@@ -307,7 +307,7 @@ A secure OAuth/OIDC implementation should include:
 
 ---
 
-# Sources (as provided)
+# Sources
 - Egor Homakov — *The Most Common OAuth2 Vulnerability* (2012)  
   http://homakov.blogspot.com/2012/07/saferweb-most-common-oauth2.html
 - Salt Security — *Booking.com OAuth Flaw* (2023)
@@ -329,3 +329,4 @@ A secure OAuth/OIDC implementation should include:
   https://medium.com/@instatunnel/oauth-gone-wrong-when-sign-in-with-google-opens-a-pandoras-box-e7cfa048f908
 - Wu et al. — *OAuth 2.0 Case Study on Dropbox* (2013 PDF)  
   https://www.cpp.edu/polysec/project/dropbox/dropbox-paper.pdf
+
