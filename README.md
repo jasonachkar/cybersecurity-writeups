@@ -118,6 +118,19 @@ docs/research/oauth-misconfigurations/
 
 ---
 
+### 🔹 Advanced Cloud Security Engineering (IAM, DevSecOps, Architecture, Detection)
+**Topics:** Cloud Security, IAM, DevSecOps, Detection Engineering, Zero Trust, Azure  
+A production-grade research report covering workload identity federation & secretless CI/CD, policy-as-code (Rego/Checkov), supply-chain security (SBOM, Cosign/SLSA), micro-segmentation & Private Link, envelope encryption, and detection engineering with KQL.
+
+📂 Path:
+```
+
+docs/research/enterprise-cloud-security-engineering/
+
+```
+
+---
+
 ## 🎓 Certification Notes
 
 ### 🔹 CompTIA Security+ Study Notes & Labs
