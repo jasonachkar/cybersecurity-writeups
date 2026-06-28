@@ -1,0 +1,37 @@
+{
+  "config": {
+    "default": true,
+    "MD013": false,
+    "MD024": false,
+    "MD033": false,
+    "MD036": false,
+    "MD032": false,
+    "MD040": false,
+    "MD025": false,
+    "MD022": false,
+    "MD031": false,
+    "MD004": false,
+    "MD007": false,
+    "MD034": false,
+    "MD029": false,
+    "MD009": false,
+    "MD012": false,
+    "MD026": false,
+    "MD038": false,
+    "MD041": false,
+    "MD060": false,
+    "table-column-style": false,
+    "MD052": false,
+    "MD058": false,
+    "MD003": false,
+    "MD001": false,
+    "MD047": false,
+    "MD010": false,
+    "MD051": false,
+    "MD053": false,
+    "MD028": false
+  },
+  "ignores": [
+    "node_modules"
+  ]
+}
