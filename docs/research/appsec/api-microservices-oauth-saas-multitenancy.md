@@ -1,36 +1,152 @@
 # API and Microservices Threat Modeling
 
-> Status: OUTLINE DRAFT – to be expanded with full research
+> Status: IN PROGRESS – deep-dive draft
 
 ## Executive Summary
 
-This document presents a practical threat modeling approach for APIs and microservices in cloud-native applications. It focuses on data flow modeling, trust boundaries, common vulnerability classes (e.g., broken authn/authz, injection, IDOR), and layered mitigations using gateways, identity systems, and runtime defenses.
+In cloud-native systems, APIs are the primary interface through which users, services, and third parties interact with your application. In a microservices architecture, each service often exposes its own API, multiplying the number of places where attackers can interact with your system. This document presents a practical, API-centric threat modeling approach that senior engineers can use to understand and mitigate risks across distributed services. It focuses on data flows, trust boundaries, common vulnerability classes, and layered mitigations using gateways, identity systems, and runtime controls.[web:128][web:130][web:135]
 
 ## 1. API-Centric Threat Modeling in Microservices
 
-- Why API-centric threat modeling is necessary in distributed systems.
-- Using data flow diagrams and STRIDE-like techniques adapted to microservices.
+### 1.1 Why API-Centric Threat Modeling Matters
+
+Traditional threat modeling approaches often assume a single monolithic application with a clear perimeter. Microservices architectures, by contrast, distribute functionality across many services and APIs:[web:130][web:135]
+
+- Each service may have its own endpoints and data stores.
+- Services communicate via APIs using HTTP, gRPC, or messaging.
+- Third-party integrations and internal services expand the attack surface.
+
+API-centric threat modeling focuses on how data moves between clients, gateways, services, and stores, and how attackers might abuse those flows.
+
+### 1.2 Data Flow Diagrams and STRIDE-like Techniques
+
+A practical starting point is to draw data flow diagrams (DFDs):[web:128][web:130]
+
+- Identify entities: external clients, identity providers, API gateways, microservices, databases, caches, and message queues.
+- Draw data flows: request/response paths, background jobs, events, and callbacks.
+- Mark trust boundaries: points where data crosses from one trust domain to another (e.g., Internet → gateway, gateway → internal service, service → data store).
+
+With DFDs in place, you can apply STRIDE-like analysis (Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege) to each data flow and boundary, focusing on API-specific concerns.
 
 ## 2. Trust Boundaries and Attack Surfaces
 
-- External clients, gateways, internal services, data stores, and third-party integrations.
-- Identifying trust boundaries and attack surfaces across API calls.
+### 2.1 Key Trust Boundaries
+
+Important boundaries in microservices architectures include:[web:128][web:130]
+
+- Internet → API gateway or edge services.
+- Gateway → internal services.
+- Services → data stores and external APIs.
+
+At each boundary, consider:
+
+- Who is allowed to send requests and with what credentials.
+- What assumptions services make about identity and authorization.
+- How data is validated, transformed, and logged.
+
+### 2.2 Attack Surfaces Across API Calls
+
+Attackers can target:
+
+- Public API endpoints exposed to the Internet.
+- Internal APIs exposed to other services or to private clients.
+- Administrative and operational APIs used by tools and operators.[web:130][web:135]
+
+Threat modeling helps identify which APIs are most sensitive and require stronger controls.
 
 ## 3. Common Vulnerabilities and Abuse Patterns
 
-- Broken authentication and authorization, IDOR, and injection attacks.
-- Rate limiting, resource exhaustion, and abuse of APIs.
+### 3.1 Broken Authentication and Authorization
+
+Common authn/authz issues in API-based microservices include:[web:130][web:135]
+
+- Missing or inconsistent enforcement of authentication across endpoints.
+- Authorization checks performed only at the gateway, with internal services assuming all requests are trusted.
+- Insecure multi-tenant authorization, where tenant identifiers are not properly validated or enforced.
+
+Threat modeling should ask:
+
+- Where is authentication enforced?
+- Where and how are authorization decisions made?
+- How do services know which tenant and user a request belongs to?
+
+### 3.2 IDOR and Injection Attacks
+
+Insecure direct object references (IDOR) and injection attacks are prevalent in APIs:[web:130][web:135]
+
+- IDOR arises when APIs expose resource identifiers without ensuring that callers are authorized to access those resources.
+- Injection occurs when user-controlled data is passed to interpreters (SQL, NoSQL, command shells, template engines) without proper sanitization.
+
+Threat modeling should consider:
+
+- How APIs validate identifiers and enforce ownership.
+- Where data enters the system and how it is validated before reaching interpreters.
+
+### 3.3 Rate Limiting, Resource Exhaustion, and Abuse
+
+APIs can be abused to exhaust resources:
+
+- Attackers may send high volumes of requests to critical endpoints.
+- Misuse of expensive operations (e.g., search, report generation) can impact availability.[web:130]
+
+Threat models should include abuse scenarios and consider rate limiting and throttling strategies.
 
 ## 4. Layered Mitigation Strategies
 
-- Strong authn/authz at gateways and services.
-- Input validation, schema enforcement, and safe serialization.
-- Protection of service-to-service communication, rate limiting, and API gateways as policy enforcement points.
+### 4.1 Strong Authn/Authz at Gateways and Services
+
+Gateways and services should work together:
+
+- Gateways enforce authentication and coarse-grained authorization (e.g., scopes, roles, tenant membership).
+- Services perform fine-grained authorization based on resource ownership and business rules.[web:130][web:135]
+
+Threat modeling should ensure that authorization is not assumed, but explicitly checked at appropriate layers.
+
+### 4.2 Input Validation, Schemas, and Safe Serialization
+
+Robust input validation mitigates many issues:[web:130]
+
+- Use schemas (e.g., OpenAPI/JSON Schema) to define expected inputs.
+- Enforce schema validation at gateways or service boundaries.
+- Avoid passing unvalidated data directly to interpreters.
+
+Threat modeling helps identify which inputs require stricter validation.
+
+### 4.3 Protecting Service-to-Service Communication
+
+Service-to-service calls should be protected:[web:128][web:130]
+
+- Use mutual TLS and identity-aware routing where appropriate.
+- Ensure that internal APIs still enforce authorization, not just trust the gateway.
+
+This reduces the impact of compromised internal services or misconfigured gateways.
+
+### 4.4 Rate Limiting and API Gateways as Policy Enforcement Points
+
+Gateways can enforce policies beyond routing:[web:130][web:135]
+
+- Apply rate limits and quotas per client, user, or tenant.
+- Block or throttle abusive patterns.
+
+Threat modeling should identify which endpoints and clients need additional protections.
 
 ## 5. Threat Modeling as a Continuous Practice
 
-- Integrating threat modeling into development and operations workflows.
-- Using automated checks and observability to maintain threat models over time.
+### 5.1 Integrating into Development and Operations
+
+Threat modeling works best when it is continuous:[web:135]
+
+- Incorporate threat modeling into design reviews for new APIs and services.
+- Revisit models when significant changes occur (new endpoints, new integrations).
+
+### 5.2 Automated Checks and Observability
+
+Automation and observability help maintain threat models:
+
+- Use API gateways and observability tools to detect unusual traffic patterns.
+- Integrate security tests and scanners into CI/CD pipelines.
+
+Threat models should inform what to monitor and what automated checks to implement.
 
 ---
 
