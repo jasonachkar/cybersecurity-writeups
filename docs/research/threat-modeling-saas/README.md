@@ -1,3 +1,11 @@
+---
+title: "Threat Modeling for Multi-Tenant SaaS Applications"
+type: "research"
+tags: ['Security', 'SaaS']
+date: "2026-06"
+readingTime: 22
+---
+
 # Threat Modeling for Multi-Tenant SaaS Applications
 
 A comprehensive guide to identifying, analyzing, and mitigating security threats in multi-tenant Software-as-a-Service architectures using STRIDE and other methodologies.

@@ -1,3 +1,11 @@
+---
+title: "Common OAuth 2.0 Misconfigurations and Exploits"
+type: "research"
+tags: ['Security', 'OAuth']
+date: "2026-06"
+readingTime: 13
+---
+
 # Common OAuth 2.0 Misconfigurations and Exploits
 
 ## Introduction

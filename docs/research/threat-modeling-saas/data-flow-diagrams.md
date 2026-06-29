@@ -8,11 +8,11 @@ Data Flow Diagrams (DFDs) are a visual representation of how data moves through 
 
 Standard threat modeling DFDs use specific symbols to represent different entities in the system:
 
-*   **External Entities (Rectangles):** People, devices, or other systems that interact with the application but are outside of your control (e.g., a User's Browser, a 3rd-party Payment Gateway).
-*   **Processes (Circles):** Code or services that transform or route data (e.g., API Gateway, Authentication Service, Billing Microservice).
-*   **Data Stores (Parallel Lines):** Databases, file systems, S3 buckets, or caches where data rests.
-*   **Data Flows (Arrows):** The movement of data between entities (e.g., HTTP requests, database queries).
-*   **Trust Boundaries (Dotted Lines):** The perimeter separating entities with different levels of trust or privilege (e.g., the boundary between the public internet and your private VPC).
+* **External Entities (Rectangles):** People, devices, or other systems that interact with the application but are outside of your control (e.g., a User's Browser, a 3rd-party Payment Gateway).
+* **Processes (Circles):** Code or services that transform or route data (e.g., API Gateway, Authentication Service, Billing Microservice).
+* **Data Stores (Parallel Lines):** Databases, file systems, S3 buckets, or caches where data rests.
+* **Data Flows (Arrows):** The movement of data between entities (e.g., HTTP requests, database queries).
+* **Trust Boundaries (Dotted Lines):** The perimeter separating entities with different levels of trust or privilege (e.g., the boundary between the public internet and your private VPC).
 
 ---
 
@@ -61,12 +61,12 @@ flowchart TD
 
 Looking at the diagram above, we can identify potential threats at the trust boundaries:
 
-1.  **Between User and WAF (Internet $\rightarrow$ VPC):**
-    *   *Spoofing:* Attacker steals the JWT in transit if TLS is misconfigured.
-    *   *DoS:* Attacker floods the WAF/ALB with volumetric traffic.
-2.  **Between Core SaaS App and Database (Process $\rightarrow$ Data Store):**
-    *   *Information Disclosure:* The App process fails to append `WHERE tenant_id = ?` to a database query, leaking data across the trust boundary.
-    *   *Elevation of Privilege:* SQL Injection originating from the user allows arbitrary command execution on the database engine.
-3.  **Inside the Auth Microservice (Process):**
-    *   *Tampering:* The microservice uses a weak secret key for signing JWTs, allowing an attacker to forge tokens.
-    *   *Repudiation:* The Auth service fails to log failed login attempts, masking a brute-force attack.
+1. **Between User and WAF (Internet $\rightarrow$ VPC):**
+    * *Spoofing:* Attacker steals the JWT in transit if TLS is misconfigured.
+    * *DoS:* Attacker floods the WAF/ALB with volumetric traffic.
+2. **Between Core SaaS App and Database (Process $\rightarrow$ Data Store):**
+    * *Information Disclosure:* The App process fails to append `WHERE tenant_id = ?` to a database query, leaking data across the trust boundary.
+    * *Elevation of Privilege:* SQL Injection originating from the user allows arbitrary command execution on the database engine.
+3. **Inside the Auth Microservice (Process):**
+    * *Tampering:* The microservice uses a weak secret key for signing JWTs, allowing an attacker to forge tokens.
+    * *Repudiation:* The Auth service fails to log failed login attempts, masking a brute-force attack.

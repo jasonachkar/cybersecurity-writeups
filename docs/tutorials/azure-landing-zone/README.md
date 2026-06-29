@@ -1,3 +1,11 @@
+---
+title: "Azure Landing Zone Security"
+type: "tutorial"
+tags: ['Security', 'Azure']
+date: "2026-06"
+readingTime: 21
+---
+
 # Azure Landing Zone Security
 
 A comprehensive guide to designing and implementing secure Azure Landing Zones following Microsoft's Cloud Adoption Framework best practices.

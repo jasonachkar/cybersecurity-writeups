@@ -1,3 +1,11 @@
+---
+title: "Configuring Azure Firewall with UDR-Based Traffic Control"
+type: "tutorial"
+tags: ['Security', 'Azure']
+date: "2026-06"
+readingTime: 8
+---
+
 # Configuring Azure Firewall with UDR-Based Traffic Control
 
 A hands-on walkthrough for deploying Azure Firewall, routing all workload traffic through it using User-Defined Routes (UDR), and enforcing granular network, application, and DNAT rules.

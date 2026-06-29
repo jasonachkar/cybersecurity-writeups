@@ -1,4 +1,12 @@
-# <img src="/docs/assets/images/comptia-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> CompTIA Security+ SY0-701 Study Guide
+---
+title: "CompTIA Security+ SY0-701 Study Guide"
+type: "certification-notes"
+tags: ['Security', 'CompTIA']
+date: "2026-06"
+readingTime: 17
+---
+
+# <img src="/docs/assets/images/comptia-logo.svg" alt="CompTIA Logo" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> CompTIA Security+ SY0-701 Study Guide
 
 
 ## Exam Overview
