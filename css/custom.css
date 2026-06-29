@@ -168,35 +168,7 @@ body[data-md-color-scheme="slate"] .md-typeset a:hover {
   border-bottom: none !important;
 }
 
-/* Active sidebar link highlight (Global/Light Mode) */
-body .md-nav .md-nav__item--active > .md-nav__link,
-body .md-nav .md-nav__link--active,
-body .md-nav .md-nav__link--active .md-ellipsis {
-  color: #2563eb !important;
-  font-weight: 700 !important;
-}
-
-body .md-nav .md-nav__item--active > .md-nav__link,
-body .md-nav .md-nav__link--active {
-  background-color: rgba(37, 99, 235, 0.1) !important;
-  border-left: 4px solid #2563eb !important;
-  border-radius: 0 4px 4px 0 !important;
-  padding-left: 0.75rem !important;
-}
-
-/* Active sidebar link highlight (Dark Mode) */
-body[data-md-color-scheme="slate"] .md-nav .md-nav__item--active > .md-nav__link,
-body[data-md-color-scheme="slate"] .md-nav .md-nav__link--active,
-body[data-md-color-scheme="slate"] .md-nav .md-nav__link--active .md-ellipsis {
-  color: #58a6ff !important;
-  font-weight: 700 !important;
-}
-
-body[data-md-color-scheme="slate"] .md-nav .md-nav__item--active > .md-nav__link,
-body[data-md-color-scheme="slate"] .md-nav .md-nav__link--active {
-  background-color: rgba(88, 166, 255, 0.15) !important;
-  border-left: 4px solid #58a6ff !important;
-}
+/* Active sidebar styles consolidated at the bottom of the file */
 
 /* Table of contents links (right sidebar) */
 body[data-md-color-scheme="slate"] .md-nav--secondary a {
@@ -398,52 +370,87 @@ body[data-md-color-scheme="slate"] .md-copyright {
 }
 
 /* ========================================================
-   MODERN ENTERPRISE SIDEBAR (SonarQube/Stripe Style)
+   MODERN SIDEBAR (SonarQube/Stripe Aesthetic)
    ======================================================== */
 
-/* Sidebar general typography */
-.md-nav {
-  font-size: 0.85rem !important;
+/* Sidebar wrapper & general styles */
+.md-sidebar--primary {
+  padding-top: 1rem;
 }
 
-/* Section titles (Top level categories) */
-.md-nav--primary .md-nav__title {
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  font-size: 0.75rem !important;
-  letter-spacing: 0.05em !important;
-  color: #64748b !important; /* Slate 500 */
-  padding-top: 1rem !important;
+.md-nav {
+  font-size: 0.82rem !important;
+  line-height: 1.5 !important;
+}
+
+/* Parent Category/Folder items (collapsible headers) */
+.md-nav__item--nested > .md-nav__link {
+  font-weight: 600 !important;
+  color: #334155 !important; /* Slate 700 */
+  padding-top: 0.5rem !important;
   padding-bottom: 0.5rem !important;
 }
 
-body[data-md-color-scheme="slate"] .md-nav--primary .md-nav__title {
-  color: #8b949e !important; 
+body[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link {
+  color: #cbd5e1 !important; /* Slate 300 */
 }
 
-/* Links inside sections */
+/* Sidebar Links (Leaf nodes/pages) */
 .md-nav__link {
-  transition: background-color 0.15s ease, color 0.15s ease !important;
+  color: #475569 !important; /* Slate 600 */
+  transition: all 0.2s ease !important;
   border-radius: 6px !important;
-  padding: 0.4rem 0.6rem !important;
-  margin-bottom: 0.1rem !important;
+  padding: 0.45rem 0.75rem !important;
+  margin: 0.15rem 0 !important;
+  display: flex !important;
+  align-items: center !important;
 }
 
-/* Hover effects for links */
-.md-nav__item:not(.md-nav__item--active) > .md-nav__link:hover {
-  background-color: rgba(0, 0, 0, 0.04) !important;
+body[data-md-color-scheme="slate"] .md-nav__link {
+  color: #94a3b8 !important; /* Slate 400 */
+}
+
+/* Hover effect on links */
+.md-nav__link:hover {
+  background-color: #f1f5f9 !important; /* Slate 100 */
   color: #0f172a !important; /* Slate 900 */
+  cursor: pointer;
 }
 
-body[data-md-color-scheme="slate"] .md-nav__item:not(.md-nav__item--active) > .md-nav__link:hover {
-  background-color: rgba(255, 255, 255, 0.05) !important;
-  color: #e2e8f0 !important; /* Slate 200 */
+body[data-md-color-scheme="slate"] .md-nav__link:hover {
+  background-color: rgba(255, 255, 255, 0.06) !important;
+  color: #f8fafc !important; /* Slate 50 */
 }
 
-/* Adjust active highlight to match the new rounded padded look */
-body .md-nav .md-nav__item--active > .md-nav__link,
-body .md-nav .md-nav__link--active {
-  border-radius: 6px !important;
-  border-left: none !important;
-  padding-left: 0.6rem !important;
+/* Active Leaf Page Highlight
+   Only highlight the actual active leaf link, never the parent category folder! */
+.md-nav__link.md-nav__link--active,
+.md-nav__link.md-nav__link--active .md-ellipsis {
+  color: #2563eb !important; /* Deep Blue */
+  font-weight: 600 !important;
+}
+
+.md-nav__link.md-nav__link--active {
+  background-color: #eff6ff !important; /* Light blue tint */
+}
+
+/* Active Leaf Page Highlight (Dark Mode) */
+body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active,
+body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active .md-ellipsis {
+  color: #38bdf8 !important; /* Sky Blue */
+}
+
+body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active {
+  background-color: rgba(56, 189, 248, 0.12) !important;
+}
+
+/* Adjust nested items indentation for clear visual hierarchy */
+.md-nav__list .md-nav__list {
+  padding-left: 0.75rem !important;
+  border-left: 1px solid #e2e8f0;
+  margin-left: 0.75rem;
+}
+
+body[data-md-color-scheme="slate"] .md-nav__list .md-nav__list {
+  border-left-color: rgba(255, 255, 255, 0.08);
 }
