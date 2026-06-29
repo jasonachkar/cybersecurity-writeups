@@ -142,3 +142,7 @@ nav:
       - Domain 3 - Operations: docs/certification-notes/security-plus/domain-3-operations.md
       - Quick Reference: docs/certification-notes/security-plus/quick-reference.md
       - Practice Questions: docs/certification-notes/security-plus/practice-questions.md
+    - "☁️ Microsoft AZ-900": docs/certification-notes/az-900/index.md
+    - "🛡️ Google Cybersecurity": docs/certification-notes/google-cybersecurity/index.md
+    - "🔒 Microsoft AZ-500": docs/certification-notes/az-500/index.md
+
