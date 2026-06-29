@@ -6,6 +6,8 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
+      
       
         <meta name="author" content="Jason Achkardiab">
       
@@ -27,7 +29,7 @@
     
     
       
-        <title>Secure CI/CD Pipeline Design: Runner Hardening, Workload Identity, and Pipeline Integrity - Platform Security & Cloud Architecture Writeups</title>
+        <title>Secure CI/CD Pipeline Design: Runner Hardening, Workload Identity, and Pipeline Integrity - Cloud Security Engineering</title>
       
     
     
@@ -96,7 +98,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Platform Security &amp; Cloud Architecture Writeups" class="md-header__button md-logo" aria-label="Platform Security & Cloud Architecture Writeups" data-md-component="logo">
+    <a href="../.." title="Cloud Security Engineering" class="md-header__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -110,7 +112,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Platform Security & Cloud Architecture Writeups
+            Cloud Security Engineering
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -234,13 +236,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Platform Security &amp; Cloud Architecture Writeups" class="md-nav__button md-logo" aria-label="Platform Security & Cloud Architecture Writeups" data-md-component="logo">
+    <a href="../.." title="Cloud Security Engineering" class="md-nav__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Platform Security & Cloud Architecture Writeups
+    Cloud Security Engineering
   </label>
   
     <div class="md-nav__source">
@@ -309,7 +311,7 @@
   <span class="md-ellipsis">
     
   
-    ☁️ Cloud Security
+    :material-cloud-lock: Cloud Security
   
 
     
@@ -325,7 +327,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    ☁️ Cloud Security
+    :material-cloud-lock: Cloud Security
   
 
           </label>
@@ -531,7 +533,7 @@
   <span class="md-ellipsis">
     
   
-    💻 Application Security
+    :material-application-brackets-outline: Application Security
   
 
     
@@ -547,7 +549,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    💻 Application Security
+    :material-application-brackets-outline: Application Security
   
 
           </label>
@@ -699,7 +701,7 @@
   <span class="md-ellipsis">
     
   
-    🛡️ DevSecOps
+    :material-shield-sync: DevSecOps
   
 
     
@@ -715,7 +717,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🛡️ DevSecOps
+    :material-shield-sync: DevSecOps
   
 
           </label>
@@ -1107,7 +1109,7 @@
   <span class="md-ellipsis">
     
   
-    🕵️ Threat Intelligence
+    :material-target-account: Threat Intelligence
   
 
     
@@ -1123,7 +1125,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🕵️ Threat Intelligence
+    :material-target-account: Threat Intelligence
   
 
           </label>
@@ -1217,7 +1219,7 @@
   <span class="md-ellipsis">
     
   
-    📘 Legacy Tutorials
+    :material-book-open-page-variant: Tutorials
   
 
     
@@ -1233,7 +1235,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    📘 Legacy Tutorials
+    :material-book-open-page-variant: Tutorials
   
 
           </label>
@@ -2245,7 +2247,7 @@
   <span class="md-ellipsis">
     
   
-    🔬 Legacy Research
+    :material-flask-outline: Research
   
 
     
@@ -2261,7 +2263,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🔬 Legacy Research
+    :material-flask-outline: Research
   
 
           </label>
@@ -2912,7 +2914,7 @@
   <span class="md-ellipsis">
     
   
-    🎓 Certification Notes
+    :material-certificate-outline: Certification Notes
   
 
     
@@ -2928,7 +2930,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🎓 Certification Notes
+    :material-certificate-outline: Certification Notes
   
 
           </label>
@@ -3501,24 +3503,21 @@
 <h2 id="defensive-architecture">Defensive Architecture</h2>
 <p>A secure pipeline design requires isolating runner hosts, enforcing branch protections, and applying strict validation rules to all code changes.</p>
 <h3 id="reference-pipeline-isolation-boundary-topology">Reference Pipeline Isolation Boundary Topology</h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[ Developer Local ] ── (git push) ──&gt; [ GitHub Repository (Branch Protection Enforced) ]
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>                                                   │
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>                                      (Webhook Triggers Build)
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                                                   │
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>                                                   ▼
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>                                    [ Self-Hosted Runner VPC ]
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>                                                   │
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>                                    (Ephememeral Kubernetes Pods)
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>                                                   │
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>                           ┌───────────────────────┴───────────────────────┐
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>                           ▼                                               ▼
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>                 [ Sandbox Runner Pod ]                        [ Production Runner Pod ]
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>                           │                                               │
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>                    (Restricted Network)                              (VPC Peering)
-</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>                           │                                               │
-</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>                           ▼                                               ▼
-</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>                 [ Isolated Dev VPC ]                            [ Inspection Subnets ]
-</span></code></pre></div>
+<pre class="mermaid"><code>flowchart TD
+    DEV["Developer Local"] --&gt;|git push| REPO["GitHub Repository&lt;br/&gt;Branch Protection Enforced"]
+    REPO --&gt;|Webhook Trigger| VPC["Self-Hosted Runner VPC"]
+    VPC --&gt;|Ephemeral K8s Pods| SAND["Sandbox Runner Pod"]
+    VPC --&gt;|Ephemeral K8s Pods| PROD["Production Runner Pod"]
+    SAND --&gt;|Restricted Network| DEVVPC["Isolated Dev VPC"]
+    PROD --&gt;|VPC Peering| INSPECT["Inspection Subnets"]
+
+    style DEV fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style REPO fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style VPC fill:#0891b2,color:#fff,stroke:#0e7490
+    style SAND fill:#059669,color:#fff,stroke:#047857
+    style PROD fill:#dc2626,color:#fff,stroke:#b91c1c
+    style DEVVPC fill:#059669,color:#fff,stroke:#047857
+    style INSPECT fill:#d97706,color:#fff,stroke:#b45309</code></pre>
 <ul>
 <li><strong>Ephemeral Runners</strong>: Build steps run inside temporary Kubernetes pods (e.g. using Actions Runner Controller). Pods are destroyed immediately after execution completes, preventing cross-build contamination and persistent malware installation.</li>
 <li><strong>Network Isolation</strong>: Runners executing untrusted code (like unit tests or PR checks) run in isolated VPC subnets with no routing paths to internal production environments.</li>

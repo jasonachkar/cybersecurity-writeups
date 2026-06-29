@@ -6,6 +6,8 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
+      
       
         <meta name="author" content="Jason Achkardiab">
       
@@ -27,7 +29,7 @@
     
     
       
-        <title>Cloud Network Segmentation: VPC Architecture, Transit Gateway Routing, and PrivateLink Integration - Platform Security & Cloud Architecture Writeups</title>
+        <title>Cloud Network Segmentation: VPC Architecture, Transit Gateway Routing, and PrivateLink Integration - Cloud Security Engineering</title>
       
     
     
@@ -96,7 +98,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Platform Security &amp; Cloud Architecture Writeups" class="md-header__button md-logo" aria-label="Platform Security & Cloud Architecture Writeups" data-md-component="logo">
+    <a href="../.." title="Cloud Security Engineering" class="md-header__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -110,7 +112,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Platform Security & Cloud Architecture Writeups
+            Cloud Security Engineering
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -234,13 +236,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Platform Security &amp; Cloud Architecture Writeups" class="md-nav__button md-logo" aria-label="Platform Security & Cloud Architecture Writeups" data-md-component="logo">
+    <a href="../.." title="Cloud Security Engineering" class="md-nav__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Platform Security & Cloud Architecture Writeups
+    Cloud Security Engineering
   </label>
   
     <div class="md-nav__source">
@@ -311,7 +313,7 @@
   <span class="md-ellipsis">
     
   
-    ☁️ Cloud Security
+    :material-cloud-lock: Cloud Security
   
 
     
@@ -327,7 +329,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    ☁️ Cloud Security
+    :material-cloud-lock: Cloud Security
   
 
           </label>
@@ -803,7 +805,7 @@
   <span class="md-ellipsis">
     
   
-    💻 Application Security
+    :material-application-brackets-outline: Application Security
   
 
     
@@ -819,7 +821,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    💻 Application Security
+    :material-application-brackets-outline: Application Security
   
 
           </label>
@@ -969,7 +971,7 @@
   <span class="md-ellipsis">
     
   
-    🛡️ DevSecOps
+    :material-shield-sync: DevSecOps
   
 
     
@@ -985,7 +987,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🛡️ DevSecOps
+    :material-shield-sync: DevSecOps
   
 
           </label>
@@ -1135,7 +1137,7 @@
   <span class="md-ellipsis">
     
   
-    🕵️ Threat Intelligence
+    :material-target-account: Threat Intelligence
   
 
     
@@ -1151,7 +1153,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🕵️ Threat Intelligence
+    :material-target-account: Threat Intelligence
   
 
           </label>
@@ -1245,7 +1247,7 @@
   <span class="md-ellipsis">
     
   
-    📘 Legacy Tutorials
+    :material-book-open-page-variant: Tutorials
   
 
     
@@ -1261,7 +1263,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    📘 Legacy Tutorials
+    :material-book-open-page-variant: Tutorials
   
 
           </label>
@@ -2273,7 +2275,7 @@
   <span class="md-ellipsis">
     
   
-    🔬 Legacy Research
+    :material-flask-outline: Research
   
 
     
@@ -2289,7 +2291,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🔬 Legacy Research
+    :material-flask-outline: Research
   
 
           </label>
@@ -2940,7 +2942,7 @@
   <span class="md-ellipsis">
     
   
-    🎓 Certification Notes
+    :material-certificate-outline: Certification Notes
   
 
     
@@ -2956,7 +2958,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🎓 Certification Notes
+    :material-certificate-outline: Certification Notes
   
 
           </label>
@@ -3504,12 +3506,21 @@
 <p>If all VPC attachments are associated with a single default TGW route table, every VPC can communicate with every other VPC. This creates a flat network across the entire organization.</p>
 <h4 id="the-isolated-hub-and-spoke-pattern">The Isolated Hub-and-Spoke Pattern</h4>
 <p>To prevent unauthorized lateral movement, assign VPC attachments to separate, dedicated TGW route tables. </p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>[ Web VPC ] &lt;--&gt; [ Web TGW Route Table ] ────┐
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>                                             ▼
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>[ Core DB VPC ] &lt;--&gt; [ DB TGW Route Table ] ─┼─&gt; [ Inspection VPC (Firewall Appliance) ]
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                                             ▲
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>[ Shared SVCS ] &lt;--&gt; [ SVCS TGW Route Table ]┘
-</span></code></pre></div>
+<pre class="mermaid"><code>flowchart LR
+    WEB["Web VPC"] &lt;--&gt; WRT["Web TGW&lt;br/&gt;Route Table"]
+    DB["Core DB VPC"] &lt;--&gt; DRT["DB TGW&lt;br/&gt;Route Table"]
+    SVC["Shared SVCS"] &lt;--&gt; SRT["SVCS TGW&lt;br/&gt;Route Table"]
+    WRT --&gt; FW["Inspection VPC&lt;br/&gt;Firewall Appliance"]
+    DRT --&gt; FW
+    SRT --&gt; FW
+
+    style WEB fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style DB fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style SVC fill:#0891b2,color:#fff,stroke:#0e7490
+    style FW fill:#dc2626,color:#fff,stroke:#b91c1c
+    style WRT fill:#1e293b,color:#fff,stroke:#0f172a
+    style DRT fill:#1e293b,color:#fff,stroke:#0f172a
+    style SRT fill:#1e293b,color:#fff,stroke:#0f172a</code></pre>
 <p>By decoupling propagation (which networks the TGW learns about) and association (which route table the TGW uses to route traffic), you can force all inter-VPC traffic through a central firewall appliance in an <strong>Inspection VPC</strong>.</p>
 <h3 id="aws-privatelink-eliminating-public-egress-paths">AWS PrivateLink: Eliminating Public Egress Paths</h3>
 <p>AWS PrivateLink allows you to access services hosted in other VPCs or AWS services privately, without exposing traffic to the public internet.</p>
@@ -3517,67 +3528,67 @@
 <p>PrivateLink creates <strong>Interface VPC Endpoints</strong> inside your subnets. These endpoints appear as local elastic network interfaces (ENIs) with private IP addresses. Traffic destined for the target service is routed over the AWS internal network fabric, avoiding the internet gateway entirely.</p>
 <h4 id="policy-constraints-on-endpoints">Policy Constraints on Endpoints</h4>
 <p>To prevent data exfiltration, you must attach an Endpoint Policy to your VPC endpoints. This restricts the specific accounts and resources that can use the endpoint. For example, the policy below allows access only to a specific, authorized S3 bucket:</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="p">{</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">      </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AllowAccessToAuthorizedBucketOnly&quot;</span><span class="p">,</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Allow&quot;</span><span class="p">,</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span><span class="nt">&quot;Principal&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">        </span><span class="s2">&quot;s3:GetObject&quot;</span><span class="p">,</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">        </span><span class="s2">&quot;s3:PutObject&quot;</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">      </span><span class="p">],</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">      </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">        </span><span class="s2">&quot;arn:aws:s3:::my-authorized-enterprise-bucket&quot;</span><span class="p">,</span>
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">        </span><span class="s2">&quot;arn:aws:s3:::my-authorized-enterprise-bucket/*&quot;</span>
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="w">      </span><span class="p">]</span>
-</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">  </span><span class="p">]</span>
-</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="p">}</span>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">      </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;AllowAccessToAuthorizedBucketOnly&quot;</span><span class="p">,</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Allow&quot;</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">      </span><span class="nt">&quot;Principal&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">        </span><span class="s2">&quot;s3:GetObject&quot;</span><span class="p">,</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">        </span><span class="s2">&quot;s3:PutObject&quot;</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">      </span><span class="p">],</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">      </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">        </span><span class="s2">&quot;arn:aws:s3:::my-authorized-enterprise-bucket&quot;</span><span class="p">,</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">        </span><span class="s2">&quot;arn:aws:s3:::my-authorized-enterprise-bucket/*&quot;</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">      </span><span class="p">]</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>If an attacker tries to use this endpoint to exfiltrate data to a personal S3 bucket, the request is blocked by the endpoint policy, even if the application's IAM policy allows broad S3 access.</p>
 <hr />
 <h2 id="defensive-architecture">Defensive Architecture</h2>
 <p>A secure cloud network architecture requires segmenting network tiers and routing all outbound traffic through central inspection points.</p>
 <h3 id="architecture-topology-hub-and-spoke-inspection-flow">Architecture Topology: Hub-and-Spoke Inspection Flow</h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>[ Spoke VPC A: Frontend ]      [ Spoke VPC B: Backend ]
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>           │                              │
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>           └──────────────┬───────────────┘
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>                          ▼ (TGW Attachment)
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>             [ AWS Transit Gateway ]
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>                          │
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>                          ▼ (Route table forces traffic to Inspection VPC)
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>            [ Inspection VPC Subnets ]
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>                          │
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>                          ▼
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>            [ AWS Network Firewall / NGFW ]
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>                          │
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>                          ▼ (Inspected &amp; Approved Traffic)
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>                 [ Transit Gateway ]
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>                          │
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>                          ▼
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>                  [ Egress VPC ] ──&gt; [ Internet Gateway ]
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>[ Spoke VPC A: Frontend ]      [ Spoke VPC B: Backend ]
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>           │                              │
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>           └──────────────┬───────────────┘
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                          ▼ (TGW Attachment)
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>             [ AWS Transit Gateway ]
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>                          │
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>                          ▼ (Route table forces traffic to Inspection VPC)
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>            [ Inspection VPC Subnets ]
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>                          │
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>                          ▼
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>            [ AWS Network Firewall / NGFW ]
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>                          │
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>                          ▼ (Inspected &amp; Approved Traffic)
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>                 [ Transit Gateway ]
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>                          │
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>                          ▼
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>                  [ Egress VPC ] ──&gt; [ Internet Gateway ]
 </span></code></pre></div>
 <h3 id="route-53-resolver-dns-firewall-implementation">Route 53 Resolver DNS Firewall Implementation</h3>
 <p>To prevent DNS-based data exfiltration and restrict access to malicious domains, implement Route 53 Resolver DNS Firewall rules. Block known malicious domains and unauthorized external DNS resolvers.</p>
 <h4 id="terraform-configuration-snippet">Terraform Configuration Snippet</h4>
-<div class="language-hcl highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_route53_resolver_firewall_domain_list&quot;</span><span class="w"> </span><span class="nv">&quot;blocked_domains&quot;</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="na">name</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;enterprise-blocked-domains&quot;</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="na">domains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;*.malicious-domain.com&quot;, &quot;*.attacker.net&quot;</span><span class="p">]</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="p">}</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_route53_resolver_firewall_rule_group&quot;</span><span class="w"> </span><span class="nv">&quot;dns_rule_group&quot;</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">  </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;dns-security-policy&quot;</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="p">}</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_route53_resolver_firewall_rule&quot;</span><span class="w"> </span><span class="nv">&quot;block_malicious&quot;</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">  </span><span class="na">name</span><span class="w">                    </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;block-malicious-traffic&quot;</span>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">  </span><span class="na">firewall_rule_group_id</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_route53_resolver_firewall_rule_group.dns_rule_group.id</span>
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">  </span><span class="na">firewall_domain_list_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_route53_resolver_firewall_domain_list.blocked_domains.id</span>
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">  </span><span class="na">action</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;BLOCK&quot;</span>
-</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">  </span><span class="na">block_response</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;NXDOMAIN&quot;</span>
-</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">  </span><span class="na">priority</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="m">100</span>
-</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="p">}</span>
+<div class="language-hcl highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_route53_resolver_firewall_domain_list&quot;</span><span class="w"> </span><span class="nv">&quot;blocked_domains&quot;</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="na">name</span><span class="w">    </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;enterprise-blocked-domains&quot;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="na">domains</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;*.malicious-domain.com&quot;, &quot;*.attacker.net&quot;</span><span class="p">]</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="p">}</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_route53_resolver_firewall_rule_group&quot;</span><span class="w"> </span><span class="nv">&quot;dns_rule_group&quot;</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span><span class="na">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;dns-security-policy&quot;</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="p">}</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;aws_route53_resolver_firewall_rule&quot;</span><span class="w"> </span><span class="nv">&quot;block_malicious&quot;</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">  </span><span class="na">name</span><span class="w">                    </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;block-malicious-traffic&quot;</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">  </span><span class="na">firewall_rule_group_id</span><span class="w">  </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_route53_resolver_firewall_rule_group.dns_rule_group.id</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">  </span><span class="na">firewall_domain_list_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">aws_route53_resolver_firewall_domain_list.blocked_domains.id</span>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">  </span><span class="na">action</span><span class="w">                  </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;BLOCK&quot;</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">  </span><span class="na">block_response</span><span class="w">          </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;NXDOMAIN&quot;</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">  </span><span class="na">priority</span><span class="w">                </span><span class="o">=</span><span class="w"> </span><span class="m">100</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="p">}</span>
 </span></code></pre></div>
 <hr />
 <h2 id="tooling-and-implementation">Tooling and Implementation</h2>

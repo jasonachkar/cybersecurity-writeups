@@ -6,6 +6,8 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
+      
       
         <meta name="author" content="Jason Achkardiab">
       
@@ -27,7 +29,7 @@
     
     
       
-        <title>Advanced Cloud Attack Path Analysis: Mapping Multi-Stage Exploits to the MITRE ATT&CK Matrix - Platform Security & Cloud Architecture Writeups</title>
+        <title>Advanced Cloud Attack Path Analysis: Mapping Multi-Stage Exploits to the MITRE ATT&CK Matrix - Cloud Security Engineering</title>
       
     
     
@@ -96,7 +98,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Platform Security &amp; Cloud Architecture Writeups" class="md-header__button md-logo" aria-label="Platform Security & Cloud Architecture Writeups" data-md-component="logo">
+    <a href="../.." title="Cloud Security Engineering" class="md-header__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -110,7 +112,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Platform Security & Cloud Architecture Writeups
+            Cloud Security Engineering
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -234,13 +236,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Platform Security &amp; Cloud Architecture Writeups" class="md-nav__button md-logo" aria-label="Platform Security & Cloud Architecture Writeups" data-md-component="logo">
+    <a href="../.." title="Cloud Security Engineering" class="md-nav__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Platform Security & Cloud Architecture Writeups
+    Cloud Security Engineering
   </label>
   
     <div class="md-nav__source">
@@ -309,7 +311,7 @@
   <span class="md-ellipsis">
     
   
-    ☁️ Cloud Security
+    :material-cloud-lock: Cloud Security
   
 
     
@@ -325,7 +327,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    ☁️ Cloud Security
+    :material-cloud-lock: Cloud Security
   
 
           </label>
@@ -531,7 +533,7 @@
   <span class="md-ellipsis">
     
   
-    💻 Application Security
+    :material-application-brackets-outline: Application Security
   
 
     
@@ -547,7 +549,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    💻 Application Security
+    :material-application-brackets-outline: Application Security
   
 
           </label>
@@ -697,7 +699,7 @@
   <span class="md-ellipsis">
     
   
-    🛡️ DevSecOps
+    :material-shield-sync: DevSecOps
   
 
     
@@ -713,7 +715,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🛡️ DevSecOps
+    :material-shield-sync: DevSecOps
   
 
           </label>
@@ -865,7 +867,7 @@
   <span class="md-ellipsis">
     
   
-    🕵️ Threat Intelligence
+    :material-target-account: Threat Intelligence
   
 
     
@@ -881,7 +883,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🕵️ Threat Intelligence
+    :material-target-account: Threat Intelligence
   
 
           </label>
@@ -1211,7 +1213,7 @@
   <span class="md-ellipsis">
     
   
-    📘 Legacy Tutorials
+    :material-book-open-page-variant: Tutorials
   
 
     
@@ -1227,7 +1229,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    📘 Legacy Tutorials
+    :material-book-open-page-variant: Tutorials
   
 
           </label>
@@ -2239,7 +2241,7 @@
   <span class="md-ellipsis">
     
   
-    🔬 Legacy Research
+    :material-flask-outline: Research
   
 
     
@@ -2255,7 +2257,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🔬 Legacy Research
+    :material-flask-outline: Research
   
 
           </label>
@@ -2906,7 +2908,7 @@
   <span class="md-ellipsis">
     
   
-    🎓 Certification Notes
+    :material-certificate-outline: Certification Notes
   
 
     
@@ -2922,7 +2924,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🎓 Certification Notes
+    :material-certificate-outline: Certification Notes
   
 
           </label>
@@ -3433,6 +3435,17 @@
 <li><strong>Control Plane Takeover via AssumeRole (T1078)</strong>:</li>
 <li>The attacker uses the node's IAM credentials to assume a high-privilege cross-account administration role, completing the attack chain.</li>
 </ol>
+<pre class="mermaid"><code>flowchart LR
+    A["1 - Stolen Dev Keys&lt;br/&gt;T1586"] --&gt; B["2 - ECR Image Poisoning&lt;br/&gt;T1195"]
+    B --&gt; C["3 - K8s Node Breakout&lt;br/&gt;T1611"]
+    C --&gt; D["4 - IMDS Credential&lt;br/&gt;Harvest T1552"]
+    D --&gt; E["5 - Cross-Account&lt;br/&gt;AssumeRole T1078"]
+
+    style A fill:#dc2626,color:#fff,stroke:#991b1b
+    style B fill:#ea580c,color:#fff,stroke:#c2410c
+    style C fill:#d97706,color:#fff,stroke:#b45309
+    style D fill:#ca8a04,color:#fff,stroke:#a16207
+    style E fill:#9333ea,color:#fff,stroke:#7e22ce</code></pre>
 <hr />
 <h2 id="deep-technical-body">Deep Technical Body</h2>
 <h3 id="step-by-step-anatomy-of-the-attack-path">Step-by-Step Anatomy of the Attack Path</h3>
@@ -3484,31 +3497,21 @@ They extract the client certificate and private key, allowing them to send comma
 <h2 id="defensive-architecture">Defensive Architecture</h2>
 <p>Preventing multi-stage attacks requires breaking compilation links and applying strict verification gates at every transition.</p>
 <h3 id="architecture-topology-hardened-deployment-and-runtime-isolation">Architecture Topology: Hardened Deployment and Runtime Isolation</h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>[ Code Commit ] ──&gt; [ Static Scanner ]
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>                           │
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>                 ( Verifies Commit Signature )
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>                           │
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>                           ▼
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>                  [ Ephemeral Builder ]
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>                           │
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>                 ( Signs Image via Cosign )
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>                           │
-</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>                           ▼
-</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>                 [ Container Registry ]
-</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>                           │
-</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>                           ▼
-</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>     [ Kubernetes Admission Controller (Kyverno) ]
-</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>                           │
-</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>               ( Enforces Image Signatures )
-</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>                           │
-</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>                           ▼
-</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>             [ Sandboxed Worker Node (gVisor) ]
-</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>                           │
-</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>               ( Blocks HostPath Mounts )
-</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>                           │
-</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>                           ▼
-</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>     [ IMDS Restricted to Hop Limit 1 (Blocks Pods) ]
-</span></code></pre></div>
+<pre class="mermaid"><code>flowchart TD
+    COMMIT["Code Commit"] --&gt;|Verifies Commit Signature| SCAN["Static Scanner"]
+    SCAN --&gt; BUILD["Ephemeral Builder"]
+    BUILD --&gt;|Signs Image via Cosign| REG["Container Registry"]
+    REG --&gt; KYV["Kubernetes Admission&lt;br/&gt;Controller - Kyverno"]
+    KYV --&gt;|Enforces Image Signatures| GVISOR["Sandboxed Worker Node&lt;br/&gt;gVisor"]
+    GVISOR --&gt;|Blocks HostPath Mounts| IMDS["IMDS Restricted&lt;br/&gt;Hop Limit 1 - Blocks Pods"]
+
+    style COMMIT fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style SCAN fill:#0891b2,color:#fff,stroke:#0e7490
+    style BUILD fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style REG fill:#0891b2,color:#fff,stroke:#0e7490
+    style KYV fill:#d97706,color:#fff,stroke:#b45309
+    style GVISOR fill:#059669,color:#fff,stroke:#047857
+    style IMDS fill:#dc2626,color:#fff,stroke:#b91c1c</code></pre>
 <ul>
 <li><strong>Restrict IMDS Hop Limit</strong>: Configure the EC2 Instance Metadata Service hop limit to 1. This prevents pods (which add a network hop) from querying the metadata service, restricting IMDS access exclusively to the host node.</li>
 <li><strong>Block hostPath and Privileged Pods</strong>: Enforce Kyverno policies to reject any pod attempting to use hostPath mounts or run as privileged.</li>
@@ -3520,7 +3523,7 @@ They extract the client certificate and private key, allowing them to send comma
 <li><strong>Kyverno / OPA Gatekeeper</strong>: Deploy admission controllers to enforce Pod Security Standards, blocking hostPath mounts and restricting pod capabilities.</li>
 <li><strong>Aqua Security Trivy / Sysdig Falco</strong>: Use Trivy to scan images in the registry for vulnerabilities, and deploy Falco to monitor container runtime activity, alerting on anomalous shell executions or file system traversals.</li>
 <li><strong>IMDS Protection Configuration</strong>: Use the AWS CLI to enforce IMDSv2 and restrict the metadata response hop limit:
-   <div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>aws<span class="w"> </span>ec2<span class="w"> </span>modify-instance-metadata-options<span class="w"> </span>--instance-id<span class="w"> </span>i-0123456789abcdef0<span class="w"> </span>--http-tokens<span class="w"> </span>required<span class="w"> </span>--http-put-response-hop-limit<span class="w"> </span><span class="m">1</span>
+   <div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>aws<span class="w"> </span>ec2<span class="w"> </span>modify-instance-metadata-options<span class="w"> </span>--instance-id<span class="w"> </span>i-0123456789abcdef0<span class="w"> </span>--http-tokens<span class="w"> </span>required<span class="w"> </span>--http-put-response-hop-limit<span class="w"> </span><span class="m">1</span>
 </span></code></pre></div></li>
 </ol>
 <hr />

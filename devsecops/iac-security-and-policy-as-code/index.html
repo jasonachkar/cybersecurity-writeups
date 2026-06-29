@@ -6,6 +6,8 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
+        <meta name="description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
+      
       
         <meta name="author" content="Jason Achkardiab">
       
@@ -27,7 +29,7 @@
     
     
       
-        <title>IaC Security and Policy as Code: Hardening Terraform State, Rego Policy Engine, and Drift Controls - Platform Security & Cloud Architecture Writeups</title>
+        <title>IaC Security and Policy as Code: Hardening Terraform State, Rego Policy Engine, and Drift Controls - Cloud Security Engineering</title>
       
     
     
@@ -96,7 +98,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Platform Security &amp; Cloud Architecture Writeups" class="md-header__button md-logo" aria-label="Platform Security & Cloud Architecture Writeups" data-md-component="logo">
+    <a href="../.." title="Cloud Security Engineering" class="md-header__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -110,7 +112,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Platform Security & Cloud Architecture Writeups
+            Cloud Security Engineering
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -234,13 +236,13 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Platform Security &amp; Cloud Architecture Writeups" class="md-nav__button md-logo" aria-label="Platform Security & Cloud Architecture Writeups" data-md-component="logo">
+    <a href="../.." title="Cloud Security Engineering" class="md-nav__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    Platform Security & Cloud Architecture Writeups
+    Cloud Security Engineering
   </label>
   
     <div class="md-nav__source">
@@ -309,7 +311,7 @@
   <span class="md-ellipsis">
     
   
-    ☁️ Cloud Security
+    :material-cloud-lock: Cloud Security
   
 
     
@@ -325,7 +327,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    ☁️ Cloud Security
+    :material-cloud-lock: Cloud Security
   
 
           </label>
@@ -531,7 +533,7 @@
   <span class="md-ellipsis">
     
   
-    💻 Application Security
+    :material-application-brackets-outline: Application Security
   
 
     
@@ -547,7 +549,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    💻 Application Security
+    :material-application-brackets-outline: Application Security
   
 
           </label>
@@ -699,7 +701,7 @@
   <span class="md-ellipsis">
     
   
-    🛡️ DevSecOps
+    :material-shield-sync: DevSecOps
   
 
     
@@ -715,7 +717,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🛡️ DevSecOps
+    :material-shield-sync: DevSecOps
   
 
           </label>
@@ -1107,7 +1109,7 @@
   <span class="md-ellipsis">
     
   
-    🕵️ Threat Intelligence
+    :material-target-account: Threat Intelligence
   
 
     
@@ -1123,7 +1125,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🕵️ Threat Intelligence
+    :material-target-account: Threat Intelligence
   
 
           </label>
@@ -1217,7 +1219,7 @@
   <span class="md-ellipsis">
     
   
-    📘 Legacy Tutorials
+    :material-book-open-page-variant: Tutorials
   
 
     
@@ -1233,7 +1235,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    📘 Legacy Tutorials
+    :material-book-open-page-variant: Tutorials
   
 
           </label>
@@ -2245,7 +2247,7 @@
   <span class="md-ellipsis">
     
   
-    🔬 Legacy Research
+    :material-flask-outline: Research
   
 
     
@@ -2261,7 +2263,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🔬 Legacy Research
+    :material-flask-outline: Research
   
 
           </label>
@@ -2912,7 +2914,7 @@
   <span class="md-ellipsis">
     
   
-    🎓 Certification Notes
+    :material-certificate-outline: Certification Notes
   
 
     
@@ -2928,7 +2930,7 @@
             <span class="md-nav__icon md-icon"></span>
             
   
-    🎓 Certification Notes
+    :material-certificate-outline: Certification Notes
   
 
           </label>
@@ -3499,25 +3501,23 @@
 <h2 id="defensive-architecture">Defensive Architecture</h2>
 <p>A secure IaC deployment pipeline must enforce pre-commit validation, plan-stage policy checks, and automated drift detection.</p>
 <h3 id="architecture-topology-iac-validation-pipeline-and-drift-detection-loop">Architecture Topology: IaC Validation Pipeline and Drift Detection Loop</h3>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>[ Developer Push ] ────&gt; [ GitHub Action runner ]
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                                │
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>                   ( Runs Checkov / Static Scan )
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>                                │
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>                                ▼
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>                       [ Terraform Plan ]
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>                                │
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>                    ( Generates tfplan.json )
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>                                │
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>                                ▼
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>                 [ Open Policy Agent Validation ]
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>                                │
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>               ┌────────────────┴────────────────┐
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>               ▼ (Passes)                        ▼ (Violations)
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>      [ Apply Changes ]                 [ Block Build &amp; Alert ]
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>               │
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>               ▼
-</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>   [ Provisioned Resources ] &lt;─── (Hourly Drift Scan) ─── [ Cloud Config Monitor ]
-</span></code></pre></div>
+<pre class="mermaid"><code>flowchart TD
+    DEV["Developer Push"] --&gt; GHA["GitHub Actions Runner"]
+    GHA --&gt;|Runs Checkov / Static Scan| TF["Terraform Plan"]
+    TF --&gt;|Generates tfplan.json| OPA["Open Policy Agent&lt;br/&gt;Validation"]
+    OPA --&gt;|Passes| APPLY["Apply Changes"]
+    OPA --&gt;|Violations| BLOCK["Block Build &amp; Alert"]
+    APPLY --&gt; RES["Provisioned Resources"]
+    MONITOR["Cloud Config Monitor"] --&gt;|Hourly Drift Scan| RES
+
+    style DEV fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style GHA fill:#0891b2,color:#fff,stroke:#0e7490
+    style TF fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style OPA fill:#d97706,color:#fff,stroke:#b45309
+    style APPLY fill:#059669,color:#fff,stroke:#047857
+    style BLOCK fill:#dc2626,color:#fff,stroke:#b91c1c
+    style RES fill:#059669,color:#fff,stroke:#047857
+    style MONITOR fill:#0891b2,color:#fff,stroke:#0e7490</code></pre>
 <h3 id="automated-drift-detection-workflow">Automated Drift Detection Workflow</h3>
 <p>To detect unauthorized changes made directly via the cloud console, run a scheduled drift detection job hourly in your CI/CD system. Run <code>terraform plan -detailed-exitcode</code>; if the command returns exit code 2 (indicating configuration changes exist), trigger alert notifications or run <code>terraform apply</code> to overwrite the changes and restore compliance.</p>
 <hr />
