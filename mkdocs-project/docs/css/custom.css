@@ -455,3 +455,11 @@ body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active:not([for="
 body[data-md-color-scheme="slate"] .md-nav__list .md-nav__list {
   border-left-color: rgba(255, 255, 255, 0.08);
 }
+
+/* ========================================================
+   MERMAID DIAGRAM TEXT LEGIBILITY FIX
+   ======================================================== */
+.mermaid .node * {
+  color: inherit !important;
+}
+
