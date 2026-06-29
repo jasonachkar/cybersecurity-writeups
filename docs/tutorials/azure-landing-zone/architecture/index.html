@@ -81,6 +81,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#azure-landing-zone-architecture-overview" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -1084,6 +1089,26 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -1101,6 +1126,75 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-core-principles-of-a-landing-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Core Principles of a Landing Zone
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-management-group-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Management Group Hierarchy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Management Group Hierarchy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#platform-subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform Subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#landing-zone-subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Landing Zone Subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2946,6 +3040,66 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-core-principles-of-a-landing-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Core Principles of a Landing Zone
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-management-group-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Management Group Hierarchy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Management Group Hierarchy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#platform-subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Platform Subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#landing-zone-subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Landing Zone Subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2965,9 +3119,48 @@
   
 
 
-  <h1>Architecture</h1>
+<h1 id="azure-landing-zone-architecture-overview">Azure Landing Zone: Architecture Overview</h1>
+<p>An Azure Landing Zone is the output of a multi-subscription Azure environment that accounts for scale, security governance, networking, and identity. It serves as the foundation for deploying production workloads in the cloud.</p>
+<hr />
+<h2 id="1-core-principles-of-a-landing-zone">1. Core Principles of a Landing Zone</h2>
+<ul>
+<li><strong>Subscription Democratization:</strong> Subscriptions should be used as a unit of management and scale, not just a billing boundary.</li>
+<li><strong>Policy-Driven Governance:</strong> Utilize Azure Policy to enforce guardrails rather than relying solely on RBAC.</li>
+<li><strong>Single Control and Management Plane:</strong> Centralize logging, monitoring, and networking for full visibility.</li>
+<li><strong>Application-Centric and Archetype-Neutral:</strong> The landing zone should support any application archetype (IaaS, PaaS, or Kubernetes).</li>
+</ul>
+<h2 id="2-management-group-hierarchy">2. Management Group Hierarchy</h2>
+<p>The core of an Azure Landing Zone is a robust Management Group structure. This allows you to apply Azure Policies and RBAC at scale across multiple subscriptions.</p>
+<pre class="mermaid"><code>flowchart TD
+    ROOT["Tenant Root Group"] --&gt; MGMT["Platform (Management Group)"]
+    ROOT --&gt; LANDING["Landing Zones (Management Group)"]
+    ROOT --&gt; SANDBOX["Sandboxes (Management Group)"]
+    ROOT --&gt; DECOMM["Decommissioned (Management Group)"]
 
+    MGMT --&gt; ID["Identity Sub"]
+    MGMT --&gt; NET["Connectivity Sub"]
+    MGMT --&gt; SEC["Management Sub (Log Analytics)"]
 
+    LANDING --&gt; CORP["Corp (Internal Apps)"]
+    LANDING --&gt; ONLINE["Online (Public Facing)"]
+
+    CORP --&gt; APP1["App 1 Sub"]
+    ONLINE --&gt; APP2["App 2 Sub"]
+
+    style ROOT fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style MGMT fill:#0891b2,color:#fff,stroke:#0e7490
+    style LANDING fill:#059669,color:#fff,stroke:#047857
+    style SANDBOX fill:#d97706,color:#fff,stroke:#b45309
+    style DECOMM fill:#475569,color:#fff,stroke:#334155</code></pre>
+<h3 id="platform-subscriptions">Platform Subscriptions</h3>
+<p>These are highly controlled subscriptions that provide shared services to the rest of the environment:
+1.  <strong>Identity Subscription:</strong> Hosts Active Directory Domain Controllers, Azure AD Connect, or specialized identity appliances.
+2.  <strong>Connectivity Subscription:</strong> Hosts the Azure Virtual WAN hub, ExpressRoute circuits, VPN gateways, and Azure Firewall.
+3.  <strong>Management Subscription:</strong> Hosts the centralized Log Analytics Workspace, Azure Monitor, and Microsoft Defender for Cloud configurations.</p>
+<h3 id="landing-zone-subscriptions">Landing Zone Subscriptions</h3>
+<p>These host your actual workloads. They are typically divided into:
+1.  <strong>Corp:</strong> Workloads that do not have direct inbound internet access. They connect via the Hub (Connectivity Subscription).
+2.  <strong>Online:</strong> Workloads that require direct inbound internet access (often behind an Azure Application Gateway or Front Door).</p>
 
 
 

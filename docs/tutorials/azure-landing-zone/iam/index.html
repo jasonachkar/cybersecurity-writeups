@@ -81,6 +81,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#azure-landing-zone-identity-and-access-management-iam" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -1168,6 +1173,26 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IAM Design
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -1185,6 +1210,75 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-role-based-access-control-rbac-at-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Role-Based Access Control (RBAC) at Scale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Role-Based Access Control (RBAC) at Scale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standard-operating-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Operating Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-privileged-identity-management-pim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Privileged Identity Management (PIM)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-workload-identities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Workload Identities
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2946,6 +3040,66 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-role-based-access-control-rbac-at-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Role-Based Access Control (RBAC) at Scale
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Role-Based Access Control (RBAC) at Scale">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#standard-operating-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standard Operating Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-privileged-identity-management-pim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Privileged Identity Management (PIM)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-workload-identities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Workload Identities
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2965,9 +3119,34 @@
   
 
 
-  <h1>IAM Design</h1>
-
-
+<h1 id="azure-landing-zone-identity-and-access-management-iam">Azure Landing Zone: Identity and Access Management (IAM)</h1>
+<p>A secure Azure Landing Zone delegates permissions systematically using Role-Based Access Control (RBAC) and Privileged Identity Management (PIM), ensuring that users only have the access they need, exactly when they need it.</p>
+<hr />
+<h2 id="1-role-based-access-control-rbac-at-scale">1. Role-Based Access Control (RBAC) at Scale</h2>
+<p>Do not assign permissions directly to users or at the individual resource level. This quickly becomes unmanageable.</p>
+<ul>
+<li><strong>Group-Based Assignment:</strong> Always assign Azure Roles to Azure AD (Entra ID) Security Groups. Add users to the groups.</li>
+<li><strong>Management Group Scope:</strong> Assign broad, read-only or auditing roles at the Management Group level so they cascade down to all subscriptions.</li>
+<li><strong>Subscription Scope:</strong> Assign workload-specific roles (e.g., <code>Virtual Machine Contributor</code>) at the specific Subscription or Resource Group level.</li>
+</ul>
+<h3 id="standard-operating-roles">Standard Operating Roles</h3>
+<p>Establish baseline groups for operations:
+- <code>AZ-Global-Readers</code>: Assigned <code>Reader</code> at the Root Management Group.
+- <code>AZ-Network-Admins</code>: Assigned <code>Network Contributor</code> at the Connectivity Subscription.
+- <code>AZ-Security-Admins</code>: Assigned <code>Security Admin</code> at the Root Management Group.</p>
+<h2 id="2-privileged-identity-management-pim">2. Privileged Identity Management (PIM)</h2>
+<p>No user should have standing, persistent access to administrative roles like <code>Owner</code> or <code>Contributor</code>.</p>
+<ul>
+<li><strong>Just-in-Time (JIT) Access:</strong> Users are made "Eligible" for a role. When they need to perform a task, they activate the role for a limited time (e.g., 2 hours).</li>
+<li><strong>Approval Workflows:</strong> Highly privileged roles (like Subscription Owner) should require manual approval from another administrator before the role is activated.</li>
+<li><strong>MFA Enforcement:</strong> PIM requires users to perform Multi-Factor Authentication before activating any privileged role.</li>
+</ul>
+<h2 id="3-workload-identities">3. Workload Identities</h2>
+<p>Applications and scripts running in Azure should not use hardcoded passwords or shared API keys.</p>
+<ul>
+<li><strong>Managed Identities:</strong> Azure resources (like VMs, App Services, or Functions) can be assigned a Managed Identity. Azure automatically manages the lifecycle and credentials of this identity. The application can request an Azure AD token to authenticate to other services (like Key Vault or SQL) without any code changes.</li>
+<li><strong>Federated Identity Credentials (OIDC):</strong> For workloads running outside of Azure (e.g., GitHub Actions CI/CD pipelines or on-premises Kubernetes), use OpenID Connect (OIDC) federation. This allows the external workload to assume an Azure AD App Registration identity temporarily, completely eliminating the need to store long-lived Client Secrets in GitHub.</li>
+</ul>
 
 
 

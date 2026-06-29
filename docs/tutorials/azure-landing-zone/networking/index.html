@@ -81,6 +81,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#azure-landing-zone-networking-and-connectivity" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -1112,6 +1117,26 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -1129,6 +1154,69 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-hub-and-spoke-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Hub-and-Spoke Topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-azure-virtual-wan-vwan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Azure Virtual WAN (vWAN)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-network-security-groups-nsgs-and-asgs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Network Security Groups (NSGs) and ASGs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-private-link-and-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Private Link and DNS
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2946,6 +3034,60 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-hub-and-spoke-topology" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Hub-and-Spoke Topology
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-azure-virtual-wan-vwan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Azure Virtual WAN (vWAN)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-network-security-groups-nsgs-and-asgs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Network Security Groups (NSGs) and ASGs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-private-link-and-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Private Link and DNS
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2965,9 +3107,41 @@
   
 
 
-  <h1>Networking</h1>
+<h1 id="azure-landing-zone-networking-and-connectivity">Azure Landing Zone: Networking and Connectivity</h1>
+<p>A secure Azure Landing Zone relies on a Hub-and-Spoke topology, isolating workload environments while centralizing security inspections and external connectivity.</p>
+<hr />
+<h2 id="1-hub-and-spoke-topology">1. Hub-and-Spoke Topology</h2>
+<p>In a Hub-and-Spoke architecture, the <strong>Hub</strong> is a central virtual network (VNet) in the Connectivity Subscription that acts as a single point of connectivity to on-premises networks and the internet. The <strong>Spokes</strong> are VNets in the Landing Zone subscriptions where your applications reside.</p>
+<ul>
+<li><strong>VNet Peering:</strong> Spoke VNets are peered directly to the Hub VNet. Spokes do <em>not</em> peer directly with each other by default, preventing lateral movement.</li>
+<li><strong>Centralized Security:</strong> All traffic entering or leaving the Azure environment (and optionally traffic moving between Spokes) is routed through an Azure Firewall or Network Virtual Appliance (NVA) in the Hub.</li>
+</ul>
+<pre class="mermaid"><code>flowchart LR
+    ONPREM["🏢 On-Premises Data Center"] &lt;--&gt;|ExpressRoute / VPN| HUB["Hub VNet&lt;br/&gt;(Connectivity Sub)"]
+    INTERNET["🌐 Internet"] &lt;--&gt;|Azure Firewall / WAF| HUB
 
+    HUB &lt;--&gt;|VNet Peering| SPOKE1["Spoke 1 VNet&lt;br/&gt;(Corp Sub)"]
+    HUB &lt;--&gt;|VNet Peering| SPOKE2["Spoke 2 VNet&lt;br/&gt;(Corp Sub)"]
+    HUB &lt;--&gt;|VNet Peering| SPOKE3["Spoke 3 VNet&lt;br/&gt;(Online Sub)"]
 
+    style ONPREM fill:#475569,color:#fff,stroke:#334155
+    style HUB fill:#0891b2,color:#fff,stroke:#0e7490
+    style SPOKE1 fill:#059669,color:#fff,stroke:#047857
+    style SPOKE2 fill:#059669,color:#fff,stroke:#047857
+    style SPOKE3 fill:#2563eb,color:#fff,stroke:#1d4ed8</code></pre>
+<h2 id="2-azure-virtual-wan-vwan">2. Azure Virtual WAN (vWAN)</h2>
+<p>For large-scale, global deployments, Azure Virtual WAN is recommended over traditional VNet peering.
+*   <strong>Any-to-Any Connectivity:</strong> vWAN automatically manages routing between multiple hubs across different Azure regions and simplifies VPN/ExpressRoute branch connectivity.
+*   <strong>Secured Virtual Hub:</strong> Integrating Azure Firewall directly into the vWAN hub creates a "Secured Virtual Hub," allowing you to inspect traffic flowing branch-to-branch, branch-to-VNet, and VNet-to-VNet.</p>
+<h2 id="3-network-security-groups-nsgs-and-asgs">3. Network Security Groups (NSGs) and ASGs</h2>
+<p>While the Azure Firewall handles perimeter security, NSGs provide micro-segmentation inside the Spoke VNets.
+*   <strong>NSGs:</strong> Attach to subnets (preferred) or individual Network Interfaces (NICs) to filter traffic based on IP, port, and protocol.
+*   <strong>Application Security Groups (ASGs):</strong> Group VMs based on their function (e.g., <code>Web-Servers</code>, <code>DB-Servers</code>) rather than relying on explicit IP addresses. You can write NSG rules that say "Allow traffic from <code>Web-Servers</code> to <code>DB-Servers</code>".</p>
+<h2 id="4-private-link-and-dns">4. Private Link and DNS</h2>
+<ul>
+<li><strong>Azure Private Link:</strong> Access Azure PaaS services (like Azure SQL or Storage Accounts) over a private IP address within your VNet, ensuring traffic never traverses the public internet.</li>
+<li><strong>Private DNS Zones:</strong> To resolve Private Endpoint IP addresses, Azure Private DNS Zones are integrated into the Hub, and a central DNS resolver (like Azure DNS Private Resolver) handles queries from on-premises and spoke VNets.</li>
+</ul>
 
 
 

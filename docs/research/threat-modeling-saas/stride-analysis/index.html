@@ -81,6 +81,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#stride-analysis-for-saas-multi-tenancy" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -2112,6 +2117,26 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STRIDE Analysis
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -2129,6 +2154,91 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-spoofing-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Spoofing Identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-tampering-with-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Tampering with Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-repudiation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Repudiation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-information-disclosure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Information Disclosure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-denial-of-service-dos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Denial of Service (DoS)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-elevation-of-privilege" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Elevation of Privilege
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2946,6 +3056,82 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-spoofing-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Spoofing Identity
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-tampering-with-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Tampering with Data
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-repudiation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Repudiation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-information-disclosure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Information Disclosure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-denial-of-service-dos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Denial of Service (DoS)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-elevation-of-privilege" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Elevation of Privilege
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2965,9 +3151,75 @@
   
 
 
-  <h1>STRIDE Analysis</h1>
-
-
+<h1 id="stride-analysis-for-saas-multi-tenancy">STRIDE Analysis for SaaS Multi-Tenancy</h1>
+<p>STRIDE is a threat modeling methodology developed by Microsoft that categorizes different types of threats. When analyzing a SaaS application, especially one that is multi-tenant, STRIDE provides a structured framework to identify potential vulnerabilities in how data and processes flow through the system.</p>
+<hr />
+<h2 id="1-spoofing-identity">1. Spoofing Identity</h2>
+<p><strong>Definition:</strong> An attacker assumes the identity of a legitimate user or system.
+<strong>SaaS Context:</strong> In a multi-tenant SaaS, tenant isolation relies heavily on identity context. If an attacker can spoof a tenant admin or service account, they can bypass tenant boundaries.</p>
+<ul>
+<li><strong>Threat Vectors:</strong><ul>
+<li>Cookie theft or session hijacking (e.g., via XSS) leading to impersonation of another tenant's user.</li>
+<li>Forging JSON Web Tokens (JWTs) if the signing key is weak or leaked.</li>
+<li>API calls that lack strict identity validation, allowing a user from Tenant A to pass the Tenant ID of Tenant B in the header.</li>
+</ul>
+</li>
+</ul>
+<h2 id="2-tampering-with-data">2. Tampering with Data</h2>
+<p><strong>Definition:</strong> Malicious modification of data.
+<strong>SaaS Context:</strong> Attackers modify data at rest, in transit, or in memory, potentially affecting the integrity of the SaaS platform or specific tenants.</p>
+<ul>
+<li><strong>Threat Vectors:</strong><ul>
+<li>Intercepting and altering API requests (MitM) if TLS is improperly configured.</li>
+<li>Modifying multi-tenant database records (e.g., changing the <code>tenant_id</code> field on a sensitive record from someone else's tenant to their own).</li>
+<li>Tampering with application configuration files to degrade the service.</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-repudiation">3. Repudiation</h2>
+<p><strong>Definition:</strong> An attacker performs an action but denies doing it, and the system lacks the ability to prove otherwise.
+<strong>SaaS Context:</strong> Without robust, tamper-proof audit logs, malicious actions (like a tenant deleting critical shared resources or an insider altering data) cannot be traced.</p>
+<ul>
+<li><strong>Threat Vectors:</strong><ul>
+<li>Lack of centralized logging for critical API mutations (POST/PUT/DELETE).</li>
+<li>Insufficient log detail (e.g., logging an action without recording the associated <code>tenant_id</code> or <code>user_id</code>).</li>
+<li>Attackers deleting local log files before they are shipped to the central SIEM.</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-information-disclosure">4. Information Disclosure</h2>
+<p><strong>Definition:</strong> Exposing information to unauthorized individuals.
+<strong>SaaS Context:</strong> This is the most critical threat in multi-tenant SaaS environments. Cross-tenant data leakage can destroy customer trust and result in severe regulatory fines.</p>
+<ul>
+<li><strong>Threat Vectors:</strong><ul>
+<li>Insecure Direct Object Reference (IDOR), where a user from Tenant A queries <code>/api/v1/invoices/123</code> and accesses Tenant B's invoice because the backend didn't validate the <code>tenant_id</code>.</li>
+<li>Database misconfigurations allowing SQL injection to dump the entire shared database.</li>
+<li>Leaking stack traces or verbose error messages containing sensitive connection strings.</li>
+</ul>
+</li>
+</ul>
+<h2 id="5-denial-of-service-dos">5. Denial of Service (DoS)</h2>
+<p><strong>Definition:</strong> Denying or degrading service to legitimate users.
+<strong>SaaS Context:</strong> In a multi-tenant environment, the "Noisy Neighbor" problem is a significant DoS threat. If one tenant consumes too many resources, it degrades the experience for all other tenants.</p>
+<ul>
+<li><strong>Threat Vectors:</strong><ul>
+<li>A malicious or compromised tenant sends massive amounts of heavy database queries, exhausting connection pools.</li>
+<li>Volumetric network DDoS attacks targeting the application's load balancer.</li>
+<li>Algorithmic complexity attacks (e.g., sending massive JSON payloads that consume CPU during parsing).</li>
+</ul>
+</li>
+</ul>
+<h2 id="6-elevation-of-privilege">6. Elevation of Privilege</h2>
+<p><strong>Definition:</strong> An unprivileged user gains privileged access.
+<strong>SaaS Context:</strong> A standard user escalating to a Tenant Admin, or worse, a Tenant Admin escalating to a System/Platform Admin (gaining control over the entire SaaS infrastructure).</p>
+<ul>
+<li><strong>Threat Vectors:</strong><ul>
+<li>Exploiting authorization flaws in the API (Broken Function Level Authorization) to access administrative endpoints.</li>
+<li>Horizontal escalation (Tenant A User $\rightarrow$ Tenant B User) or Vertical escalation (Tenant User $\rightarrow$ SaaS Global Admin).</li>
+<li>Bypassing role-based access controls (RBAC) by tampering with the role claims inside a JWT.</li>
+</ul>
+</li>
+</ul>
 
 
 

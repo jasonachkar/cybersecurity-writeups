@@ -81,6 +81,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#azure-landing-zone-policy-and-governance" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -1140,6 +1145,26 @@
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
       
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Policy & Governance
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
       
       <a href="./" class="md-nav__link md-nav__link--active">
         
@@ -1157,6 +1182,103 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-role-of-azure-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Role of Azure Policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. The Role of Azure Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy Effects
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-core-guardrail-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Core Guardrail Policies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Core Guardrail Policies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-and-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security and Compliance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#centralized-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Centralized Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-microsoft-defender-for-cloud-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Microsoft Defender for Cloud Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -2946,6 +3068,94 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-the-role-of-azure-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The Role of Azure Policy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. The Role of Azure Policy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#policy-effects" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy Effects
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-core-guardrail-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Core Guardrail Policies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Core Guardrail Policies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-and-compliance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security and Compliance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#centralized-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Centralized Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-microsoft-defender-for-cloud-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Microsoft Defender for Cloud Integration
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -2965,9 +3175,34 @@
   
 
 
-  <h1>Policy & Governance</h1>
-
-
+<h1 id="azure-landing-zone-policy-and-governance">Azure Landing Zone: Policy and Governance</h1>
+<p>Governance in an Azure Landing Zone is driven by <strong>Azure Policy</strong> applied at the Management Group level. This approach guarantees that all child subscriptions automatically inherit the organization's security and compliance rules.</p>
+<hr />
+<h2 id="1-the-role-of-azure-policy">1. The Role of Azure Policy</h2>
+<p>Azure Policy is a service used to create, assign, and manage policies. These policies enforce different rules and effects over your resources, so those resources stay compliant with your corporate standards and service level agreements.</p>
+<h3 id="policy-effects">Policy Effects</h3>
+<p>When an Azure Policy evaluates a resource, it applies an "Effect". Common effects include:
+*   <strong>Deny:</strong> Prevents the resource from being created if it doesn't match the policy (e.g., blocking the creation of Public IP addresses on VMs).
+*   <strong>Audit:</strong> Allows the resource to be created but flags it as non-compliant in the Azure Security Center dashboard (e.g., flagging storage accounts without Secure Transfer enabled).
+*   <strong>Append:</strong> Adds specific parameters to a resource when it is created (e.g., enforcing specific IP configurations).
+*   <strong>DeployIfNotExists (DINE):</strong> Automatically deploys an ARM template to configure a resource correctly if it is missing (e.g., automatically deploying the Log Analytics agent to newly created VMs).</p>
+<h2 id="2-core-guardrail-policies">2. Core Guardrail Policies</h2>
+<p>A production-ready Landing Zone should implement the following baseline policies across all workloads:</p>
+<h3 id="security-and-compliance">Security and Compliance</h3>
+<ol>
+<li><strong>Require MFA for all subscription owners:</strong> Audits or Denies assignments of the Owner role if the user does not have MFA enforced.</li>
+<li><strong>Restrict Resource Locations:</strong> Denies the deployment of any resources outside of explicitly approved geographical regions (e.g., restricting data strictly to <code>eastus</code> and <code>westus</code> for compliance).</li>
+<li><strong>Enforce Storage Account Secure Transfer:</strong> Denies creation of storage accounts if HTTPS only is not enabled.</li>
+<li><strong>Block Public Network Access:</strong> Prevents PaaS services (like Azure SQL or Key Vault) from having public endpoints, enforcing the use of Private Link.</li>
+</ol>
+<h3 id="centralized-logging">Centralized Logging</h3>
+<ul>
+<li><strong>Diagnostics Settings DINE Policy:</strong> Uses <code>DeployIfNotExists</code> to automatically configure all resources (VNets, Key Vaults, NSGs) to stream their diagnostic logs to the centralized Log Analytics workspace in the Management Subscription.</li>
+</ul>
+<h2 id="3-microsoft-defender-for-cloud-integration">3. Microsoft Defender for Cloud Integration</h2>
+<p>Azure Policy natively integrates with Microsoft Defender for Cloud (formerly Azure Security Center).
+*   By applying the <strong>Azure Security Benchmark (ASB)</strong> initiative at the Root Management Group, Defender for Cloud continuously monitors your entire estate against industry best practices.
+*   Non-compliant resources flagged by Azure Policy contribute to your overall <strong>Secure Score</strong>, providing leadership with a clear metric of the environment's security posture.</p>
 
 
 
