@@ -1,42 +1,57 @@
 /* Custom CSS for Cybersecurity Writeups Website */
-/* SonarQube & Renovate Premium Docs Aesthetic */
+/* Premium Docs Aesthetic — GitHub Dark / Vercel inspired */
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
 
+/* ========================================================
+   LIGHT MODE
+   ======================================================== */
 :root {
-  /* Set fonts */
   --md-text-font: 'Outfit', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
   --md-code-font: 'JetBrains Mono', SFMono-Regular, Consolas, Menlo, monospace;
 
-  /* Custom Light Mode Palette (Slate & Indigo) */
-  --md-primary-fg-color: #0f172a;         /* Slate 900 */
-  --md-primary-fg-color--dark: #020617;  /* Slate 950 */
+  /* Light Mode Palette */
+  --md-primary-fg-color: #0f172a;         /* Slate 900 — header bg */
+  --md-primary-fg-color--dark: #020617;
   --md-accent-fg-color: #4f46e5;         /* Indigo 600 */
   --md-accent-fg-color--transparent: rgba(79, 70, 229, 0.1);
+  --md-typeset-a-color: #2563eb;         /* Blue 600 — clear link color */
 }
 
+/* ========================================================
+   DARK MODE — Every element must be legible
+   ======================================================== */
 body[data-md-color-scheme="slate"] {
-  /* Premium Dark Mode Palette (GitHub Dark / Vercel Aesthetic) */
-  --md-primary-fg-color: #0d1117;         /* Header background */
-  --md-primary-fg-color--dark: #000000;
-  --md-primary-bg-color: #ffffff;         /* Header text */
-  --md-accent-fg-color: #38bdf8;         /* Bright Sky Blue accent */
-  --md-accent-fg-color--transparent: rgba(56, 189, 248, 0.15);
-  
-  --md-default-bg-color: #0d1117;        /* Deep Space Gray background */
+  --md-primary-fg-color: #161b22;         /* Header background */
+  --md-primary-fg-color--dark: #0d1117;
+  --md-primary-bg-color: #f0f6fc;         /* Header text — near-white */
+  --md-accent-fg-color: #58a6ff;         /* GitHub Blue accent */
+  --md-accent-fg-color--transparent: rgba(88, 166, 255, 0.15);
+
+  --md-default-bg-color: #0d1117;        /* Page background */
   --md-default-bg-color--page: #0d1117;
   --md-default-bg-color--light: #161b22;
-  
-  --md-default-fg-color: #c9d1d9;        /* Soft gray text */
-  --md-default-fg-color--light: #8b949e; 
+
+  --md-default-fg-color: #e6edf3;        /* Primary text — bright for readability */
+  --md-default-fg-color--light: #8b949e;
   --md-default-fg-color--lighter: #484f58;
-  --md-default-fg-color--lightest: #161b22;
-  
-  --md-code-bg-color: #161b22;           /* Darker code block bg */
-  --md-typeset-a-color: #58a6ff;         /* Bright blue links */
+  --md-default-fg-color--lightest: #21262d;
+
+  --md-code-bg-color: #161b22;
+  --md-code-fg-color: #e6edf3;
+
+  --md-typeset-a-color: #58a6ff;         /* Links — GitHub Blue, always visible */
+  --md-typeset-color: #e6edf3;           /* Body text */
+
+  --md-footer-bg-color: #0d1117;
+  --md-footer-bg-color--dark: #010409;
+  --md-footer-fg-color: #8b949e;
+  --md-footer-fg-color--light: #484f58;
 }
 
-/* Custom Scrollbar */
+/* ========================================================
+   SCROLLBAR
+   ======================================================== */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -47,40 +62,148 @@ body[data-md-color-scheme="slate"] {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(121, 134, 203, 0.4);
+  background: rgba(139, 148, 158, 0.35);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(121, 134, 203, 0.7);
+  background: rgba(139, 148, 158, 0.6);
 }
 
-/* Premium Typography Adjustments */
+/* ========================================================
+   TYPOGRAPHY — Headings
+   ======================================================== */
 h1, h2, h3, h4 {
   font-weight: 600 !important;
   letter-spacing: -0.02em;
 }
 
+/* Light mode h1 */
 h1 {
   font-size: 2.2rem !important;
   margin-bottom: 1.5rem !important;
-  color: var(--md-primary-fg-color) !important;
-  border-left: 5px solid var(--md-primary-fg-color);
+  border-left: 5px solid var(--md-accent-fg-color);
   padding-left: 12px;
 }
 
 h2 {
   font-size: 1.6rem !important;
   margin-top: 2rem !important;
-  border-bottom: 1px solid rgba(121, 134, 203, 0.2);
+  border-bottom: 1px solid rgba(139, 148, 158, 0.2);
   padding-bottom: 8px;
 }
 
-/* Code block customization */
+/* Dark mode — force ALL headings to be white / near-white */
+body[data-md-color-scheme="slate"] h1,
+body[data-md-color-scheme="slate"] h2,
+body[data-md-color-scheme="slate"] h3,
+body[data-md-color-scheme="slate"] h4,
+body[data-md-color-scheme="slate"] h5,
+body[data-md-color-scheme="slate"] h6,
+body[data-md-color-scheme="slate"] .md-typeset h1,
+body[data-md-color-scheme="slate"] .md-typeset h2,
+body[data-md-color-scheme="slate"] .md-typeset h3,
+body[data-md-color-scheme="slate"] .md-typeset h4,
+body[data-md-color-scheme="slate"] .md-typeset h5,
+body[data-md-color-scheme="slate"] .md-typeset h6 {
+  color: #f0f6fc !important;
+}
+
+body[data-md-color-scheme="slate"] h1,
+body[data-md-color-scheme="slate"] .md-typeset h1 {
+  border-left-color: #58a6ff;
+}
+
+body[data-md-color-scheme="slate"] h2,
+body[data-md-color-scheme="slate"] .md-typeset h2 {
+  border-bottom-color: rgba(139, 148, 158, 0.2);
+}
+
+/* ========================================================
+   LINKS — Always visually distinct and clickable
+   ======================================================== */
+
+/* Light mode links */
+.md-typeset a {
+  color: #2563eb !important;              /* Blue 600 — strong contrast */
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: color 0.15s ease, border-bottom-color 0.15s ease;
+}
+
+.md-typeset a:hover {
+  color: #1d4ed8 !important;              /* Blue 700 on hover */
+  border-bottom-color: #1d4ed8;
+}
+
+/* Dark mode links */
+body[data-md-color-scheme="slate"] .md-typeset a {
+  color: #58a6ff !important;              /* GitHub Blue — bright, unmissable */
+  border-bottom: 1px solid rgba(88, 166, 255, 0.3);
+}
+
+body[data-md-color-scheme="slate"] .md-typeset a:hover {
+  color: #79c0ff !important;              /* Lighter blue on hover */
+  border-bottom-color: #79c0ff;
+}
+
+/* Sidebar nav links should NOT have underlines */
+.md-nav a,
+.md-tabs a,
+.md-header a,
+.md-footer a,
+.md-source a {
+  border-bottom: none !important;
+}
+
+/* Active sidebar link highlight */
+body[data-md-color-scheme="slate"] .md-nav__link--active {
+  color: #58a6ff !important;
+  font-weight: 500;
+}
+
+/* Table of contents links (right sidebar) */
+body[data-md-color-scheme="slate"] .md-nav--secondary a {
+  color: #8b949e !important;
+  border-bottom: none !important;
+}
+
+body[data-md-color-scheme="slate"] .md-nav--secondary a:hover,
+body[data-md-color-scheme="slate"] .md-nav--secondary .md-nav__link--active {
+  color: #58a6ff !important;
+}
+
+/* ========================================================
+   DARK MODE — Body text, paragraphs, lists
+   ======================================================== */
+body[data-md-color-scheme="slate"] .md-typeset,
+body[data-md-color-scheme="slate"] .md-typeset p,
+body[data-md-color-scheme="slate"] .md-typeset li,
+body[data-md-color-scheme="slate"] .md-typeset td,
+body[data-md-color-scheme="slate"] .md-typeset th,
+body[data-md-color-scheme="slate"] .md-typeset blockquote {
+  color: #c9d1d9 !important;
+}
+
+/* Bold text slightly brighter */
+body[data-md-color-scheme="slate"] .md-typeset strong,
+body[data-md-color-scheme="slate"] .md-typeset b {
+  color: #e6edf3 !important;
+}
+
+/* Italic text */
+body[data-md-color-scheme="slate"] .md-typeset em,
+body[data-md-color-scheme="slate"] .md-typeset i {
+  color: #c9d1d9 !important;
+}
+
+/* ========================================================
+   CODE BLOCKS
+   ======================================================== */
 .md-typeset pre {
   border-radius: 8px !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  border: 1px solid rgba(121, 134, 203, 0.15) !important;
+  border: 1px solid rgba(139, 148, 158, 0.15) !important;
 }
 
 .md-typeset code {
@@ -88,7 +211,16 @@ h2 {
   padding: 2px 6px;
 }
 
-/* Table styling customization */
+/* Dark mode inline code */
+body[data-md-color-scheme="slate"] .md-typeset code {
+  background-color: #21262d !important;
+  color: #e6edf3 !important;
+  border: 1px solid rgba(139, 148, 158, 0.2);
+}
+
+/* ========================================================
+   TABLES
+   ======================================================== */
 .md-typeset table:not([class]) {
   border-radius: 8px !important;
   overflow: hidden;
@@ -97,39 +229,130 @@ h2 {
 }
 
 .md-typeset table:not([class]) th {
-  background-color: var(--md-primary-fg-color) !important;
-  color: white !important;
   font-weight: 500;
 }
 
-.md-typeset table:not([class]) td {
-  border-bottom: 1px solid rgba(121, 134, 203, 0.1);
+/* Light mode table header */
+:root .md-typeset table:not([class]) th {
+  background-color: #0f172a !important;
+  color: white !important;
 }
 
-/* Admonition/Callout blocks */
+/* Dark mode table header */
+body[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  background-color: #21262d !important;
+  color: #e6edf3 !important;
+}
+
+body[data-md-color-scheme="slate"] .md-typeset table:not([class]) td {
+  border-bottom: 1px solid rgba(139, 148, 158, 0.15);
+}
+
+body[data-md-color-scheme="slate"] .md-typeset table:not([class]) tr:hover td {
+  background-color: rgba(88, 166, 255, 0.04);
+}
+
+/* ========================================================
+   ADMONITIONS / CALLOUT BLOCKS
+   ======================================================== */
 .md-typeset .admonition {
   border-radius: 6px !important;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
 }
 
-/* Mermaid Diagrams Container Styling */
+body[data-md-color-scheme="slate"] .md-typeset .admonition {
+  background-color: #161b22 !important;
+  border-color: rgba(139, 148, 158, 0.25) !important;
+}
+
+/* ========================================================
+   SIDEBAR
+   ======================================================== */
+body[data-md-color-scheme="slate"] .md-sidebar {
+  border-right-color: rgba(139, 148, 158, 0.1);
+}
+
+body[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link {
+  color: #e6edf3 !important;
+}
+
+body[data-md-color-scheme="slate"] .md-nav__link {
+  color: #8b949e !important;
+}
+
+body[data-md-color-scheme="slate"] .md-nav__link:hover {
+  color: #c9d1d9 !important;
+}
+
+/* ========================================================
+   SEARCH BAR
+   ======================================================== */
+body[data-md-color-scheme="slate"] .md-search__input {
+  background-color: #21262d !important;
+  color: #e6edf3 !important;
+  border: 1px solid rgba(139, 148, 158, 0.3);
+}
+
+body[data-md-color-scheme="slate"] .md-search__input::placeholder {
+  color: #484f58 !important;
+}
+
+/* ========================================================
+   MERMAID DIAGRAMS
+   ======================================================== */
 .mermaid {
   background-color: transparent !important;
   padding: 12px;
   border-radius: 8px;
-  border: 1px solid rgba(121, 134, 203, 0.1);
+  border: 1px solid rgba(139, 148, 158, 0.1);
   margin-bottom: 1.5rem;
   display: flex;
   justify-content: center;
 }
 
-/* Logo and Header Customization */
+/* ========================================================
+   HEADER
+   ======================================================== */
 .md-header {
   backdrop-filter: blur(12px) !important;
-  background-color: rgba(15, 23, 42, 0.85) !important; /* Transparent Slate */
+  background-color: rgba(15, 23, 42, 0.95) !important;
 }
 
 body[data-md-color-scheme="slate"] .md-header {
-  background-color: rgba(13, 17, 23, 0.85) !important; /* Transparent GitHub Dark */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background-color: rgba(13, 17, 23, 0.95) !important;
+  border-bottom: 1px solid rgba(139, 148, 158, 0.1);
+}
+
+/* Header title text in dark mode */
+body[data-md-color-scheme="slate"] .md-header__title {
+  color: #f0f6fc !important;
+}
+
+body[data-md-color-scheme="slate"] .md-header .md-header__button,
+body[data-md-color-scheme="slate"] .md-header .md-icon {
+  color: #f0f6fc !important;
+}
+
+/* ========================================================
+   CONTENT AREA — subtle card effect in dark mode
+   ======================================================== */
+body[data-md-color-scheme="slate"] .md-content {
+  background-color: #0d1117;
+}
+
+/* Horizontal rules */
+body[data-md-color-scheme="slate"] .md-typeset hr {
+  border-color: rgba(139, 148, 158, 0.15);
+}
+
+/* ========================================================
+   FOOTER
+   ======================================================== */
+body[data-md-color-scheme="slate"] .md-footer {
+  background-color: #010409 !important;
+  border-top: 1px solid rgba(139, 148, 158, 0.1);
+}
+
+body[data-md-color-scheme="slate"] .md-copyright {
+  color: #484f58 !important;
 }
