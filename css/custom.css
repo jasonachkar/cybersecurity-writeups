@@ -459,13 +459,66 @@ body[data-md-color-scheme="slate"] .md-nav__list .md-nav__list {
 /* ========================================================
    MERMAID DIAGRAM TEXT LEGIBILITY FIX
    ======================================================== */
-.mermaid .node text,
-.mermaid .node tspan,
-.mermaid .node div,
-.mermaid .node span,
-.mermaid .node p {
+
+/* 1. Generic override to respect inline color styles (like color:#fff or color:rgb(255,255,255)) */
+svg .node[style*="color:"] .label *,
+svg .node[style*="color:"] text,
+svg .node[style*="color:"] tspan,
+svg .node [style*="color:"] ~ .label *,
+svg .node [style*="color:"] ~ text,
+svg .node [style*="color:"] ~ tspan {
   color: inherit !important;
   fill: currentColor !important;
 }
+
+/* 2. Specific fallback mapping for dark/saturated fills we use to force white text in light mode */
+svg .node [style*="fill:#2563eb"] ~ .label *,
+svg .node [style*="fill: #2563eb"] ~ .label *,
+svg .node [style*="fill:rgb(37, 99, 235)"] ~ .label *,
+svg .node [style*="fill: rgb(37, 99, 235)"] ~ .label *,
+
+svg .node [style*="fill:#0891b2"] ~ .label *,
+svg .node [style*="fill: #0891b2"] ~ .label *,
+svg .node [style*="fill:rgb(8, 145, 178)"] ~ .label *,
+svg .node [style*="fill: rgb(8, 145, 178)"] ~ .label *,
+
+svg .node [style*="fill:#7c3aed"] ~ .label *,
+svg .node [style*="fill: #7c3aed"] ~ .label *,
+svg .node [style*="fill:rgb(124, 58, 237)"] ~ .label *,
+svg .node [style*="fill: rgb(124, 58, 237)"] ~ .label *,
+
+svg .node [style*="fill:#d97706"] ~ .label *,
+svg .node [style*="fill: #d97706"] ~ .label *,
+svg .node [style*="fill:rgb(217, 119, 6)"] ~ .label *,
+svg .node [style*="fill: rgb(217, 119, 6)"] ~ .label *,
+
+svg .node [style*="fill:#ea580c"] ~ .label *,
+svg .node [style*="fill: #ea580c"] ~ .label *,
+svg .node [style*="fill:rgb(234, 88, 12)"] ~ .label *,
+svg .node [style*="fill: rgb(234, 88, 12)"] ~ .label *,
+
+svg .node [style*="fill:#ca8a04"] ~ .label *,
+svg .node [style*="fill: #ca8a04"] ~ .label *,
+svg .node [style*="fill:rgb(202, 138, 4)"] ~ .label *,
+svg .node [style*="fill: rgb(202, 138, 4)"] ~ .label *,
+
+svg .node [style*="fill:#059669"] ~ .label *,
+svg .node [style*="fill: #059669"] ~ .label *,
+svg .node [style*="fill:rgb(5, 150, 105)"] ~ .label *,
+svg .node [style*="fill: rgb(5, 150, 105)"] ~ .label *,
+
+svg .node [style*="fill:#dc2626"] ~ .label *,
+svg .node [style*="fill: #dc2626"] ~ .label *,
+svg .node [style*="fill:rgb(220, 38, 38)"] ~ .label *,
+svg .node [style*="fill: rgb(220, 38, 38)"] ~ .label *,
+
+svg .node [style*="fill:#475569"] ~ .label *,
+svg .node [style*="fill: #475569"] ~ .label *,
+svg .node [style*="fill:rgb(71, 85, 105)"] ~ .label *,
+svg .node [style*="fill: rgb(71, 85, 105)"] ~ .label * {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
 
 
