@@ -383,8 +383,8 @@ label.md-nav__link[for="__toc"] {
 .md-nav__item--nested > .md-nav__link:not([for="__toc"]) {
   font-weight: 600 !important;
   color: #334155 !important; /* Slate 700 */
-  padding-top: 0.32rem !important;
-  padding-bottom: 0.32rem !important;
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.35rem !important;
   font-size: 0.74rem !important;
 }
 
@@ -397,11 +397,16 @@ body[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link:not([fo
   color: #475569 !important; /* Slate 600 */
   transition: all 0.15s ease !important;
   border-radius: 4px !important;
-  padding: 0.32rem 0.5rem !important;
-  margin: 0.08rem 0 !important;
+  padding: 0.35rem 0.55rem !important;
+  margin: 0.12rem 0 !important; /* Increased margin for highlight separation */
   display: flex;
   align-items: center;
   font-size: 0.72rem !important;
+}
+
+/* Ensure list items themselves have distinct vertical separation to prevent overlaps */
+.md-sidebar--primary .md-nav__item {
+  margin-bottom: 0.12rem !important;
 }
 
 body[data-md-color-scheme="slate"] .md-nav__link:not([for="__toc"]) {
