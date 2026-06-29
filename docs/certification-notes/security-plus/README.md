@@ -1,4 +1,5 @@
-# CompTIA Security+ SY0-701 Study Guide
+# <img src="../../assets/images/comptia-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> CompTIA Security+ SY0-701 Study Guide
+
 
 ## Exam Overview
 

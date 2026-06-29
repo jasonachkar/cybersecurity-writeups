@@ -142,7 +142,17 @@ nav:
       - Domain 3 - Operations: docs/certification-notes/security-plus/domain-3-operations.md
       - Quick Reference: docs/certification-notes/security-plus/quick-reference.md
       - Practice Questions: docs/certification-notes/security-plus/practice-questions.md
-    - "☁️ Microsoft AZ-900": docs/certification-notes/az-900/index.md
-    - "🛡️ Google Cybersecurity": docs/certification-notes/google-cybersecurity/index.md
-    - "🔒 Microsoft SC-500": docs/certification-notes/sc-500/index.md
+    - "☁️ Microsoft AZ-900":
+      - Overview: docs/certification-notes/az-900/README.md
+      - Domain 1 - Cloud Concepts: docs/certification-notes/az-900/domain-1-concepts.md
+      - Domain 2 - Azure Architecture & Services: docs/certification-notes/az-900/domain-2-architecture-services.md
+      - Domain 3 - Management & Governance: docs/certification-notes/az-900/domain-3-management-governance.md
+    - "🛡️ Google Cybersecurity": docs/certification-notes/google-cybersecurity/README.md
+    - "🔒 Microsoft SC-500":
+      - Overview: docs/certification-notes/sc-500/README.md
+      - Domain 1 - Identity & Access: docs/certification-notes/sc-500/domain-1-identity.md
+      - Domain 2 - Storage, DB & Network: docs/certification-notes/sc-500/domain-2-storage-networking.md
+      - Domain 3 - Compute & Posture: docs/certification-notes/sc-500/domain-3-compute-posture.md
+      - Domain 4 - AI Workload Security: docs/certification-notes/sc-500/domain-4-ai-security.md
+
 
