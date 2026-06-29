@@ -1,0 +1,6451 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+        <meta name="author" content="Jason Achkardiab">
+      
+      
+        <link rel="canonical" href="https://docs.jasonachkardiab.com/docs/research/threat-modeling-saas/templates/">
+      
+      
+        <link rel="prev" href="../mitigations/">
+      
+      
+        <link rel="next" href="../../oauth-misconfigurations/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Templates - Platform Security & Cloud Architecture Writeups</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../css/custom.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#threat-modeling-templates-worksheets" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="Platform Security &amp; Cloud Architecture Writeups" class="md-header__button md-logo" aria-label="Platform Security & Cloud Architecture Writeups" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Platform Security & Cloud Architecture Writeups
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Templates
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/jasonachkar/cybersecurity-writeups" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jasonachkar/cybersecurity-writeups
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../cloud-security/multi-account-landing-zones/" class="md-tabs__link">
+          
+  
+  
+  ☁️ Cloud Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../appsec/api-microservices-threat-modeling/" class="md-tabs__link">
+          
+  
+  
+  💻 Application Security
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../devsecops/secure-cicd-pipeline-design/" class="md-tabs__link">
+          
+  
+  
+  🛡️ DevSecOps
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../../threat-intel/attack-path-analysis/" class="md-tabs__link">
+          
+  
+  
+  🕵️ Threat Intelligence
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../tutorials/azure-landing-zone/" class="md-tabs__link">
+          
+  
+  
+  📘 Legacy Tutorials
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+  🔬 Legacy Research
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../../certification-notes/security-plus/" class="md-tabs__link">
+          
+  
+  
+  🎓 Certification Notes
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="Platform Security &amp; Cloud Architecture Writeups" class="md-nav__button md-logo" aria-label="Platform Security & Cloud Architecture Writeups" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Platform Security & Cloud Architecture Writeups
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jasonachkar/cybersecurity-writeups" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    jasonachkar/cybersecurity-writeups
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    ☁️ Cloud Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    ☁️ Cloud Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../cloud-security/multi-account-landing-zones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-Account Landing Zones
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../cloud-security/iam-at-scale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IAM at Scale
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../cloud-security/kubernetes-multi-tenancy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes Multi-Tenancy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../cloud-security/serverless-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serverless Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../cloud-security/cloud-network-segmentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network Segmentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../cloud-security/cloud-detection-and-response/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Detection and Response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    💻 Application Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    💻 Application Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appsec/api-microservices-threat-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API & Microservices Threat Modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appsec/oauth2-oidc-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 & OIDC Deep Dive
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appsec/saas-multitenancy-isolation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SaaS Multi-Tenancy Isolation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../appsec/runtime-protection-rasp-waf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime Protection (RASP & WAF)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🛡️ DevSecOps
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🛡️ DevSecOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../devsecops/secure-cicd-pipeline-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secure CI/CD Pipeline Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../devsecops/iac-security-and-policy-as-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IaC Security & Policy as Code
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../devsecops/supply-chain-sbom-signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supply Chain (SBOM, Signing)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../devsecops/secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets Management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🕵️ Threat Intelligence
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🕵️ Threat Intelligence
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../threat-intel/attack-path-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attack Path Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../threat-intel/cloud-breach-case-studies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Breach Case Studies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    📘 Legacy Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    📘 Legacy Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Azure Landing Zone
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Azure Landing Zone
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/azure-landing-zone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/azure-landing-zone/architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/azure-landing-zone/networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/azure-landing-zone/policy-governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Policy & Governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/azure-landing-zone/iam/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IAM Design
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/azure-landing-zone/implementation-templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Implementation Templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OWASP API Security Top 10
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OWASP API Security Top 10
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/owasp-api-security-top-10/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/owasp-api-security-top-10/vulnerabilities/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vulnerabilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/owasp-api-security-top-10/mitigations-dotnet/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitigations (.NET)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/owasp-api-security-top-10/mitigation-node/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitigations (Node.js)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/owasp-api-security-top-10/code-examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Detection Engineering with Sentinel
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Detection Engineering with Sentinel
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/detection-engineering-sentinel/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/detection-engineering-sentinel/detection-templates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Detection Templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CI/CD Security Gates
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CI/CD Security Gates
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ci-cd-gates/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ci-cd-gates/github-actions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GitHub Actions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ci-cd-gates/azure-devops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Azure DevOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/ci-cd-gates/tools/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scanners & Tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Securing Azure Entra ID
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Securing Azure Entra ID
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/securing-entra-id/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/securing-entra-id/identity-protection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Identity Protection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/securing-entra-id/pim-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PIM Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/securing-entra-id/conditional-access-policies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Conditional Access
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/securing-entra-id/monitoring-alerts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Monitoring & Alerts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Azure Firewall Walkthrough
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Azure Firewall Walkthrough
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../tutorials/azure-firewall-walkthrough/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔬 Legacy Research
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🔬 Legacy Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Modeling SaaS
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_7_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Threat Modeling SaaS
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stride-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    STRIDE Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data-flow-diagrams/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data Flow Diagrams
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mitigations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitigations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Templates
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threat-modeling-session-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat Modeling Session Template
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Threat Modeling Session Template">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#session-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session Information
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-system-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. System Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-architecture-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Architecture Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-trust-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Trust Boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Assets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-threat-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Threat Identification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-risk-assessment-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Risk Assessment Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-action-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Action Items
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-next-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Next Review
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stride-analysis-worksheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        STRIDE Analysis Worksheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="STRIDE Analysis Worksheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-_____" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component: _____
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component: _____">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spoofing-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spoofing (Authentication)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Mitigations:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tampering-integrity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tampering (Integrity)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Mitigations:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#repudiation-non-repudiation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repudiation (Non-repudiation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Mitigations:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#information-disclosure-confidentiality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Information Disclosure (Confidentiality)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Mitigations:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#denial-of-service-availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Denial of Service (Availability)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Mitigations:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#elevation-of-privilege-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Elevation of Privilege (Authorization)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tenant-isolation-review-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant Isolation Review Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tenant Isolation Review Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authorization-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authorization Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caching-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caching Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#queuebackground-jobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Queue/Background Jobs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging &amp; Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External Integrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#risk-register-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Register Template
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Risk Register Template">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#risk-entry-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Entry Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-register-summary-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Register Summary Table
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-requirements-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Requirements Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Requirements Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mapping-threats-to-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapping Threats to Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#requirement-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirement Details
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requirement Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sec-req-003-object-level-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEC-REQ-003: Object-Level Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#penetration-test-scope-for-multi-tenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Penetration Test Scope for Multi-Tenant
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Penetration Test Scope for Multi-Tenant">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Categories
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Categories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#category-1-tenant-isolation-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 1: Tenant Isolation Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-2-authentication-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 2: Authentication Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-3-authorization-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 3: Authorization Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-4-availability-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 4: Availability Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-account-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Account Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidence-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-control-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Control Mapping
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Control Mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stride-to-controls-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        STRIDE to Controls Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-effectiveness-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control Effectiveness Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-stride-quick-reference-cards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: STRIDE Quick Reference Cards
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix: STRIDE Quick Reference Cards">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#card-1-spoofing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Card 1: Spoofing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#card-2-information-disclosure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Card 2: Information Disclosure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#card-3-elevation-of-privilege" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Card 3: Elevation of Privilege
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 Misconfigurations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    OAuth 2.0 Misconfigurations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../oauth-misconfigurations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../oauth-misconfigurations/attack-scenarios/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attack Scenarios
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../oauth-misconfigurations/mitigations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mitigations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../oauth-misconfigurations/code-examples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Code Examples
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Enterprise Cloud Security Engineering
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Enterprise Cloud Security Engineering
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enterprise-cloud-security-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enterprise-cloud-security-engineering/cloud-security-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enterprise-cloud-security-engineering/multi-account-landing-zones-and-iam/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Landing Zones & IAM
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enterprise-cloud-security-engineering/iam-workload-identity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Workload Identity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enterprise-cloud-security-engineering/devsecops-pipeline-hardening/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pipeline Hardening
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../enterprise-cloud-security-engineering/detection-engineering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Detection Engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🎓 Certification Notes
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    🎓 Certification Notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CompTIA Security+
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    CompTIA Security+
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../certification-notes/security-plus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../certification-notes/security-plus/domain-1-threats/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 1 - Threats
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../certification-notes/security-plus/domain-2-architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 2 - Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../certification-notes/security-plus/domain-3-operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 3 - Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../certification-notes/security-plus/quick-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../certification-notes/security-plus/practice-questions/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Practice Questions
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#table-of-contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Table of Contents
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threat-modeling-session-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat Modeling Session Template
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Threat Modeling Session Template">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#session-information" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session Information
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-system-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. System Overview
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-architecture-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Architecture Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-trust-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Trust Boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Assets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-threat-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Threat Identification
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#6-risk-assessment-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Risk Assessment Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#7-action-items" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Action Items
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#8-next-review" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Next Review
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#stride-analysis-worksheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        STRIDE Analysis Worksheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="STRIDE Analysis Worksheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-to-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How to Use
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#component-_____" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Component: _____
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Component: _____">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#spoofing-authentication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Spoofing (Authentication)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Mitigations:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tampering-integrity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tampering (Integrity)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Mitigations:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#repudiation-non-repudiation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Repudiation (Non-repudiation)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Mitigations:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#information-disclosure-confidentiality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Information Disclosure (Confidentiality)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Mitigations:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#denial-of-service-availability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Denial of Service (Availability)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Recommended Mitigations:">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#elevation-of-privilege-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Elevation of Privilege (Authorization)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#existing-controls_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Existing Controls:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recommended-mitigations_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recommended Mitigations:
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tenant-isolation-review-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tenant Isolation Review Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Tenant Isolation Review Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authorization-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authorization Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#caching-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Caching Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#queuebackground-jobs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Queue/Background Jobs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-monitoring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging &amp; Monitoring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-integrations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External Integrations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#risk-register-template" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Register Template
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Risk Register Template">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#risk-entry-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Entry Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-register-summary-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk Register Summary Table
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-requirements-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Requirements Matrix
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Requirements Matrix">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mapping-threats-to-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapping Threats to Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#requirement-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Requirement Details
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Requirement Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sec-req-003-object-level-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SEC-REQ-003: Object-Level Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#penetration-test-scope-for-multi-tenant" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Penetration Test Scope for Multi-Tenant
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Penetration Test Scope for Multi-Tenant">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Categories
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Test Categories">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#category-1-tenant-isolation-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 1: Tenant Isolation Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-2-authentication-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 2: Authentication Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-3-authorization-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 3: Authorization Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#category-4-availability-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Category 4: Availability Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-account-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Account Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidence-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidence Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-control-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Control Mapping
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Control Mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stride-to-controls-matrix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        STRIDE to Controls Matrix
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#control-effectiveness-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control Effectiveness Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-stride-quick-reference-cards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix: STRIDE Quick Reference Cards
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Appendix: STRIDE Quick Reference Cards">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#card-1-spoofing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Card 1: Spoofing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#card-2-information-disclosure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Card 2: Information Disclosure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#card-3-elevation-of-privilege" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Card 3: Elevation of Privilege
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="threat-modeling-templates-worksheets">Threat Modeling Templates &amp; Worksheets</h1>
+<p>Practical templates for conducting threat modeling sessions on multi-tenant SaaS applications.</p>
+<h2 id="table-of-contents">Table of Contents</h2>
+<ol>
+<li><a href="#threat-modeling-session-template">Threat Modeling Session Template</a></li>
+<li><a href="#stride-analysis-worksheet">STRIDE Analysis Worksheet</a></li>
+<li><a href="#tenant-isolation-review-checklist">Tenant Isolation Review Checklist</a></li>
+<li><a href="#risk-register-template">Risk Register Template</a></li>
+<li><a href="#security-requirements-matrix">Security Requirements Matrix</a></li>
+<li><a href="#penetration-test-scope-for-multi-tenant">Penetration Test Scope for Multi-Tenant</a></li>
+</ol>
+<hr />
+<h2 id="threat-modeling-session-template">Threat Modeling Session Template</h2>
+<h3 id="session-information">Session Information</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Date</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>System/Feature</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Version/Release</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Facilitator</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Participants</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Duration</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="1-system-overview">1. System Overview</h3>
+<p><strong>Purpose:</strong></p>
+<blockquote>
+<p>Describe what the system does and its business value.</p>
+</blockquote>
+<p><strong>Tenant Model:</strong>
+- [ ] Single-tenant
+- [ ] Multi-tenant (Database per tenant)
+- [ ] Multi-tenant (Schema per tenant)
+- [ ] Multi-tenant (Row-level security)
+- [ ] Hybrid</p>
+<p><strong>Data Classification:</strong>
+| Data Type | Classification | Regulatory Requirements |
+|-----------|----------------|------------------------|
+| | | |
+| | | |</p>
+<h3 id="2-architecture-summary">2. Architecture Summary</h3>
+<p><strong>Components:</strong>
+| Component | Technology | Purpose | Trust Level |
+|-----------|------------|---------|-------------|
+| | | | |
+| | | | |</p>
+<p><strong>Data Stores:</strong>
+| Store | Type | Data Stored | Tenant Isolation |
+|-------|------|-------------|------------------|
+| | | | |</p>
+<p><strong>External Integrations:</strong>
+| Integration | Direction | Authentication | Data Exchanged |
+|-------------|-----------|----------------|----------------|
+| | | | |</p>
+<h3 id="3-trust-boundaries">3. Trust Boundaries</h3>
+<p><strong>Identified Boundaries:</strong>
+1. 
+2. 
+3. </p>
+<h3 id="4-assets">4. Assets</h3>
+<p><strong>What are we protecting?</strong>
+| Asset | Owner | Sensitivity | CIA Priority |
+|-------|-------|-------------|--------------|
+| | | | C &gt; I &gt; A |
+| | | | |</p>
+<h3 id="5-threat-identification">5. Threat Identification</h3>
+<p><em>Use STRIDE worksheet for detailed analysis</em></p>
+<h3 id="6-risk-assessment-summary">6. Risk Assessment Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Risk Level</th>
+<th>Count</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Critical (15-25)</td>
+<td></td>
+<td>Immediate</td>
+</tr>
+<tr>
+<td>High (10-14)</td>
+<td></td>
+<td>This sprint</td>
+</tr>
+<tr>
+<td>Medium (5-9)</td>
+<td></td>
+<td>Next sprint</td>
+</tr>
+<tr>
+<td>Low (1-4)</td>
+<td></td>
+<td>Backlog</td>
+</tr>
+</tbody>
+</table>
+<h3 id="7-action-items">7. Action Items</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Action</th>
+<th>Owner</th>
+<th>Due Date</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="8-next-review">8. Next Review</h3>
+<p><strong>Triggers for re-review:</strong>
+- [ ] Architecture changes
+- [ ] New integrations
+- [ ] Compliance requirement changes
+- [ ] Major incident</p>
+<p><strong>Scheduled review date:</strong> <strong><em>_</em></strong><strong><em>_</em></strong>_</p>
+<hr />
+<h2 id="stride-analysis-worksheet">STRIDE Analysis Worksheet</h2>
+<h3 id="how-to-use">How to Use</h3>
+<p>For each component/data flow in your DFD, ask the STRIDE questions below.</p>
+<hr />
+<h3 id="component-_____">Component: <strong><em>_</em></strong><strong><em>_</em></strong><strong><em>_</em></strong>__</h3>
+<h4 id="spoofing-authentication">Spoofing (Authentication)</h4>
+<p><strong>Question:</strong> Can an attacker pretend to be someone/something else?</p>
+<table>
+<thead>
+<tr>
+<th>Threat</th>
+<th>Applicable?</th>
+<th>Description</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>User impersonation</td>
+<td>Y/N</td>
+<td></td>
+<td>1-5</td>
+<td>1-5</td>
+<td>L×I</td>
+</tr>
+<tr>
+<td>Service impersonation</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Token/credential theft</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Session hijacking</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>API key compromise</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Tenant impersonation</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="existing-controls"><strong>Existing Controls:</strong></h2>
+<h2 id="recommended-mitigations"><strong>Recommended Mitigations:</strong></h2>
+<hr />
+<h4 id="tampering-integrity">Tampering (Integrity)</h4>
+<p><strong>Question:</strong> Can an attacker modify data they shouldn't?</p>
+<table>
+<thead>
+<tr>
+<th>Threat</th>
+<th>Applicable?</th>
+<th>Description</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Data modification</td>
+<td>Y/N</td>
+<td></td>
+<td>1-5</td>
+<td>1-5</td>
+<td>L×I</td>
+</tr>
+<tr>
+<td>SQL injection</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Parameter manipulation</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Mass assignment</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Message tampering</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Configuration changes</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="existing-controls_1"><strong>Existing Controls:</strong></h2>
+<h2 id="recommended-mitigations_1"><strong>Recommended Mitigations:</strong></h2>
+<hr />
+<h4 id="repudiation-non-repudiation">Repudiation (Non-repudiation)</h4>
+<p><strong>Question:</strong> Can an attacker deny their actions?</p>
+<table>
+<thead>
+<tr>
+<th>Threat</th>
+<th>Applicable?</th>
+<th>Description</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Missing audit logs</td>
+<td>Y/N</td>
+<td></td>
+<td>1-5</td>
+<td>1-5</td>
+<td>L×I</td>
+</tr>
+<tr>
+<td>Log tampering</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Insufficient attribution</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Time manipulation</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Anonymous actions</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="existing-controls_2"><strong>Existing Controls:</strong></h2>
+<h2 id="recommended-mitigations_2"><strong>Recommended Mitigations:</strong></h2>
+<hr />
+<h4 id="information-disclosure-confidentiality">Information Disclosure (Confidentiality)</h4>
+<p><strong>Question:</strong> Can an attacker access data they shouldn't?</p>
+<table>
+<thead>
+<tr>
+<th>Threat</th>
+<th>Applicable?</th>
+<th>Description</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cross-tenant data access</td>
+<td>Y/N</td>
+<td></td>
+<td>1-5</td>
+<td>1-5</td>
+<td>L×I</td>
+</tr>
+<tr>
+<td>IDOR vulnerability</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Error message leakage</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Log exposure</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Cache leakage</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Backup exposure</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>API over-exposure</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Search index leakage</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="existing-controls_3"><strong>Existing Controls:</strong></h2>
+<h2 id="recommended-mitigations_3"><strong>Recommended Mitigations:</strong></h2>
+<hr />
+<h4 id="denial-of-service-availability">Denial of Service (Availability)</h4>
+<p><strong>Question:</strong> Can an attacker disrupt service?</p>
+<table>
+<thead>
+<tr>
+<th>Threat</th>
+<th>Applicable?</th>
+<th>Description</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource exhaustion</td>
+<td>Y/N</td>
+<td></td>
+<td>1-5</td>
+<td>1-5</td>
+<td>L×I</td>
+</tr>
+<tr>
+<td>Noisy neighbor</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Rate limit bypass</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Connection exhaustion</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Storage exhaustion</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Background job flooding</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="existing-controls_4"><strong>Existing Controls:</strong></h2>
+<h2 id="recommended-mitigations_4"><strong>Recommended Mitigations:</strong></h2>
+<hr />
+<h4 id="elevation-of-privilege-authorization">Elevation of Privilege (Authorization)</h4>
+<p><strong>Question:</strong> Can an attacker gain unauthorized access?</p>
+<table>
+<thead>
+<tr>
+<th>Threat</th>
+<th>Applicable?</th>
+<th>Description</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Horizontal escalation</td>
+<td>Y/N</td>
+<td></td>
+<td>1-5</td>
+<td>1-5</td>
+<td>L×I</td>
+</tr>
+<tr>
+<td>Vertical escalation</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Tenant admin takeover</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Role manipulation</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Missing function-level authz</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>Privilege inheritance</td>
+<td>Y/N</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="existing-controls_5"><strong>Existing Controls:</strong></h2>
+<h2 id="recommended-mitigations_5"><strong>Recommended Mitigations:</strong></h2>
+<hr />
+<h2 id="tenant-isolation-review-checklist">Tenant Isolation Review Checklist</h2>
+<h3 id="authentication-layer">Authentication Layer</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tenant ID included in JWT/session</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Token validation includes tenant check</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>API keys scoped to specific tenant</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>SSO/SAML configured per tenant</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>MFA enforced for tenant admins</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="authorization-layer">Authorization Layer</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tenant context set on every request</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Object-level authorization implemented</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>All endpoints verify tenant ownership</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Admin roles isolated per tenant</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Super-admin access is audited</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="database-layer">Database Layer</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Row-level security (RLS) enabled</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>All tables have tenant_id column</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>RLS policies applied to all tenant tables</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Database connections scoped to tenant</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Cross-tenant JOINs prevented</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Migrations tested for RLS compliance</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="application-layer">Application Layer</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ORM/query builder enforces tenant filter</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Manual queries include tenant filter</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Bulk operations scoped to tenant</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Export functions filtered by tenant</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Search results scoped to tenant</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>File uploads stored in tenant-specific path</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="caching-layer">Caching Layer</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cache keys include tenant prefix</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>CDN cache varies by tenant</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Session storage is tenant-isolated</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>No shared cache between tenants</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="queuebackground-jobs">Queue/Background Jobs</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Messages include tenant context</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Workers validate tenant before processing</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Job queues are tenant-isolated (if required)</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Scheduled jobs run in correct tenant context</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="logging-monitoring">Logging &amp; Monitoring</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logs include tenant_id</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Alerts for cross-tenant access attempts</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Tenant-specific dashboards available</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>No sensitive data in logs</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="external-integrations">External Integrations</h3>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Status</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Webhook payloads scoped to tenant</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>OAuth tokens are tenant-specific</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>Third-party data isolated by tenant</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+<tr>
+<td>API callbacks verify tenant origin</td>
+<td>☐ Pass ☐ Fail ☐ N/A</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="risk-register-template">Risk Register Template</h2>
+<h3 id="risk-entry-format">Risk Entry Format</h3>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">RISK-001</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="nt">title</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Cross-Tenant</span><span class="nv"> </span><span class="s">Data</span><span class="nv"> </span><span class="s">Access</span><span class="nv"> </span><span class="s">via</span><span class="nv"> </span><span class="s">IDOR&quot;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="no">Users can access resources belonging to other tenants by </span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">    </span><span class="no">manipulating object IDs in API requests.</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span><span class="nt">category</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Information</span><span class="nv"> </span><span class="s">Disclosure&quot;</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">  </span><span class="nt">stride</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;I&quot;</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span><span class="c1"># Risk Assessment</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">  </span><span class="nt">likelihood</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4</span><span class="w">  </span><span class="c1"># 1-5</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">  </span><span class="nt">impact</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span><span class="w">      </span><span class="c1"># 1-5</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">  </span><span class="nt">risk_score</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span><span class="w"> </span><span class="c1"># likelihood × impact</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">  </span><span class="nt">risk_level</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Critical&quot;</span><span class="w">  </span><span class="c1"># Low/Medium/High/Critical</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span><span class="c1"># Attack Details</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">  </span><span class="nt">attack_vector</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;API</span><span class="nv"> </span><span class="s">manipulation&quot;</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">  </span><span class="nt">prerequisites</span><span class="p">:</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Authenticated</span><span class="nv"> </span><span class="s">user</span><span class="nv"> </span><span class="s">account&quot;</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Knowledge</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">resource</span><span class="nv"> </span><span class="s">ID</span><span class="nv"> </span><span class="s">format&quot;</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">  </span><span class="nt">affected_assets</span><span class="p">:</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Invoice</span><span class="nv"> </span><span class="s">data&quot;</span>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;Customer</span><span class="nv"> </span><span class="s">records&quot;</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="w">  </span><span class="c1"># Compliance Impact</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">  </span><span class="nt">compliance</span><span class="p">:</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;GDPR</span><span class="nv"> </span><span class="s">Article</span><span class="nv"> </span><span class="s">32</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Data</span><span class="nv"> </span><span class="s">security&quot;</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;SOC</span><span class="nv"> </span><span class="s">2</span><span class="nv"> </span><span class="s">CC6.1</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">Access</span><span class="nv"> </span><span class="s">control&quot;</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">  </span><span class="c1"># Mitigation</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">  </span><span class="nt">mitigations</span><span class="p">:</span>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MIT-001</span>
+</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Implement</span><span class="nv"> </span><span class="s">object-level</span><span class="nv"> </span><span class="s">authorization&quot;</span>
+</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="w">      </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;In</span><span class="nv"> </span><span class="s">Progress&quot;</span>
+</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="w">      </span><span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Backend</span><span class="nv"> </span><span class="s">Team&quot;</span>
+</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a><span class="w">      </span><span class="nt">due_date</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2025-02-01&quot;</span>
+</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">MIT-002</span>
+</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a><span class="w">      </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Add</span><span class="nv"> </span><span class="s">tenant</span><span class="nv"> </span><span class="s">context</span><span class="nv"> </span><span class="s">validation</span><span class="nv"> </span><span class="s">middleware&quot;</span>
+</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a><span class="w">      </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Planned&quot;</span>
+</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a><span class="w">      </span><span class="nt">owner</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Platform</span><span class="nv"> </span><span class="s">Team&quot;</span>
+</span><span id="__span-0-40"><a id="__codelineno-0-40" name="__codelineno-0-40" href="#__codelineno-0-40"></a><span class="w">      </span><span class="nt">due_date</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2025-02-15&quot;</span>
+</span><span id="__span-0-41"><a id="__codelineno-0-41" name="__codelineno-0-41" href="#__codelineno-0-41"></a>
+</span><span id="__span-0-42"><a id="__codelineno-0-42" name="__codelineno-0-42" href="#__codelineno-0-42"></a><span class="w">  </span><span class="c1"># Tracking</span>
+</span><span id="__span-0-43"><a id="__codelineno-0-43" name="__codelineno-0-43" href="#__codelineno-0-43"></a><span class="w">  </span><span class="nt">identified_date</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2025-01-07&quot;</span>
+</span><span id="__span-0-44"><a id="__codelineno-0-44" name="__codelineno-0-44" href="#__codelineno-0-44"></a><span class="w">  </span><span class="nt">identified_by</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Threat</span><span class="nv"> </span><span class="s">Model</span><span class="nv"> </span><span class="s">Session&quot;</span>
+</span><span id="__span-0-45"><a id="__codelineno-0-45" name="__codelineno-0-45" href="#__codelineno-0-45"></a><span class="w">  </span><span class="nt">status</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Open&quot;</span>
+</span><span id="__span-0-46"><a id="__codelineno-0-46" name="__codelineno-0-46" href="#__codelineno-0-46"></a><span class="w">  </span><span class="nt">residual_risk</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Low&quot;</span><span class="w">  </span><span class="c1"># After mitigations</span>
+</span><span id="__span-0-47"><a id="__codelineno-0-47" name="__codelineno-0-47" href="#__codelineno-0-47"></a>
+</span><span id="__span-0-48"><a id="__codelineno-0-48" name="__codelineno-0-48" href="#__codelineno-0-48"></a><span class="w">  </span><span class="c1"># References</span>
+</span><span id="__span-0-49"><a id="__codelineno-0-49" name="__codelineno-0-49" href="#__codelineno-0-49"></a><span class="w">  </span><span class="nt">references</span><span class="p">:</span>
+</span><span id="__span-0-50"><a id="__codelineno-0-50" name="__codelineno-0-50" href="#__codelineno-0-50"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;OWASP</span><span class="nv"> </span><span class="s">API</span><span class="nv"> </span><span class="s">Security</span><span class="nv"> </span><span class="s">Top</span><span class="nv"> </span><span class="s">10</span><span class="nv"> </span><span class="s">-</span><span class="nv"> </span><span class="s">API1:</span><span class="nv"> </span><span class="s">BOLA&quot;</span>
+</span><span id="__span-0-51"><a id="__codelineno-0-51" name="__codelineno-0-51" href="#__codelineno-0-51"></a><span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;CWE-639:</span><span class="nv"> </span><span class="s">Authorization</span><span class="nv"> </span><span class="s">Bypass&quot;</span>
+</span></code></pre></div>
+<h3 id="risk-register-summary-table">Risk Register Summary Table</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Title</th>
+<th>STRIDE</th>
+<th>Likelihood</th>
+<th>Impact</th>
+<th>Risk Score</th>
+<th>Status</th>
+<th>Owner</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RISK-001</td>
+<td>Cross-Tenant IDOR</td>
+<td>I</td>
+<td>4</td>
+<td>5</td>
+<td>20 (Critical)</td>
+<td>Open</td>
+<td>Backend</td>
+</tr>
+<tr>
+<td>RISK-002</td>
+<td>JWT Token Forgery</td>
+<td>S</td>
+<td>2</td>
+<td>5</td>
+<td>10 (High)</td>
+<td>Mitigated</td>
+<td>Security</td>
+</tr>
+<tr>
+<td>RISK-003</td>
+<td>Missing Audit Logs</td>
+<td>R</td>
+<td>3</td>
+<td>3</td>
+<td>9 (Medium)</td>
+<td>In Progress</td>
+<td>Platform</td>
+</tr>
+<tr>
+<td>RISK-004</td>
+<td>Noisy Neighbor DoS</td>
+<td>D</td>
+<td>4</td>
+<td>3</td>
+<td>12 (High)</td>
+<td>Open</td>
+<td>Infra</td>
+</tr>
+<tr>
+<td>RISK-005</td>
+<td>Horizontal Escalation</td>
+<td>E</td>
+<td>3</td>
+<td>4</td>
+<td>12 (High)</td>
+<td>Open</td>
+<td>Backend</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="security-requirements-matrix">Security Requirements Matrix</h2>
+<h3 id="mapping-threats-to-requirements">Mapping Threats to Requirements</h3>
+<table>
+<thead>
+<tr>
+<th>Threat ID</th>
+<th>Threat Description</th>
+<th>Requirement ID</th>
+<th>Requirement</th>
+<th>Control Type</th>
+<th>Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AUTH-01</td>
+<td>JWT forgery</td>
+<td>SEC-REQ-001</td>
+<td>Use RS256 for JWT signing</td>
+<td>Preventive</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>AUTH-01</td>
+<td>JWT forgery</td>
+<td>SEC-REQ-002</td>
+<td>JWT expiry ≤ 15 minutes</td>
+<td>Preventive</td>
+<td>High</td>
+</tr>
+<tr>
+<td>DATA-01</td>
+<td>Cross-tenant IDOR</td>
+<td>SEC-REQ-003</td>
+<td>Object-level authorization</td>
+<td>Preventive</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>DATA-01</td>
+<td>Cross-tenant IDOR</td>
+<td>SEC-REQ-004</td>
+<td>Tenant context middleware</td>
+<td>Preventive</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>DATA-05</td>
+<td>Cache pollution</td>
+<td>SEC-REQ-005</td>
+<td>Tenant-prefixed cache keys</td>
+<td>Preventive</td>
+<td>High</td>
+</tr>
+<tr>
+<td>DOS-01</td>
+<td>Noisy neighbor</td>
+<td>SEC-REQ-006</td>
+<td>Per-tenant rate limiting</td>
+<td>Preventive</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>DOS-01</td>
+<td>Noisy neighbor</td>
+<td>SEC-REQ-007</td>
+<td>Resource quotas per tenant</td>
+<td>Preventive</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td>AUTHZ-01</td>
+<td>Horizontal escalation</td>
+<td>SEC-REQ-008</td>
+<td>RBAC enforcement</td>
+<td>Preventive</td>
+<td>High</td>
+</tr>
+<tr>
+<td>REP-01</td>
+<td>Missing audit</td>
+<td>SEC-REQ-009</td>
+<td>Audit all admin actions</td>
+<td>Detective</td>
+<td>High</td>
+</tr>
+<tr>
+<td>REP-01</td>
+<td>Missing audit</td>
+<td>SEC-REQ-010</td>
+<td>Immutable audit log storage</td>
+<td>Preventive</td>
+<td>Medium</td>
+</tr>
+</tbody>
+</table>
+<h3 id="requirement-details">Requirement Details</h3>
+<h4 id="sec-req-003-object-level-authorization">SEC-REQ-003: Object-Level Authorization</h4>
+<p><strong>Description:</strong> Every API endpoint that accesses tenant-specific resources must verify that the requesting user has permission to access the specific object.</p>
+<p><strong>Implementation Guidance:</strong>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Required checks for every resource endpoint:</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># 1. Authenticate the user</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># 2. Resolve the tenant context</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># 3. Fetch the resource WITH tenant filter</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># 4. Verify user has permission on this object</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nd">@requires_auth</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nd">@requires_tenant_context</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="k">def</span><span class="w"> </span><span class="nf">get_resource</span><span class="p">(</span><span class="n">resource_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">User</span><span class="p">,</span> <span class="n">tenant</span><span class="p">:</span> <span class="n">Tenant</span><span class="p">):</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="c1"># Fetch with tenant filter</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="n">resource</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">Resource</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>        <span class="n">Resource</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">resource_id</span><span class="p">,</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>        <span class="n">Resource</span><span class="o">.</span><span class="n">tenant_id</span> <span class="o">==</span> <span class="n">tenant</span><span class="o">.</span><span class="n">id</span>  <span class="c1"># CRITICAL</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>    <span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">resource</span><span class="p">:</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>        <span class="k">raise</span> <span class="n">NotFoundError</span><span class="p">()</span>  <span class="c1"># Don&#39;t reveal existence</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>    <span class="c1"># Check object-level permission</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="n">permissions</span><span class="o">.</span><span class="n">can_read</span><span class="p">(</span><span class="n">user</span><span class="p">,</span> <span class="n">resource</span><span class="p">):</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>        <span class="k">raise</span> <span class="n">ForbiddenError</span><span class="p">()</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>    <span class="k">return</span> <span class="n">resource</span>
+</span></code></pre></div></p>
+<p><strong>Verification:</strong>
+- [ ] Unit tests cover authorization checks
+- [ ] Integration tests attempt cross-tenant access
+- [ ] Penetration test includes IDOR testing
+- [ ] Code review checklist includes authz verification</p>
+<hr />
+<h2 id="penetration-test-scope-for-multi-tenant">Penetration Test Scope for Multi-Tenant</h2>
+<h3 id="test-categories">Test Categories</h3>
+<h4 id="category-1-tenant-isolation-testing">Category 1: Tenant Isolation Testing</h4>
+<p><strong>Objective:</strong> Verify that tenants cannot access each other's data or resources.</p>
+<table>
+<thead>
+<tr>
+<th>Test ID</th>
+<th>Test Case</th>
+<th>Method</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ISO-001</td>
+<td>Access another tenant's resource via IDOR</td>
+<td>Modify resource IDs in API requests</td>
+<td>403 Forbidden or 404 Not Found</td>
+</tr>
+<tr>
+<td>ISO-002</td>
+<td>Enumerate other tenants' resources</td>
+<td>Sequential/random ID guessing</td>
+<td>No valid responses for other tenants</td>
+</tr>
+<tr>
+<td>ISO-003</td>
+<td>Access via cached data</td>
+<td>Analyze cache behavior</td>
+<td>No cross-tenant cache leakage</td>
+</tr>
+<tr>
+<td>ISO-004</td>
+<td>Search for other tenants' data</td>
+<td>Full-text search manipulation</td>
+<td>Results limited to current tenant</td>
+</tr>
+<tr>
+<td>ISO-005</td>
+<td>Access via export functions</td>
+<td>Export data, check contents</td>
+<td>Only current tenant data</td>
+</tr>
+<tr>
+<td>ISO-006</td>
+<td>Access via background jobs</td>
+<td>Trigger jobs, analyze data flow</td>
+<td>Jobs scoped to triggering tenant</td>
+</tr>
+</tbody>
+</table>
+<h4 id="category-2-authentication-testing">Category 2: Authentication Testing</h4>
+<table>
+<thead>
+<tr>
+<th>Test ID</th>
+<th>Test Case</th>
+<th>Method</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AUTH-001</td>
+<td>JWT token manipulation</td>
+<td>Modify tenant_id claim</td>
+<td>Token rejected</td>
+</tr>
+<tr>
+<td>AUTH-002</td>
+<td>Token reuse across tenants</td>
+<td>Use Tenant A token for Tenant B</td>
+<td>Authentication failure</td>
+</tr>
+<tr>
+<td>AUTH-003</td>
+<td>API key scope bypass</td>
+<td>Use key across tenants</td>
+<td>Unauthorized</td>
+</tr>
+<tr>
+<td>AUTH-004</td>
+<td>Session fixation</td>
+<td>Fix session, login as victim</td>
+<td>Attack prevented</td>
+</tr>
+<tr>
+<td>AUTH-005</td>
+<td>SSO tenant bypass</td>
+<td>SAML/OIDC manipulation</td>
+<td>Proper tenant validation</td>
+</tr>
+</tbody>
+</table>
+<h4 id="category-3-authorization-testing">Category 3: Authorization Testing</h4>
+<table>
+<thead>
+<tr>
+<th>Test ID</th>
+<th>Test Case</th>
+<th>Method</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AUTHZ-001</td>
+<td>Horizontal privilege escalation</td>
+<td>Access other user's resources</td>
+<td>403 Forbidden</td>
+</tr>
+<tr>
+<td>AUTHZ-002</td>
+<td>Vertical privilege escalation</td>
+<td>Attempt admin functions</td>
+<td>403 Forbidden</td>
+</tr>
+<tr>
+<td>AUTHZ-003</td>
+<td>Role manipulation</td>
+<td>Modify role claims/parameters</td>
+<td>Changes rejected</td>
+</tr>
+<tr>
+<td>AUTHZ-004</td>
+<td>Function-level access control</td>
+<td>Direct endpoint access</td>
+<td>Proper authorization</td>
+</tr>
+<tr>
+<td>AUTHZ-005</td>
+<td>Mass assignment</td>
+<td>Submit tenant_id in request body</td>
+<td>Ignored/rejected</td>
+</tr>
+</tbody>
+</table>
+<h4 id="category-4-availability-testing">Category 4: Availability Testing</h4>
+<table>
+<thead>
+<tr>
+<th>Test ID</th>
+<th>Test Case</th>
+<th>Method</th>
+<th>Expected Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>AVAIL-001</td>
+<td>Rate limit effectiveness</td>
+<td>High-volume requests</td>
+<td>Proper rate limiting</td>
+</tr>
+<tr>
+<td>AVAIL-002</td>
+<td>Per-tenant rate limits</td>
+<td>Exhaust one tenant's quota</td>
+<td>Other tenants unaffected</td>
+</tr>
+<tr>
+<td>AVAIL-003</td>
+<td>Resource quotas</td>
+<td>Exceed storage/compute limits</td>
+<td>Quota enforcement</td>
+</tr>
+<tr>
+<td>AVAIL-004</td>
+<td>Large payload handling</td>
+<td>Submit oversized requests</td>
+<td>Proper limits applied</td>
+</tr>
+</tbody>
+</table>
+<h3 id="test-account-matrix">Test Account Matrix</h3>
+<table>
+<thead>
+<tr>
+<th>Account Type</th>
+<th>Tenant</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Attacker User A</td>
+<td>Tenant-Alpha</td>
+<td>Primary attacker account</td>
+</tr>
+<tr>
+<td>Victim User B</td>
+<td>Tenant-Beta</td>
+<td>Target for cross-tenant tests</td>
+</tr>
+<tr>
+<td>Admin User A</td>
+<td>Tenant-Alpha</td>
+<td>Escalation target within tenant</td>
+</tr>
+<tr>
+<td>Super Admin</td>
+<td>Platform</td>
+<td>Platform-level privilege tests</td>
+</tr>
+<tr>
+<td>API Key A</td>
+<td>Tenant-Alpha</td>
+<td>API authentication tests</td>
+</tr>
+<tr>
+<td>API Key B</td>
+<td>Tenant-Beta</td>
+<td>Cross-tenant API tests</td>
+</tr>
+</tbody>
+</table>
+<h3 id="evidence-requirements">Evidence Requirements</h3>
+<p>For each finding:
+- [ ] Clear reproduction steps
+- [ ] HTTP request/response (redacted)
+- [ ] Screenshot or video evidence
+- [ ] Impact assessment
+- [ ] CVSS score
+- [ ] Recommended remediation
+- [ ] Verification of fix</p>
+<hr />
+<h2 id="security-control-mapping">Security Control Mapping</h2>
+<h3 id="stride-to-controls-matrix">STRIDE to Controls Matrix</h3>
+<table>
+<thead>
+<tr>
+<th>STRIDE</th>
+<th>Control Category</th>
+<th>Specific Controls</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Spoofing</strong></td>
+<td>Authentication</td>
+<td>MFA, Strong passwords, Token binding, Session management</td>
+</tr>
+<tr>
+<td><strong>Tampering</strong></td>
+<td>Integrity</td>
+<td>Input validation, Parameterized queries, Digital signatures, Checksums</td>
+</tr>
+<tr>
+<td><strong>Repudiation</strong></td>
+<td>Non-repudiation</td>
+<td>Audit logging, Log integrity, Timestamps, Digital signatures</td>
+</tr>
+<tr>
+<td><strong>Information Disclosure</strong></td>
+<td>Confidentiality</td>
+<td>Encryption (transit/rest), Access control, Data masking, RLS</td>
+</tr>
+<tr>
+<td><strong>Denial of Service</strong></td>
+<td>Availability</td>
+<td>Rate limiting, Resource quotas, Load balancing, Auto-scaling</td>
+</tr>
+<tr>
+<td><strong>Elevation of Privilege</strong></td>
+<td>Authorization</td>
+<td>RBAC/ABAC, Least privilege, Object-level authz, Tenant isolation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="control-effectiveness-testing">Control Effectiveness Testing</h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Test Method</th>
+<th>Pass Criteria</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JWT RS256 signing</td>
+<td>Attempt HS256 downgrade</td>
+<td>Algorithm enforced</td>
+</tr>
+<tr>
+<td>RLS policies</td>
+<td>Direct DB query without context</td>
+<td>Query blocked/filtered</td>
+</tr>
+<tr>
+<td>Rate limiting</td>
+<td>Exceed limits</td>
+<td>429 returned, requests blocked</td>
+</tr>
+<tr>
+<td>Audit logging</td>
+<td>Perform sensitive action</td>
+<td>Action logged with full context</td>
+</tr>
+<tr>
+<td>Object-level authz</td>
+<td>Access unowned resource</td>
+<td>403/404 returned</td>
+</tr>
+<tr>
+<td>Input validation</td>
+<td>Submit malformed data</td>
+<td>Request rejected</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="appendix-stride-quick-reference-cards">Appendix: STRIDE Quick Reference Cards</h2>
+<h3 id="card-1-spoofing">Card 1: Spoofing</h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>┌─────────────────────────────────────────────────────────────┐
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>│  SPOOFING - Can an attacker impersonate?                    │
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>├─────────────────────────────────────────────────────────────┤
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│  Property Violated: AUTHENTICATION                          │
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>│                                                             │
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>│  Questions to Ask:                                          │
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>│  • How do we verify user identity?                          │
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>│  • How do we verify service identity?                       │
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>│  • Can tokens/credentials be forged?                        │
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>│  • Can sessions be hijacked?                                │
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>│  • Can tenant context be spoofed?                           │
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>│                                                             │
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>│  Common Attacks:                                            │
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>│  • Token forgery          • Session fixation                │
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>│  • Credential stuffing    • API key theft                   │
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>│  • SAML manipulation      • Tenant impersonation            │
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>│                                                             │
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a>│  Mitigations:                                               │
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a>│  • Strong authentication (MFA)                              │
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a>│  • Cryptographic token signing                              │
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a>│  • Session binding                                          │
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a>│  • Tenant context validation                                │
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a>└─────────────────────────────────────────────────────────────┘
+</span></code></pre></div>
+<h3 id="card-2-information-disclosure">Card 2: Information Disclosure</h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>┌─────────────────────────────────────────────────────────────┐
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>│  INFORMATION DISCLOSURE - Can data leak?                    │
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>├─────────────────────────────────────────────────────────────┤
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>│  Property Violated: CONFIDENTIALITY                         │
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>│                                                             │
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>│  Questions to Ask:                                          │
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>│  • Can Tenant A access Tenant B&#39;s data?                     │
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>│  • What data is exposed in errors?                          │
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>│  • Is sensitive data logged?                                │
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>│  • Can cache serve wrong tenant&#39;s data?                     │
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>│  • Are backups properly isolated?                           │
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>│                                                             │
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>│  Common Attacks:                                            │
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>│  • Cross-tenant IDOR      • Error message analysis          │
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>│  • Log harvesting         • Cache poisoning                 │
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>│  • Search index abuse     • Backup theft                    │
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>│                                                             │
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>│  Mitigations:                                               │
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>│  • Row-level security                                       │
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>│  • Tenant-scoped queries                                    │
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>│  • Generic error messages                                   │
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>│  • Tenant-prefixed caching                                  │
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>│  • Encryption at rest                                       │
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>└─────────────────────────────────────────────────────────────┘
+</span></code></pre></div>
+<h3 id="card-3-elevation-of-privilege">Card 3: Elevation of Privilege</h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>┌─────────────────────────────────────────────────────────────┐
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>│  ELEVATION OF PRIVILEGE - Can access be escalated?          │
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>├─────────────────────────────────────────────────────────────┤
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>│  Property Violated: AUTHORIZATION                           │
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>│                                                             │
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>│  Questions to Ask:                                          │
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>│  • Can users access others&#39; resources? (horizontal)         │
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>│  • Can users gain admin access? (vertical)                  │
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>│  • Can users become another tenant&#39;s admin?                 │
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>│  • Are all functions properly authorized?                   │
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>│  • Can roles/permissions be manipulated?                    │
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>│                                                             │
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>│  Common Attacks:                                            │
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>│  • IDOR exploitation      • Role injection                  │
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>│  • Mass assignment        • Function-level bypass           │
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>│  • Tenant context switch  • Admin API access                │
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>│                                                             │
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>│  Mitigations:                                               │
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>│  • Object-level authorization                               │
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>│  • RBAC/ABAC enforcement                                    │
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>│  • Tenant context validation                                │
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>│  • Least privilege principle                                │
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>│  • Admin function isolation                                 │
+</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>└─────────────────────────────────────────────────────────────┘
+</span></code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.tabs", "navigation.instant", "navigation.tracking", "navigation.sections", "search.suggest", "search.highlight", "content.code.copy", "content.code.select"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
