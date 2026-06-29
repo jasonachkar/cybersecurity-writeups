@@ -12,31 +12,27 @@
         <meta name="author" content="Jason Achkardiab">
       
       
-        <link rel="canonical" href="https://docs.jasonachkardiab.com/appsec/oauth2-oidc-deep-dive/">
+        <link rel="canonical" href="https://docs.jasonachkardiab.com/test-icon/">
       
       
-        <link rel="prev" href="../api-microservices-threat-modeling/">
-      
-      
-        <link rel="next" href="../saas-multitenancy-isolation/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>OAuth 2.0 and OIDC Security Deep Dive: PKCE, Token Validation, and Federation Hardening - Cloud Security Engineering</title>
+        <title>Test - Cloud Security Engineering</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +51,9 @@
       
     
     
-      <link rel="stylesheet" href="../../css/custom.css">
+      <link rel="stylesheet" href="../css/custom.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -82,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#oauth-20-and-oidc-security-deep-dive-pkce-token-validation-and-federation-hardening" class="md-skip">
+        <a href="#test" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +94,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Cloud Security Engineering" class="md-header__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
+    <a href=".." title="Cloud Security Engineering" class="md-header__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -118,7 +114,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              OAuth 2.0 and OIDC Security Deep Dive: PKCE, Token Validation, and Federation Hardening
+              Test
             
           </span>
         </div>
@@ -236,7 +232,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Cloud Security Engineering" class="md-nav__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
+    <a href=".." title="Cloud Security Engineering" class="md-nav__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -266,7 +262,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href=".." class="md-nav__link">
         
   
   
@@ -340,7 +336,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/multi-account-landing-zones/" class="md-nav__link">
+      <a href="../cloud-security/multi-account-landing-zones/" class="md-nav__link">
         
   
   
@@ -368,7 +364,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/iam-at-scale/" class="md-nav__link">
+      <a href="../cloud-security/iam-at-scale/" class="md-nav__link">
         
   
   
@@ -396,7 +392,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/kubernetes-multi-tenancy/" class="md-nav__link">
+      <a href="../cloud-security/kubernetes-multi-tenancy/" class="md-nav__link">
         
   
   
@@ -424,7 +420,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/serverless-security/" class="md-nav__link">
+      <a href="../cloud-security/serverless-security/" class="md-nav__link">
         
   
   
@@ -452,7 +448,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/cloud-network-segmentation/" class="md-nav__link">
+      <a href="../cloud-security/cloud-network-segmentation/" class="md-nav__link">
         
   
   
@@ -480,7 +476,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/cloud-detection-and-response/" class="md-nav__link">
+      <a href="../cloud-security/cloud-detection-and-response/" class="md-nav__link">
         
   
   
@@ -512,20 +508,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -546,7 +540,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
@@ -564,7 +558,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../api-microservices-threat-modeling/" class="md-nav__link">
+      <a href="../appsec/api-microservices-threat-modeling/" class="md-nav__link">
         
   
   
@@ -589,37 +583,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    OAuth 2.0 & OIDC Deep Dive
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../appsec/oauth2-oidc-deep-dive/" class="md-nav__link">
         
   
   
@@ -635,193 +602,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#executive-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Executive Summary
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#threat-model-and-attack-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Threat Model and Attack Surface
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Threat Model and Attack Surface">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#threat-vectors-and-kill-chains" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Threat Vectors and Kill-Chains
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deep-technical-body" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deep Technical Body
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Deep Technical Body">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cryptographic-underpinnings-of-pkce-rfc-7636" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cryptographic Underpinnings of PKCE (RFC 7636)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Cryptographic Underpinnings of PKCE (RFC 7636)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pkce-mathematical-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PKCE Mathematical Flow
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#jwt-cryptographic-validation-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        JWT Cryptographic Validation Flow
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#defensive-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Defensive Architecture
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Defensive Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#architecture-topology-gateway-level-token-validation-and-session-management" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architecture Topology: Gateway-Level Token Validation and Session Management
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hardened-authorization-request-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Hardened Authorization Request Configuration
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tooling-and-implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tooling and Implementation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#oauth-and-oidc-security-audit-checklist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OAuth and OIDC Security Audit Checklist
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        References
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -834,7 +614,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../saas-multitenancy-isolation/" class="md-nav__link">
+      <a href="../appsec/saas-multitenancy-isolation/" class="md-nav__link">
         
   
   
@@ -862,7 +642,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../runtime-protection-rasp-waf/" class="md-nav__link">
+      <a href="../appsec/runtime-protection-rasp-waf/" class="md-nav__link">
         
   
   
@@ -944,7 +724,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../devsecops/secure-cicd-pipeline-design/" class="md-nav__link">
+      <a href="../devsecops/secure-cicd-pipeline-design/" class="md-nav__link">
         
   
   
@@ -972,7 +752,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../devsecops/iac-security-and-policy-as-code/" class="md-nav__link">
+      <a href="../devsecops/iac-security-and-policy-as-code/" class="md-nav__link">
         
   
   
@@ -1000,7 +780,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../devsecops/supply-chain-sbom-signing/" class="md-nav__link">
+      <a href="../devsecops/supply-chain-sbom-signing/" class="md-nav__link">
         
   
   
@@ -1028,7 +808,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../devsecops/secrets-management/" class="md-nav__link">
+      <a href="../devsecops/secrets-management/" class="md-nav__link">
         
   
   
@@ -1110,7 +890,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../threat-intel/attack-path-analysis/" class="md-nav__link">
+      <a href="../threat-intel/attack-path-analysis/" class="md-nav__link">
         
   
   
@@ -1138,7 +918,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../threat-intel/cloud-breach-case-studies/" class="md-nav__link">
+      <a href="../threat-intel/cloud-breach-case-studies/" class="md-nav__link">
         
   
   
@@ -1267,7 +1047,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/" class="md-nav__link">
+      <a href="../docs/tutorials/azure-landing-zone/" class="md-nav__link">
         
   
   
@@ -1295,7 +1075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/architecture/" class="md-nav__link">
+      <a href="../docs/tutorials/azure-landing-zone/architecture/" class="md-nav__link">
         
   
   
@@ -1323,7 +1103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/networking/" class="md-nav__link">
+      <a href="../docs/tutorials/azure-landing-zone/networking/" class="md-nav__link">
         
   
   
@@ -1351,7 +1131,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/policy-governance/" class="md-nav__link">
+      <a href="../docs/tutorials/azure-landing-zone/policy-governance/" class="md-nav__link">
         
   
   
@@ -1379,7 +1159,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/iam/" class="md-nav__link">
+      <a href="../docs/tutorials/azure-landing-zone/iam/" class="md-nav__link">
         
   
   
@@ -1407,7 +1187,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/implementation-templates/" class="md-nav__link">
+      <a href="../docs/tutorials/azure-landing-zone/implementation-templates/" class="md-nav__link">
         
   
   
@@ -1490,7 +1270,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/owasp-api-security-top-10/" class="md-nav__link">
+      <a href="../docs/tutorials/owasp-api-security-top-10/" class="md-nav__link">
         
   
   
@@ -1518,7 +1298,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/owasp-api-security-top-10/vulnerabilities/" class="md-nav__link">
+      <a href="../docs/tutorials/owasp-api-security-top-10/vulnerabilities/" class="md-nav__link">
         
   
   
@@ -1546,7 +1326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/owasp-api-security-top-10/mitigations-dotnet/" class="md-nav__link">
+      <a href="../docs/tutorials/owasp-api-security-top-10/mitigations-dotnet/" class="md-nav__link">
         
   
   
@@ -1574,7 +1354,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/owasp-api-security-top-10/mitigation-node/" class="md-nav__link">
+      <a href="../docs/tutorials/owasp-api-security-top-10/mitigation-node/" class="md-nav__link">
         
   
   
@@ -1602,7 +1382,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/owasp-api-security-top-10/code-examples/" class="md-nav__link">
+      <a href="../docs/tutorials/owasp-api-security-top-10/code-examples/" class="md-nav__link">
         
   
   
@@ -1685,7 +1465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/detection-engineering-sentinel/" class="md-nav__link">
+      <a href="../docs/tutorials/detection-engineering-sentinel/" class="md-nav__link">
         
   
   
@@ -1713,7 +1493,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/detection-engineering-sentinel/detection-templates/" class="md-nav__link">
+      <a href="../docs/tutorials/detection-engineering-sentinel/detection-templates/" class="md-nav__link">
         
   
   
@@ -1796,7 +1576,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/ci-cd-gates/" class="md-nav__link">
+      <a href="../docs/tutorials/ci-cd-gates/" class="md-nav__link">
         
   
   
@@ -1824,7 +1604,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/ci-cd-gates/github-actions/" class="md-nav__link">
+      <a href="../docs/tutorials/ci-cd-gates/github-actions/" class="md-nav__link">
         
   
   
@@ -1852,7 +1632,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/ci-cd-gates/azure-devops/" class="md-nav__link">
+      <a href="../docs/tutorials/ci-cd-gates/azure-devops/" class="md-nav__link">
         
   
   
@@ -1880,7 +1660,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/ci-cd-gates/tools/" class="md-nav__link">
+      <a href="../docs/tutorials/ci-cd-gates/tools/" class="md-nav__link">
         
   
   
@@ -1963,7 +1743,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/securing-entra-id/" class="md-nav__link">
+      <a href="../docs/tutorials/securing-entra-id/" class="md-nav__link">
         
   
   
@@ -1991,7 +1771,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/securing-entra-id/identity-protection/" class="md-nav__link">
+      <a href="../docs/tutorials/securing-entra-id/identity-protection/" class="md-nav__link">
         
   
   
@@ -2019,7 +1799,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/securing-entra-id/pim-configuration/" class="md-nav__link">
+      <a href="../docs/tutorials/securing-entra-id/pim-configuration/" class="md-nav__link">
         
   
   
@@ -2047,7 +1827,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/securing-entra-id/conditional-access-policies/" class="md-nav__link">
+      <a href="../docs/tutorials/securing-entra-id/conditional-access-policies/" class="md-nav__link">
         
   
   
@@ -2075,7 +1855,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/securing-entra-id/monitoring-alerts/" class="md-nav__link">
+      <a href="../docs/tutorials/securing-entra-id/monitoring-alerts/" class="md-nav__link">
         
   
   
@@ -2158,7 +1938,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-firewall-walkthrough/" class="md-nav__link">
+      <a href="../docs/tutorials/azure-firewall-walkthrough/" class="md-nav__link">
         
   
   
@@ -2295,7 +2075,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/threat-modeling-saas/" class="md-nav__link">
+      <a href="../docs/research/threat-modeling-saas/" class="md-nav__link">
         
   
   
@@ -2323,7 +2103,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/threat-modeling-saas/stride-analysis/" class="md-nav__link">
+      <a href="../docs/research/threat-modeling-saas/stride-analysis/" class="md-nav__link">
         
   
   
@@ -2351,7 +2131,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/threat-modeling-saas/data-flow-diagrams/" class="md-nav__link">
+      <a href="../docs/research/threat-modeling-saas/data-flow-diagrams/" class="md-nav__link">
         
   
   
@@ -2379,7 +2159,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/threat-modeling-saas/mitigations/" class="md-nav__link">
+      <a href="../docs/research/threat-modeling-saas/mitigations/" class="md-nav__link">
         
   
   
@@ -2407,7 +2187,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/threat-modeling-saas/templates/" class="md-nav__link">
+      <a href="../docs/research/threat-modeling-saas/templates/" class="md-nav__link">
         
   
   
@@ -2490,7 +2270,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/oauth-misconfigurations/" class="md-nav__link">
+      <a href="../docs/research/oauth-misconfigurations/" class="md-nav__link">
         
   
   
@@ -2518,7 +2298,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/oauth-misconfigurations/attack-scenarios/" class="md-nav__link">
+      <a href="../docs/research/oauth-misconfigurations/attack-scenarios/" class="md-nav__link">
         
   
   
@@ -2546,7 +2326,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/oauth-misconfigurations/mitigations/" class="md-nav__link">
+      <a href="../docs/research/oauth-misconfigurations/mitigations/" class="md-nav__link">
         
   
   
@@ -2574,7 +2354,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/oauth-misconfigurations/code-examples/" class="md-nav__link">
+      <a href="../docs/research/oauth-misconfigurations/code-examples/" class="md-nav__link">
         
   
   
@@ -2657,7 +2437,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/" class="md-nav__link">
+      <a href="../docs/research/enterprise-cloud-security-engineering/" class="md-nav__link">
         
   
   
@@ -2685,7 +2465,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/cloud-security-architecture/" class="md-nav__link">
+      <a href="../docs/research/enterprise-cloud-security-engineering/cloud-security-architecture/" class="md-nav__link">
         
   
   
@@ -2713,7 +2493,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/multi-account-landing-zones-and-iam/" class="md-nav__link">
+      <a href="../docs/research/enterprise-cloud-security-engineering/multi-account-landing-zones-and-iam/" class="md-nav__link">
         
   
   
@@ -2741,7 +2521,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/iam-workload-identity/" class="md-nav__link">
+      <a href="../docs/research/enterprise-cloud-security-engineering/iam-workload-identity/" class="md-nav__link">
         
   
   
@@ -2769,7 +2549,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security/" class="md-nav__link">
+      <a href="../docs/research/enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security/" class="md-nav__link">
         
   
   
@@ -2797,7 +2577,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/devsecops-pipeline-hardening/" class="md-nav__link">
+      <a href="../docs/research/enterprise-cloud-security-engineering/devsecops-pipeline-hardening/" class="md-nav__link">
         
   
   
@@ -2825,7 +2605,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/detection-engineering/" class="md-nav__link">
+      <a href="../docs/research/enterprise-cloud-security-engineering/detection-engineering/" class="md-nav__link">
         
   
   
@@ -2962,7 +2742,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/" class="md-nav__link">
+      <a href="../docs/certification-notes/security-plus/" class="md-nav__link">
         
   
   
@@ -2990,7 +2770,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/domain-1-threats/" class="md-nav__link">
+      <a href="../docs/certification-notes/security-plus/domain-1-threats/" class="md-nav__link">
         
   
   
@@ -3018,7 +2798,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/domain-2-architecture/" class="md-nav__link">
+      <a href="../docs/certification-notes/security-plus/domain-2-architecture/" class="md-nav__link">
         
   
   
@@ -3046,7 +2826,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/domain-3-operations/" class="md-nav__link">
+      <a href="../docs/certification-notes/security-plus/domain-3-operations/" class="md-nav__link">
         
   
   
@@ -3074,7 +2854,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/quick-reference/" class="md-nav__link">
+      <a href="../docs/certification-notes/security-plus/quick-reference/" class="md-nav__link">
         
   
   
@@ -3102,7 +2882,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/practice-questions/" class="md-nav__link">
+      <a href="../docs/certification-notes/security-plus/practice-questions/" class="md-nav__link">
         
   
   
@@ -3158,181 +2938,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#executive-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Executive Summary
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#threat-model-and-attack-surface" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Threat Model and Attack Surface
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Threat Model and Attack Surface">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#threat-vectors-and-kill-chains" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Threat Vectors and Kill-Chains
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#deep-technical-body" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Deep Technical Body
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Deep Technical Body">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#cryptographic-underpinnings-of-pkce-rfc-7636" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Cryptographic Underpinnings of PKCE (RFC 7636)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Cryptographic Underpinnings of PKCE (RFC 7636)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#pkce-mathematical-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        PKCE Mathematical Flow
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#jwt-cryptographic-validation-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        JWT Cryptographic Validation Flow
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#defensive-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Defensive Architecture
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Defensive Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#architecture-topology-gateway-level-token-validation-and-session-management" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architecture Topology: Gateway-Level Token Validation and Session Management
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#hardened-authorization-request-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Hardened Authorization Request Configuration
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tooling-and-implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tooling and Implementation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#oauth-and-oidc-security-audit-checklist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        OAuth and OIDC Security Audit Checklist
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        References
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -3351,189 +2956,14 @@
   
 
 
-<h1 id="oauth-20-and-oidc-security-deep-dive-pkce-token-validation-and-federation-hardening">OAuth 2.0 and OIDC Security Deep Dive: PKCE, Token Validation, and Federation Hardening</h1>
-<h2 id="executive-summary">Executive Summary</h2>
-<p>OAuth 2.0 and OpenID Connect (OIDC) are the industry standards for web-based authorization and identity federation. However, implementing these protocols securely is notoriously difficult. Many engineering teams rely on outdated flows or fail to validate token signatures and claims properly. Common mistakes like utilizing the insecure Implicit Flow or neglecting to enforce Proof Key for Code Exchange (PKCE) leave applications vulnerable to token hijacking and authorization code interception.</p>
-<p>At scale, the failure to secure redirect URIs, validate cryptographic tokens, and prevent issuer confusion leads directly to account takeover vulnerabilities. Attackers exploit these flaws to intercept authorization codes, replay tokens, and masquerade as trusted users. This whitepaper explains the cryptographic principles of PKCE, details secure JWT validation processes, analyzes common federation vulnerabilities, and provides defensive implementation guidelines.</p>
-<hr />
-<h2 id="threat-model-and-attack-surface">Threat Model and Attack Surface</h2>
-<p>The OAuth and OIDC attack surface includes the client application, the user's browser, the Authorization Server, and the token transfer paths.</p>
-<pre class="mermaid"><code>sequenceDiagram
-    participant B as User Browser
-    participant AS as Authorization Server
-    participant A as Attacker
-
-    B-&gt;&gt;AS: Request Auth Code
-    AS--&gt;&gt;B: Redirect with Auth Code
-    A-&gt;&gt;A: Intercept Auth Code
-    A-&gt;&gt;AS: Exchange Code for Token
-    AS-&gt;&gt;AS: PKCE Validation
-    AS--&gt;&gt;A: BLOCK: Missing code_verifier</code></pre>
-<h3 id="threat-vectors-and-kill-chains">Threat Vectors and Kill-Chains</h3>
-<ol>
-<li><strong>Authorization Code Interception (Authorization Code Flow without PKCE)</strong>:</li>
-<li><em>Adversary Goal</em>: Intercept the authorization code and exchange it for a user's access token.</li>
-<li><em>Attack Vector</em>: In native or single-page applications (SPAs), the authorization response is delivered via a browser redirect. An attacker registers a malicious app on the user's device that intercepts custom URI schemes (e.g. <code>myapp://oauth-callback</code>). When the authorization server redirects the user, the attacker's app captures the authorization code from the URL and exchanges it for access tokens, compromising the user's account.</li>
-<li><strong>State Parameter Bypass (Cross-Site Request Forgery - CSRF)</strong>:</li>
-<li><em>Adversary Goal</em>: Force a victim to associate their account with an attacker's identity.</li>
-<li><em>Attack Vector</em>: The client application does not generate or validate a cryptographically secure <code>state</code> parameter in the authorization request. An attacker initiates an OAuth flow, intercepts the authorization code response, and tricks a victim into clicking a link containing that code. The victim's browser sends the code to the client application. Because the client does not check <code>state</code>, it associates the victim's session with the attacker's resource account.</li>
-<li><strong>Open Redirector Exploitation via Lax Redirect URIs</strong>:</li>
-<li><em>Adversary Goal</em>: Redirect authorization codes directly to an attacker-controlled server.</li>
-<li><em>Attack Vector</em>: The authorization server allows wildcard redirect URIs (e.g. <code>https://example.com/*</code> or <code>*.example.com</code>). An attacker crafts an authorization URL with a redirect parameter pointing to a known open redirect vulnerability on the victim's domain: <code>https://example.com/oauth/callback?redirect=http://attacker.com</code>. The authorization server validates the pattern against the wildcard rule and sends the code to the target domain, which redirects the sensitive parameter straight to the attacker's server.</li>
-</ol>
-<hr />
-<h2 id="deep-technical-body">Deep Technical Body</h2>
-<h3 id="cryptographic-underpinnings-of-pkce-rfc-7636">Cryptographic Underpinnings of PKCE (RFC 7636)</h3>
-<p>Proof Key for Code Exchange (PKCE) mitigates the risk of authorization code interception. Instead of relying on a static <code>client_secret</code> (which cannot be securely stored in public clients like SPAs or mobile apps), PKCE dynamically binds each transaction to the specific client that initiated it.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>       [ Client ]                                     [ Auth Server ]
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>           │                                                │
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>           ├─── Step 1: Compute Challenge (S256) ──────────&gt;│ (Stores Challenge)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>           │                                                │
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>           │&lt;── Step 2: Return Authorization Code ──────────┤
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>           │                                                │
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>           ├─── Step 3: Send Code + Original Verifier ─────&gt;│ (Verifies Verifier)
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>           │                                                │
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>           │&lt;── Step 4: Issue Access &amp; ID Tokens ───────────┤
-</span></code></pre></div>
-<h4 id="pkce-mathematical-flow">PKCE Mathematical Flow</h4>
-<ol>
-<li><strong>Generate Verifier</strong>: The client generates a high-entropy, cryptographically secure random string <code>code_verifier</code> containing characters <code>[A-Z]</code>, <code>[a-z]</code>, <code>[0-9]</code>, <code>-</code>, <code>.</code>, <code>_</code>, <code>~</code>.</li>
-<li><strong>Compute Challenge</strong>: The client computes the <code>code_challenge</code> by taking the SHA-256 hash of the verifier and base64url-encoding it:
-   $$\text{Challenge} = \text{Base64URLEncode}(\text{SHA256}(\text{Verifier}))$$</li>
-<li><strong>Send Challenge</strong>: The client sends the challenge and method (<code>code_challenge_method=S256</code>) to the authorization endpoint. The server stores these values.</li>
-<li><strong>Token Request</strong>: During the token exchange step, the client sends the authorization code along with the plaintext <code>code_verifier</code>.</li>
-<li><strong>Validation</strong>: The server computes the challenge using the incoming verifier and compares it to the stored challenge. If they match, it verifies the transaction is authentic and issues the tokens.</li>
-</ol>
-<h3 id="jwt-cryptographic-validation-flow">JWT Cryptographic Validation Flow</h3>
-<p>When an application receives an ID token or access token (JWT), it must validate the token before trusting its contents.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>                 [ Receive JWT Token ]
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>                           │
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>                           ▼
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>              [ Decode Header &amp; Payload ]
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>                           │
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>                           ▼
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>          [ Fetch Public Signing Keys (JWKS) ]
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                           │
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                           ▼
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>          [ Cryptographically Verify Signature ]
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>                           │
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>            ┌──────────────┴──────────────┐
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>            ▼ (Valid)                     ▼ (Invalid)
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>   [ Validate Claims ]             [ REJECT TOKEN ]
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>  (iss, aud, exp, nbf)
-</span></code></pre></div>
-<ol>
-<li><strong>Header Parsing</strong>: Decode the base64url-encoded header to identify the signing algorithm (<code>alg</code>) and the key ID (<code>kid</code>).</li>
-<li><strong>Key Retrieval</strong>: Fetch the organization's JSON Web Key Set (JWKS) from the trusted <code>.well-known/jwks.json</code> endpoint. Locate the public key matching the token's <code>kid</code>.</li>
-<li><strong>Signature Verification</strong>: Verify the cryptographic signature using the public key and the token's signing input (header + payload).</li>
-<li><strong>Claim Validation</strong>:</li>
-<li><strong>Expiration (<code>exp</code>)</strong>: Ensure the current time is before the expiration timestamp.</li>
-<li><strong>Not Before (<code>nbf</code>)</strong>: Ensure the current time is after the activation timestamp.</li>
-<li><strong>Issuer (<code>iss</code>)</strong>: Match the issuer string exactly against the expected authentication domain.</li>
-<li><strong>Audience (<code>aud</code>)</strong>: Match the audience claim exactly against the client application's registered client ID.</li>
-</ol>
-<hr />
-<h2 id="defensive-architecture">Defensive Architecture</h2>
-<p>A secure authentication architecture requires enforcing PKCE globally and validating all OIDC tokens at the gateway boundary.</p>
-<h3 id="architecture-topology-gateway-level-token-validation-and-session-management">Architecture Topology: Gateway-Level Token Validation and Session Management</h3>
-<pre class="mermaid"><code>flowchart TD
-    CLIENT["Public Client"] --&gt; GW["API Gateway&lt;br/&gt;Enforces HTTPS"]
-    GW --&gt;|Validates JWT| DECISION{"Token Valid?"}
-    DECISION --&gt;|Valid Claims + Signature| FWD["Forward Request"]
-    DECISION --&gt;|Expired / Invalid| BLOCK["Return 401 Unauthorized"]
-    FWD --&gt; SVC["Internal Services"]
-
-    style CLIENT fill:#2563eb,color:#fff,stroke:#1d4ed8
-    style GW fill:#7c3aed,color:#fff,stroke:#6d28d9
-    style DECISION fill:#0891b2,color:#fff,stroke:#0e7490
-    style FWD fill:#059669,color:#fff,stroke:#047857
-    style BLOCK fill:#dc2626,color:#fff,stroke:#b91c1c
-    style SVC fill:#059669,color:#fff,stroke:#047857</code></pre>
-<h3 id="hardened-authorization-request-configuration">Hardened Authorization Request Configuration</h3>
-<p>When initiating the authorization flow, always use the Authorization Code Flow with PKCE, enforce the <code>state</code> parameter, and request access tokens using secure scopes.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>https://auth.company.com/oauth/authorize?
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>  response_type=code
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>  &amp;client_id=spa-client-1192
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  &amp;redirect_uri=https://example.com/callback
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  &amp;scope=openid%20profile%20email
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  &amp;state=c2VjdXJlX3JhbmRvbV9zdGF0ZV92YWx1ZQ
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>  &amp;code_challenge=E9Melhoa2OwvFrGMTJguCH5yOFzCg3AVydeuDB9nTHs
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>  &amp;code_challenge_method=S256
-</span></code></pre></div>
-<hr />
-<h2 id="tooling-and-implementation">Tooling and Implementation</h2>
-<p>Implement automated tools to manage token lifecycle and validate configurations:</p>
-<ol>
-<li><strong>OAuth2 Proxy</strong>: Deploy OAuth2 Proxy in front of internal applications to manage authentication sessions, handle redirects, and validate JWT tokens automatically.</li>
-<li><strong>Hydra / Keycloak</strong>: Use open-source, standards-compliant identity providers like Ory Hydra or Keycloak to enforce secure authentication flows, PKCE validation, and token signing.</li>
-<li><strong>OWASP ZAP / JWT Tool</strong>: Use vulnerability scanners and testing utilities (like <code>jwt_tool</code>) during development to check if your API endpoints are vulnerable to signature bypass attacks (e.g. changing the signing algorithm to <code>none</code>).</li>
-</ol>
-<hr />
-<h2 id="oauth-and-oidc-security-audit-checklist">OAuth and OIDC Security Audit Checklist</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Item</th>
-<th style="text-align: left;">Focus Area</th>
-<th style="text-align: left;">Verification Step / Command</th>
-<th style="text-align: left;">Target State</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">Flow Enforcement</td>
-<td style="text-align: left;">Inspect application configurations to check if Implicit Flow is disabled.</td>
-<td style="text-align: left;">All clients use Authorization Code Flow with PKCE.</td>
-</tr>
-<tr>
-<td style="text-align: left;">2</td>
-<td style="text-align: left;">PKCE Validation</td>
-<td style="text-align: left;">Verify that the authorization server rejects token requests lacking a <code>code_verifier</code>.</td>
-<td style="text-align: left;">Server requires PKCE for all public client applications.</td>
-</tr>
-<tr>
-<td style="text-align: left;">3</td>
-<td style="text-align: left;">State Parameter</td>
-<td style="text-align: left;">Confirm if the client application validates the <code>state</code> parameter.</td>
-<td style="text-align: left;">The client generates a unique, cryptographically random <code>state</code> value per session and verifies it.</td>
-</tr>
-<tr>
-<td style="text-align: left;">4</td>
-<td style="text-align: left;">Redirect URI Policy</td>
-<td style="text-align: left;">Check redirect URI registration lists.</td>
-<td style="text-align: left;">Redirect URIs are configured with exact matches; no wildcard domains or paths are permitted.</td>
-</tr>
-<tr>
-<td style="text-align: left;">5</td>
-<td style="text-align: left;">Token Claims</td>
-<td style="text-align: left;">Verify that signature, issuer, and audience validation is enforced.</td>
-<td style="text-align: left;">Custom verification libraries throw errors on invalid signatures, incorrect issuers, or mismatched client IDs.</td>
-</tr>
-<tr>
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">Transport Security</td>
-<td style="text-align: left;">Ensure all OAuth communication routes over HTTPS.</td>
-<td style="text-align: left;">Non-secure HTTP communication is blocked at the gateway level.</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="references">References</h2>
-<ul>
-<li><em>Proof Key for Code Exchange (PKCE) Specification</em>: <a href="https://tools.ietf.org/html/rfc7636">IETF RFC 7636</a></li>
-<li><em>OAuth 2.0 Security Best Current Practice</em>: <a href="https://datatracker.ietf.org/doc/html/draft-ietf-oauth-security-topics">IETF Draft</a></li>
-<li><em>JSON Web Token (JWT) Specification</em>: <a href="https://tools.ietf.org/html/rfc7519">IETF RFC 7519</a></li>
-</ul>
+<h1 id="test">Test</h1>
+<p><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.2 14.5v.24c-.7.6-1.2 1.5-1.2 2.46V20H6.5c-1.5 0-2.81-.5-3.89-1.57C1.54 17.38 1 16.09 1 14.58q0-1.95 1.17-3.48C3.34 9.57 4 9.43 5.25 9.15c.42-1.53 1.25-2.77 2.5-3.72S10.42 4 12 4c1.95 0 3.6.68 4.96 2.04 1.12 1.12 1.77 2.46 1.97 3.96-2.57.04-4.73 2.08-4.73 4.5m8.8 2.8v3.5c0 .6-.6 1.2-1.3 1.2h-5.5c-.6 0-1.2-.6-1.2-1.3v-3.5c0-.6.6-1.2 1.2-1.2v-1.5c0-1.4 1.4-2.5 2.8-2.5s2.8 1.1 2.8 2.5V16c.6 0 1.2.6 1.2 1.3m-2.5-2.8c0-.8-.7-1.3-1.5-1.3s-1.5.5-1.5 1.3V16h3z"/></svg></span></p>
 
 
 
 
 
 
-
-  
-  
 
 
 
@@ -3577,10 +3007,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.breadcrumbs", "search.suggest", "search.highlight", "content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tracking", "navigation.top", "navigation.breadcrumbs", "search.suggest", "search.highlight", "content.code.copy", "content.code.select"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
