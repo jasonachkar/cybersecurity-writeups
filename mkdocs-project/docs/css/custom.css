@@ -396,3 +396,54 @@ body[data-md-color-scheme="slate"] .md-footer {
 body[data-md-color-scheme="slate"] .md-copyright {
   color: #484f58 !important;
 }
+
+/* ========================================================
+   MODERN ENTERPRISE SIDEBAR (SonarQube/Stripe Style)
+   ======================================================== */
+
+/* Sidebar general typography */
+.md-nav {
+  font-size: 0.85rem !important;
+}
+
+/* Section titles (Top level categories) */
+.md-nav--primary .md-nav__title {
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em !important;
+  color: #64748b !important; /* Slate 500 */
+  padding-top: 1rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
+body[data-md-color-scheme="slate"] .md-nav--primary .md-nav__title {
+  color: #8b949e !important; 
+}
+
+/* Links inside sections */
+.md-nav__link {
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+  border-radius: 6px !important;
+  padding: 0.4rem 0.6rem !important;
+  margin-bottom: 0.1rem !important;
+}
+
+/* Hover effects for links */
+.md-nav__item:not(.md-nav__item--active) > .md-nav__link:hover {
+  background-color: rgba(0, 0, 0, 0.04) !important;
+  color: #0f172a !important; /* Slate 900 */
+}
+
+body[data-md-color-scheme="slate"] .md-nav__item:not(.md-nav__item--active) > .md-nav__link:hover {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  color: #e2e8f0 !important; /* Slate 200 */
+}
+
+/* Adjust active highlight to match the new rounded padded look */
+body .md-nav .md-nav__item--active > .md-nav__link,
+body .md-nav .md-nav__link--active {
+  border-radius: 6px !important;
+  border-left: none !important;
+  padding-left: 0.6rem !important;
+}
