@@ -368,77 +368,75 @@ body[data-md-color-scheme="slate"] .md-copyright {
 }
 
 .md-nav {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-  font-size: 0.74rem !important;
-  line-height: 1.35 !important;
+  /* Inherits 'Outfit' font family naturally, just adjusting scale and spacing */
+  font-size: 0.72rem !important;
+  line-height: 1.3 !important;
+}
+
+/* Ensure the TOC toggle label is completely hidden */
+.md-nav__link[for="__toc"],
+label.md-nav__link[for="__toc"] {
+  display: none !important;
 }
 
 /* Parent Category/Folder items (collapsible headers) */
-.md-nav__item--nested > .md-nav__link {
+.md-nav__item--nested > .md-nav__link:not([for="__toc"]) {
   font-weight: 600 !important;
   color: #334155 !important; /* Slate 700 */
-  padding-top: 0.28rem !important;
-  padding-bottom: 0.28rem !important;
-  font-size: 0.76rem !important;
+  padding-top: 0.25rem !important;
+  padding-bottom: 0.25rem !important;
+  font-size: 0.74rem !important;
 }
 
-body[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link {
+body[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link:not([for="__toc"]) {
   color: #cbd5e1 !important; /* Slate 300 */
 }
 
 /* Sidebar Links (Leaf nodes/pages) */
-.md-nav__link {
+.md-nav__link:not([for="__toc"]) {
   color: #475569 !important; /* Slate 600 */
   transition: all 0.15s ease !important;
   border-radius: 4px !important;
-  padding: 0.28rem 0.45rem !important;
+  padding: 0.25rem 0.4rem !important;
   margin: 0.02rem 0 !important;
-  display: flex; /* Removed !important to allow MkDocs to hide it on desktop */
+  display: flex;
   align-items: center;
-  font-size: 0.74rem !important;
+  font-size: 0.72rem !important;
 }
 
-/* Explicitly hide TOC drawer toggle on desktop to prevent duplicate rendering */
-@media screen and (min-width: 60em) {
-  .md-sidebar--primary .md-nav__link[for="__toc"] {
-    display: none !important;
-  }
-}
-
-body[data-md-color-scheme="slate"] .md-nav__link {
+body[data-md-color-scheme="slate"] .md-nav__link:not([for="__toc"]) {
   color: #94a3b8 !important; /* Slate 400 */
 }
 
 /* Hover effect on links */
-.md-nav__link:hover {
+.md-nav__link:not([for="__toc"]):hover {
   background-color: #f1f5f9 !important; /* Slate 100 */
   color: #0f172a !important; /* Slate 900 */
 }
 
-body[data-md-color-scheme="slate"] .md-nav__link:hover {
+body[data-md-color-scheme="slate"] .md-nav__link:not([for="__toc"]):hover {
   background-color: rgba(255, 255, 255, 0.04) !important;
   color: #f8fafc !important; /* Slate 50 */
 }
 
-/* Active Leaf Page Highlight
-   Only highlight the actual active leaf link, never the parent category folder! */
-.md-nav__link.md-nav__link--active,
-.md-nav__link.md-nav__link--active .md-ellipsis {
+/* Active Leaf Page Highlight */
+.md-nav__link.md-nav__link--active:not([for="__toc"]),
+.md-nav__link.md-nav__link--active:not([for="__toc"]) .md-ellipsis {
   color: #2563eb !important; /* Deep Blue */
   font-weight: 600 !important;
 }
 
-.md-nav__link.md-nav__link--active {
+.md-nav__link.md-nav__link--active:not([for="__toc"]) {
   background-color: #eff6ff !important; /* Light blue tint */
 }
 
 /* Active Leaf Page Highlight (Dark Mode) */
-body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active,
-body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active .md-ellipsis {
+body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active:not([for="__toc"]),
+body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active:not([for="__toc"]) .md-ellipsis {
   color: #38bdf8 !important; /* Sky Blue */
 }
 
-body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active {
+body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active:not([for="__toc"]) {
   background-color: rgba(56, 189, 248, 0.1) !important;
 }
 

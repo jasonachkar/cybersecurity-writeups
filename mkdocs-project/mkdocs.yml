@@ -32,8 +32,6 @@ theme:
   features:
     - navigation.tracking
     - navigation.top
-    - navigation.sections
-    - navigation.expand
     - navigation.breadcrumbs
     - search.suggest
     - search.highlight
