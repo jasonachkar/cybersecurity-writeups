@@ -284,17 +284,7 @@ body[data-md-color-scheme="slate"] .md-sidebar {
   border-right-color: rgba(139, 148, 158, 0.1);
 }
 
-body[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link {
-  color: #e6edf3 !important;
-}
-
-body[data-md-color-scheme="slate"] .md-nav__link {
-  color: #8b949e !important;
-}
-
-body[data-md-color-scheme="slate"] .md-nav__link:hover {
-  color: #c9d1d9 !important;
-}
+/* Redundant overrides removed, styled in the unified section below */
 
 /* ========================================================
    SEARCH BAR
@@ -373,22 +363,23 @@ body[data-md-color-scheme="slate"] .md-copyright {
    MODERN SIDEBAR (SonarQube/Stripe Aesthetic)
    ======================================================== */
 
-/* Sidebar wrapper & general styles */
 .md-sidebar--primary {
-  padding-top: 1rem;
+  padding-top: 0.5rem;
 }
 
 .md-nav {
-  font-size: 0.82rem !important;
-  line-height: 1.5 !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+  font-size: 0.8rem !important;
+  line-height: 1.4 !important;
 }
 
 /* Parent Category/Folder items (collapsible headers) */
 .md-nav__item--nested > .md-nav__link {
   font-weight: 600 !important;
   color: #334155 !important; /* Slate 700 */
-  padding-top: 0.5rem !important;
-  padding-bottom: 0.5rem !important;
+  padding-top: 0.35rem !important;
+  padding-bottom: 0.35rem !important;
+  font-size: 0.82rem !important;
 }
 
 body[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link {
@@ -398,12 +389,13 @@ body[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link {
 /* Sidebar Links (Leaf nodes/pages) */
 .md-nav__link {
   color: #475569 !important; /* Slate 600 */
-  transition: all 0.2s ease !important;
-  border-radius: 6px !important;
-  padding: 0.45rem 0.75rem !important;
-  margin: 0.15rem 0 !important;
+  transition: all 0.15s ease !important;
+  border-radius: 4px !important;
+  padding: 0.35rem 0.5rem !important;
+  margin: 0.05rem 0 !important;
   display: flex !important;
   align-items: center !important;
+  font-size: 0.78rem !important;
 }
 
 body[data-md-color-scheme="slate"] .md-nav__link {
