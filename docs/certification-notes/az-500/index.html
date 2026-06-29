@@ -12,31 +12,29 @@
         <meta name="author" content="Jason Achkardiab">
       
       
-        <link rel="canonical" href="https://docs.jasonachkardiab.com/threat-intel/cloud-breach-case-studies/">
+        <link rel="canonical" href="https://docs.jasonachkardiab.com/docs/certification-notes/az-500/">
       
       
-        <link rel="prev" href="../attack-path-analysis/">
+        <link rel="prev" href="../google-cybersecurity/">
       
-      
-        <link rel="next" href="../../docs/tutorials/azure-landing-zone/">
       
       
         
       
       
-      <link rel="icon" href="../../assets/images/favicon.png">
+      <link rel="icon" href="../../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Cloud Breach Case Studies: Technical Autopsy of Capital One, Uber, and CircleCI Compromises - Cloud Security Engineering</title>
+        <title>🔒 Microsoft AZ-500 - Cloud Security Engineering</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.484c7ddc.min.css">
       
         
-        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
       
       
 
@@ -55,9 +53,9 @@
       
     
     
-      <link rel="stylesheet" href="../../css/custom.css">
+      <link rel="stylesheet" href="../../../css/custom.css">
     
-    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
@@ -82,7 +80,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cloud-breach-case-studies-technical-autopsy-of-capital-one-uber-and-circleci-compromises" class="md-skip">
+        <a href="#microsoft-az-500-azure-security-technologies" class="md-skip">
           Skip to content
         </a>
       
@@ -98,7 +96,7 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Cloud Security Engineering" class="md-header__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
+    <a href="../../.." title="Cloud Security Engineering" class="md-header__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -118,7 +116,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Cloud Breach Case Studies: Technical Autopsy of Capital One, Uber, and CircleCI Compromises
+              🔒 Microsoft AZ-500
             
           </span>
         </div>
@@ -236,7 +234,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="Cloud Security Engineering" class="md-nav__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
+    <a href="../../.." title="Cloud Security Engineering" class="md-nav__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -266,7 +264,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../.." class="md-nav__link">
+      <a href="../../.." class="md-nav__link">
         
   
   
@@ -340,7 +338,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/multi-account-landing-zones/" class="md-nav__link">
+      <a href="../../../cloud-security/multi-account-landing-zones/" class="md-nav__link">
         
   
   
@@ -368,7 +366,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/iam-at-scale/" class="md-nav__link">
+      <a href="../../../cloud-security/iam-at-scale/" class="md-nav__link">
         
   
   
@@ -396,7 +394,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/kubernetes-multi-tenancy/" class="md-nav__link">
+      <a href="../../../cloud-security/kubernetes-multi-tenancy/" class="md-nav__link">
         
   
   
@@ -424,7 +422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/serverless-security/" class="md-nav__link">
+      <a href="../../../cloud-security/serverless-security/" class="md-nav__link">
         
   
   
@@ -452,7 +450,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/cloud-network-segmentation/" class="md-nav__link">
+      <a href="../../../cloud-security/cloud-network-segmentation/" class="md-nav__link">
         
   
   
@@ -480,7 +478,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../cloud-security/cloud-detection-and-response/" class="md-nav__link">
+      <a href="../../../cloud-security/cloud-detection-and-response/" class="md-nav__link">
         
   
   
@@ -562,7 +560,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../appsec/api-microservices-threat-modeling/" class="md-nav__link">
+      <a href="../../../appsec/api-microservices-threat-modeling/" class="md-nav__link">
         
   
   
@@ -590,7 +588,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../appsec/oauth2-oidc-deep-dive/" class="md-nav__link">
+      <a href="../../../appsec/oauth2-oidc-deep-dive/" class="md-nav__link">
         
   
   
@@ -618,7 +616,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../appsec/saas-multitenancy-isolation/" class="md-nav__link">
+      <a href="../../../appsec/saas-multitenancy-isolation/" class="md-nav__link">
         
   
   
@@ -646,7 +644,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../appsec/runtime-protection-rasp-waf/" class="md-nav__link">
+      <a href="../../../appsec/runtime-protection-rasp-waf/" class="md-nav__link">
         
   
   
@@ -728,7 +726,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../devsecops/secure-cicd-pipeline-design/" class="md-nav__link">
+      <a href="../../../devsecops/secure-cicd-pipeline-design/" class="md-nav__link">
         
   
   
@@ -756,7 +754,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../devsecops/iac-security-and-policy-as-code/" class="md-nav__link">
+      <a href="../../../devsecops/iac-security-and-policy-as-code/" class="md-nav__link">
         
   
   
@@ -784,7 +782,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../devsecops/supply-chain-sbom-signing/" class="md-nav__link">
+      <a href="../../../devsecops/supply-chain-sbom-signing/" class="md-nav__link">
         
   
   
@@ -812,7 +810,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../devsecops/secrets-management/" class="md-nav__link">
+      <a href="../../../devsecops/secrets-management/" class="md-nav__link">
         
   
   
@@ -844,20 +842,18 @@
       
   
   
-    
   
   
-  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
           <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
@@ -878,7 +874,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -896,7 +892,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../attack-path-analysis/" class="md-nav__link">
+      <a href="../../../threat-intel/attack-path-analysis/" class="md-nav__link">
         
   
   
@@ -921,37 +917,10 @@
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Cloud Breach Case Studies
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../../threat-intel/cloud-breach-case-studies/" class="md-nav__link">
         
   
   
@@ -967,226 +936,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#executive-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Executive Summary
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#technical-autopsy-1-capital-one-ssrf-imdsv1-abuse" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Autopsy 1: Capital One (SSRF &amp; IMDSv1 Abuse)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Technical Autopsy 1: Capital One (SSRF &amp; IMDSv1 Abuse)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#attack-path-and-root-cause" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Attack Path and Root Cause
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#architectural-failures" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architectural Failures
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#technical-autopsy-2-uber-hardcoded-credentials-pam-compromise" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Autopsy 2: Uber (Hardcoded Credentials &amp; PAM Compromise)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Technical Autopsy 2: Uber (Hardcoded Credentials &amp; PAM Compromise)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#attack-path-and-root-cause_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Attack Path and Root Cause
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#architectural-failures_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architectural Failures
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#technical-autopsy-3-circleci-workstation-compromise-build-system-session-hijacking" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Autopsy 3: CircleCI (Workstation Compromise &amp; Build System Session Hijacking)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Technical Autopsy 3: CircleCI (Workstation Compromise &amp; Build System Session Hijacking)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#attack-path-and-root-cause_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Attack Path and Root Cause
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#architectural-failures_2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architectural Failures
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#architectural-lessons-and-defenses" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Architectural Lessons and Defenses
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Architectural Lessons and Defenses">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-hardening-ec2-instance-metadata-options-mitigation-for-capital-one" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Hardening EC2 Instance Metadata Options (Mitigation for Capital One)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-implementing-iam-session-conditions-mitigation-for-stolen-credentials" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Implementing IAM Session Conditions (Mitigation for Stolen Credentials)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tooling-and-implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tooling and Implementation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#incident-prevention-audit-checklist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Incident Prevention Audit Checklist
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        References
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -1300,7 +1049,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/" class="md-nav__link">
+      <a href="../../tutorials/azure-landing-zone/" class="md-nav__link">
         
   
   
@@ -1328,7 +1077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/architecture/" class="md-nav__link">
+      <a href="../../tutorials/azure-landing-zone/architecture/" class="md-nav__link">
         
   
   
@@ -1356,7 +1105,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/networking/" class="md-nav__link">
+      <a href="../../tutorials/azure-landing-zone/networking/" class="md-nav__link">
         
   
   
@@ -1384,7 +1133,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/policy-governance/" class="md-nav__link">
+      <a href="../../tutorials/azure-landing-zone/policy-governance/" class="md-nav__link">
         
   
   
@@ -1412,7 +1161,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/iam/" class="md-nav__link">
+      <a href="../../tutorials/azure-landing-zone/iam/" class="md-nav__link">
         
   
   
@@ -1440,7 +1189,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-landing-zone/implementation-templates/" class="md-nav__link">
+      <a href="../../tutorials/azure-landing-zone/implementation-templates/" class="md-nav__link">
         
   
   
@@ -1523,7 +1272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/owasp-api-security-top-10/" class="md-nav__link">
+      <a href="../../tutorials/owasp-api-security-top-10/" class="md-nav__link">
         
   
   
@@ -1551,7 +1300,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/owasp-api-security-top-10/vulnerabilities/" class="md-nav__link">
+      <a href="../../tutorials/owasp-api-security-top-10/vulnerabilities/" class="md-nav__link">
         
   
   
@@ -1579,7 +1328,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/owasp-api-security-top-10/mitigations-dotnet/" class="md-nav__link">
+      <a href="../../tutorials/owasp-api-security-top-10/mitigations-dotnet/" class="md-nav__link">
         
   
   
@@ -1607,7 +1356,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/owasp-api-security-top-10/mitigation-node/" class="md-nav__link">
+      <a href="../../tutorials/owasp-api-security-top-10/mitigation-node/" class="md-nav__link">
         
   
   
@@ -1635,7 +1384,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/owasp-api-security-top-10/code-examples/" class="md-nav__link">
+      <a href="../../tutorials/owasp-api-security-top-10/code-examples/" class="md-nav__link">
         
   
   
@@ -1718,7 +1467,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/detection-engineering-sentinel/" class="md-nav__link">
+      <a href="../../tutorials/detection-engineering-sentinel/" class="md-nav__link">
         
   
   
@@ -1746,7 +1495,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/detection-engineering-sentinel/detection-templates/" class="md-nav__link">
+      <a href="../../tutorials/detection-engineering-sentinel/detection-templates/" class="md-nav__link">
         
   
   
@@ -1829,7 +1578,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/ci-cd-gates/" class="md-nav__link">
+      <a href="../../tutorials/ci-cd-gates/" class="md-nav__link">
         
   
   
@@ -1857,7 +1606,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/ci-cd-gates/github-actions/" class="md-nav__link">
+      <a href="../../tutorials/ci-cd-gates/github-actions/" class="md-nav__link">
         
   
   
@@ -1885,7 +1634,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/ci-cd-gates/azure-devops/" class="md-nav__link">
+      <a href="../../tutorials/ci-cd-gates/azure-devops/" class="md-nav__link">
         
   
   
@@ -1913,7 +1662,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/ci-cd-gates/tools/" class="md-nav__link">
+      <a href="../../tutorials/ci-cd-gates/tools/" class="md-nav__link">
         
   
   
@@ -1996,7 +1745,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/securing-entra-id/" class="md-nav__link">
+      <a href="../../tutorials/securing-entra-id/" class="md-nav__link">
         
   
   
@@ -2024,7 +1773,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/securing-entra-id/identity-protection/" class="md-nav__link">
+      <a href="../../tutorials/securing-entra-id/identity-protection/" class="md-nav__link">
         
   
   
@@ -2052,7 +1801,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/securing-entra-id/pim-configuration/" class="md-nav__link">
+      <a href="../../tutorials/securing-entra-id/pim-configuration/" class="md-nav__link">
         
   
   
@@ -2080,7 +1829,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/securing-entra-id/conditional-access-policies/" class="md-nav__link">
+      <a href="../../tutorials/securing-entra-id/conditional-access-policies/" class="md-nav__link">
         
   
   
@@ -2108,7 +1857,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/securing-entra-id/monitoring-alerts/" class="md-nav__link">
+      <a href="../../tutorials/securing-entra-id/monitoring-alerts/" class="md-nav__link">
         
   
   
@@ -2191,7 +1940,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/tutorials/azure-firewall-walkthrough/" class="md-nav__link">
+      <a href="../../tutorials/azure-firewall-walkthrough/" class="md-nav__link">
         
   
   
@@ -2328,7 +2077,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/threat-modeling-saas/" class="md-nav__link">
+      <a href="../../research/threat-modeling-saas/" class="md-nav__link">
         
   
   
@@ -2356,7 +2105,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/threat-modeling-saas/stride-analysis/" class="md-nav__link">
+      <a href="../../research/threat-modeling-saas/stride-analysis/" class="md-nav__link">
         
   
   
@@ -2384,7 +2133,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/threat-modeling-saas/data-flow-diagrams/" class="md-nav__link">
+      <a href="../../research/threat-modeling-saas/data-flow-diagrams/" class="md-nav__link">
         
   
   
@@ -2412,7 +2161,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/threat-modeling-saas/mitigations/" class="md-nav__link">
+      <a href="../../research/threat-modeling-saas/mitigations/" class="md-nav__link">
         
   
   
@@ -2440,7 +2189,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/threat-modeling-saas/templates/" class="md-nav__link">
+      <a href="../../research/threat-modeling-saas/templates/" class="md-nav__link">
         
   
   
@@ -2523,7 +2272,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/oauth-misconfigurations/" class="md-nav__link">
+      <a href="../../research/oauth-misconfigurations/" class="md-nav__link">
         
   
   
@@ -2551,7 +2300,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/oauth-misconfigurations/attack-scenarios/" class="md-nav__link">
+      <a href="../../research/oauth-misconfigurations/attack-scenarios/" class="md-nav__link">
         
   
   
@@ -2579,7 +2328,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/oauth-misconfigurations/mitigations/" class="md-nav__link">
+      <a href="../../research/oauth-misconfigurations/mitigations/" class="md-nav__link">
         
   
   
@@ -2607,7 +2356,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/oauth-misconfigurations/code-examples/" class="md-nav__link">
+      <a href="../../research/oauth-misconfigurations/code-examples/" class="md-nav__link">
         
   
   
@@ -2690,7 +2439,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/" class="md-nav__link">
+      <a href="../../research/enterprise-cloud-security-engineering/" class="md-nav__link">
         
   
   
@@ -2718,7 +2467,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/cloud-security-architecture/" class="md-nav__link">
+      <a href="../../research/enterprise-cloud-security-engineering/cloud-security-architecture/" class="md-nav__link">
         
   
   
@@ -2746,7 +2495,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/multi-account-landing-zones-and-iam/" class="md-nav__link">
+      <a href="../../research/enterprise-cloud-security-engineering/multi-account-landing-zones-and-iam/" class="md-nav__link">
         
   
   
@@ -2774,7 +2523,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/iam-workload-identity/" class="md-nav__link">
+      <a href="../../research/enterprise-cloud-security-engineering/iam-workload-identity/" class="md-nav__link">
         
   
   
@@ -2802,7 +2551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security/" class="md-nav__link">
+      <a href="../../research/enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security/" class="md-nav__link">
         
   
   
@@ -2830,7 +2579,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/devsecops-pipeline-hardening/" class="md-nav__link">
+      <a href="../../research/enterprise-cloud-security-engineering/devsecops-pipeline-hardening/" class="md-nav__link">
         
   
   
@@ -2858,7 +2607,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/research/enterprise-cloud-security-engineering/detection-engineering/" class="md-nav__link">
+      <a href="../../research/enterprise-cloud-security-engineering/detection-engineering/" class="md-nav__link">
         
   
   
@@ -2898,18 +2647,20 @@
       
   
   
+    
   
   
+  
     
     
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
         
           
           <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
@@ -2930,7 +2681,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
@@ -2995,7 +2746,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/" class="md-nav__link">
+      <a href="../security-plus/" class="md-nav__link">
         
   
   
@@ -3023,7 +2774,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/domain-1-threats/" class="md-nav__link">
+      <a href="../security-plus/domain-1-threats/" class="md-nav__link">
         
   
   
@@ -3051,7 +2802,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/domain-2-architecture/" class="md-nav__link">
+      <a href="../security-plus/domain-2-architecture/" class="md-nav__link">
         
   
   
@@ -3079,7 +2830,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/domain-3-operations/" class="md-nav__link">
+      <a href="../security-plus/domain-3-operations/" class="md-nav__link">
         
   
   
@@ -3107,7 +2858,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/quick-reference/" class="md-nav__link">
+      <a href="../security-plus/quick-reference/" class="md-nav__link">
         
   
   
@@ -3135,7 +2886,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/security-plus/practice-questions/" class="md-nav__link">
+      <a href="../security-plus/practice-questions/" class="md-nav__link">
         
   
   
@@ -3171,7 +2922,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/az-900/" class="md-nav__link">
+      <a href="../az-900/" class="md-nav__link">
         
   
   
@@ -3199,7 +2950,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/google-cybersecurity/" class="md-nav__link">
+      <a href="../google-cybersecurity/" class="md-nav__link">
         
   
   
@@ -3224,10 +2975,37 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../docs/certification-notes/az-500/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    🔒 Microsoft AZ-500
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -3243,6 +3021,182 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-manage-identity-and-access-microsoft-entra-id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Manage Identity and Access (Microsoft Entra ID)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Manage Identity and Access (Microsoft Entra ID)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hybrid-identity-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hybrid Identity &amp; Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#advanced-authentication-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Authentication &amp; Protection
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-secure-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Secure Infrastructure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Secure Infrastructure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#azure-virtual-networks-vnet-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Virtual Networks (VNet) Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#host-platform-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Host &amp; Platform Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-secure-data-and-applications" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Secure Data and Applications
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Secure Data and Applications">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-vault-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Vault Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database Security
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-security-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Security Operations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Security Operations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#security-management-with-defender-for-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Management with Defender for Cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#threat-detection-with-microsoft-sentinel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat Detection with Microsoft Sentinel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -3282,33 +3236,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#executive-summary" class="md-nav__link">
+  <a href="#1-manage-identity-and-access-microsoft-entra-id" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Executive Summary
+        1. Manage Identity and Access (Microsoft Entra ID)
       
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#technical-autopsy-1-capital-one-ssrf-imdsv1-abuse" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Autopsy 1: Capital One (SSRF &amp; IMDSv1 Abuse)
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Technical Autopsy 1: Capital One (SSRF &amp; IMDSv1 Abuse)">
+    <nav class="md-nav" aria-label="1. Manage Identity and Access (Microsoft Entra ID)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#attack-path-and-root-cause" class="md-nav__link">
+  <a href="#hybrid-identity-access" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Attack Path and Root Cause
+        Hybrid Identity &amp; Access
       
     </span>
   </a>
@@ -3316,10 +3259,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#architectural-failures" class="md-nav__link">
+  <a href="#advanced-authentication-protection" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architectural Failures
+        Advanced Authentication &amp; Protection
       
     </span>
   </a>
@@ -3332,22 +3275,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#technical-autopsy-2-uber-hardcoded-credentials-pam-compromise" class="md-nav__link">
+  <a href="#2-secure-infrastructure" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Technical Autopsy 2: Uber (Hardcoded Credentials &amp; PAM Compromise)
+        2. Secure Infrastructure
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Technical Autopsy 2: Uber (Hardcoded Credentials &amp; PAM Compromise)">
+    <nav class="md-nav" aria-label="2. Secure Infrastructure">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#attack-path-and-root-cause_1" class="md-nav__link">
+  <a href="#azure-virtual-networks-vnet-security" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Attack Path and Root Cause
+        Azure Virtual Networks (VNet) Security
       
     </span>
   </a>
@@ -3355,10 +3298,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#architectural-failures_1" class="md-nav__link">
+  <a href="#host-platform-security" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architectural Failures
+        Host &amp; Platform Security
       
     </span>
   </a>
@@ -3371,22 +3314,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#technical-autopsy-3-circleci-workstation-compromise-build-system-session-hijacking" class="md-nav__link">
+  <a href="#3-secure-data-and-applications" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Technical Autopsy 3: CircleCI (Workstation Compromise &amp; Build System Session Hijacking)
+        3. Secure Data and Applications
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Technical Autopsy 3: CircleCI (Workstation Compromise &amp; Build System Session Hijacking)">
+    <nav class="md-nav" aria-label="3. Secure Data and Applications">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#attack-path-and-root-cause_2" class="md-nav__link">
+  <a href="#key-vault-management" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Attack Path and Root Cause
+        Key Vault Management
       
     </span>
   </a>
@@ -3394,10 +3337,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#architectural-failures_2" class="md-nav__link">
+  <a href="#database-security" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architectural Failures
+        Database Security
       
     </span>
   </a>
@@ -3410,22 +3353,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#architectural-lessons-and-defenses" class="md-nav__link">
+  <a href="#4-security-operations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Architectural Lessons and Defenses
+        4. Security Operations
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Architectural Lessons and Defenses">
+    <nav class="md-nav" aria-label="4. Security Operations">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#1-hardening-ec2-instance-metadata-options-mitigation-for-capital-one" class="md-nav__link">
+  <a href="#security-management-with-defender-for-cloud" class="md-nav__link">
     <span class="md-ellipsis">
       
-        1. Hardening EC2 Instance Metadata Options (Mitigation for Capital One)
+        Security Management with Defender for Cloud
       
     </span>
   </a>
@@ -3433,10 +3376,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#2-implementing-iam-session-conditions-mitigation-for-stolen-credentials" class="md-nav__link">
+  <a href="#threat-detection-with-microsoft-sentinel" class="md-nav__link">
     <span class="md-ellipsis">
       
-        2. Implementing IAM Session Conditions (Mitigation for Stolen Credentials)
+        Threat Detection with Microsoft Sentinel
       
     </span>
   </a>
@@ -3445,39 +3388,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tooling-and-implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tooling and Implementation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#incident-prevention-audit-checklist" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Incident Prevention Audit Checklist
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        References
-      
-    </span>
-  </a>
   
 </li>
       
@@ -3501,181 +3411,76 @@
   
 
 
-<h1 id="cloud-breach-case-studies-technical-autopsy-of-capital-one-uber-and-circleci-compromises">Cloud Breach Case Studies: Technical Autopsy of Capital One, Uber, and CircleCI Compromises</h1>
-<h2 id="executive-summary">Executive Summary</h2>
-<p>Analyzing real-world security breaches is essential for platform security engineers. Case studies provide valuable insights into how actual adversaries exploit complex system configurations. Often, breaches are not the result of a single, highly advanced exploit. Instead, they occur when attackers chain together minor misconfigurations, legacy features, and loose access boundaries.</p>
-<p>This whitepaper performs a detailed technical autopsy of three major cloud breaches: Capital One, Uber, and CircleCI. It analyzes the root causes, architectural failures, and specific attack techniques used in each incident. By dissecting these compromises, we extract precise engineering lessons and defensive mitigations to protect modern cloud landing zones.</p>
+<h1 id="microsoft-az-500-azure-security-technologies">Microsoft AZ-500: Azure Security Technologies</h1>
+<p><em>(Note: Microsoft does not have an "SC-500" exam; the primary expert-level security engineering and architecture certificates are </em><em>AZ-500</em><em> for Cloud Security Engineers and </em><em>SC-100</em><em> for Cybersecurity Architects. These notes target the </em><em>AZ-500</em><em>: Microsoft Azure Security Technologies certification.)</em></p>
 <hr />
-<h2 id="technical-autopsy-1-capital-one-ssrf-imdsv1-abuse">Technical Autopsy 1: Capital One (SSRF &amp; IMDSv1 Abuse)</h2>
-<p>In 2019, Capital One suffered a massive data breach exposing over 100 million customer records stored in Amazon S3 buckets. The incident is a classic example of how Server-Side Request Forgery (SSRF) can be used to compromise cloud metadata services.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>       [ External Attacker ] ── (Exploits SSRF on web application proxy) ──&gt; [ WAF EC2 Instance ]
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                                                                   │
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                                                          (Queries IMDSv1 endpoint)
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                                                                                   ▼
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                                                                        [ Plaintext Temp Role Keys ]
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                                                                                   │
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                                                                                   ▼
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                                                                     [ Exfiltrates S3 Bucket Data ]
-</span></code></pre></div>
-<h3 id="attack-path-and-root-cause">Attack Path and Root Cause</h3>
-<ol>
-<li><strong>Initial Vulnerability (SSRF)</strong>: The attacker identified a misconfigured open-source web application proxy running on an EC2 instance. The proxy was vulnerable to Server-Side Request Forgery (SSRF), allowing the attacker to craft requests that forced the EC2 instance to query local network resources on the attacker's behalf.</li>
-<li><strong>Metadata Exploitation (IMDSv1)</strong>: The attacker forced the proxy to query the EC2 Instance Metadata Service (IMDSv1) at <code>http://169.254.169.254/latest/meta-data/iam/security-credentials/</code>. Because IMDSv1 does not require session token authentication, the service immediately returned temporary IAM security credentials assigned to the EC2 instance role.</li>
-<li><strong>Overly Permissive IAM Privileges</strong>: The EC2 instance role was configured with excessive read permissions, including wildcard access to list and download files from S3 buckets across the AWS account.</li>
-<li><strong>Data Exfiltration</strong>: The attacker configured the stolen temporary credentials on their local machine and called S3 APIs to list buckets and download data directly, bypassing the corporate firewall.</li>
-</ol>
-<h3 id="architectural-failures">Architectural Failures</h3>
+<h2 id="1-manage-identity-and-access-microsoft-entra-id">1. Manage Identity and Access (Microsoft Entra ID)</h2>
+<h3 id="hybrid-identity-access">Hybrid Identity &amp; Access</h3>
 <ul>
-<li><strong>Failure to Enforce IMDSv2</strong>: IMDSv1 does not validate incoming requests. In contrast, IMDSv2 requires a session token generated via a PUT request. This token cannot easily be forwarded by web proxies, blocking SSRF-based metadata harvesting.</li>
-<li><strong>Violating Least Privilege</strong>: The web application proxy did not require access to S3 buckets, yet its IAM execution role possessed broad read access, amplifying the blast radius of the compromise.</li>
+<li><strong>Microsoft Entra Connect:</strong> Synchronizes users, groups, and password hashes from on-premises Active Directory Domain Services (AD DS) to cloud-based Microsoft Entra ID.</li>
+<li><strong>Active Directory Federation Services (AD FS):</strong> Enables federated authentication where local domain controllers perform the credentials check directly.</li>
+</ul>
+<h3 id="advanced-authentication-protection">Advanced Authentication &amp; Protection</h3>
+<ul>
+<li><strong>Microsoft Entra ID Protection:</strong> Uses ML to analyze sign-in risks (impossible travel, leaked credentials) and enforces automatic self-remediation (like MFA prompt or password reset).</li>
+<li><strong>Privileged Identity Management (PIM):</strong><ul>
+<li>Enforces Just-in-Time (JIT) access.</li>
+<li>Enables time-bounded administrative roles (e.g., active for only 2 hours).</li>
+<li>Requires explicit manager approval or ticket numbers for activation.</li>
+<li>Generates full audit trails.</li>
+</ul>
+</li>
 </ul>
 <hr />
-<h2 id="technical-autopsy-2-uber-hardcoded-credentials-pam-compromise">Technical Autopsy 2: Uber (Hardcoded Credentials &amp; PAM Compromise)</h2>
-<p>In 2022, an attacker gained full control of Uber's internal IT systems, AWS environments, and Google Cloud workspaces. The breach demonstrated the danger of storing administrative credentials in plaintext shares and having flat access paths.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>       [ Compromised Contractor Session ] ── (Scans internal network files) ──&gt; [ Network Share Backup ]
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>                                                                                      │
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>                                                                         (Finds script with credentials)
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>                                                                                      ▼
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>                                                                           [ Thycotic PAM Password ]
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>                                                                                      │
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>                                                                                      ▼
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                                                                     [ Full Cloud Infrastructure Control ]
-</span></code></pre></div>
-<h3 id="attack-path-and-root-cause_1">Attack Path and Root Cause</h3>
-<ol>
-<li><strong>Initial Access</strong>: The attacker compromised a contractor's personal device and captured their credentials. They used MFA fatigue tactics, sending repeated push notifications until the contractor approved the authentication request.</li>
-<li><strong>Internal Network Scanning</strong>: Once connected to Uber's internal network via VPN, the attacker scanned network drives and backup shares.</li>
-<li><strong>Plaintext Secrets Exposure</strong>: The attacker discovered a PowerShell script containing hardcoded administrative credentials for Uber's Privileged Access Management (PAM) platform (Thycotic).</li>
-<li><strong>Platform Takeover</strong>: The attacker logged into the PAM tool using the hardcoded credentials, extracting master keys for Azure AD, AWS, Google Cloud, and Slack, leading to complete infrastructure compromise.</li>
-</ol>
-<h3 id="architectural-failures_1">Architectural Failures</h3>
+<h2 id="2-secure-infrastructure">2. Secure Infrastructure</h2>
+<h3 id="azure-virtual-networks-vnet-security">Azure Virtual Networks (VNet) Security</h3>
 <ul>
-<li><strong>Secrets Stored in Version Control / Backup Shares</strong>: Storing passwords in configuration files or deployment scripts bypasses access controls.</li>
-<li><strong>Lack of Multi-Factor Authentication for Admin Platforms</strong>: The PAM platform trusted login credentials without requiring additional authentication steps (MFA) or network source validation.</li>
+<li><strong>Network Security Groups (NSGs):</strong> Layer 4 stateful packet filters applied at the subnet or Network Interface (NIC) level.</li>
+<li><strong>Application Security Groups (ASGs):</strong> Allows grouping VMs under logical tags (e.g., <code>ASG-Web</code>, <code>ASG-DB</code>) and referencing them in NSG rules, making firewall rule structures independent of dynamic IP changes.</li>
+<li><strong>User Defined Routes (UDRs):</strong> Custom routing tables override default Azure routes, routing subnet egress traffic directly through a Central Virtual Firewall Appliance (NVA).</li>
+</ul>
+<h3 id="host-platform-security">Host &amp; Platform Security</h3>
+<ul>
+<li><strong>Azure Bastion:</strong> Managed PaaS offering secure RDP/SSH terminal access directly within the Azure Portal over SSL (Port 443), removing the need for public IP addresses on VMs.</li>
+<li><strong>Just-in-Time VM Access:</strong> Restricts inbound management traffic (RDP/SSH) by configuring NSG rules to open ports <em>only</em> when requested, approved, and for a short window.</li>
+<li><strong>Disk Encryption:</strong><ul>
+<li><em>Azure Disk Encryption (ADE):</em> DM-Crypt (Linux) and BitLocker (Windows) to encrypt VM OS and data disks. Integrated directly with Azure Key Vault.</li>
+</ul>
+</li>
 </ul>
 <hr />
-<h2 id="technical-autopsy-3-circleci-workstation-compromise-build-system-session-hijacking">Technical Autopsy 3: CircleCI (Workstation Compromise &amp; Build System Session Hijacking)</h2>
-<p>In 2022, CircleCI suffered a breach that exposed customer environment variables, repository secrets, and deployment keys. The compromise illustrated the vulnerability of build platform execution environments.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>       [ Malware on Developer Laptop ] ── (Extracts active session cookies) ──&gt; [ Attacker Machine ]
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>                                                                                      │
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>                                                                         (Hijacks 2FA Session)
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>                                                                                      ▼
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>                                                                           [ CircleCI Control Plane ]
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>                                                                                      │
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>                                                                                      ▼
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>                                                                     [ Extracts Customer Environment Keys ]
-</span></code></pre></div>
-<h3 id="attack-path-and-root-cause_2">Attack Path and Root Cause</h3>
-<ol>
-<li><strong>Developer Workstation Compromise</strong>: An attacker compromised a developer's local laptop using malware. The malware bypassed endpoint protections and extracted active session cookies from the developer's web browser.</li>
-<li><strong>Session Hijacking</strong>: The attacker used the stolen session cookies to bypass multi-factor authentication (MFA) checks, hijacking the developer's administrative session on the CircleCI control plane.</li>
-<li><strong>Database and Vault Access</strong>: The developer had authorized access to core database backups and decryption keys. Using the hijacked session, the attacker downloaded customer environment variables and decryption keys stored in the platform's Vault database, compromising customer deployment environments.</li>
-</ol>
-<h3 id="architectural-failures_2">Architectural Failures</h3>
+<h2 id="3-secure-data-and-applications">3. Secure Data and Applications</h2>
+<h3 id="key-vault-management">Key Vault Management</h3>
 <ul>
-<li><strong>Broad Session Token Lifetimes</strong>: Long-lived session cookies allow attackers to use hijacked sessions without re-authenticating.</li>
-<li><strong>Over-privileged Developer Accounts</strong>: The developer possessed broad administrative access to production database decryption keys, violating least privilege.</li>
+<li><strong>Azure Key Vault:</strong> Centralized, secure storage for secrets (passwords, connection strings), keys (encryption keys), and certificates.<ul>
+<li><em>Soft Delete &amp; Purge Protection:</em> Mandatory guards preventing immediate deletion of key vaults or secrets by rogue admins, retaining deleted vaults in a recycle bin for a set period.</li>
+</ul>
+</li>
+</ul>
+<h3 id="database-security">Database Security</h3>
+<ul>
+<li><strong>Always Encrypted:</strong> Client-side database encryption technique where database engine processes data without seeing the decrypted plaintext.</li>
+<li><strong>Microsoft Defender for SQL:</strong> Performs vulnerability assessments and anomalous database activities audits.</li>
+<li><strong>Dynamic Data Masking (DDM):</strong> Limits sensitive data exposure by masking it to non-privileged users (e.g., masking credit card column outputs as <code>XXXX-XXXX-XXXX-1234</code>).</li>
 </ul>
 <hr />
-<h2 id="architectural-lessons-and-defenses">Architectural Lessons and Defenses</h2>
-<p>Applying technical lessons from these breaches requires implementing concrete security controls:</p>
-<h3 id="1-hardening-ec2-instance-metadata-options-mitigation-for-capital-one">1. Hardening EC2 Instance Metadata Options (Mitigation for Capital One)</h3>
-<p>Enforce IMDSv2 and disable IMDSv1 on all EC2 instances to protect credentials from SSRF exploits.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Force IMDSv2 on an existing instance</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>aws<span class="w"> </span>ec2<span class="w"> </span>modify-instance-metadata-options<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span>--instance-id<span class="w"> </span>i-0123456789abcdef0<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span>--http-tokens<span class="w"> </span>required<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span>--http-endpoint<span class="w"> </span>enabled
-</span></code></pre></div>
-<h3 id="2-implementing-iam-session-conditions-mitigation-for-stolen-credentials">2. Implementing IAM Session Conditions (Mitigation for Stolen Credentials)</h3>
-<p>Add source IP and execution conditions to IAM policies to ensure stolen credentials cannot be used outside the enterprise network or authorized CI/CD platforms.</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">{</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">&quot;Version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="p">{</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deny&quot;</span><span class="p">,</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">      </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">      </span><span class="nt">&quot;Condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">        </span><span class="nt">&quot;NotIpAddress&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">          </span><span class="nt">&quot;aws:SourceIp&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">            </span><span class="s2">&quot;198.51.100.0/24&quot;</span><span class="p">,</span>
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">            </span><span class="s2">&quot;203.0.113.0/24&quot;</span>
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">          </span><span class="p">]</span>
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">        </span><span class="p">},</span>
-</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">        </span><span class="nt">&quot;Bool&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">          </span><span class="nt">&quot;aws:ViaAWSService&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;false&quot;</span>
-</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">        </span><span class="p">}</span>
-</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">      </span><span class="p">}</span>
-</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">  </span><span class="p">]</span>
-</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="p">}</span>
-</span></code></pre></div>
-<hr />
-<h2 id="tooling-and-implementation">Tooling and Implementation</h2>
-<p>Deploy automated scanners to detect and mitigate breach vulnerabilities:</p>
-<ol>
-<li><strong>Checkov / Gitleaks</strong>: Integrate Gitleaks into your build pipelines to scan code repositories for hardcoded credentials, preventing secrets from being committed to source control (Mitigation for Uber).</li>
-<li><strong>AWS Config / Azure Policy</strong>: Enforce compliance policies across your cloud infrastructure. Configure rules to flag or terminate EC2 instances running with IMDSv1 enabled automatically (Mitigation for Capital One).</li>
-<li><strong>Endpoint Detection and Response (EDR)</strong>: Deploy EDR tools (like CrowdStrike or Microsoft Defender) on all developer endpoints to detect and block credential-dumping malware, protecting active session tokens (Mitigation for CircleCI).</li>
-</ol>
-<hr />
-<h2 id="incident-prevention-audit-checklist">Incident Prevention Audit Checklist</h2>
-<table>
-<thead>
-<tr>
-<th style="text-align: left;">Item</th>
-<th style="text-align: left;">Incident Context</th>
-<th style="text-align: left;">Verification Step / Command</th>
-<th style="text-align: left;">Target State</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">IMDS Enforcement</td>
-<td style="text-align: left;">Query instances for IMDS configuration settings.</td>
-<td style="text-align: left;">IMDSv1 is disabled; IMDSv2 is enforced on all workloads.</td>
-</tr>
-<tr>
-<td style="text-align: left;">2</td>
-<td style="text-align: left;">Code Secret Scanning</td>
-<td style="text-align: left;">Run Gitleaks scans on all active source repositories.</td>
-<td style="text-align: left;">Zero hardcoded passwords, keys, or API tokens are found in code.</td>
-</tr>
-<tr>
-<td style="text-align: left;">3</td>
-<td style="text-align: left;">Access Policy Limits</td>
-<td style="text-align: left;">Audit IAM policies for wildcard permissions (<code>*</code> on <code>*</code>).</td>
-<td style="text-align: left;">Actions and resources are explicitly defined; wildcards are restricted.</td>
-</tr>
-<tr>
-<td style="text-align: left;">4</td>
-<td style="text-align: left;">MFA Validation</td>
-<td style="text-align: left;">Check MFA status on administrative endpoints and PAM platforms.</td>
-<td style="text-align: left;">Access requires multi-factor authentication; session timeouts are set to short limits.</td>
-</tr>
-<tr>
-<td style="text-align: left;">5</td>
-<td style="text-align: left;">Session IP Locks</td>
-<td style="text-align: left;">Review access conditions for high-privilege administrative roles.</td>
-<td style="text-align: left;">Access is restricted using source IP or virtual private endpoint constraints.</td>
-</tr>
-<tr>
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">Endpoint Security</td>
-<td style="text-align: left;">Check EDR agent installation status on developer workstations.</td>
-<td style="text-align: left;">Active security agents monitor endpoints and block unauthorized process executions.</td>
-</tr>
-</tbody>
-</table>
-<hr />
-<h2 id="references">References</h2>
+<h2 id="4-security-operations">4. Security Operations</h2>
+<h3 id="security-management-with-defender-for-cloud">Security Management with Defender for Cloud</h3>
 <ul>
-<li><em>Capital One Breach Information and Technical Analysis</em>: <a href="https://aws.amazon.com/blogs/security/defense-in-depth-introducing-instance-metadata-service-v2/">AWS Security Blog</a></li>
-<li><em>Uber Security Incident Update (2022)</em>: <a href="https://www.uber.com/newsroom/security-update/">Uber Newsroom Statement</a></li>
-<li><em>CircleCI Incident Security Report (2022)</em>: <a href="https://circleci.com/blog/january-4-2023-security-alert/">CircleCI Security Advisory</a></li>
-<li><em>OWASP API Security Top 10 (SSRF and Broken Object Level Authorization)</em>: <a href="https://owasp.org/www-project-api-security/">OWASP Project</a></li>
+<li><strong>Microsoft Defender for Cloud:</strong> Cloud Security Posture Management (CSPM) and Cloud Workload Protection (CWPP) dashboard.<ul>
+<li>Calculates <strong>Secure Score</strong> based on cloud configurations against benchmarks (e.g., ISO 27001, CIS).</li>
+<li>Auto-detects missing configurations (like unprotected ports or unencrypted databases).</li>
+</ul>
+</li>
+</ul>
+<h3 id="threat-detection-with-microsoft-sentinel">Threat Detection with Microsoft Sentinel</h3>
+<ul>
+<li><strong>Microsoft Sentinel:</strong> Native cloud SIEM (Security Information and Event Management) and SOAR (Security Orchestration, Automation, and Response).<ul>
+<li>Aggregates event logs from multiple clouds and local nodes.</li>
+<li>Uses <strong>KQL (Kusto Query Language)</strong> to query events and build automated detection analytics.</li>
+<li>Triggers <strong>Playbooks (Logic Apps)</strong> to isolate resources or alert security centers.</li>
+</ul>
+</li>
 </ul>
 
 
@@ -3683,9 +3488,6 @@
 
 
 
-
-  
-  
 
 
 
@@ -3729,10 +3531,10 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.breadcrumbs", "search.suggest", "search.highlight", "content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.tracking", "navigation.top", "navigation.breadcrumbs", "search.suggest", "search.highlight", "content.code.copy", "content.code.select"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../../assets/javascripts/bundle.79ae519e.min.js"></script>
       
     
   </body>
