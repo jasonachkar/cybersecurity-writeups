@@ -7,6 +7,22 @@
   /* Set fonts */
   --md-text-font: 'Outfit', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
   --md-code-font: 'JetBrains Mono', SFMono-Regular, Consolas, Menlo, monospace;
+
+  /* Custom Light Mode Palette (Slate & Indigo) */
+  --md-primary-fg-color: #0f172a;         /* Slate 900 */
+  --md-primary-fg-color--dark: #020617;  /* Slate 950 */
+  --md-accent-fg-color: #4f46e5;         /* Indigo 600 */
+  --md-accent-fg-color--transparent: rgba(79, 70, 229, 0.1);
+}
+
+[data-md-color-scheme="slate"] {
+  /* Custom Dark Mode Palette (Slate & Indigo Accent) */
+  --md-primary-fg-color: #0b0f19;         /* Very Dark Navy/Slate */
+  --md-primary-fg-color--dark: #05070c;
+  --md-accent-fg-color: #818cf8;         /* Indigo 400 */
+  --md-accent-fg-color--transparent: rgba(129, 140, 248, 0.1);
+  --md-default-bg-color: #0f172a;        /* Slate 900 background */
+  --md-default-bg-color--page: #0f172a;
 }
 
 /* Custom Scrollbar */
@@ -99,9 +115,9 @@ h2 {
 /* Logo and Header Customization */
 .md-header {
   backdrop-filter: blur(12px) !important;
-  background-color: rgba(26, 35, 126, 0.85) !important; /* Indigo with transparency */
+  background-color: rgba(15, 23, 42, 0.85) !important; /* Transparent Slate */
 }
 
 [data-md-color-scheme="slate"] .md-header {
-  background-color: rgba(30, 30, 42, 0.85) !important; /* Dark Slate transparent */
+  background-color: rgba(11, 15, 25, 0.85) !important; /* Transparent Dark Slate */
 }

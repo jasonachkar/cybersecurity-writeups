@@ -14,7 +14,7 @@ theme:
     # Light Mode
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
+      primary: custom
       accent: indigo
       toggle:
         icon: material/brightness-7
@@ -22,16 +22,16 @@ theme:
     # Dark Mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
+      primary: custom
       accent: indigo
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - navigation.tabs
     - navigation.instant
     - navigation.tracking
-    - navigation.sections
+    - navigation.top
+    - navigation.breadcrumbs
     - search.suggest
     - search.highlight
     - content.code.copy
