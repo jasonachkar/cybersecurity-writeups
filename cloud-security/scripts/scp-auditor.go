@@ -131,7 +131,7 @@ func EvaluateAction(action string, resource string, leaf *OrgNode) (bool, string
 
 func main() {
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ AWS Organizations SCP Hierarchy Simulator")
+	fmt.Println("AWS Organizations SCP Hierarchy Simulator")
 	fmt.Println("==================================================")
 
 	// Create policies

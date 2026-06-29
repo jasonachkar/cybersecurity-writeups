@@ -88,7 +88,7 @@ index 8389d63..298d8ef 100644
 	`
 
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ Git Commit Secret Scanner & Entropy Audit Engine")
+	fmt.Println("Git Commit Secret Scanner & Entropy Audit Engine")
 	fmt.Println("==================================================")
 
 	lines := strings.Split(gitDiffInput, "\n")

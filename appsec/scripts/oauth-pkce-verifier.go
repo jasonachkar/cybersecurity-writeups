@@ -56,7 +56,7 @@ func ValidatePKCE(codeVerifier string, storedChallenge string, method string) bo
 
 func main() {
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ OAuth 2.0 PKCE (Proof Key for Code Exchange) Flow")
+	fmt.Println("OAuth 2.0 PKCE (Proof Key for Code Exchange) Flow")
 	fmt.Println("==================================================")
 
 	// Step 1: Client generates code_verifier
@@ -90,9 +90,9 @@ func main() {
 	fmt.Printf("   - Presented Verifier: %s\n", codeVerifier)
 	valid := ValidatePKCE(codeVerifier, storedChallenge, storedMethod)
 	if valid {
-		fmt.Println("   - [SUCCESS] Verifier matches challenge! Access Token issued successfully. ✅")
+		fmt.Println("   - [SUCCESS] Verifier matches challenge! Access Token issued successfully.")
 	} else {
-		fmt.Println("   - [FAILURE] Cryptographic mismatch! Token request rejected. ❌")
+		fmt.Println("   - [FAILURE] Cryptographic mismatch! Token request rejected.")
 	}
 
 	// Case 2: Invalid/Intercepted Auth Code with Bad Verifier
@@ -103,8 +103,8 @@ func main() {
 	fmt.Printf("   - Presented Attacker Verifier: %s\n", attackerVerifier)
 	valid = ValidatePKCE(attackerVerifier, storedChallenge, storedMethod)
 	if valid {
-		fmt.Println("   - [BUG] Token issued! Attacker bypassed PKCE security check. ❌")
+		fmt.Println("   - [BUG] Token issued! Attacker bypassed PKCE security check.")
 	} else {
-		fmt.Println("   - [BLOCKED] Cryptographic mismatch! Access request blocked. PKCE verification protected the session. ✅")
+		fmt.Println("   - [BLOCKED] Cryptographic mismatch! Access request blocked. PKCE verification protected the session.")
 	}
 }

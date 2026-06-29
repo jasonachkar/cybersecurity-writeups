@@ -105,7 +105,7 @@ func main() {
 	}`
 
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ DevSecOps SBOM Diff & Dependency Audit Tool")
+	fmt.Println("DevSecOps SBOM Diff & Dependency Audit Tool")
 	fmt.Println("==================================================")
 
 	var sbomA, sbomB CycloneDXSBOM
@@ -145,7 +145,7 @@ func main() {
 			// Check license of new dependency
 			for _, lic := range compB.Licenses {
 				if lic.License.ID == "GPL-3.0-only" || lic.License.ID == "AGPL-3.0" {
-					fmt.Printf("   ⚠️  [LICENSE ALERT] Component '%s' introduces copyleft license: %s\n", key, lic.License.ID)
+					fmt.Printf("   [LICENSE ALERT] Component '%s' introduces copyleft license: %s\n", key, lic.License.ID)
 					licenseAlerts++
 				}
 			}

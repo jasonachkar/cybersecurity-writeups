@@ -95,7 +95,7 @@ func AuthenticateToken(token string) (UserSession, bool) {
 
 func main() {
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ API Security IDOR Vulnerability Scanner Simulator")
+	fmt.Println("API Security IDOR Vulnerability Scanner Simulator")
 	fmt.Println("==================================================")
 
 	// In an audit, we test access using two distinct tenant sessions (Alice and Bob)

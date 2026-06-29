@@ -102,7 +102,7 @@ func main() {
 	}`
 
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ DevSecOps CI/CD Deployment Security Gate Engine")
+	fmt.Println("DevSecOps CI/CD Deployment Security Gate Engine")
 	fmt.Println("==================================================")
 
 	var metrics SecurityMetrics
@@ -123,10 +123,10 @@ func main() {
 	passed, violations := EvaluateGate(metrics, policy)
 
 	if passed {
-		fmt.Println("\n✅ [PASS] All security gates successfully cleared. Continuing deployment pipeline.")
+		fmt.Println("\n[PASS] All security gates successfully cleared. Continuing deployment pipeline.")
 		os.Exit(0)
 	} else {
-		fmt.Println("\n❌ [FAIL] Build blocked by organizational security policy gates!")
+		fmt.Println("\n[FAIL] Build blocked by organizational security policy gates!")
 		fmt.Println("Violations:")
 		for _, violation := range violations {
 			fmt.Printf("   - %s\n", violation)

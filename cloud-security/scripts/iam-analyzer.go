@@ -91,7 +91,7 @@ func main() {
 	}`
 
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ AWS IAM Policy Analyzer & Privilege Escalation Scanner")
+	fmt.Println("AWS IAM Policy Analyzer & Privilege Escalation Scanner")
 	fmt.Println("==================================================")
 
 	var doc PolicyDocument
