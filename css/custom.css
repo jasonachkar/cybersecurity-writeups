@@ -459,7 +459,13 @@ body[data-md-color-scheme="slate"] .md-nav__list .md-nav__list {
 /* ========================================================
    MERMAID DIAGRAM TEXT LEGIBILITY FIX
    ======================================================== */
-.mermaid .node * {
+.mermaid .node text,
+.mermaid .node tspan,
+.mermaid .node div,
+.mermaid .node span,
+.mermaid .node p {
   color: inherit !important;
+  fill: currentColor !important;
 }
+
 
