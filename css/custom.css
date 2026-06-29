@@ -83,8 +83,6 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
   font-size: 2.2rem !important;
   margin-bottom: 1.5rem !important;
-  border-left: 5px solid #4f46e5;         /* Indigo accent bar */
-  padding-left: 12px;
   color: #0f172a !important;
 }
 
@@ -123,7 +121,7 @@ body[data-md-color-scheme="slate"] .md-typeset h6 {
 
 body[data-md-color-scheme="slate"] h1,
 body[data-md-color-scheme="slate"] .md-typeset h1 {
-  border-left-color: #58a6ff;
+  border-left: none !important;
 }
 
 body[data-md-color-scheme="slate"] h2,
