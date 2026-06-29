@@ -460,18 +460,60 @@ body[data-md-color-scheme="slate"] .md-nav__list .md-nav__list {
    MERMAID DIAGRAM TEXT LEGIBILITY FIX
    ======================================================== */
 
-/* 1. Generic override to respect inline color styles (like color:#fff or color:rgb(255,255,255)) */
-svg .node[style*="color:"] .label *,
-svg .node[style*="color:"] text,
-svg .node[style*="color:"] tspan,
-svg .node [style*="color:"] ~ .label *,
-svg .node [style*="color:"] ~ text,
-svg .node [style*="color:"] ~ tspan {
-  color: inherit !important;
-  fill: currentColor !important;
+/* Respect inline color styles (like color:#fff or color:rgb(255,255,255)) regardless of browser serialization format */
+
+/* Class-based HTML text nodes inside foreignObject */
+svg [style*="color:#fff"] .nodeLabel,
+svg [style*="color: #fff"] .nodeLabel,
+svg [style*="color:#ffffff"] .nodeLabel,
+svg [style*="color: #ffffff"] .nodeLabel,
+svg [style*="color:rgb(255,255,255)"] .nodeLabel,
+svg [style*="color: rgb(255, 255, 255)"] .nodeLabel,
+svg [style*="color:#fff"] .label *,
+svg [style*="color: #fff"] .label *,
+svg [style*="color:#ffffff"] .label *,
+svg [style*="color: #ffffff"] .label *,
+svg [style*="color:rgb(255,255,255)"] .label *,
+svg [style*="color: rgb(255, 255, 255)"] .label *,
+
+/* SVG native text and tspan elements */
+svg [style*="color:#fff"] text,
+svg [style*="color: #fff"] text,
+svg [style*="color:#ffffff"] text,
+svg [style*="color: #ffffff"] text,
+svg [style*="color:rgb(255,255,255)"] text,
+svg [style*="color: rgb(255, 255, 255)"] text,
+svg [style*="color:#fff"] tspan,
+svg [style*="color: #fff"] tspan,
+svg [style*="color:#ffffff"] tspan,
+svg [style*="color: #ffffff"] tspan,
+svg [style*="color:rgb(255,255,255)"] tspan,
+svg [style*="color: rgb(255, 255, 255)"] tspan,
+
+/* Sibling elements (when style is on the sibling rect container instead of the parent) */
+svg .node [style*="color:#fff"] ~ .label *,
+svg .node [style*="color: #fff"] ~ .label *,
+svg .node [style*="color:#ffffff"] ~ .label *,
+svg .node [style*="color: #ffffff"] ~ .label *,
+svg .node [style*="color:rgb(255,255,255)"] ~ .label *,
+svg .node [style*="color: rgb(255, 255, 255)"] ~ .label *,
+svg .node [style*="color:#fff"] ~ text,
+svg .node [style*="color: #fff"] ~ text,
+svg .node [style*="color:#ffffff"] ~ text,
+svg .node [style*="color: #ffffff"] ~ text,
+svg .node [style*="color:rgb(255,255,255)"] ~ text,
+svg .node [style*="color: rgb(255, 255, 255)"] ~ text,
+svg .node [style*="color:#fff"] ~ tspan,
+svg .node [style*="color: #fff"] ~ tspan,
+svg .node [style*="color:#ffffff"] ~ tspan,
+svg .node [style*="color: #ffffff"] ~ tspan,
+svg .node [style*="color:rgb(255,255,255)"] ~ tspan,
+svg .node [style*="color: rgb(255, 255, 255)"] ~ tspan {
+  color: #ffffff !important;
+  fill: #ffffff !important;
 }
 
-/* 2. Specific fallback mapping for dark/saturated fills we use to force white text in light mode */
+/* Fallback: Direct hex mappings for the specific colored nodes we defined */
 svg .node [style*="fill:#2563eb"] ~ .label *,
 svg .node [style*="fill: #2563eb"] ~ .label *,
 svg .node [style*="fill:rgb(37, 99, 235)"] ~ .label *,
@@ -519,6 +561,7 @@ svg .node [style*="fill: rgb(71, 85, 105)"] ~ .label * {
   color: #ffffff !important;
   fill: #ffffff !important;
 }
+
 
 
 
