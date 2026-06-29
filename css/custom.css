@@ -369,17 +369,17 @@ body[data-md-color-scheme="slate"] .md-copyright {
 
 .md-nav {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
-  font-size: 0.8rem !important;
-  line-height: 1.4 !important;
+  font-size: 0.74rem !important;
+  line-height: 1.35 !important;
 }
 
 /* Parent Category/Folder items (collapsible headers) */
 .md-nav__item--nested > .md-nav__link {
   font-weight: 600 !important;
   color: #334155 !important; /* Slate 700 */
-  padding-top: 0.35rem !important;
-  padding-bottom: 0.35rem !important;
-  font-size: 0.82rem !important;
+  padding-top: 0.28rem !important;
+  padding-bottom: 0.28rem !important;
+  font-size: 0.76rem !important;
 }
 
 body[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link {
@@ -391,11 +391,18 @@ body[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link {
   color: #475569 !important; /* Slate 600 */
   transition: all 0.15s ease !important;
   border-radius: 4px !important;
-  padding: 0.35rem 0.5rem !important;
-  margin: 0.05rem 0 !important;
-  display: flex !important;
-  align-items: center !important;
-  font-size: 0.78rem !important;
+  padding: 0.28rem 0.45rem !important;
+  margin: 0.02rem 0 !important;
+  display: flex; /* Removed !important to allow MkDocs to hide it on desktop */
+  align-items: center;
+  font-size: 0.74rem !important;
+}
+
+/* Explicitly hide TOC drawer toggle on desktop to prevent duplicate rendering */
+@media screen and (min-width: 60em) {
+  .md-sidebar--primary .md-nav__link[for="__toc"] {
+    display: none !important;
+  }
 }
 
 body[data-md-color-scheme="slate"] .md-nav__link {
@@ -406,11 +413,10 @@ body[data-md-color-scheme="slate"] .md-nav__link {
 .md-nav__link:hover {
   background-color: #f1f5f9 !important; /* Slate 100 */
   color: #0f172a !important; /* Slate 900 */
-  cursor: pointer;
 }
 
 body[data-md-color-scheme="slate"] .md-nav__link:hover {
-  background-color: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.04) !important;
   color: #f8fafc !important; /* Slate 50 */
 }
 
@@ -433,14 +439,14 @@ body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active .md-ellips
 }
 
 body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active {
-  background-color: rgba(56, 189, 248, 0.12) !important;
+  background-color: rgba(56, 189, 248, 0.1) !important;
 }
 
 /* Adjust nested items indentation for clear visual hierarchy */
 .md-nav__list .md-nav__list {
-  padding-left: 0.75rem !important;
+  padding-left: 0.5rem !important;
   border-left: 1px solid #e2e8f0;
-  margin-left: 0.75rem;
+  margin-left: 0.6rem;
 }
 
 body[data-md-color-scheme="slate"] .md-nav__list .md-nav__list {
