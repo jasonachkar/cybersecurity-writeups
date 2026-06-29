@@ -1,4 +1,4 @@
-# <img src="../../assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> AZ-900 Domain 1: Describe Cloud Concepts
+# <img src="/docs/assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> AZ-900 Domain 1: Describe Cloud Concepts
 
 This section covers the core cloud concepts required for the AZ-900 exam.
 

@@ -1,4 +1,4 @@
-# <img src="../../assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> Microsoft SC-500: Implementing Security Controls for Cloud and AI Workloads Overview
+# <img src="/docs/assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> Microsoft SC-500: Implementing Security Controls for Cloud and AI Workloads Overview
 
 Welcome to the study guide for the **Microsoft SC-500: Cloud and AI Security Engineer Associate** certification exam. This course is divided into dedicated sub-sections covering the core domains of the official exam curriculum in extreme technical depth, detailing secure configurations, auditing queries, and AI workload security.
 

@@ -1,4 +1,4 @@
-# <img src="../../assets/images/google-logo.svg" width="32" height="32" style="vertical-align: middle; margin-right: 10px;"> Google Cybersecurity Professional Certificate
+# <img src="/docs/assets/images/google-logo.svg" width="32" height="32" style="vertical-align: middle; margin-right: 10px;"> Google Cybersecurity Professional Certificate
 
 This document covers core domains, tools, and technical competencies taught throughout the Google Cybersecurity Professional Certificate.
 

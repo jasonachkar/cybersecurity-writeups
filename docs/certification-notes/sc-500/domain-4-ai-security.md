@@ -1,4 +1,4 @@
-# <img src="../../assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> SC-500 Domain 4: Secure AI Workloads and Governance
+# <img src="/docs/assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> SC-500 Domain 4: Secure AI Workloads and Governance
 
 This domain outlines secure deployment parameters for Generative AI endpoints, prompt safety mitigations, vector database index filters, and ML pipelines.
 

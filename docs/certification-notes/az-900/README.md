@@ -1,4 +1,4 @@
-# <img src="../../assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> Microsoft AZ-900: Azure Fundamentals Overview
+# <img src="/docs/assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> Microsoft AZ-900: Azure Fundamentals Overview
 
 Welcome to the **Microsoft AZ-900: Azure Fundamentals** study guide. This course is divided into dedicated sub-sections covering the core topics of the official exam curriculum in technical depth.
 

@@ -1,4 +1,4 @@
-# <img src="../../assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> AZ-900 Domain 2: Describe Azure Architecture & Services
+# <img src="/docs/assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> AZ-900 Domain 2: Describe Azure Architecture & Services
 
 This section details Azure's physical structure, resource management hierarchies, and core cloud services.
 

@@ -1,4 +1,4 @@
-# <img src="../../assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> SC-500 Domain 1: Manage Identity, Access, and Governance
+# <img src="/docs/assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> SC-500 Domain 1: Manage Identity, Access, and Governance
 
 This domain focuses on configuring identity directory authentication boundaries, privileged access parameters, and auditing access anomalies using Kusto Query Language (KQL).
 

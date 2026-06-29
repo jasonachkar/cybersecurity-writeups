@@ -1,4 +1,4 @@
-# <img src="../../assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> SC-500 Domain 2: Secure Storage, Databases, and Networking
+# <img src="/docs/assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> SC-500 Domain 2: Secure Storage, Databases, and Networking
 
 This domain outlines database access hardening, private networking configurations, and firewall routing controls.
 

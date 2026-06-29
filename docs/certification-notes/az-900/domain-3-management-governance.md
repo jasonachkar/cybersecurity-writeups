@@ -1,4 +1,4 @@
-# <img src="../../assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> AZ-900 Domain 3: Describe Azure Management & Governance
+# <img src="/docs/assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> AZ-900 Domain 3: Describe Azure Management & Governance
 
 This section covers Entra ID authentication, governance policy rules, cost tools, and monitoring architectures.
 

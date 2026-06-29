@@ -40,6 +40,7 @@ theme:
 
 extra_css:
   - css/custom.css
+  - https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css
 
 markdown_extensions:
   - admonition
@@ -63,28 +64,28 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 nav:
-  - "🏠 Home": index.md
-  - "☁️ Cloud Security":
+  - "<i class='fa-solid fa-house'></i> Home": index.md
+  - "<i class='fa-solid fa-cloud'></i> Cloud Security":
     - Multi-Account Landing Zones: cloud-security/multi-account-landing-zones.md
     - IAM at Scale: cloud-security/iam-at-scale.md
     - Kubernetes Multi-Tenancy: cloud-security/kubernetes-multi-tenancy.md
     - Serverless Security: cloud-security/serverless-security.md
     - Network Segmentation: cloud-security/cloud-network-segmentation.md
     - Detection and Response: cloud-security/cloud-detection-and-response.md
-  - "🔐 Application Security":
+  - "<i class='fa-solid fa-lock'></i> Application Security":
     - API & Microservices Threat Modeling: appsec/api-microservices-threat-modeling.md
     - OAuth 2.0 & OIDC Deep Dive: appsec/oauth2-oidc-deep-dive.md
     - SaaS Multi-Tenancy Isolation: appsec/saas-multitenancy-isolation.md
     - Runtime Protection (RASP & WAF): appsec/runtime-protection-rasp-waf.md
-  - "⚙️ DevSecOps":
+  - "<i class='fa-solid fa-gears'></i> DevSecOps":
     - Secure CI/CD Pipeline Design: devsecops/secure-cicd-pipeline-design.md
     - IaC Security & Policy as Code: devsecops/iac-security-and-policy-as-code.md
     - Supply Chain (SBOM, Signing): devsecops/supply-chain-sbom-signing.md
     - Secrets Management: devsecops/secrets-management.md
-  - "🎯 Threat Intelligence":
+  - "<i class='fa-solid fa-bullseye'></i> Threat Intelligence":
     - Attack Path Analysis: threat-intel/attack-path-analysis.md
     - Cloud Breach Case Studies: threat-intel/cloud-breach-case-studies.md
-  - "📘 Tutorials":
+  - "<i class='fa-solid fa-book'></i> Tutorials":
     - Azure Landing Zone:
       - Overview: docs/tutorials/azure-landing-zone/README.md
       - Architecture: docs/tutorials/azure-landing-zone/architecture.md
@@ -114,7 +115,7 @@ nav:
       - Monitoring & Alerts: docs/tutorials/securing-entra-id/monitoring-alerts.md
     - Azure Firewall Walkthrough:
       - Overview: docs/tutorials/azure-firewall-walkthrough/README.md
-  - "🔬 Research":
+  - "<i class='fa-solid fa-flask'></i> Research":
     - Threat Modeling SaaS:
       - Overview: docs/research/threat-modeling-saas/README.md
       - STRIDE Analysis: docs/research/threat-modeling-saas/stride-analysis.md
@@ -134,7 +135,7 @@ nav:
       - Kubernetes Security: docs/research/enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security.md
       - Pipeline Hardening: docs/research/enterprise-cloud-security-engineering/devsecops-pipeline-hardening.md
       - Detection Engineering: docs/research/enterprise-cloud-security-engineering/detection-engineering.md
-  - "🎓 Certification Notes":
+  - "<i class='fa-solid fa-graduation-cap'></i> Certification Notes":
     - CompTIA Security+:
       - Overview: docs/certification-notes/security-plus/README.md
       - Domain 1 - Threats: docs/certification-notes/security-plus/domain-1-threats.md
@@ -142,17 +143,22 @@ nav:
       - Domain 3 - Operations: docs/certification-notes/security-plus/domain-3-operations.md
       - Quick Reference: docs/certification-notes/security-plus/quick-reference.md
       - Practice Questions: docs/certification-notes/security-plus/practice-questions.md
-    - "☁️ Microsoft AZ-900":
+    - "<i class='fa-brands fa-microsoft'></i> Microsoft AZ-900":
       - Overview: docs/certification-notes/az-900/README.md
       - Domain 1 - Cloud Concepts: docs/certification-notes/az-900/domain-1-concepts.md
       - Domain 2 - Azure Architecture & Services: docs/certification-notes/az-900/domain-2-architecture-services.md
       - Domain 3 - Management & Governance: docs/certification-notes/az-900/domain-3-management-governance.md
-    - "🛡️ Google Cybersecurity": docs/certification-notes/google-cybersecurity/README.md
-    - "🔒 Microsoft SC-500":
+    - "<i class='fa-brands fa-google'></i> Google Cybersecurity": docs/certification-notes/google-cybersecurity/README.md
+    - "<i class='fa-brands fa-microsoft'></i> Microsoft SC-500":
       - Overview: docs/certification-notes/sc-500/README.md
       - Domain 1 - Identity & Access: docs/certification-notes/sc-500/domain-1-identity.md
       - Domain 2 - Storage, DB & Network: docs/certification-notes/sc-500/domain-2-storage-networking.md
       - Domain 3 - Compute & Posture: docs/certification-notes/sc-500/domain-3-compute-posture.md
       - Domain 4 - AI Workload Security: docs/certification-notes/sc-500/domain-4-ai-security.md
+  - "<i class='fa-solid fa-wrench'></i> Security Automation Scripts":
+    - Cloud Security: docs/scripts/cloud-security.md
+    - Application Security: docs/scripts/app-security.md
+    - DevSecOps: docs/scripts/devsecops.md
+    - Threat Intelligence: docs/scripts/threat-intel.md
 
 

@@ -1,4 +1,4 @@
-# <img src="../../assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> SC-500 Domain 3: Secure Compute Workloads and Posture
+# <img src="/docs/assets/images/azure-logo.svg" width="36" height="36" style="vertical-align: middle; margin-right: 10px;"> SC-500 Domain 3: Secure Compute Workloads and Posture
 
 This domain details compute hardening (bastions, VM endpoints), cryptographic key vaults, and posture management tools.
 
