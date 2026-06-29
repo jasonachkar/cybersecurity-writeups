@@ -96,25 +96,24 @@ A secure runtime architecture combines edge WAF analysis, RASP code instrumentat
 
 ### Architecture Topology: Defense-in-Depth Web Application Inspection
 
-```
-[ Incoming HTTP Request ] ────> [ Cloud WAF / Edge WAF ]
-                                       │
-                              ( Blocks Bot Scans )
-                                       │
-                                       ▼
-                     [ API Gateway / Load Balancer ]
-                                       │
-                                       ▼
-                       [ Application Worker Pods ]
-                                       │
-                 ┌─────────────────────┴─────────────────────┐
-                 ▼                                           ▼
-       [ RASP Agent (JVM/CLR) ]                     [ eBPF Sensor (Kernel) ]
-                 │                                           │
-  ( Hooks DB & File System calls )              ( Audits execve / socket creation )
-                 │                                           │
-                 ▼                                           ▼
-         [ Block Exploit ]                           [ Terminate Pod ]
+```mermaid
+flowchart TD
+    REQ["Incoming HTTP Request"] --> WAF["Cloud WAF / Edge WAF"]
+    WAF -->|Blocks Bot Scans| GW["API Gateway /<br/>Load Balancer"]
+    GW --> APP["Application Worker Pods"]
+    APP --> RASP["RASP Agent<br/>JVM/CLR"]
+    APP --> EBPF["eBPF Sensor<br/>Kernel"]
+    RASP -->|Hooks DB and FS calls| BLOCKR["Block Exploit"]
+    EBPF -->|Audits execve / socket| TERM["Terminate Pod"]
+
+    style REQ fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style WAF fill:#dc2626,color:#fff,stroke:#b91c1c
+    style GW fill:#0891b2,color:#fff,stroke:#0e7490
+    style APP fill:#059669,color:#fff,stroke:#047857
+    style RASP fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style EBPF fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style BLOCKR fill:#dc2626,color:#fff,stroke:#b91c1c
+    style TERM fill:#dc2626,color:#fff,stroke:#b91c1c
 ```
 
 ### eBPF System Call Filtering Policy

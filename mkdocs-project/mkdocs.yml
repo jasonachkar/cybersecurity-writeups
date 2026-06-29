@@ -1,4 +1,5 @@
-site_name: "Platform Security & Cloud Architecture Writeups"
+site_name: "Cloud Security Engineering"
+site_description: "Deep-dive research, threat models, and defensive architecture for cloud-native security"
 site_url: "https://docs.jasonachkardiab.com"
 site_author: "Jason Achkardiab"
 repo_name: "jasonachkar/cybersecurity-writeups"
@@ -56,30 +57,34 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
 
 nav:
   - Home: index.md
-  - ☁️ Cloud Security:
+  - ":material-cloud-lock: Cloud Security":
     - Multi-Account Landing Zones: cloud-security/multi-account-landing-zones.md
     - IAM at Scale: cloud-security/iam-at-scale.md
     - Kubernetes Multi-Tenancy: cloud-security/kubernetes-multi-tenancy.md
     - Serverless Security: cloud-security/serverless-security.md
     - Network Segmentation: cloud-security/cloud-network-segmentation.md
     - Detection and Response: cloud-security/cloud-detection-and-response.md
-  - 💻 Application Security:
+  - ":material-application-brackets-outline: Application Security":
     - API & Microservices Threat Modeling: appsec/api-microservices-threat-modeling.md
     - OAuth 2.0 & OIDC Deep Dive: appsec/oauth2-oidc-deep-dive.md
     - SaaS Multi-Tenancy Isolation: appsec/saas-multitenancy-isolation.md
     - Runtime Protection (RASP & WAF): appsec/runtime-protection-rasp-waf.md
-  - 🛡️ DevSecOps:
+  - ":material-shield-sync: DevSecOps":
     - Secure CI/CD Pipeline Design: devsecops/secure-cicd-pipeline-design.md
     - IaC Security & Policy as Code: devsecops/iac-security-and-policy-as-code.md
     - Supply Chain (SBOM, Signing): devsecops/supply-chain-sbom-signing.md
     - Secrets Management: devsecops/secrets-management.md
-  - 🕵️ Threat Intelligence:
+  - ":material-target-account: Threat Intelligence":
     - Attack Path Analysis: threat-intel/attack-path-analysis.md
     - Cloud Breach Case Studies: threat-intel/cloud-breach-case-studies.md
-  - 📘 Legacy Tutorials:
+  - ":material-book-open-page-variant: Tutorials":
     - Azure Landing Zone:
       - Overview: docs/tutorials/azure-landing-zone/README.md
       - Architecture: docs/tutorials/azure-landing-zone/architecture.md
@@ -109,7 +114,7 @@ nav:
       - Monitoring & Alerts: docs/tutorials/securing-entra-id/monitoring-alerts.md
     - Azure Firewall Walkthrough:
       - Overview: docs/tutorials/azure-firewall-walkthrough/README.md
-  - 🔬 Legacy Research:
+  - ":material-flask-outline: Research":
     - Threat Modeling SaaS:
       - Overview: docs/research/threat-modeling-saas/README.md
       - STRIDE Analysis: docs/research/threat-modeling-saas/stride-analysis.md
@@ -129,7 +134,7 @@ nav:
       - Kubernetes Security: docs/research/enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security.md
       - Pipeline Hardening: docs/research/enterprise-cloud-security-engineering/devsecops-pipeline-hardening.md
       - Detection Engineering: docs/research/enterprise-cloud-security-engineering/detection-engineering.md
-  - 🎓 Certification Notes:
+  - ":material-certificate-outline: Certification Notes":
     - CompTIA Security+:
       - Overview: docs/certification-notes/security-plus/README.md
       - Domain 1 - Threats: docs/certification-notes/security-plus/domain-1-threats.md

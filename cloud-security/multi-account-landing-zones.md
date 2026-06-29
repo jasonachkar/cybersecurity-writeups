@@ -122,21 +122,37 @@ A secure landing zone requires a structured OU hierarchy that isolates administr
 
 ### Reference OU Directory Tree
 
-```
-Management Payer Account (Root)
-├── Security OU (Highly Restricted)
-│   ├── Log-Archive Account (Centralized Read-Only Storage)
-│   └── Security-Tooling Account (GuardDuty, SecurityHub, IAM Access Analyzer)
-├── Core Infrastructure OU
-│   ├── Network Account (Transit Gateway, Direct Connect, Centralized WAF)
-│   └── Shared Services Account (AD, DNS Resolvers, Core Golden Images)
-└── Workloads OU
-    ├── Production OU
-    │   ├── App-A-Prod Account
-    │   └── App-B-Prod Account
-    └── Non-Production OU
-        ├── App-A-NonProd Account
-        └── Developer Sandbox OU (Strict SCPs, No Inter-VPC Routes)
+```mermaid
+flowchart TD
+    ROOT["Management Payer Account<br/>Root"] --> SEC["Security OU<br/>Highly Restricted"]
+    ROOT --> CORE["Core Infrastructure OU"]
+    ROOT --> WORK["Workloads OU"]
+
+    SEC --> LOG["Log-Archive Account<br/>Centralized Read-Only Storage"]
+    SEC --> SECTOOL["Security-Tooling Account<br/>GuardDuty, SecurityHub, IAM Analyzer"]
+
+    CORE --> NET["Network Account<br/>Transit Gateway, Direct Connect, WAF"]
+    CORE --> SHARED["Shared Services Account<br/>AD, DNS Resolvers, Golden Images"]
+
+    WORK --> PROD["Production OU"]
+    WORK --> NONPROD["Non-Production OU"]
+
+    PROD --> APPA["App-A-Prod Account"]
+    PROD --> APPB["App-B-Prod Account"]
+
+    NONPROD --> APPANP["App-A-NonProd Account"]
+    NONPROD --> SANDBOX["Developer Sandbox OU<br/>Strict SCPs, No Inter-VPC Routes"]
+
+    style ROOT fill:#0f172a,color:#fff,stroke:#020617
+    style SEC fill:#dc2626,color:#fff,stroke:#b91c1c
+    style CORE fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style WORK fill:#059669,color:#fff,stroke:#047857
+    style LOG fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style SECTOOL fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style NET fill:#0891b2,color:#fff,stroke:#0e7490
+    style SHARED fill:#0891b2,color:#fff,stroke:#0e7490
+    style PROD fill:#059669,color:#fff,stroke:#047857
+    style NONPROD fill:#d97706,color:#fff,stroke:#b45309
 ```
 
 ### Core Guardrail Policy: Harden Account Boundaries

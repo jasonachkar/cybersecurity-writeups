@@ -20,20 +20,18 @@ At scale, the failure to secure redirect URIs, validate cryptographic tokens, an
 
 The OAuth and OIDC attack surface includes the client application, the user's browser, the Authorization Server, and the token transfer paths.
 
-```
-[ User Browser (Client App) ] ── (Requests Auth Code) ──> [ Authorization Server ]
-             │                                                     │
-(Code Intercepted by Attacker)                                     │
-             │                                                     ▼
-             ▼                                           [ Issues Auth Code ]
-   [ Attacker Token Request ]                                      │
-             │                                                     │
-(Attempts to exchange code for token)                              │
-             │                                                     │
-             ├─────────────────────── (Sends Code Only) ───────────┤
-             │                                                     │
-             ▼                                                     ▼
-     [ PKCE Validation ] ─────────────────────────> [ BLOCK: Missing Verifier ]
+```mermaid
+sequenceDiagram
+    participant B as User Browser
+    participant AS as Authorization Server
+    participant A as Attacker
+
+    B->>AS: Request Auth Code
+    AS-->>B: Redirect with Auth Code
+    A->>A: Intercept Auth Code
+    A->>AS: Exchange Code for Token
+    AS->>AS: PKCE Validation
+    AS-->>A: BLOCK: Missing code_verifier
 ```
 
 ### Threat Vectors and Kill-Chains
@@ -115,17 +113,20 @@ A secure authentication architecture requires enforcing PKCE globally and valida
 
 ### Architecture Topology: Gateway-Level Token Validation and Session Management
 
-```
-[ Public Client ] -> [ API Gateway (Enforces HTTPS) ]
-                           │
-                    ( Validates JWT )
-                           │
-            ┌──────────────┴──────────────┐
-            ▼ (Valid Claims & Signature)  ▼ (Expired / Invalid Signature)
-     [ Forward Request ]           [ Return 401 Unauthorized ]
-            │
-            ▼
-   [ Internal Services ]
+```mermaid
+flowchart TD
+    CLIENT["Public Client"] --> GW["API Gateway<br/>Enforces HTTPS"]
+    GW -->|Validates JWT| DECISION{"Token Valid?"}
+    DECISION -->|Valid Claims + Signature| FWD["Forward Request"]
+    DECISION -->|Expired / Invalid| BLOCK["Return 401 Unauthorized"]
+    FWD --> SVC["Internal Services"]
+
+    style CLIENT fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style GW fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style DECISION fill:#0891b2,color:#fff,stroke:#0e7490
+    style FWD fill:#059669,color:#fff,stroke:#047857
+    style BLOCK fill:#dc2626,color:#fff,stroke:#b91c1c
+    style SVC fill:#059669,color:#fff,stroke:#047857
 ```
 
 ### Hardened Authorization Request Configuration

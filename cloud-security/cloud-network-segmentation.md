@@ -64,12 +64,22 @@ If all VPC attachments are associated with a single default TGW route table, eve
 #### The Isolated Hub-and-Spoke Pattern
 To prevent unauthorized lateral movement, assign VPC attachments to separate, dedicated TGW route tables. 
 
-```
-[ Web VPC ] <--> [ Web TGW Route Table ] ────┐
-                                             ▼
-[ Core DB VPC ] <--> [ DB TGW Route Table ] ─┼─> [ Inspection VPC (Firewall Appliance) ]
-                                             ▲
-[ Shared SVCS ] <--> [ SVCS TGW Route Table ]┘
+```mermaid
+flowchart LR
+    WEB["Web VPC"] <--> WRT["Web TGW<br/>Route Table"]
+    DB["Core DB VPC"] <--> DRT["DB TGW<br/>Route Table"]
+    SVC["Shared SVCS"] <--> SRT["SVCS TGW<br/>Route Table"]
+    WRT --> FW["Inspection VPC<br/>Firewall Appliance"]
+    DRT --> FW
+    SRT --> FW
+
+    style WEB fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style DB fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style SVC fill:#0891b2,color:#fff,stroke:#0e7490
+    style FW fill:#dc2626,color:#fff,stroke:#b91c1c
+    style WRT fill:#1e293b,color:#fff,stroke:#0f172a
+    style DRT fill:#1e293b,color:#fff,stroke:#0f172a
+    style SRT fill:#1e293b,color:#fff,stroke:#0f172a
 ```
 
 By decoupling propagation (which networks the TGW learns about) and association (which route table the TGW uses to route traffic), you can force all inter-VPC traffic through a central firewall appliance in an **Inspection VPC**.

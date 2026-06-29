@@ -123,25 +123,24 @@ A secure IaC deployment pipeline must enforce pre-commit validation, plan-stage 
 
 ### Architecture Topology: IaC Validation Pipeline and Drift Detection Loop
 
-```
-[ Developer Push ] ────> [ GitHub Action runner ]
-                                │
-                   ( Runs Checkov / Static Scan )
-                                │
-                                ▼
-                       [ Terraform Plan ]
-                                │
-                    ( Generates tfplan.json )
-                                │
-                                ▼
-                 [ Open Policy Agent Validation ]
-                                │
-               ┌────────────────┴────────────────┐
-               ▼ (Passes)                        ▼ (Violations)
-      [ Apply Changes ]                 [ Block Build & Alert ]
-               │
-               ▼
-   [ Provisioned Resources ] <─── (Hourly Drift Scan) ─── [ Cloud Config Monitor ]
+```mermaid
+flowchart TD
+    DEV["Developer Push"] --> GHA["GitHub Actions Runner"]
+    GHA -->|Runs Checkov / Static Scan| TF["Terraform Plan"]
+    TF -->|Generates tfplan.json| OPA["Open Policy Agent<br/>Validation"]
+    OPA -->|Passes| APPLY["Apply Changes"]
+    OPA -->|Violations| BLOCK["Block Build & Alert"]
+    APPLY --> RES["Provisioned Resources"]
+    MONITOR["Cloud Config Monitor"] -->|Hourly Drift Scan| RES
+
+    style DEV fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style GHA fill:#0891b2,color:#fff,stroke:#0e7490
+    style TF fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style OPA fill:#d97706,color:#fff,stroke:#b45309
+    style APPLY fill:#059669,color:#fff,stroke:#047857
+    style BLOCK fill:#dc2626,color:#fff,stroke:#b91c1c
+    style RES fill:#059669,color:#fff,stroke:#047857
+    style MONITOR fill:#0891b2,color:#fff,stroke:#0e7490
 ```
 
 ### Automated Drift Detection Workflow

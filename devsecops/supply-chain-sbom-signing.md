@@ -67,19 +67,22 @@ SLSA is a security framework designed to protect the integrity of software artif
 
 Cosign (part of the Sigstore project) simplifies signing and verifying container images. It stores signatures directly inside the container registry, eliminating the need to manage external signature stores.
 
-```
-[ Build Image ] ──> [ Push to Registry ] ──> [ Cosign Signs Image ] ────┐
-                                                                       ▼
-                                                          [ Push Signature to Registry ]
-                                                                       │
-                                                                       ▼
-[ Deploy Image ] <── [ Cluster Admission Controller (Kyverno) ] <──────┘
-                                  │
-                       ( Verifies Signature )
-                                  │
-                      ┌───────────┴───────────┐
-                      ▼                       ▼
-               [ Run Container ]       [ Reject Image ]
+```mermaid
+flowchart LR
+    BUILD["Build Image"] --> PUSH["Push to Registry"]
+    PUSH --> SIGN["Cosign Signs Image"]
+    SIGN --> SIG["Push Signature<br/>to Registry"]
+    SIG --> KYVERNO["Cluster Admission<br/>Controller - Kyverno"]
+    KYVERNO -->|Signature Valid| RUN["Run Container"]
+    KYVERNO -->|No Signature| REJECT["Reject Image"]
+
+    style BUILD fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style PUSH fill:#0891b2,color:#fff,stroke:#0e7490
+    style SIGN fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style SIG fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style KYVERNO fill:#d97706,color:#fff,stroke:#b45309
+    style RUN fill:#059669,color:#fff,stroke:#047857
+    style REJECT fill:#dc2626,color:#fff,stroke:#b91c1c
 ```
 
 #### Keyless Signing Mechanics
@@ -99,29 +102,26 @@ A secure supply chain architecture requires generating verified Software Bills o
 
 ### Architecture Topology: End-to-End Build and Verification Flow
 
-```
-[ Git Push ] ────> [ GitHub Runner ]
-                          │
-                  ( Build & Test Code )
-                          │
-                          ▼
-            [ Generate CycloneDX SBOM ] ──> (Saves SBOM to Registry)
-                          │
-                          ▼
-             [ Build Container Image ]
-                          │
-                          ▼
-             [ Cosign Keyless Signing ]
-                          │
-                          ▼
-            [ Push Image to Registry ]
-                          │
-                          ▼
-     [ Kubernetes Cluster (Kyverno Verify) ]
-                          │
-               ┌──────────┴──────────┐
-               ▼ (Valid Signature)   ▼ (No Signature)
-         [ Run Workload ]      [ Block Deployment ]
+```mermaid
+flowchart TD
+    GIT["Git Push"] --> RUNNER["GitHub Runner"]
+    RUNNER -->|Build and Test| SBOM["Generate CycloneDX SBOM"]
+    SBOM -->|Saves to Registry| IMG["Build Container Image"]
+    IMG --> COSIGN["Cosign Keyless Signing"]
+    COSIGN --> REG["Push Image to Registry"]
+    REG --> K8S["Kubernetes Cluster<br/>Kyverno Verify"]
+    K8S -->|Valid Signature| RUN["Run Workload"]
+    K8S -->|No Signature| BLOCK["Block Deployment"]
+
+    style GIT fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style RUNNER fill:#0891b2,color:#fff,stroke:#0e7490
+    style SBOM fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style IMG fill:#0891b2,color:#fff,stroke:#0e7490
+    style COSIGN fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style REG fill:#0891b2,color:#fff,stroke:#0e7490
+    style K8S fill:#d97706,color:#fff,stroke:#b45309
+    style RUN fill:#059669,color:#fff,stroke:#047857
+    style BLOCK fill:#dc2626,color:#fff,stroke:#b91c1c
 ```
 
 ### Kyverno Image Verification Policy

@@ -55,6 +55,20 @@ The cloud attack surface is highly dynamic. Attackers target developer endpoints
 5. **Control Plane Takeover via AssumeRole (T1078)**:
    - The attacker uses the node's IAM credentials to assume a high-privilege cross-account administration role, completing the attack chain.
 
+```mermaid
+flowchart LR
+    A["1 - Stolen Dev Keys<br/>T1586"] --> B["2 - ECR Image Poisoning<br/>T1195"]
+    B --> C["3 - K8s Node Breakout<br/>T1611"]
+    C --> D["4 - IMDS Credential<br/>Harvest T1552"]
+    D --> E["5 - Cross-Account<br/>AssumeRole T1078"]
+
+    style A fill:#dc2626,color:#fff,stroke:#991b1b
+    style B fill:#ea580c,color:#fff,stroke:#c2410c
+    style C fill:#d97706,color:#fff,stroke:#b45309
+    style D fill:#ca8a04,color:#fff,stroke:#a16207
+    style E fill:#9333ea,color:#fff,stroke:#7e22ce
+```
+
 ---
 
 ## Deep Technical Body
@@ -130,31 +144,22 @@ Preventing multi-stage attacks requires breaking compilation links and applying 
 
 ### Architecture Topology: Hardened Deployment and Runtime Isolation
 
-```
-[ Code Commit ] ──> [ Static Scanner ]
-                           │
-                 ( Verifies Commit Signature )
-                           │
-                           ▼
-                  [ Ephemeral Builder ]
-                           │
-                 ( Signs Image via Cosign )
-                           │
-                           ▼
-                 [ Container Registry ]
-                           │
-                           ▼
-     [ Kubernetes Admission Controller (Kyverno) ]
-                           │
-               ( Enforces Image Signatures )
-                           │
-                           ▼
-             [ Sandboxed Worker Node (gVisor) ]
-                           │
-               ( Blocks HostPath Mounts )
-                           │
-                           ▼
-     [ IMDS Restricted to Hop Limit 1 (Blocks Pods) ]
+```mermaid
+flowchart TD
+    COMMIT["Code Commit"] -->|Verifies Commit Signature| SCAN["Static Scanner"]
+    SCAN --> BUILD["Ephemeral Builder"]
+    BUILD -->|Signs Image via Cosign| REG["Container Registry"]
+    REG --> KYV["Kubernetes Admission<br/>Controller - Kyverno"]
+    KYV -->|Enforces Image Signatures| GVISOR["Sandboxed Worker Node<br/>gVisor"]
+    GVISOR -->|Blocks HostPath Mounts| IMDS["IMDS Restricted<br/>Hop Limit 1 - Blocks Pods"]
+
+    style COMMIT fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style SCAN fill:#0891b2,color:#fff,stroke:#0e7490
+    style BUILD fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style REG fill:#0891b2,color:#fff,stroke:#0e7490
+    style KYV fill:#d97706,color:#fff,stroke:#b45309
+    style GVISOR fill:#059669,color:#fff,stroke:#047857
+    style IMDS fill:#dc2626,color:#fff,stroke:#b91c1c
 ```
 
 * **Restrict IMDS Hop Limit**: Configure the EC2 Instance Metadata Service hop limit to 1. This prevents pods (which add a network hop) from querying the metadata service, restricting IMDS access exclusively to the host node.

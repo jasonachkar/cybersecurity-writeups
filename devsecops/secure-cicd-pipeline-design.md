@@ -123,24 +123,22 @@ A secure pipeline design requires isolating runner hosts, enforcing branch prote
 
 ### Reference Pipeline Isolation Boundary Topology
 
-```
-[ Developer Local ] ── (git push) ──> [ GitHub Repository (Branch Protection Enforced) ]
-                                                   │
-                                      (Webhook Triggers Build)
-                                                   │
-                                                   ▼
-                                    [ Self-Hosted Runner VPC ]
-                                                   │
-                                    (Ephememeral Kubernetes Pods)
-                                                   │
-                           ┌───────────────────────┴───────────────────────┐
-                           ▼                                               ▼
-                 [ Sandbox Runner Pod ]                        [ Production Runner Pod ]
-                           │                                               │
-                    (Restricted Network)                              (VPC Peering)
-                           │                                               │
-                           ▼                                               ▼
-                 [ Isolated Dev VPC ]                            [ Inspection Subnets ]
+```mermaid
+flowchart TD
+    DEV["Developer Local"] -->|git push| REPO["GitHub Repository<br/>Branch Protection Enforced"]
+    REPO -->|Webhook Trigger| VPC["Self-Hosted Runner VPC"]
+    VPC -->|Ephemeral K8s Pods| SAND["Sandbox Runner Pod"]
+    VPC -->|Ephemeral K8s Pods| PROD["Production Runner Pod"]
+    SAND -->|Restricted Network| DEVVPC["Isolated Dev VPC"]
+    PROD -->|VPC Peering| INSPECT["Inspection Subnets"]
+
+    style DEV fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style REPO fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style VPC fill:#0891b2,color:#fff,stroke:#0e7490
+    style SAND fill:#059669,color:#fff,stroke:#047857
+    style PROD fill:#dc2626,color:#fff,stroke:#b91c1c
+    style DEVVPC fill:#059669,color:#fff,stroke:#047857
+    style INSPECT fill:#d97706,color:#fff,stroke:#b45309
 ```
 
 * **Ephemeral Runners**: Build steps run inside temporary Kubernetes pods (e.g. using Actions Runner Controller). Pods are destroyed immediately after execution completes, preventing cross-build contamination and persistent malware installation.

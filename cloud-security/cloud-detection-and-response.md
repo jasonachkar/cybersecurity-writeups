@@ -63,13 +63,14 @@ Auditing systems are only as secure as the logs they generate. If an attacker ca
 #### Multi-Account Log Aggregation
 All CloudTrail, VPC Flow, and application logs must be delivered directly to a dedicated `Log-Archive` account. This account must be isolated from the rest of the Organization.
 
-```
-[ Workload Member Account ]  ── (Delivers logs) ──>  [ Log-Archive Account ]
-                                                          │
-                                                (Enforces Object Lock)
-                                                          │
-                                                          ▼
-                                                [ Tamper-Proof S3 Bucket ]
+```mermaid
+flowchart LR
+    WL["Workload Member Account"] -->|Delivers logs| LA["Log-Archive Account"]
+    LA -->|Enforces Object Lock| S3["Tamper-Proof S3 Bucket"]
+
+    style WL fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style LA fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style S3 fill:#059669,color:#fff,stroke:#047857
 ```
 
 * **No Delete Permissions**: The IAM policies in the member accounts must only permit writing to the S3 bucket in the `Log-Archive` account. They must have no permissions to read, modify, or delete existing objects.
@@ -84,25 +85,24 @@ A secure detection and response architecture relies on real-time event routing, 
 
 ### Architecture Topology: Real-Time Log Pipeline and Automated Containment
 
-```
-[ AWS Member Account API Call ] -> [ AWS CloudTrail ]
-                                         │
-                                         ├─> (Delivers to S3 WORM Bucket in Log-Archive)
-                                         │
-                                         ▼
-                               [ AWS EventBridge ]
-                                         │
-                   (Filters: Target Security Event Matches)
-                                         │
-                                         ▼
-                             [ AWS Security Tooling ]
-                                         │
-                                         ▼
-                          [ Lambda Containment Engine ]
-                                         │
-               ┌─────────────────────────┴─────────────────────────┐
-               ▼                                                   ▼
-[ Revoke IAM Principal Sessions ]                   [ Quarantine Security Group ]
+```mermaid
+flowchart TD
+    API["AWS Member Account<br/>API Call"] --> CT["AWS CloudTrail"]
+    CT --> S3W["S3 WORM Bucket<br/>Log-Archive"]
+    CT --> EB["AWS EventBridge"]
+    EB -->|Security Event Match| TOOL["AWS Security Tooling"]
+    TOOL --> LAMBDA["Lambda<br/>Containment Engine"]
+    LAMBDA --> REVOKE["Revoke IAM<br/>Principal Sessions"]
+    LAMBDA --> QUARANTINE["Quarantine<br/>Security Group"]
+
+    style API fill:#2563eb,color:#fff,stroke:#1d4ed8
+    style CT fill:#7c3aed,color:#fff,stroke:#6d28d9
+    style S3W fill:#059669,color:#fff,stroke:#047857
+    style EB fill:#0891b2,color:#fff,stroke:#0e7490
+    style TOOL fill:#d97706,color:#fff,stroke:#b45309
+    style LAMBDA fill:#dc2626,color:#fff,stroke:#b91c1c
+    style REVOKE fill:#dc2626,color:#fff,stroke:#b91c1c
+    style QUARANTINE fill:#dc2626,color:#fff,stroke:#b91c1c
 ```
 
 ### High-Signal KQL Detection Rule: Detecting CloudTrail Stop / Disable Requests

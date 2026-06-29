@@ -73,24 +73,36 @@ body[data-md-color-scheme="slate"] {
 /* ========================================================
    TYPOGRAPHY — Headings
    ======================================================== */
-h1, h2, h3, h4 {
+h1, h2, h3, h4, h5, h6 {
   font-weight: 600 !important;
   letter-spacing: -0.02em;
+  color: #0f172a !important;              /* Slate 900 — strong dark in light mode */
 }
 
 /* Light mode h1 */
 h1 {
   font-size: 2.2rem !important;
   margin-bottom: 1.5rem !important;
-  border-left: 5px solid var(--md-accent-fg-color);
+  border-left: 5px solid #4f46e5;         /* Indigo accent bar */
   padding-left: 12px;
+  color: #0f172a !important;
 }
 
 h2 {
   font-size: 1.6rem !important;
   margin-top: 2rem !important;
-  border-bottom: 1px solid rgba(139, 148, 158, 0.2);
+  border-bottom: 1px solid rgba(15, 23, 42, 0.12);
   padding-bottom: 8px;
+  color: #1e293b !important;              /* Slate 800 */
+}
+
+h3 {
+  font-size: 1.3rem !important;
+  color: #1e293b !important;
+}
+
+h4, h5, h6 {
+  color: #334155 !important;              /* Slate 700 */
 }
 
 /* Dark mode — force ALL headings to be white / near-white */
