@@ -1,3 +1,11 @@
+---
+title: "Detection Engineering with Microsoft Sentinel"
+type: "tutorial"
+tags: ['Security', 'Sentinel']
+date: "2026-06"
+readingTime: 17
+---
+
 # Detection Engineering with Microsoft Sentinel
 
 A comprehensive guide to building, deploying, and managing detection rules in Microsoft Sentinel using KQL (Kusto Query Language).

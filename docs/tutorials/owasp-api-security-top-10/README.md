@@ -1,3 +1,11 @@
+---
+title: "OWASP API Security Top 10 (2023)"
+type: "tutorial"
+tags: ['Security', 'OWASP']
+date: "2026-06"
+readingTime: 28
+---
+
 # OWASP API Security Top 10 (2023)
 
 A comprehensive guide to understanding and mitigating the most critical API security risks as defined by the Open Web Application Security Project.
