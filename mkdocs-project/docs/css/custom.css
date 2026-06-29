@@ -1,0 +1,107 @@
+/* Custom CSS for Cybersecurity Writeups Website */
+/* SonarQube & Renovate Premium Docs Aesthetic */
+
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+:root {
+  /* Set fonts */
+  --md-text-font: 'Outfit', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+  --md-code-font: 'JetBrains Mono', SFMono-Regular, Consolas, Menlo, monospace;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--md-default-bg-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(121, 134, 203, 0.4);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(121, 134, 203, 0.7);
+}
+
+/* Premium Typography Adjustments */
+h1, h2, h3, h4 {
+  font-weight: 600 !important;
+  letter-spacing: -0.02em;
+}
+
+h1 {
+  font-size: 2.2rem !important;
+  margin-bottom: 1.5rem !important;
+  color: var(--md-primary-fg-color) !important;
+  border-left: 5px solid var(--md-primary-fg-color);
+  padding-left: 12px;
+}
+
+h2 {
+  font-size: 1.6rem !important;
+  margin-top: 2rem !important;
+  border-bottom: 1px solid rgba(121, 134, 203, 0.2);
+  padding-bottom: 8px;
+}
+
+/* Code block customization */
+.md-typeset pre {
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  border: 1px solid rgba(121, 134, 203, 0.15) !important;
+}
+
+.md-typeset code {
+  border-radius: 4px;
+  padding: 2px 6px;
+}
+
+/* Table styling customization */
+.md-typeset table:not([class]) {
+  border-radius: 8px !important;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+  border-collapse: collapse;
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-primary-fg-color) !important;
+  color: white !important;
+  font-weight: 500;
+}
+
+.md-typeset table:not([class]) td {
+  border-bottom: 1px solid rgba(121, 134, 203, 0.1);
+}
+
+/* Admonition/Callout blocks */
+.md-typeset .admonition {
+  border-radius: 6px !important;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Mermaid Diagrams Container Styling */
+.mermaid {
+  background-color: transparent !important;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(121, 134, 203, 0.1);
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* Logo and Header Customization */
+.md-header {
+  backdrop-filter: blur(12px) !important;
+  background-color: rgba(26, 35, 126, 0.85) !important; /* Indigo with transparency */
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background-color: rgba(30, 30, 42, 0.85) !important; /* Dark Slate transparent */
+}

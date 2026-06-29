@@ -1,0 +1,139 @@
+site_name: "Platform Security & Cloud Architecture Writeups"
+site_url: "https://docs.jasonachkardiab.com"
+site_author: "Jason Achkardiab"
+repo_name: "jasonachkar/cybersecurity-writeups"
+repo_url: "https://github.com/jasonachkar/cybersecurity-writeups"
+edit_uri: "edit/main/"
+
+docs_dir: docs
+site_dir: site
+
+theme:
+  name: material
+  palette:
+    # Light Mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark Mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.instant
+    - navigation.tracking
+    - navigation.sections
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.select
+
+extra_css:
+  - css/custom.css
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+nav:
+  - Home: index.md
+  - ☁️ Cloud Security:
+    - Multi-Account Landing Zones: cloud-security/multi-account-landing-zones.md
+    - IAM at Scale: cloud-security/iam-at-scale.md
+    - Kubernetes Multi-Tenancy: cloud-security/kubernetes-multi-tenancy.md
+    - Serverless Security: cloud-security/serverless-security.md
+    - Network Segmentation: cloud-security/cloud-network-segmentation.md
+    - Detection and Response: cloud-security/cloud-detection-and-response.md
+  - 💻 Application Security:
+    - API & Microservices Threat Modeling: appsec/api-microservices-threat-modeling.md
+    - OAuth 2.0 & OIDC Deep Dive: appsec/oauth2-oidc-deep-dive.md
+    - SaaS Multi-Tenancy Isolation: appsec/saas-multitenancy-isolation.md
+    - Runtime Protection (RASP & WAF): appsec/runtime-protection-rasp-waf.md
+  - 🛡️ DevSecOps:
+    - Secure CI/CD Pipeline Design: devsecops/secure-cicd-pipeline-design.md
+    - IaC Security & Policy as Code: devsecops/iac-security-and-policy-as-code.md
+    - Supply Chain (SBOM, Signing): devsecops/supply-chain-sbom-signing.md
+    - Secrets Management: devsecops/secrets-management.md
+  - 🕵️ Threat Intelligence:
+    - Attack Path Analysis: threat-intel/attack-path-analysis.md
+    - Cloud Breach Case Studies: threat-intel/cloud-breach-case-studies.md
+  - 📘 Legacy Tutorials:
+    - Azure Landing Zone:
+      - Overview: docs/tutorials/azure-landing-zone/README.md
+      - Architecture: docs/tutorials/azure-landing-zone/architecture.md
+      - Networking: docs/tutorials/azure-landing-zone/networking.md
+      - Policy & Governance: docs/tutorials/azure-landing-zone/policy-governance.md
+      - IAM Design: docs/tutorials/azure-landing-zone/iam.md
+      - Implementation Templates: docs/tutorials/azure-landing-zone/implementation-templates.md
+    - OWASP API Security Top 10:
+      - Overview: docs/tutorials/owasp-api-security-top-10/README.md
+      - Vulnerabilities: docs/tutorials/owasp-api-security-top-10/vulnerabilities.md
+      - Mitigations (.NET): docs/tutorials/owasp-api-security-top-10/mitigations-dotnet.md
+      - Mitigations (Node.js): docs/tutorials/owasp-api-security-top-10/mitigation-node.md
+      - Code Examples: docs/tutorials/owasp-api-security-top-10/code-examples.md
+    - Detection Engineering with Sentinel:
+      - Overview: docs/tutorials/detection-engineering-sentinel/README.md
+      - Detection Templates: docs/tutorials/detection-engineering-sentinel/detection-templates.md
+    - CI/CD Security Gates:
+      - Overview: docs/tutorials/ci-cd-gates/README.md
+      - GitHub Actions: docs/tutorials/ci-cd-gates/github-actions.md
+      - Azure DevOps: docs/tutorials/ci-cd-gates/azure-devops.md
+      - Scanners & Tools: docs/tutorials/ci-cd-gates/tools.md
+    - Securing Azure Entra ID:
+      - Overview: docs/tutorials/securing-entra-id/README.md
+      - Identity Protection: docs/tutorials/securing-entra-id/identity-protection.md
+      - PIM Configuration: docs/tutorials/securing-entra-id/pim-configuration.md
+      - Conditional Access: docs/tutorials/securing-entra-id/conditional-access-policies.md
+      - Monitoring & Alerts: docs/tutorials/securing-entra-id/monitoring-alerts.md
+    - Azure Firewall Walkthrough:
+      - Overview: docs/tutorials/azure-firewall-walkthrough/README.md
+  - 🔬 Legacy Research:
+    - Threat Modeling SaaS:
+      - Overview: docs/research/threat-modeling-saas/README.md
+      - STRIDE Analysis: docs/research/threat-modeling-saas/stride-analysis.md
+      - Data Flow Diagrams: docs/research/threat-modeling-saas/data-flow-diagrams.md
+      - Mitigations: docs/research/threat-modeling-saas/mitigations.md
+      - Templates: docs/research/threat-modeling-saas/templates.md
+    - OAuth 2.0 Misconfigurations:
+      - Overview: docs/research/oauth-misconfigurations/README.md
+      - Attack Scenarios: docs/research/oauth-misconfigurations/attack-scenarios.md
+      - Mitigations: docs/research/oauth-misconfigurations/mitigations.md
+      - Code Examples: docs/research/oauth-misconfigurations/code-examples.md
+    - Enterprise Cloud Security Engineering:
+      - Overview: docs/research/enterprise-cloud-security-engineering/README.md
+      - Architecture: docs/research/enterprise-cloud-security-engineering/cloud-security-architecture.md
+      - Landing Zones & IAM: docs/research/enterprise-cloud-security-engineering/multi-account-landing-zones-and-iam.md
+      - Workload Identity: docs/research/enterprise-cloud-security-engineering/iam-workload-identity.md
+      - Kubernetes Security: docs/research/enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security.md
+      - Pipeline Hardening: docs/research/enterprise-cloud-security-engineering/devsecops-pipeline-hardening.md
+      - Detection Engineering: docs/research/enterprise-cloud-security-engineering/detection-engineering.md
+  - 🎓 Certification Notes:
+    - CompTIA Security+:
+      - Overview: docs/certification-notes/security-plus/README.md
+      - Domain 1 - Threats: docs/certification-notes/security-plus/domain-1-threats.md
+      - Domain 2 - Architecture: docs/certification-notes/security-plus/domain-2-architecture.md
+      - Domain 3 - Operations: docs/certification-notes/security-plus/domain-3-operations.md
+      - Quick Reference: docs/certification-notes/security-plus/quick-reference.md
+      - Practice Questions: docs/certification-notes/security-plus/practice-questions.md

@@ -1,0 +1,6 @@
+.venv/
+site/
+mkdocs-project/site/
+__pycache__/
+.DS_Store
+*.pyc

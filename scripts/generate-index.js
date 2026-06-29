@@ -458,9 +458,8 @@ function main() {
       const { frontMatter } = parseFrontMatter(raw);
       const meta = normalizeMeta(frontMatter);
 
-      // We index folders, not file links, so link to the directory
-      const dir = path.dirname(filePath);
-      const relDir = path.relative(REPO_ROOT, dir);
+      // We link directly to the README.md file for MkDocs/GitHub compatibility
+      const relDir = path.relative(REPO_ROOT, filePath);
       items.push({ meta, relDir });
     }
   }
