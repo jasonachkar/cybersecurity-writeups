@@ -1,6 +1,16 @@
 .venv/
 site/
 mkdocs-project/site/
+node_modules/
 __pycache__/
 .DS_Store
 *.pyc
+.env
+.env.*
+!.env.example
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+labs/azure-landing-zone/main.json
