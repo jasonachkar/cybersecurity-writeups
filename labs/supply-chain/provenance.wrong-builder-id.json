@@ -4,7 +4,7 @@
     {
       "name": "release.txt",
       "digest": {
-        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        "sha256": "096407aa951a20498aabd46de33f6c41f190fc7987d3e01779438afc5c65b1c9"
       }
     }
   ],
@@ -30,7 +30,7 @@
     },
     "runDetails": {
       "builder": {
-        "id": "https://github.com/jasonachkar/cybersecurity-writeups/.github/workflows/release.yml@refs/heads/main"
+        "id": "https://github.com/untrusted/example/.github/workflows/release.yml@refs/heads/main"
       }
     }
   }

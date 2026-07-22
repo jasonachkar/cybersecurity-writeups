@@ -11,14 +11,30 @@
   "predicateType": "https://slsa.dev/provenance/v1",
   "predicate": {
     "buildDefinition": {
-      "buildType": "https://github.com/jasonachkar/cybersecurity-writeups/.github/workflows/release.yml",
+      "buildType": "https://actions.github.io/buildtypes/workflow/v1",
       "externalParameters": {
-        "source": "git+https://github.com/jasonachkar/cybersecurity-writeups@refs/heads/main"
+        "workflow": {
+          "repository": "https://github.com/jasonachkar/cybersecurity-writeups",
+          "ref": "refs/heads/main",
+          "path": ".github/workflows/release.yml"
+        }
+      },
+      "resolvedDependencies": [
+        {
+          "uri": "git+https://github.com/jasonachkar/cybersecurity-writeups@refs/heads/main",
+          "digest": {
+            "gitCommit": "38b5bf73cf8fa4a5ce0f9d6950dafa05aba9c584"
+          }
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "https://github.com/jasonachkar/cybersecurity-writeups/.github/workflows/release.yml@refs/heads/main"
+      },
+      "metadata": {
+        "invocationId": "https://github.com/jasonachkar/cybersecurity-writeups/actions/runs/fixture"
       }
     }
-  },
-  "verification": {
-    "issuer": "https://token.actions.githubusercontent.com",
-    "verified": true
   }
 }

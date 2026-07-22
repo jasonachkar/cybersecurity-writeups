@@ -1,9 +1,17 @@
 # Artifact provenance and SBOM verification lab
 
-This offline lab demonstrates that a verifier must bind an artifact digest to the
-expected statement type, builder workflow, source repository/ref, issuer, and a
-successful cryptographic-verification result. It also parses a minimal CycloneDX 1.7
-SBOM fixture.
+This offline lab demonstrates policy checks across four deliberately separate inputs:
+
+1. the artifact bytes;
+2. a SLSA v1 provenance statement;
+3. the trusted output of an external cryptographic verifier; and
+4. organization policy.
+
+The policy independently constrains `predicate.runDetails.builder.id`,
+`predicate.buildDefinition.buildType`, the canonical source URI, and the attestation
+issuer. The external verifier result must return the authenticated statement, which
+must deep-match the separately supplied provenance. The statement subject must then
+match the locally calculated artifact digest.
 
 ## Prerequisites and run command
 
@@ -14,17 +22,47 @@ SBOM fixture.
 node labs/supply-chain/tests/run-tests.js
 ```
 
-Expected output ends in `PASS`. Negative tests reject a modified artifact, wrong
-digest, untrusted builder, and a statement whose signature-verification result is not
-successful.
+Expected output ends in `PASS`. Negative tests reject:
 
-## What is reproduced
+- wrong builder ID;
+- wrong build type;
+- missing `runDetails`;
+- wrong source;
+- wrong issuer;
+- failed cryptographic-verification result;
+- a verifier result bound to another statement;
+- a provenance subject with the wrong digest; and
+- modified artifact bytes.
 
-The local verifier and deterministic fixtures are tested. The `verification` object
-is deliberately a fixture boundary: this lab does **not** implement cryptography or
-claim that editing JSON can establish signature validity. In production, populate
-verified claims only from an attestation verifier such as Cosign or GitHub's
-attestation tooling, then apply the same policy constraints.
+## SLSA field model
+
+SLSA v1.2 assigns different meanings to fields that must not be conflated:
+
+- `buildDefinition.buildType` identifies the parameterized build template/process;
+- `runDetails.builder.id` identifies the trusted build platform for that invocation;
+- `subject[].digest` binds provenance to output bytes; and
+- signature, certificate, issuer, and transparency checks happen on the attestation
+  envelope before provenance policy is applied.
+
+`policy.json` therefore uses explicit `expectedBuilderId`, `expectedBuildType`,
+`expectedSourceUri`, and `expectedIssuer` fields.
+
+## External verifier boundary
+
+`verifier-result.valid.json` is a **tested pedagogical adapter contract**, not a
+Sigstore, Cosign, or GitHub-defined file format. It represents data returned over a
+trusted in-process boundary after a real verifier has checked the signed envelope,
+certificate chain or key, signer identity, and any required transparency evidence.
+Negative tests create separate temporary verifier results for wrong issuer, failed
+verification, and statement mismatch. Neither the tracked fixture nor temporary
+results can establish cryptographic validity merely by containing
+`"verified": true`.
+
+Production code must invoke and authenticate a supported verifier, consume its result
+without allowing the build under test to forge or replace it, and then enforce the
+same statement and policy constraints. The fixture carries the statement returned by
+the external verifier; the harness requires it to deep-match the policy-evaluated
+statement, so a successful result cannot be replayed for modified provenance.
 
 Example production commands, not executed by this offline lab:
 
@@ -46,18 +84,25 @@ signature from any identity as authorization.
 
 An SBOM is an inventory, not evidence that components are vulnerability-free.
 Provenance describes a build path, not developer intent or source safety. This lab
-does not test transparency-log availability, certificate revocation semantics,
-reusable-workflow delegation, private-repository identity, key compromise, or the
-production attestation envelope. Those require the selected verifier and platform.
+does not implement DSSE parsing, certificate/key validation, transparency-log checks,
+certificate revocation semantics, reusable-workflow delegation, private-repository
+identity, key-compromise response, or the production attestation envelope. Those
+belong to the selected external verifier and platform integration.
+
+The lab binds source in both the GitHub workflow external parameters and
+`resolvedDependencies`; it also requires the external workflow repository, path, and
+ref to reconstruct the authorized builder ID. A production GitHub build-type policy
+should additionally reject every unexpected or unrecognized external parameter.
 
 ## Cleanup
 
-Tests remove their temporary tampered artifact. No service or cloud resource is
-created.
+Tests remove their temporary verifier results and tampered artifact. No service or
+cloud resource is created.
 
 ## References
 
-- [SLSA v1.2 specification](https://slsa.dev/spec/v1.2/)
+- [SLSA v1.2 build provenance](https://slsa.dev/spec/v1.2/build-provenance)
+- [SLSA v1.2 artifact verification](https://slsa.dev/spec/v1.2/verifying-artifacts)
 - [Sigstore Cosign verification](https://docs.sigstore.dev/cosign/verifying/verify/)
 - [GitHub artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations)
 - [CycloneDX specification overview](https://cyclonedx.org/specification/overview/)

@@ -4,14 +4,14 @@
     {
       "name": "release.txt",
       "digest": {
-        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        "sha256": "096407aa951a20498aabd46de33f6c41f190fc7987d3e01779438afc5c65b1c9"
       }
     }
   ],
   "predicateType": "https://slsa.dev/provenance/v1",
   "predicate": {
     "buildDefinition": {
-      "buildType": "https://actions.github.io/buildtypes/workflow/v1",
+      "buildType": "https://example.invalid/buildtypes/untrusted/v1",
       "externalParameters": {
         "workflow": {
           "repository": "https://github.com/jasonachkar/cybersecurity-writeups",

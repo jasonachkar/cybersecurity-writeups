@@ -37,12 +37,14 @@ federated what-if workflow. Existing deep dives remain available for
 
 ## Executive decision
 
-Use a management-group hierarchy that expresses policy/operating archetypes rather
-than the current org chart. Vend workload subscriptions through a controlled product
-workflow that establishes ownership, budget, identity, network, security, logging,
-policy, and decommissioning metadata. Keep platform, landing-zone, sandbox, and
-decommissioned scopes distinct. Deploy the platform from protected IaC with federated
-identities and staged policy enforcement.
+Reserve the tenant-root management group for the smallest set of controls that must
+apply to every subscription. Put the organization's Platform, Landing Zones, Sandbox,
+and Decommissioned hierarchy under an intermediate root management group, and express
+durable policy/operating archetypes rather than the current org chart. Vend workload
+subscriptions through a controlled product workflow that establishes ownership,
+budget, identity, network, security, logging, policy, and decommissioning metadata.
+Deploy the platform from protected IaC with federated identities and staged policy
+enforcement.
 
 Prefer a small durable hierarchy. Management groups affect inherited authorization
 and policy at broad scope; every extra branch adds exception, move, deployment, and
@@ -87,7 +89,8 @@ management boundaries deliberately.
 
 ```mermaid
 flowchart TB
-  E["Microsoft Entra tenant and emergency access"] --> R["Tenant root management group"]
+  E["Microsoft Entra tenant and emergency access"] --> T["Tenant root management group: minimal global controls"]
+  T --> R["Organization intermediate root management group"]
   R --> P["Platform"]
   R --> L["Landing zones"]
   R --> S["Sandbox"]
@@ -135,7 +138,10 @@ network appliance, or control-plane dependency.
 ### Selected organization model
 
 Use the tenant root only for controls that genuinely apply everywhere and need the
-widest scope. Beneath it:
+widest scope. Create an organization intermediate root management group directly
+beneath it so the organization can evolve its governed hierarchy without treating the
+provider-owned tenant root as its ordinary landing-zone root. Beneath that intermediate
+root:
 
 - **Platform:** centrally operated identity, management/security, and connectivity
   subscriptions.
