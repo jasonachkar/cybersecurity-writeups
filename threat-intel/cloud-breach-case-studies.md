@@ -1,171 +1,207 @@
 ---
-title: "Cloud Breach Case Studies: Technical Autopsy of Capital One, Uber, and CircleCI Compromises"
-type: threat-intel
-tags: [Threat Intelligence, Case Studies, Cloud Breaches, Incident Response, Incident Analysis]
-date: 2026-06
-readingTime: 20
+title: "Cloud Incident Case Studies: Evidence, Chronology, and Control Lessons"
+type: "threat-intel"
+tags:
+  - cloud-security
+  - incident-response
+  - identity
+  - ssrf
+date: "2026-07-21"
+lastReviewed: "2026-07-21"
+readingTime: 25
+reviewStatus: "verified"
+validatedAgainst:
+  - "Capital One incident facts, US Department of Justice case materials, and AWS IMDSv2 launch post"
+  - "Uber September 2022 security update"
+  - "CircleCI January 2023 incident report and alert"
+sourceQuality: "primary-sources-reviewed"
+implementationStatus: "illustrative"
+reviewIntervalDays: 180
 ---
 
-# Cloud Breach Case Studies: Technical Autopsy of Capital One, Uber, and CircleCI Compromises
+# Cloud Incident Case Studies: Evidence, Chronology, and Control Lessons
 
-## Executive Summary
+Incident lessons are useful only when chronology and evidence are honest. This review
+uses affected-organization disclosures and competent-authority records, separates
+confirmed facts from engineering inference, and avoids judging an organization for a
+control that did not exist at incident time.
 
-Analyzing real-world security breaches is essential for platform security engineers. Case studies provide valuable insights into how actual adversaries exploit complex system configurations. Often, breaches are not the result of a single, highly advanced exploit. Instead, they occur when attackers chain together minor misconfigurations, legacy features, and loose access boundaries.
+## Evidence method
 
-This whitepaper performs a detailed technical autopsy of three major cloud breaches: Capital One, Uber, and CircleCI. It analyzes the root causes, architectural failures, and specific attack techniques used in each incident. By dissecting these compromises, we extract precise engineering lessons and defensive mitigations to protect modern cloud landing zones.
+For each case:
 
----
+- **Confirmed** means directly stated by the organization or a government/court
+  source cited below.
+- **Engineering inference** connects confirmed facts to a control design but is not a
+  claim about the victim's undocumented environment.
+- **Retrospective control** was released or became available later and is useful for
+  current defense, not a contemporaneous missed requirement.
 
-## Technical Autopsy 1: Capital One (SSRF & IMDSv1 Abuse)
+Public reports do not expose every root cause, architecture detail, detection signal,
+or corrective action. Absence from a disclosure is not proof a control was absent.
 
-In 2019, Capital One suffered a massive data breach exposing over 100 million customer records stored in Amazon S3 buckets. The incident is a classic example of how Server-Side Request Forgery (SSRF) can be used to compromise cloud metadata services.
+## Capital One, 2019
 
-```
-       [ External Attacker ] ── (Exploits SSRF on web application proxy) ──> [ WAF EC2 Instance ]
-                                                                                   │
-                                                          (Queries IMDSv1 endpoint)
-                                                                                   ▼
-                                                                        [ Plaintext Temp Role Keys ]
-                                                                                   │
-                                                                                   ▼
-                                                                     [ Exfiltrates S3 Bucket Data ]
-```
+### Confirmed chronology and scope
 
-### Attack Path and Root Cause
-1. **Initial Vulnerability (SSRF)**: The attacker identified a misconfigured open-source web application proxy running on an EC2 instance. The proxy was vulnerable to Server-Side Request Forgery (SSRF), allowing the attacker to craft requests that forced the EC2 instance to query local network resources on the attacker's behalf.
-2. **Metadata Exploitation (IMDSv1)**: The attacker forced the proxy to query the EC2 Instance Metadata Service (IMDSv1) at `http://169.254.169.254/latest/meta-data/iam/security-credentials/`. Because IMDSv1 does not require session token authentication, the service immediately returned temporary IAM security credentials assigned to the EC2 instance role.
-3. **Overly Permissive IAM Privileges**: The EC2 instance role was configured with excessive read permissions, including wildcard access to list and download files from S3 buckets across the AWS account.
-4. **Data Exfiltration**: The attacker configured the stolen temporary credentials on their local machine and called S3 APIs to list buckets and download data directly, bypassing the corporate firewall.
+Capital One says unauthorized access occurred on March 22 and 23, 2019. The company
+determined unauthorized access had occurred on July 19 and announced the incident on
+July 29, 2019. It reported approximately 100 million people in the United States and
+6 million in Canada were affected. The disclosed categories and counts vary by data
+type; the company's facts page is the authoritative scope reference rather than the
+shorthand "100 million records."
 
-### Architectural Failures
-* **Failure to Enforce IMDSv2**: IMDSv1 does not validate incoming requests. In contrast, IMDSv2 requires a session token generated via a PUT request. This token cannot easily be forwarded by web proxies, blocking SSRF-based metadata harvesting.
-* **Violating Least Privilege**: The web application proxy did not require access to S3 buckets, yet its IAM execution role possessed broad read access, amplifying the blast radius of the compromise.
+The US Department of Justice described a misconfigured web application firewall that
+enabled commands to reach and obtain credentials for data access. The prosecution and
+later court materials provide case-specific evidence; they should not be expanded into
+an unsupported claim that every S3 bucket or the entire AWS environment was exposed.
 
----
+### Control analysis
 
-## Technical Autopsy 2: Uber (Hardcoded Credentials & PAM Compromise)
+Engineering lessons for current systems:
 
-In 2022, an attacker gained full control of Uber's internal IT systems, AWS environments, and Google Cloud workspaces. The breach demonstrated the danger of storing administrative credentials in plaintext shares and having flat access paths.
+- constrain the application/WAF instance role to exact required actions/resources;
+- prevent server-side request forgery through URL allowlists, parser-safe validation,
+  egress controls, and removal of generic fetch/proxy behavior;
+- segment sensitive data and use data-access/audit detections independent of the web
+  tier;
+- monitor unusual metadata/credential access, role sessions, object enumeration, and
+  bulk reads;
+- treat application-layer compromise plus reachable workload credentials as a
+  compound threat and test it.
 
-```
-       [ Compromised Contractor Session ] ── (Scans internal network files) ──> [ Network Share Backup ]
-                                                                                      │
-                                                                         (Finds script with credentials)
-                                                                                      ▼
-                                                                           [ Thycotic PAM Password ]
-                                                                                      │
-                                                                                      ▼
-                                                                     [ Full Cloud Infrastructure Control ]
-```
+AWS launched IMDSv2 on November 19, 2019—months after the March incident. Requiring
+IMDSv2 and limiting metadata hop behavior are strong **retrospective defense-in-depth**
+recommendations for current EC2 designs. They must not be described as a control
+Capital One failed to enable at incident time.
 
-### Attack Path and Root Cause
-1. **Initial Access**: The attacker compromised a contractor's personal device and captured their credentials. They used MFA fatigue tactics, sending repeated push notifications until the contractor approved the authentication request.
-2. **Internal Network Scanning**: Once connected to Uber's internal network via VPN, the attacker scanned network drives and backup shares.
-3. **Plaintext Secrets Exposure**: The attacker discovered a PowerShell script containing hardcoded administrative credentials for Uber's Privileged Access Management (PAM) platform (Thycotic).
-4. **Platform Takeover**: The attacker logged into the PAM tool using the hardcoded credentials, extracting master keys for Azure AD, AWS, Google Cloud, and Slack, leading to complete infrastructure compromise.
+### Residual caution
 
-### Architectural Failures
-* **Secrets Stored in Version Control / Backup Shares**: Storing passwords in configuration files or deployment scripts bypasses access controls.
-* **Lack of Multi-Factor Authentication for Admin Platforms**: The PAM platform trusted login credentials without requiring additional authentication steps (MFA) or network source validation.
+IMDSv2 reduces important SSRF/metadata attack paths but does not repair an overly
+privileged role, arbitrary command execution, compromised host, exposed credentials,
+or sensitive-data access that the role is authorized to perform.
 
----
+## Uber, September 2022
 
-## Technical Autopsy 3: CircleCI (Workstation Compromise & Build System Session Hijacking)
+### Confirmed chronology and access path
 
-In 2022, CircleCI suffered a breach that exposed customer environment variables, repository secrets, and deployment keys. The compromise illustrated the vulnerability of build platform execution environments.
+Uber's September 19 security update said an external contractor's account was
+compromised. Uber reported it was likely the attacker purchased the contractor's
+corporate password after the contractor's personal device was infected with malware.
+The attacker repeatedly attempted to log in, generating two-factor approval requests,
+and the contractor accepted one. Uber said the attacker then accessed other employee
+accounts and tools and posted a message to a company-wide Slack channel. The company
+identified the activity on September 15 and responded by restricting affected systems
+and access.
 
-```
-       [ Malware on Developer Laptop ] ── (Extracts active session cookies) ──> [ Attacker Machine ]
-                                                                                      │
-                                                                         (Hijacks 2FA Session)
-                                                                                      ▼
-                                                                           [ CircleCI Control Plane ]
-                                                                                      │
-                                                                                      ▼
-                                                                     [ Extracts Customer Environment Keys ]
-```
+Use Uber's update for the organization's stated impact. Avoid summaries such as "the
+attacker controlled all infrastructure" unless a primary source establishes that
+scope. Password possession plus an approved MFA prompt explains an authenticated
+session; it does not by itself prove every subsequent privilege path or dataset.
 
-### Attack Path and Root Cause
-1. **Developer Workstation Compromise**: An attacker compromised a developer's local laptop using malware. The malware bypassed endpoint protections and extracted active session cookies from the developer's web browser.
-2. **Session Hijacking**: The attacker used the stolen session cookies to bypass multi-factor authentication (MFA) checks, hijacking the developer's administrative session on the CircleCI control plane.
-3. **Database and Vault Access**: The developer had authorized access to core database backups and decryption keys. Using the hijacked session, the attacker downloaded customer environment variables and decryption keys stored in the platform's Vault database, compromising customer deployment environments.
+### Control analysis
 
-### Architectural Failures
-* **Broad Session Token Lifetimes**: Long-lived session cookies allow attackers to use hijacked sessions without re-authenticating.
-* **Over-privileged Developer Accounts**: The developer possessed broad administrative access to production database decryption keys, violating least privilege.
+Engineering inference for present-day programs:
 
----
+- use phishing-resistant authentication (for example device-bound/passkey/security-
+  key mechanisms appropriate to the workforce platform) for privileged access;
+- reduce MFA push fatigue with number matching, context, rate limits, risk signals,
+  help-desk controls, and user reporting;
+- prevent an ordinary contractor session from becoming an administrative platform
+  session through tiered identities, just-in-time privilege, device health, network/
+  application access policy, and separate privileged workstations;
+- restrict and monitor credential stores, scripts, shared drives, PAM tools, service
+  credentials, and administrative remote-management systems;
+- correlate identity, endpoint, SaaS, source-control, secrets, and cloud audit events.
 
-## Architectural Lessons and Defenses
+### Failure mode lesson
 
-Applying technical lessons from these breaches requires implementing concrete security controls:
+MFA success is an authentication signal, not proof of legitimate intent. Repeated
+denials followed by approval, new device/location, contractor privilege use, and rapid
+movement across administrative tools should create high-confidence containment and
+human-verification paths.
 
-### 1. Hardening EC2 Instance Metadata Options (Mitigation for Capital One)
-Enforce IMDSv2 and disable IMDSv1 on all EC2 instances to protect credentials from SSRF exploits.
+## CircleCI, December 2022 to January 2023
 
-```bash
-# Force IMDSv2 on an existing instance
-aws ec2 modify-instance-metadata-options \
-  --instance-id i-0123456789abcdef0 \
-  --http-tokens required \
-  --http-endpoint enabled
-```
+### Confirmed chronology and mechanism
 
-### 2. Implementing IAM Session Conditions (Mitigation for Stolen Credentials)
-Add source IP and execution conditions to IAM policies to ensure stolen credentials cannot be used outside the enterprise network or authorized CI/CD platforms.
+CircleCI's incident report states that malware on an employee laptop enabled a threat
+actor to steal a valid, two-factor-authenticated session cookie. CircleCI reported the
+initial laptop compromise on December 16, 2022, reconnaissance on December 19, and
+data exfiltration on December 22. The employee had privileges that enabled generation
+of production access tokens, and the attacker extracted encryption keys from a
+running process, enabling access to encrypted customer credentials. CircleCI alerted
+customers in early January 2023 and instructed rotation.
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Deny",
-      "Action": "*",
-      "Resource": "*",
-      "Condition": {
-        "NotIpAddress": {
-          "aws:SourceIp": [
-            "198.51.100.0/24",
-            "203.0.113.0/24"
-          ]
-        },
-        "Bool": {
-          "aws:ViaAWSService": "false"
-        }
-      }
-    }
-  ]
-}
-```
+The event is best described as a December 2022 compromise discovered/disclosed in
+January 2023, not simply a "2023 breach." The primary report should govern detailed
+scope, token rotation, and remediation claims.
 
----
+### Control analysis
 
-## Tooling and Implementation
+Engineering lessons:
 
-Deploy automated scanners to detect and mitigate breach vulnerabilities:
+- session cookies for privileged SaaS/control-plane access are bearer credentials;
+  protect endpoints, bind sessions/device context where supported, shorten privileged
+  lifetimes, and reauthenticate for critical actions;
+- separate ordinary engineering sessions from production token-generation authority;
+- reduce standing privileges and require just-in-time, approved, attributable access;
+- design encryption so a single long-running process and its identity cannot expose
+  every customer's credential without additional scoped authorization/audit;
+- make customer-secret rotation fast, automatable, and inventory-driven;
+- provide customers with exact affected secret categories, time windows, audit
+  evidence, and verification steps.
 
-1. **Checkov / Gitleaks**: Integrate Gitleaks into your build pipelines to scan code repositories for hardcoded credentials, preventing secrets from being committed to source control (Mitigation for Uber).
-2. **AWS Config / Azure Policy**: Enforce compliance policies across your cloud infrastructure. Configure rules to flag or terminate EC2 instances running with IMDSv1 enabled automatically (Mitigation for Capital One).
-3. **Endpoint Detection and Response (EDR)**: Deploy EDR tools (like CrowdStrike or Microsoft Defender) on all developer endpoints to detect and block credential-dumping malware, protecting active session tokens (Mitigation for CircleCI).
+Encryption at rest did not make the decrypted data inaccessible to an authorized
+running process. This is a general envelope/key-access design lesson, not a reason to
+discard encryption at rest.
 
----
+## Cross-case engineering patterns
 
-## Incident Prevention Audit Checklist
+| Pattern | Capital One | Uber | CircleCI | Current design response |
+| --- | --- | --- | --- | --- |
+| Trusted workload/user session abused | workload credentials reached from web tier | contractor session accepted after MFA prompts | stolen authenticated session cookie | constrain session privilege and continuously evaluate context |
+| Privilege compounded impact | data-access role capabilities | movement into other internal tools/accounts | ability to mint production tokens/read keys | eliminate standing privilege; separate trust tiers and duties |
+| One control was insufficient | perimeter/WAF did not contain data role | MFA approval did not establish legitimate intent | encryption did not protect from authorized process/key access | layer preventive, detective, and recovery controls |
+| Credential lifecycle mattered | workload credential scope/session | password/session/admin secrets | customer secrets required rotation | inventory, scope, short lifetime, revocation and rehearsed rotation |
+| Detection/reconstruction required multiple planes | web, STS/cloud, data access | IdP, endpoint, SaaS/internal tools | endpoint, identity, production, customer credential access | normalize/correlate control-plane and data-plane telemetry |
 
-| Item | Incident Context | Verification Step / Command | Target State |
-| :--- | :--- | :--- | :--- |
-| 1 | IMDS Enforcement | Query instances for IMDS configuration settings. | IMDSv1 is disabled; IMDSv2 is enforced on all workloads. |
-| 2 | Code Secret Scanning | Run Gitleaks scans on all active source repositories. | Zero hardcoded passwords, keys, or API tokens are found in code. |
-| 3 | Access Policy Limits | Audit IAM policies for wildcard permissions (`*` on `*`). | Actions and resources are explicitly defined; wildcards are restricted. |
-| 4 | MFA Validation | Check MFA status on administrative endpoints and PAM platforms. | Access requires multi-factor authentication; session timeouts are set to short limits. |
-| 5 | Session IP Locks | Review access conditions for high-privilege administrative roles. | Access is restricted using source IP or virtual private endpoint constraints. |
-| 6 | Endpoint Security | Check EDR agent installation status on developer workstations. | Active security agents monitor endpoints and block unauthorized process executions. |
+## Validation questions for architectures
 
----
+1. Can a server-side request or code-execution flaw reach a credential endpoint or
+   data plane, and what exact authorization would that credential have?
+2. Does a successful MFA/session event permit privilege escalation without independent
+   device, role, approval, and risk controls?
+3. Which identities can mint production/customer credentials or read encryption keys
+   from memory/control planes?
+4. Can the organization identify every credential/artifact/data object touched by one
+   compromised session and revoke/rotate it quickly?
+5. Are controls evaluated as of incident date, and are later mitigations labeled
+   retrospective?
+
+## Operational checklist
+
+- [ ] Incident timelines use occurrence, detection, containment, and disclosure dates.
+- [ ] Record counts and access scope retain the source's precision and caveats.
+- [ ] Confirmed fact, inference, and retrospective control are visibly separated.
+- [ ] Identity/session privilege is correlated with endpoint, SaaS, cloud, and data
+      access telemetry.
+- [ ] Workload/user credentials are narrow, short-lived, and revocable.
+- [ ] Break-glass, bulk-secret rotation, and customer notification evidence are tested.
+- [ ] New vendor/court disclosures trigger review rather than silent narrative drift.
+
+## Limitations
+
+These are public-source case studies, not forensic reports. They do not assign legal
+liability, evaluate controls unavailable in private evidence, or claim that listed
+recommendations would certainly have prevented the incidents.
 
 ## References
 
-* *Capital One Breach Information and Technical Analysis*: [AWS Security Blog](https://aws.amazon.com/blogs/security/defense-in-depth-introducing-instance-metadata-service-v2/)
-* *Uber Security Incident Update (2022)*: [Uber Newsroom Statement](https://www.uber.com/newsroom/security-update/)
-* *CircleCI Incident Security Report (2022)*: [CircleCI Security Advisory](https://circleci.com/blog/january-4-2023-security-alert/)
-* *OWASP API Security Top 10 (SSRF and Broken Object Level Authorization)*: [OWASP Project](https://owasp.org/www-project-api-security/)
+- [Capital One 2019 incident facts](https://www.capitalone.com/digital/facts2019/)
+- [US Department of Justice: United States v. Paige Thompson](https://www.justice.gov/usao-wdwa/united-states-v-paige-thompson)
+- [DOJ arrest announcement describing the WAF access path](https://www.justice.gov/usao-wdwa/pr/seattle-tech-worker-arrested-data-theft-involving-large-financial-services-company)
+- [AWS launch of IMDSv2 on November 19, 2019](https://aws.amazon.com/blogs/security/defense-in-depth-open-firewalls-reverse-proxies-ssrf-vulnerabilities-ec2-instance-metadata-service/)
+- [Uber September 2022 security update](https://www.uber.com/newsroom/security-update/)
+- [CircleCI January 2023 incident report](https://circleci.com/blog/jan-4-2023-incident-report/)
+- [CircleCI January 4, 2023 security alert](https://circleci.com/blog/january-4-2023-security-alert/)

@@ -1,198 +1,203 @@
 ---
-title: "Kubernetes Multi-Tenancy: Hardening RBAC, NetworkPolicies, and Workload Isolation Boundaries"
-type: cloud-security
-tags: [Kubernetes, Multi-Tenancy, OPA Gatekeeper, NetworkPolicy, Container Security]
-date: 2026-06
-readingTime: 22
+title: "Kubernetes Multi-tenancy: Boundaries, Isolation, and Operations"
+type: "cloud-security"
+tags:
+  - kubernetes
+  - multi-tenancy
+  - admission-control
+  - network-security
+date: "2026-07-21"
+lastReviewed: "2026-07-21"
+readingTime: 27
+reviewStatus: "verified"
+validatedAgainst:
+  - "Kubernetes multi-tenancy, node authorization, service-account, Pod Security Standards, and ValidatingAdmissionPolicy documentation checked 2026-07-21"
+sourceQuality: "primary-sources-reviewed"
+implementationStatus: "illustrative"
+reviewIntervalDays: 180
 ---
 
-# Kubernetes Multi-Tenancy: Hardening RBAC, NetworkPolicies, and Workload Isolation Boundaries
+# Kubernetes Multi-tenancy: Boundaries, Isolation, and Operations
 
-## Executive Summary
+Kubernetes multi-tenancy is a spectrum. Namespaces are an administrative and policy
+scope inside one control plane, not a hard security boundary by themselves. Containers
+on a node share a kernel. Network connectivity is allowed by default unless policy and
+the network implementation enforce restrictions. Cloud workload identities, node
+credentials, admission, RBAC, secrets, storage, DNS, observability, and operator access
+must be designed together.
 
-Kubernetes has become the operating system of the cloud, hosting diverse workloads across namespaces and business units. However, Kubernetes was not designed with hard multi-tenancy in mind. The container runtime shares the host operating system's kernel, making container escapes a constant risk. By default, namespaces in Kubernetes are logical divisions, not secure security boundaries. Without deliberate security engineering, any pod in a cluster can communicate with any other pod, query the cluster's internal DNS, and potentially extract secrets from the local Kubernetes API.
+## Isolation decision
 
-At scale, the failure to implement network segmentation, secure RBAC configurations, and strict admission control policies turns a single microservice compromise into a cluster-wide take-over. Attackers exploit weak Pod Security Standards to schedule privileged workloads, mount host directories, and capture service account tokens to escalate privileges. This whitepaper analyzes the attack paths from pod compromise to control plane takeover. It provides defensive architecture patterns using Kubernetes NetworkPolicies, OPA Gatekeeper, and sandboxed runtimes to achieve secure multi-tenancy.
+Use shared clusters only when tenant trust, regulatory requirements, blast radius, and
+operational controls support a soft-to-moderate boundary. Use dedicated clusters—and
+often dedicated cloud accounts/subscriptions/projects—for hostile, regulated, high-
+impact, or custom-control-plane tenants. A product may offer several tiers.
 
----
-
-## Threat Model and Attack Surface
-
-In a multi-tenant Kubernetes cluster, the threat model assumes that one of the tenants (or a pod running a tenant's code) is either malicious or compromised.
-
-```
-                  [ Compromised Pod / Container ]
-                                 │
-                        ( HostPath Escape )
-                                 │
-                                 ▼
-                   [ Access Host File System ]
-                                 │
-               ┌─────────────────┴─────────────────┐
-               ▼                                   ▼
-      [ Steal Kubelet Config ]           [ Steal Cloud Credentials ]
-               │                                   │
-               ▼                                   ▼
-      [ Control Plane Takeover ]         [ Cloud Platform Takeover ]
-```
-
-### Threat Vectors and Kill-Chains
-
-1. **Pod Escape via HostPath Mounts**:
-   - *Adversary Goal*: Gain root access to the underlying worker node.
-   - *Attack Vector*: An attacker compromises a pod running in a namespace with lax security policies. The pod is configured to mount `/var/log` or the root directory `/` of the worker node using `hostPath`. The attacker writes a malicious cron job or modifies a system binary in the mounted host directory, executing arbitrary commands with root privileges on the node.
-2. **Identity Theft via Service Account Token Harvesting**:
-   - *Adversary Goal*: Acquire administrative tokens to query the Kubernetes API.
-   - *Attack Vector*: Every pod by default mounts a Service Account token at `/var/run/secrets/kubernetes.io/serviceaccount/token`. An attacker compromises a pod, extracts this JWT token, and uses it to authenticate to the Kubernetes API server from their workstation. If RBAC bindings are overly permissive (e.g. wildcard verbs or secrets-access on default service accounts), the attacker escalates permissions across the cluster.
-3. **Cross-Tenant Network Probing and Lateral Movement**:
-   - *Adversary Goal*: Intercept or alter traffic belonging to another tenant in the same cluster.
-   - *Attack Vector*: A database service runs in namespace `finance` without network segmentation. An attacker compromises an application pod in namespace `marketing`. Because NetworkPolicies are not configured, the attacker port-scans the internal network, identifies the database in `finance`, and logs in using brute-forced credentials or exploits unpatched service vulnerabilities.
-
----
-
-## Deep Technical Body
-
-### The Mechanics of Node Compromise (Container Escape)
-
-Container isolation relies on Linux kernel namespaces (cgroups, pid, mount, network, ipc, uts). If a container runs in `privileged` mode or mounts sensitive host systems, these namespaces are bypassed.
-
-#### The hostPath Mount Attack Path
-Consider a pod YAML configuration where a developer mounted `/var/run/docker.sock` or the node's root filesystem:
-
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: admin-helper-pod
-spec:
-  containers:
-  - name: helper
-    image: alpine
-    command: ["sleep", "3600"]
-    volumeMounts:
-    - name: host-root
-      mountPath: /host
-  volumes:
-  - name: host-root
-    hostPath:
-      path: /
+```mermaid
+flowchart TB
+  O["Cloud organization/account boundary"] --> C["Kubernetes control plane"]
+  C --> N1["Tenant namespace and RBAC"]
+  C --> N2["Platform namespaces"]
+  N1 --> A["Admission and Pod Security"]
+  N1 --> W["Default-deny network policy"]
+  N1 --> I["Dedicated service account/workload identity"]
+  N1 --> Q["Quota, limits, priority"]
+  A --> K["Shared node kernel/runtime"]
+  W --> K
+  I --> X["Cloud APIs"]
+  K --> S["Storage, secrets, logs, DNS"]
 ```
 
-If an attacker compromises this pod:
-1. They navigate to `/host/etc/shadow` to dump node user passwords.
-2. They access `/host/etc/kubernetes/kubelet.conf` which contains the worker node's client certificate and credentials.
-3. Using the kubelet credentials, they send API requests directly to the control plane, masquerading as the worker node. Since nodes have permissions to read secrets and write statuses for pods assigned to them (via the Node Authorization mode), the attacker can pull secrets across the cluster.
+## Boundary layers and abuse cases
 
-### Network Isolation Failures and Default Trust
-In Kubernetes, the network is flat. Pods receive unique IPs and can communicate with any other pod in the cluster, even across namespaces.
-* **DNS Reconnaissance**: Any pod can query the internal DNS provider (`coredns.kube-system.svc.cluster.local`) to map out all services across all namespaces.
-* **Cloud Metadata Service Exfiltration**: If a pod runs on a cloud provider (e.g., AWS or GCP) and the node's IMDS is not restricted, the pod can query `http://169.254.169.254/latest/meta-data/` to retrieve the worker node's IAM instance profile credentials, potentially compromising the parent cloud account.
+| Layer | Key controls | Important limitation/negative test |
+| --- | --- | --- |
+| Cloud/account | separate accounts/projects, narrow cluster/node/workload roles, network perimeter | workload cannot obtain node or another tenant's cloud identity |
+| Control plane | private/restricted endpoint, strong admin auth, audit, encryption, upgrade/backup | compromised cluster-admin can cross namespace boundaries |
+| Namespace/RBAC | dedicated namespaces/service accounts, least privilege, no wildcard escalation/bind/impersonate | tenant cannot create role bindings or resources in another namespace |
+| Admission | Pod Security Admission and/or ValidatingAdmissionPolicy/policy engine | deny privileged/host access, unsafe volume, missing tenant label; test failure policy |
+| Network | default deny ingress and egress, explicit DNS/API/dependency paths | CNI actually enforces egress/ingress; hostNetwork/node paths tested |
+| Kernel/node | sandboxed runtime or dedicated node pools, hardened OS/runtime, patching | containers share a kernel; privileged/hostPath/hostPID escalation blocked |
+| Workload identity | dedicated service account, short-lived projected token, IRSA/Pod Identity/workload federation | pod cannot use default SA, node metadata, or another workload's identity |
+| Data/storage | tenant-bound PVC/storage class/key/backup/export policies | stale volume/snapshot/backup cannot attach or restore cross-tenant |
+| Availability | ResourceQuota, LimitRange, priority/fairness, autoscaling bounds | one tenant cannot exhaust API, CPU/memory, storage, IPs, logs, or cost |
+| Observability | tenant-aware log/metric/traces and platform audit access | telemetry queries and labels do not leak other tenants |
 
----
+## RBAC and service accounts
 
-## Defensive Architecture
+The default service account receives no RBAC permissions beyond API discovery by
+default, but pods may receive a token unless automount is disabled. Create a dedicated
+service account per workload trust boundary, set `automountServiceAccountToken: false`
+when Kubernetes API access is unnecessary, and use projected short-lived tokens for
+supported external integrations.
 
-A secure multi-tenant architecture must implement network micro-segmentation, lock down pod capabilities, and enforce compliance using admission controllers.
+Audit RBAC permissions that enable escalation: create/update roles or role bindings,
+`bind`, `escalate`, `impersonate`, access to secrets, pod creation under a privileged
+service account, exec/attach/port-forward, admission configuration, nodes/proxy,
+certificate signing, and webhook/policy changes. Kubernetes authorization alone does
+not express application tenant authorization inside a shared service.
 
-### Hardened NetworkPolicy: Namespace Isolation
-By default, block all ingress and egress traffic, then explicitly allow traffic only between designated services and system components like CoreDNS.
+## Node authorization precision
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: default-deny-all
-  namespace: tenant-a
-spec:
-  podSelector: {}
-  policyTypes:
-  - Ingress
-  - Egress
----
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-internal-namespace-traffic-only
-  namespace: tenant-a
-spec:
-  podSelector: {}
-  policyTypes:
-  - Ingress
-  ingress:
-  - from:
-    - podSelector: {} # Allow ingress only from pods in the same namespace
-```
+With the Node authorizer, a kubelet is authorized for its own Node object and for pods
+bound to its node, plus related secrets, ConfigMaps, PVCs/PVs and selected objects
+needed for those pods. It is not accurately described as unrestricted read of every
+secret in the cluster. Enable the Node authorizer and NodeRestriction admission plugin
+as documented; do not grant kubelets or node bootstrap identities broad legacy groups/
+roles.
 
-### OPA Gatekeeper Policy: Block Privileged Containers and HostPath Mounts
-Deploy Gatekeeper to validate configurations. The following ConstraintTemplate blocks any pod that attempts to run as privileged or uses hostPath mounts.
+Nevertheless, node compromise is high impact: it exposes workloads and credentials
+available on that node and may enable lateral movement through network, workload
+identity, control-plane vulnerabilities, or privileged workloads. Use dedicated node
+pools for stronger tenant separation, minimize node permissions, restrict metadata
+access, patch, monitor runtime behavior, and evaluate sandboxed runtimes.
 
-```yaml
-apiVersion: templates.gatekeeper.sh/v1
-kind: ConstraintTemplate
-metadata:
-  name: k8sblockhostpath
-spec:
-  crd:
-    spec:
-      names:
-        kind: K8sBlockHostPath
-  targets:
-    - target: admission.k8s.gatekeeper.sh
-      rego: |
-        package k8sblockhostpath
+## Pod security and admission
 
-        violation[{"msg": msg}] {
-          volume := input.review.object.spec.volumes[_]
-          has_field(volume, "hostPath")
-          msg := sprintf("HostPath volume mount is forbidden: %v", [volume.name])
-        }
+PodSecurityPolicy was removed in Kubernetes 1.25. Use Pod Security Admission against
+the current Pod Security Standards (Privileged, Baseline, Restricted), or a maintained
+policy engine/native ValidatingAdmissionPolicy for additional rules.
 
-        has_field(obj, field) {
-          _ := obj[field]
-        }
-```
+ValidatingAdmissionPolicy is stable since Kubernetes 1.30 and evaluates CEL
+expressions. A robust policy design defines:
 
-To instantiate this policy, create the Constraint resource:
-```yaml
-apiVersion: constraints.gatekeeper.sh/v1beta1
-kind: K8sBlockHostPath
-metadata:
-  name: block-hostpath-mounts
-spec:
-  match:
-    kinds:
-      - apiGroups: [""]
-        kinds: ["Pod"]
-```
+- exact resources/operations and namespace/object selectors;
+- parameter ownership, missing-parameter behavior, and authorization;
+- audit/warn/deny rollout;
+- `failurePolicy` behavior when evaluation errors occur;
+- exclusions for platform/system components with explicit owners;
+- unit fixtures and server-side integration tests across supported versions.
 
----
+Admission controls creation/update; they do not repair existing violating objects or
+detect runtime compromise by themselves.
 
-## Tooling and Implementation
+## Network, DNS, and service discovery
 
-Secure multi-tenancy requires active runtime inspection and policy enforcement tools:
+Kubernetes networking permits pod-to-pod communication by default. Apply default-deny
+ingress and egress in every tenant namespace, then allow DNS, API, identity, telemetry,
+and application dependencies narrowly. Confirm the installed CNI enforces the policy
+features used; NetworkPolicy semantics do not cover every node/host/control-plane path.
 
-1. **OPA Gatekeeper / Kyverno**: Enforce Pod Security Standards (PSS) dynamically. They replace legacy Pod Security Policies (PSPs) and reject pods that attempt to run with root group IDs, host namespaces (`hostPID`, `hostNetwork`, `hostIPC`), or insecure capabilities.
-2. **Cilium Network Engine**: Replace default CNI plugins with Cilium. Cilium uses eBPF (Extended Berkeley Packet Filter) to apply NetworkPolicies at the Linux kernel level, providing high-performance, L7-aware application routing security.
-3. **Kata Containers / gVisor**: For hard tenancy (running untrusted or third-party code), isolate workloads using sandboxed container runtimes. gVisor intercepts system calls and runs them in a user-space kernel, preventing container breakout attacks from compromising the host OS.
+Cluster DNS commonly lets a pod resolve a service when it knows or guesses the fully
+qualified name, including another namespace, subject to DNS/network controls. DNS does
+not itself grant Kubernetes API enumeration of all services. Protect API discovery with
+RBAC, restrict cross-namespace traffic, and consider tenant-specific DNS visibility/
+egress controls where name disclosure matters.
 
----
+## Workload-to-cloud identity
 
-## Kubernetes Security Audit Checklist
+Avoid static cloud credentials and broad node instance roles. Bind a dedicated
+Kubernetes service account to a narrow cloud workload identity. Protect every
+Kubernetes permission that can create/mutate pods, service accounts, annotations, or
+admission objects that influence identity. Block access to node metadata credentials
+from pods and correlate Kubernetes audit with cloud STS/token/audit logs.
 
-| Item | Focus Area | Verification Step / Command | Target State |
-| :--- | :--- | :--- | :--- |
-| 1 | Pod Security Standards | Check if namespaces enforce the `restricted` pod security profile. | `kubectl get ns -o jsonpath='{.items[*].metadata.labels}'` contains `pod-security.kubernetes.io/enforce: restricted`. |
-| 2 | Auto-mounting Tokens | Inspect if pods auto-mount API tokens when not required. | Pod specifications define `automountServiceAccountToken: false`. |
-| 3 | Network Segmentation | Confirm if NetworkPolicies exist in every tenant namespace. | `kubectl get netpol -n <namespace>` returns at least one active policy. |
-| 4 | Host Access | Verify that pods are blocked from running with `hostNetwork` or `hostPID`. | Admission controller rules block these configurations. |
-| 5 | Metadata Protection | Ensure access to `169.254.169.254` is blocked at the network level. | Network policies or node-level iptables rules block pod access to the cloud metadata service. |
-| 6 | Namespace RBAC | Audit Roles and RoleBindings to check for tenant administrative isolation. | No tenant has permissions to modify resources in sister namespaces or write cluster-level resources. |
+The cloud authorization policy still defines what a valid federated identity may do.
+Test a pod in each tenant cannot exchange for another tenant/platform identity or call
+resources outside its scope.
 
----
+## Resource and noisy-neighbor controls
+
+Apply namespace ResourceQuota and LimitRange for CPU, memory, ephemeral storage,
+object counts, load balancers, PVCs/storage, and extended resources. Set requests/
+limits based on performance testing, use priority classes carefully, constrain
+autoscaling/cost, and protect API fairness. Quota is not a kernel/security boundary,
+and limits can introduce availability problems; test eviction, throttling, and scaling.
+
+## Failure modes and rollout
+
+- Policy engine/webhook unavailable: define timeout and failure policy deliberately.
+  Production isolation controls generally require fail-closed plus a controlled
+  emergency process, not silent bypass.
+- CNI/DNS failure: preserve default deny, investigate implementation health, and avoid
+  replacing policy with broad allows during recovery.
+- Bad admission policy: use audit/warn, canary namespaces, versioned policy, and a
+  narrowly authorized rollback path.
+- Node compromise: cordon/isolate, revoke node/workload sessions, rotate exposed
+  secrets, rebuild the node, inventory pods/identities/data, and review control-plane
+  audit.
+- Tenant offboarding: revoke identities, stop workloads, handle storage/snapshots/
+  backups/log retention, remove network/policy exceptions, and prove deletion.
+
+Rollout starts with asset/tenant classification, RBAC and identity inventory, audit
+mode, negative test tenants, default-deny networking, restricted pod baseline, resource
+controls, dedicated node/account tiers, and incident exercises. Do not move hostile
+tenants into a shared cluster merely because policies compile.
+
+## Observability and validation
+
+Collect API audit, admission decisions, RBAC denials, service-account token exchanges,
+cloud identity sessions, network flows/denies, DNS, runtime detections, node changes,
+exec/attach/port-forward, secret access, resource exhaustion, policy exemptions, and
+telemetry-query authorization.
+
+Test at minimum:
+
+- cross-namespace list/get/create/exec and RBAC escalation;
+- privileged, host namespace/path/network, unsafe capability and device requests;
+- cross-tenant ingress/egress and node metadata/control-plane paths;
+- service-account/cloud identity substitution;
+- PVC/snapshot/backup reuse and secret/config access;
+- admission dependency/error/missing-parameter behavior;
+- CPU/memory/storage/API/log-volume exhaustion;
+- node compromise and tenant offboarding runbooks.
+
+## Residual risk and limitations
+
+Shared clusters retain a common control plane and usually shared worker kernels/nodes.
+Policy/controller/CNI/runtime defects, cluster-admin compromise, side channels,
+observability leaks, cloud identity mistakes, and denial of service remain possible.
+Dedicated clusters/accounts reduce some shared blast radius but add cost, fleet
+management, patching, policy distribution, and incident complexity.
+
+Examples are architectural. Kubernetes and managed-service versions/features differ;
+perform server-side tests on each supported cluster/CNI/runtime/provider combination.
 
 ## References
 
-* *Kubernetes Pod Security Standards*: [Kubernetes Documentation](https://kubernetes.io/docs/concepts/security/pod-security-standards/)
-* *OPA Gatekeeper Constraints and Templates*: [Gatekeeper Library](https://open-policy-agent.github.io/gatekeeper/website/docs/howto)
-* *Securing GKE Multi-Tenancy (Shopify SSRF case study)*: [Google Cloud Security Blog](https://cloud.google.com/blog/products/containers-kubernetes/gke-security-metadata-concealment/)
-* *NIST Special Publication 800-190 (Application Container Security Guide)*: [NIST SP 800-190](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-190.pdf)
+- [Kubernetes multi-tenancy](https://kubernetes.io/docs/concepts/security/multi-tenancy/)
+- [Kubernetes Node authorization](https://kubernetes.io/docs/reference/access-authn-authz/node/)
+- [Kubernetes service accounts](https://kubernetes.io/docs/concepts/security/service-accounts/)
+- [Kubernetes Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/)
+- [Kubernetes ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/)
+- [Removed PodSecurityPolicy documentation](https://kubernetes.io/docs/concepts/security/pod-security-policy/)

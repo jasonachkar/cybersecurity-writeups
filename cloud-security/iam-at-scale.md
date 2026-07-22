@@ -1,71 +1,72 @@
 ---
-title: "Enterprise IAM at Scale: Workload Identity, Permission Boundaries, and Trust Architecture"
-type: cloud-security
-tags: [AWS IAM, Workload Identity, OIDC, ABAC, Security Boundaries]
-date: 2026-06
-readingTime: 20
+title: "AWS IAM at Scale: Federation, Delegation, and Guardrails"
+type: "cloud-security"
+tags:
+  - aws
+  - iam
+  - oidc
+  - workload-identity
+date: "2026-07-21"
+lastReviewed: "2026-07-21"
+readingTime: 26
+reviewStatus: "verified"
+validatedAgainst:
+  - "AWS IAM best practices, OIDC provider, GitHub OIDC role, PassRole, and EKS workload-identity documentation checked 2026-07-21"
+  - "GitHub Actions OIDC documentation checked 2026-07-21"
+sourceQuality: "primary-sources-reviewed"
+implementationStatus: "illustrative"
+reviewIntervalDays: 180
 ---
 
-# Enterprise IAM at Scale: Workload Identity, Permission Boundaries, and Trust Architecture
+# AWS IAM at Scale: Federation, Delegation, and Guardrails
 
-## Executive Summary
+At scale, IAM is an authorization system and operating model. The design objective is
+short-lived, attributable sessions with narrowly delegated permissions and controls
+that remain understandable across accounts—not periodic rotation of thousands of
+long-lived access keys.
 
-Identity and Access Management (IAM) is the security perimeter of the modern cloud. While network boundaries remain critical, they are easily bypassed if identity controls are weak. In large-scale cloud operations, maintaining least privilege becomes exponentially harder. Traditional Role-Based Access Control (RBAC) often results in "role explosion" and privilege creep, where engineers continuously request new permissions and rarely clean up old ones. To solve this, organizations must shift toward Attribute-Based Access Control (ABAC) and enforce structural guardrails like Permission Boundaries.
+## Executive decision
 
-A major failure mode in enterprise cloud platforms is the mismanagement of workload identities. Hardcoded, long-lived API keys are still a leading cause of compromise. Even when teams adopt modern solutions like OpenID Connect (OIDC) federation or Kubernetes IAM Roles for Service Accounts (IRSA), they often misconfigure trust relationships. This creates vulnerabilities like multi-cluster OIDC token audience confusion or lateral cross-account privilege escalation. This whitepaper explains the design patterns and cryptographic principles required to secure workload identity, configure boundaries, and build a resilient cross-account trust architecture.
+- Federate workforce access through an identity provider and IAM Identity Center.
+- Use temporary workload credentials. For GitHub Actions, validate the AWS OIDC
+  audience and a narrow `sub`; for EKS, prefer EKS Pod Identity where its documented
+  constraints fit, otherwise use IRSA deliberately.
+- Eliminate long-lived IAM-user access keys wherever possible. If a documented legacy
+  exception remains, inventory, restrict, monitor, and rotate it while actively
+  migrating it—not as a permanent 90-day ritual.
+- Separate identity trust policy from permissions policy, resource policy, SCP/RCP,
+  permission boundary, session policy, and service control behavior.
+- Govern `iam:PassRole` as a privilege-escalation boundary and continuously analyze
+  effective reachability.
 
----
+## Trust model
 
-## Threat Model and Attack Surface
+An AWS role session requires both authentication/trust and authorization. A signed
+OIDC token proves claims only if AWS trusts the issuer and the role trust policy
+matches those claims. It does not give every repository access by default, and an
+attacker cannot simply type a different signed `sub`. Risk appears when the trust
+policy uses an overly broad pattern, accepts the wrong audience/issuer, or protects
+the accepted repository/ref/environment poorly.
 
-The IAM attack surface expands as organizations adopt multi-cloud, multi-region, and multi-tenant architectures. Attackers target trust relationships to transition from compute access to global platform control.
-
+```mermaid
+flowchart LR
+  W["Workforce IdP"] --> I["IAM Identity Center permission set"]
+  G["GitHub OIDC issuer"] --> T["Role trust: iss/aud/sub conditions"]
+  K["EKS Pod Identity or IRSA"] --> T2["Workload role trust"]
+  I --> S["Short-lived role session"]
+  T --> S
+  T2 --> S
+  S --> E["Effective authorization"]
+  P["Identity/resource policy"] --> E
+  B["Boundary/session policy"] --> E
+  O["SCP/RCP and service rules"] --> E
 ```
-       [ Stolen Kubernetes SA Token ]
-                     │
-                     ▼
-       [ Calls sts:AssumeRoleWithWebIdentity ]
-                     │
-       ┌─────────────┴─────────────┐
-       ▼                           ▼
-[ Target Role: No Aud Match ]   [ Target Role: Aud Wildcarded ]
-       │                           │
-       ▼                           ▼
-[ Signature verification fails ]   [ STS grants Session Credentials ]
-       │                           │
-  ( Blocked )                      ▼
-                       [ Lateral Cluster Takeover ]
-```
 
-### Threat Vectors and Kill-Chains
+## GitHub Actions OIDC trust
 
-1. **OIDC Audience (aud) Confusion**:
-   - *Adversary Goal*: Assume high-privilege AWS roles using a low-privilege OIDC token from a different cluster.
-   - *Attack Vector*: An enterprise shares a single OIDC provider or configures a trust relationship with wildcarded resource constraints in the AWS IAM Role trust policy. An attacker on Cluster A generates a token for service account `dev-sa`. They call `sts:AssumeRoleWithWebIdentity` against a role in Cluster B. Because the trust policy of the Cluster B role accepts a wildcarded audience (`*` or has lax checks on issuer/client IDs), AWS STS validates the signature and issues session credentials, allowing the attacker to assume the high-privilege role.
-2. **Confused Deputy in Role Assumption**:
-   - *Adversary Goal*: Compromise resources by tricking a trusted service into acting on their behalf.
-   - *Attack Vector*: An attacker specifies a victim's role ARN in an integration request to a third-party monitoring SaaS. If the victim's role trust relationship does not enforce a unique `sts:ExternalId` condition, the monitoring tool's integration role assumes the victim's role without verifying who initiated the request.
-3. **Escalation via PassRole Abuse**:
-   - *Adversary Goal*: Attach admin privileges to a compute instance under their control.
-   - *Attack Vector*: A developer has permission to run EC2 instances and has `iam:PassRole` permissions over a role named `EC2-Admin-Role`. They spin up a custom EC2 instance, pass the administrative role to it, log into the instance (via SSM or SSH), and query the instance metadata service (IMDSv2) to extract full administrator credentials.
-
----
-
-## Deep Technical Body
-
-### Workload Identity Federation (OIDC) Security Mechanics
-
-Workload Identity Federation removes the need for long-lived credentials. Instead of configuring IAM users with access keys, applications authenticate using short-lived tokens (JSON Web Tokens - JWTs) issued by an identity provider (IdP), such as GitHub Actions, GitLab, HashiCorp Vault, or a Kubernetes OpenID Connect issuer.
-
-#### The Token Exchange Flow
-1. The workload requests an identity token from its local provider (e.g. GitHub Actions runner requests a token from GitHub's OIDC issuer).
-2. The provider generates a signed JWT containing claims: `iss` (issuer), `sub` (subject), `aud` (audience), and `exp` (expiry).
-3. The workload sends this JWT to AWS STS via the `AssumeRoleWithWebIdentity` API call.
-4. AWS STS validates the JWT signature using the provider's public key (fetched from the provider's `.well-known/openid-configuration` JWKS endpoint).
-5. AWS STS matches the claims against the IAM role's trust policy. If they match, STS returns temporary AWS credentials.
-
-#### The OIDC Audience Wildcard Vulnerability
-A common and dangerous misconfiguration is using wildcards in OIDC role trust relationships. Consider the following trust policy designed to allow GitHub Actions to deploy resources:
+AWS requires a GitHub trust policy to evaluate the GitHub subject claim; AWS also
+documents using the audience `sts.amazonaws.com`. A narrow protected-environment
+example is:
 
 ```json
 {
@@ -74,101 +75,13 @@ A common and dangerous misconfiguration is using wildcards in OIDC role trust re
     {
       "Effect": "Allow",
       "Principal": {
-        "Federated": "arn:aws:iam::123456789012:oidc-provider/token.actions.githubusercontent.com"
-      },
-      "Action": "sts:AssumeRoleWithWebIdentity",
-      "Condition": {
-        "StringLike": {
-          "token.actions.githubusercontent.com:sub": "repo:my-org/*"
-        }
-      }
-    }
-  ]
-}
-```
-
-**What is the flaw?** While this policy limits the *subject* (`sub`) to repositories under `my-org/*`, it **fails to validate the audience (`aud`)**. By default, if the audience check is missing, any JWT issued by GitHub Actions for *any* repository in the world can potentially assume this role if the attacker can spoof the subject format or if the OIDC provider configurations overlap. To secure this, the `aud` condition must be strictly locked down to `sts.amazonaws.com`.
-
-### IAM Permission Boundaries: Mechanics and Bypasses
-
-A Permission Boundary is an advanced IAM feature that limits the maximum permissions a policy can grant to an identity (User or Role). It acts as a logical AND filter.
-
-```
-          [ Permissions Granted by IAM Policy ]
-                         │
-                         ├─────────┐
-                         ▼         ▼
-                     [ Action A ] [ Action B ]
-                         │
-                         ▼
-        [ Matches Permission Boundary Policy? ]
-                         │
-               ┌─────────┴─────────┐
-               ▼                   ▼
-           [ Action A ]        [ Action B ]
-             (Allowed)         (Matches: No)
-                                   │
-                                   ▼
-                            [ ACCESS DENIED ]
-```
-
-When an administrator delegates role-creation privileges to developers or teams, they must enforce a permission boundary. This prevents developers from creating a role with greater permissions than they themselves possess.
-
-#### The Enforcement Pattern
-To enforce a boundary, the developer's IAM policy must contain a condition requiring the boundary policy to be attached to any new role they create:
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "CreateRoleWithBoundaryOnly",
-      "Effect": "Allow",
-      "Action": [
-        "iam:CreateRole",
-        "iam:PutRolePolicy",
-        "iam:AttachRolePolicy"
-      ],
-      "Resource": "arn:aws:iam::123456789012:role/developer/*",
-      "Condition": {
-        "StringEquals": {
-          "iam:PermissionsBoundary": "arn:aws:iam::123456789012:policy/Developer-Boundary"
-        }
-      }
-    }
-  ]
-}
-```
-
-#### Common Permission Boundary Bypasses
-If not configured carefully, developers can bypass boundary rules:
-1. **Missing `DeleteRolePermissionsBoundary` Prevention**: If the developer has `iam:DeleteRolePermissionsBoundary` access, they can simply remove the boundary from a role they created, restoring full admin privileges to that role.
-2. **Lax Resource Paths**: If the developer can modify roles outside the `arn:aws:iam::123456789012:role/developer/*` path, they can target system roles or core integration roles.
-3. **IAM Policy Updates**: If the developer has permissions to create new versions of the `Developer-Boundary` policy itself (`iam:CreatePolicyVersion`), they can update the boundary to grant themselves administrative permissions.
-
----
-
-## Defensive Architecture
-
-A secure enterprise identity architecture requires combining ABAC for scale with strict validation rules on trust relationships.
-
-### Hardened Role Trust Blueprint (Kubernetes IRSA)
-This policy shows the correct way to configure IRSA (IAM Roles for Service Accounts) on EKS, preventing token audience confusion and limiting access to a specific Kubernetes Namespace and ServiceAccount.
-
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Federated": "arn:aws:iam::123456789012:oidc-provider/oidc.eks.us-west-2.amazonaws.com/id/EXAMPLETOCKENID"
+        "Federated": "arn:aws:iam::<account-id>:oidc-provider/token.actions.githubusercontent.com"
       },
       "Action": "sts:AssumeRoleWithWebIdentity",
       "Condition": {
         "StringEquals": {
-          "oidc.eks.us-west-2.amazonaws.com/id/EXAMPLETOCKENID:aud": "sts.amazonaws.com",
-          "oidc.eks.us-west-2.amazonaws.com/id/EXAMPLETOCKENID:sub": "system:serviceaccount:payment-processing:payment-processor-sa"
+          "token.actions.githubusercontent.com:aud": "sts.amazonaws.com",
+          "token.actions.githubusercontent.com:sub": "repo:jasonachkar/cybersecurity-writeups:environment:production"
         }
       }
     }
@@ -176,60 +89,147 @@ This policy shows the correct way to configure IRSA (IAM Roles for Service Accou
 }
 ```
 
-### Attribute-Based Access Control (ABAC) Design Pattern
-To avoid maintaining thousands of individual IAM policies, use session tags for authorization. Ensure that compute instances or roles can only access S3 buckets, secrets, or databases that share their environment tag.
+This is illustrative. Verify the exact subject generated by the selected GitHub
+event/environment and protect that environment with reviewers and branch/tag rules.
+Use separate roles for build, staging, and production. A broad pattern such as
+`repo:organization/*` intentionally delegates trust to many repositories and requires
+organization-wide repository/workflow governance; it is not equivalent to an exact
+repository and environment binding.
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Sid": "AllowSecretsAccessByTagMatching",
-      "Effect": "Allow",
-      "Action": [
-        "secretsmanager:GetSecretValue",
-        "secretsmanager:DescribeSecret"
-      ],
-      "Resource": "*",
-      "Condition": {
-        "StringEquals": {
-          "aws:ResourceTag/Environment": "${aws:PrincipalTag/Environment}",
-          "aws:ResourceTag/CostCenter": "${aws:PrincipalTag/CostCenter}"
-        }
-      }
-    }
-  ]
-}
-```
+On each exchange, validate through configuration:
 
----
+- canonical GitHub OIDC provider URL and thumbprint/provider handling per current AWS
+  documentation;
+- audience expected by the AWS action/partition;
+- exact repository owner/name and branch, tag, pull request, or environment subject;
+- repository visibility/ownership controls if relevant to the claim set;
+- session duration, session name/tags where supported, and narrow role permissions.
 
-## Tooling and Implementation
+The workflow still needs `id-token: write`; this permits requesting an OIDC token but
+does not itself grant AWS access. The AWS trust and permissions remain decisive.
 
-Modern organizations automate the validation and management of IAM policies:
+## Workload identity on EKS
 
-1. **IAM Access Analyzer**: Use this service to check for external or public access sharing and identify overly permissive policies.
-2. **CloudMapper / PMapper (Principal Mapper)**: An open-source tool that maps the relationship chains between IAM principals. It detects privilege escalation paths (e.g. User A can assume Role B, which can pass Role C to an EC2 instance, leading to Admin access).
-3. **Kube-2-IAM / EKS Pod Identity**: Utilize native AWS EKS Pod Identity agents. EKS Pod Identity associates IAM roles with Kubernetes service accounts directly using API calls instead of OIDC provider configurations, making management simpler and less prone to configuration errors.
+AWS currently recommends EKS Pod Identity where possible. It centralizes the service
+principal trust model and supports session tags, but has documented platform/version,
+node-agent, same-account, and service limitations. IRSA uses a cluster OIDC provider
+and service-account subject conditions and remains appropriate where Pod Identity is
+unsupported or its model does not fit.
 
----
+For either model:
 
-## IAM Audit Checklist
+- dedicate Kubernetes service accounts to workloads and disable default token mount
+  where unnecessary;
+- bind one narrow AWS role per meaningful workload trust boundary;
+- restrict Kubernetes RBAC that can create/modify pods and service accounts because
+  it may confer workload identity;
+- enforce IMDS/node-role protections so a pod cannot fall back to broader node
+  credentials;
+- correlate Kubernetes audit, STS, and CloudTrail identity/session data.
 
-| Item | Focus Area | Verification Step / Command | Target State |
-| :--- | :--- | :--- | :--- |
-| 1 | Credential Expiry | Scan for active, long-lived AWS IAM Access Keys. | Access keys older than 90 days are disabled or rotated automatically. |
-| 2 | OIDC Security | Audit EKS and GitHub OIDC trust relationships. | All trust statements must contain a explicit `"aud": "sts.amazonaws.com"` (or similar client identifier) constraint. |
-| 3 | Confused Deputy | Verify that external/third-party roles use an `ExternalId`. | Trust policies require `sts:ExternalId` containing a unique ID. |
-| 4 | Permission Boundaries | Audit roles used by deployment tools (e.g. Jenkins, GitLab, Terraform). | If they have role-creation rights, they must be constrained by an `iam:PermissionsBoundary` check. |
-| 5 | PassRole Scope | Scan policy configurations for `"Action": "iam:PassRole"` on resource `*`. | `PassRole` is strictly restricted to roles with matching paths (e.g. `arn:aws:iam::*:role/compute/*`). |
-| 6 | Over-permissive Wildcards | Hunt for policies containing `"*"` in both Action and Resource blocks. | Allowed only in central admin roles, blocked on all application and compute roles. |
+Do not call containers a complete boundary: pods on a node share a kernel, and node/
+cluster compromise can affect workload identity controls.
 
----
+## `iam:PassRole` and delegated service roles
+
+`iam:PassRole` lets a principal tell an AWS service to use a role. The role trust
+policy must trust that service, and the role must be in the same account as the
+principal passing it. Authorization should constrain:
+
+- explicit role ARNs or tightly governed role paths/tags;
+- destination service using `iam:PassedToService` where supported;
+- associated resource using `iam:AssociatedResourceArn` where semantics are
+  documented and tested;
+- the service API actions that create/update the resource using the role.
+
+The effective privilege is the intersection of who can pass which role, to which
+service/resource, through which create/update APIs. Review all dimensions. The
+`PassRole` permission is evaluated during the service API and does not produce a
+standalone CloudTrail `PassRole` event; investigate the destination service event and
+role ARN.
+
+## Permission architecture
+
+Use accounts as blast-radius and policy boundaries, organized under AWS Organizations.
+SCPs restrict the maximum permissions available in member accounts; they do not grant
+permissions. Permission boundaries restrict delegated role/user policies; they do not
+grant permissions. Resource policies, KMS key policies, role trust policies, session
+policies, service-specific authorization, and Organizations resource control policies
+where applicable all contribute to effective access.
+
+Build reusable job-function roles/permission sets, then narrow resource scope and
+conditions. Avoid attaching administrator policies to CI, platform, and incident roles
+for convenience. Use separate break-glass access with strong authentication,
+just-in-time approval, dedicated monitoring, tested recovery, and post-use review.
+
+## Long-lived access keys
+
+AWS IAM best practices prioritize federation and temporary credentials. The target
+state is no IAM-user key for humans, CI/CD, EC2, containers, or supported AWS
+services. Use roles, instance/task profiles, EKS identities, service roles, and OIDC/
+SAML federation.
+
+For a legacy exception:
+
+1. name an owner, workload, business reason, data/actions, network path, and migration
+   deadline;
+2. restrict policy/resource conditions and place the secret in a managed secret
+   store, never source or general CI variables;
+3. monitor use, source, and anomalous behavior;
+4. rotate with overlap and rollback only as required by the integration;
+5. disable, observe, then delete when migration completes.
+
+Age alone is a weak signal: an unused new key is still unnecessary, and rotating a
+persistently overprivileged key does not reduce its inherent exposure.
+
+## Analysis and continuous validation
+
+Use IAM Access Analyzer for external/internal access findings and policy generation/
+validation, service last-accessed information with context, CloudTrail, AWS Config,
+organization policy checks, and graph analysis. Community tools such as PMapper can
+assist reachability review, but pin/test tool versions and treat their results as
+analysis rather than authoritative proof.
+
+Negative tests should attempt cross-account assume role, wrong GitHub repository/ref/
+environment/audience, unapproved service-account identity, PassRole to an unauthorized
+role/service, access outside resource tags/paths, and action from an SCP-denied account.
+
+## Failure modes and rollback
+
+- OIDC or IdP outage: use a controlled break-glass path, not cached permanent CI keys.
+- Overbroad trust: restrict immediately, revoke active sessions where feasible,
+  investigate CloudTrail, rotate any accessed downstream secrets, and review builds/
+  deployments from affected sessions.
+- Permission reduction breaks workloads: roll back a versioned policy through review;
+  do not attach AdministratorAccess as an automated fallback.
+- Lost organization controls: detect drift and require delegated policy changes through
+  a protected pipeline with management-account safeguards.
+
+## Operational checklist
+
+- [ ] Humans and workloads use temporary, attributable sessions.
+- [ ] GitHub trust validates audience and exact intended subject/environment.
+- [ ] EKS workload identity choice and node/metadata protections are documented.
+- [ ] `iam:PassRole`, destination APIs, role trust, and passed role permissions are
+      reviewed together.
+- [ ] SCPs/boundaries are described as guardrails, not grants.
+- [ ] Long-lived keys have a migration deadline, not only a rotation date.
+- [ ] Break-glass and identity-provider outage procedures are rehearsed.
+- [ ] Trust/policy/role/access-key changes and unexpected sessions alert centrally.
+
+## Limitations
+
+Policy snippets require account/partition/service-specific review. AWS adds services,
+condition keys, workload-identity capabilities, and Organizations controls over time;
+revalidate before production changes.
 
 ## References
 
-* *Kubernetes IAM Roles for Service Accounts (IRSA)*: [AWS Documentation](https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html)
-* *AWS IAM Evaluation Logic*: [AWS IAM Documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic.html)
-* *Principal Mapper (PMapper) Escalation Engine*: [GitHub Repository](https://github.com/nccgroup/pmpper)
-* *OAuth 2.0 Web Identity Federation*: [IETF RFC 7523](https://tools.ietf.org/html/rfc7523)
+- [AWS IAM security best practices](https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html)
+- [Create an OIDC role for GitHub Actions](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html)
+- [Create an IAM OIDC identity provider](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html)
+- [GitHub OIDC reference](https://docs.github.com/en/enterprise-cloud@latest/actions/reference/security/oidc)
+- [GitHub OIDC in AWS](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws)
+- [Grant a principal permission to pass a role](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html)
+- [EKS IAM roles for service accounts and Pod Identity comparison](https://docs.aws.amazon.com/eks/latest/userguide/service-accounts.html)
+- [PMapper source repository](https://github.com/nccgroup/PMapper)

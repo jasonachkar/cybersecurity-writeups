@@ -185,6 +185,6 @@ Utilize enterprise secrets managers and automated validators to maintain credent
 
 ## References
 
-* *HashiCorp Vault Production Hardening Guide*: [HashiCorp Documentation](https://developer.hashicorp.com/vault/docs/concepts/hardening)
+* *HashiCorp Vault Production Hardening Guide*: [HashiCorp Documentation](https://developer.hashicorp.com/vault/docs/concepts/production-hardening)
 * *AWS Secrets Manager Rotation Guidelines*: [AWS Documentation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html)
 * *NIST Special Publication 800-57 (Recommendation for Key Management)*: [NIST SP 800-57](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57Pt1r5.pdf)
