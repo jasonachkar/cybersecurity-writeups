@@ -17,6 +17,7 @@ if [ ! -d ".venv" ]; then
   exit 1
 fi
 
+# shellcheck source=/dev/null
 source .venv/bin/activate
 
 echo "==> Verifying site build..."

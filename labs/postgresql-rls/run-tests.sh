@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -eu
 
-lab_root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+lab_root=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 keep=false
 if [ "${1:-}" = "--keep" ]; then
   keep=true
