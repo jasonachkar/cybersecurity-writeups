@@ -1,0 +1,24 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "subject": [
+    {
+      "name": "release.txt",
+      "digest": {
+        "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    }
+  ],
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://github.com/jasonachkar/cybersecurity-writeups/.github/workflows/release.yml",
+      "externalParameters": {
+        "source": "git+https://github.com/jasonachkar/cybersecurity-writeups@refs/heads/main"
+      }
+    }
+  },
+  "verification": {
+    "issuer": "https://token.actions.githubusercontent.com",
+    "verified": true
+  }
+}

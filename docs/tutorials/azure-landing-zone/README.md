@@ -1,1208 +1,405 @@
 ---
-title: "Azure Landing Zone Security"
+title: "Azure Landing Zone Security Engineering Guide"
 type: "tutorial"
-tags: ['Security', 'Azure']
-date: "2026-06"
-readingTime: 21
+tags:
+  - azure
+  - landing-zone
+  - governance
+  - identity
+  - network-security
+date: "2026-07-21"
+lastReviewed: "2026-07-21"
+readingTime: 35
+reviewStatus: "verified"
+validatedAgainst:
+  - "Azure Cloud Adoption Framework landing-zone design areas, management-group, subscription-vending, and GitHub OIDC guidance checked 2026-07-21"
+  - "Bicep compilation target at labs/azure-landing-zone"
+sourceQuality: "primary-sources-reviewed"
+implementationStatus: "partially-tested"
+reviewIntervalDays: 180
 ---
 
-# Azure Landing Zone Security
+# Azure Landing Zone Security Engineering Guide
 
-A comprehensive guide to designing and implementing secure Azure Landing Zones following Microsoft's Cloud Adoption Framework best practices.
+An Azure landing zone is an operating model and architecture for placing workloads
+into governed subscriptions. It is not a single portal accelerator, repository, or
+management-group diagram. A senior design connects identity, resource organization,
+networking, security operations, governance, platform automation, subscription
+vending, workload onboarding, and lifecycle responsibilities—and preserves a safe
+path to change them.
 
-## Table of Contents
+The companion [Azure landing-zone lab](../../../labs/azure-landing-zone/README.md)
+compiles a small tenant-scope management-group/policy Bicep design and documents a
+federated what-if workflow. Existing deep dives remain available for
+[architecture](architecture.md), [identity](iam.md), [networking](networking.md),
+[policy governance](policy-governance.md), and
+[implementation templates](implementation-templates.md).
 
-1. [Introduction to Azure Landing Zones](#introduction-to-azure-landing-zones)
-2. [Architecture Overview](#architecture-overview)
-3. [Management Group Hierarchy](#management-group-hierarchy)
-4. [Identity and Access Management](#identity-and-access-management)
-5. [Network Security](#network-security)
-6. [Azure Policy and Governance](#azure-policy-and-governance)
-7. [Microsoft Defender for Cloud](#microsoft-defender-for-cloud)
-8. [Zero Trust Implementation](#zero-trust-implementation)
-9. [Subscription Vending](#subscription-vending)
-10. [Monitoring and Logging](#monitoring-and-logging)
-11. [Security Checklists](#security-checklists)
+## Executive decision
 
----
+Use a management-group hierarchy that expresses policy/operating archetypes rather
+than the current org chart. Vend workload subscriptions through a controlled product
+workflow that establishes ownership, budget, identity, network, security, logging,
+policy, and decommissioning metadata. Keep platform, landing-zone, sandbox, and
+decommissioned scopes distinct. Deploy the platform from protected IaC with federated
+identities and staged policy enforcement.
 
-## Introduction to Azure Landing Zones
+Prefer a small durable hierarchy. Management groups affect inherited authorization
+and policy at broad scope; every extra branch adds exception, move, deployment, and
+operations cost.
 
-### What is an Azure Landing Zone?
+## Scope and non-goals
 
-An Azure Landing Zone is a scalable, modular environment that follows Microsoft's best practices for governance, security, and operations. It provides the foundation upon which organizations deploy and manage their Azure workloads.
+In scope:
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Azure Landing Zone Architecture                   │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  PLATFORM LANDING ZONE (Shared Services)                            │
-│  ├─ Identity Subscription (AD DS, DNS, identity services)           │
-│  ├─ Management Subscription (Log Analytics, Automation, Sentinel)   │
-│  └─ Connectivity Subscription (Hub VNet, Firewall, VPN/ExpressRoute)│
-│                                                                      │
-│  APPLICATION LANDING ZONES (Workload Environments)                  │
-│  ├─ Corp Landing Zones (Internal apps, private connectivity)        │
-│  └─ Online Landing Zones (Internet-facing apps)                     │
-│                                                                      │
-│  GOVERNANCE FOUNDATION                                               │
-│  ├─ Management Group Hierarchy                                      │
-│  ├─ Azure Policy Assignments                                        │
-│  ├─ RBAC Role Assignments                                           │
-│  └─ Resource Tagging Standards                                      │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
-```
+- Microsoft Entra tenant and Azure organization/resource hierarchy;
+- identity/privilege, subscription vending, policy, network, management/security,
+  platform automation, ownership, observability, and recovery;
+- greenfield or incremental adoption across platform and workload teams.
 
-### Eight Design Areas
+Not provided:
 
-| Design Area | Security Focus |
-|-------------|----------------|
-| **Azure Billing & Tenant** | Tenant security, billing account access |
-| **Identity & Access Management** | Authentication, authorization, privileged access |
-| **Management Group & Subscription** | Hierarchy design, policy inheritance |
-| **Network Topology & Connectivity** | Hub-spoke, segmentation, private connectivity |
-| **Security** | Defense in depth, threat protection |
-| **Management** | Monitoring, patching, backup |
-| **Governance** | Policy enforcement, compliance |
-| **Platform Automation & DevOps** | IaC security, CI/CD pipelines |
+- an organization-specific tenant, IP plan, regulatory mapping, budget, or operating
+  team;
+- authorization to create tenant-scope resources or move subscriptions;
+- a complete Virtual WAN/hub-spoke, identity platform, SIEM, backup, or workload
+  implementation;
+- proof that the legacy snippets in companion pages compile against every current API
+  version. Each example retains its declared implementation status.
 
-### Key Design Principles
+## Assumptions and constraints
 
-1. **Subscription Democratization**: Enable application teams with pre-configured subscriptions
-2. **Policy-Driven Governance**: Use Azure Policy for automated guardrails
-3. **Single Control and Management Plane**: Unified operations across all landing zones
-4. **Application-Centric Service Model**: Align subscriptions to workloads
-5. **Enterprise-Scale Architecture**: Design for growth and evolution
+- One organization controls the Entra tenant and Azure billing/management hierarchy.
+- Production workloads have named business, technical, security, data, and cost
+  owners.
+- Tenant-root and management-group changes are protected by privileged identity,
+  change review, audit, and emergency access.
+- Workload teams can consume a paved-road subscription product but retain responsibility
+  for application/data controls inside their subscription.
+- Regulatory/data-residency requirements are translated into explicit policy and
+  deployment requirements, not inferred from a generic reference architecture.
 
----
+If mergers, sovereign tenants, hostile tenant workloads, delegated providers, or
+separate legal entities violate these assumptions, design separate tenant/account/
+management boundaries deliberately.
 
-## Architecture Overview
+## Assets, actors, and trust boundaries
 
-### Reference Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         AZURE LANDING ZONE REFERENCE                         │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│  ┌──────────────────────────────────────────────────────────────────────┐   │
-│  │                    ROOT MANAGEMENT GROUP (Tenant)                     │   │
-│  └──────────────────────────────────────────────────────────────────────┘   │
-│                                    │                                         │
-│  ┌─────────────────────────────────┴─────────────────────────────────┐      │
-│  │               INTERMEDIATE ROOT (e.g., "Contoso")                  │      │
-│  │  Policies: Security baseline, MCSB, allowed regions               │      │
-│  └─────────────────────────────────┬─────────────────────────────────┘      │
-│                                    │                                         │
-│     ┌──────────────────────────────┼──────────────────────────────┐         │
-│     │                              │                              │          │
-│     ▼                              ▼                              ▼          │
-│  ┌──────────┐               ┌────────────┐               ┌────────────┐     │
-│  │ Platform │               │ Landing    │               │ Decomm-    │     │
-│  │          │               │ Zones      │               │ issioned   │     │
-│  └────┬─────┘               └─────┬──────┘               └────────────┘     │
-│       │                           │                                          │
-│  ┌────┴────┐                 ┌────┴────┐                                    │
-│  │         │                 │         │                                    │
-│  ▼         ▼                 ▼         ▼                                    │
-│ ┌───┐ ┌───┐ ┌───┐         ┌────┐   ┌────────┐                              │
-│ │Mgt│ │Con│ │Idn│         │Corp│   │ Online │                              │
-│ └───┘ └───┘ └───┘         └────┘   └────────┘                              │
-│   │     │     │              │          │                                   │
-│   ▼     ▼     ▼              ▼          ▼                                   │
-│ [Log] [Hub] [AD]          [App1]    [App2]                                 │
-│ [Snl] [FW]  [DNS]         [App3]    [App4]                                 │
-│ [Auto][VPN]               (Corp     (Internet-                             │
-│       [ER]                 Apps)     facing)                               │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+  E["Microsoft Entra tenant and emergency access"] --> R["Tenant root management group"]
+  R --> P["Platform"]
+  R --> L["Landing zones"]
+  R --> S["Sandbox"]
+  R --> D["Decommissioned"]
+  P --> I["Identity subscription"]
+  P --> M["Management/security subscription"]
+  P --> C["Connectivity subscription"]
+  L --> O["Online workload subscriptions"]
+  L --> K["Corp/internal workload subscriptions"]
+  V["Subscription vending workflow"] --> O
+  V --> K
+  G["Protected IaC and policy pipeline"] --> R
+  G --> P
+  W["Workload teams"] --> O
+  X["Security/platform operations"] --> M
 ```
 
-### Platform vs Application Landing Zones
+High-value assets include tenant-root authority, Global Administrator/Privileged Role
+Administrator paths, emergency accounts, management-group owners, policy exemptions,
+deployment identities, connectivity controls, DNS, firewall/routing, platform keys,
+central logs, Defender/Sentinel configurations, recovery vaults, and subscription-
+vending metadata.
 
-| Aspect | Platform Landing Zone | Application Landing Zone |
-|--------|----------------------|--------------------------|
-| **Purpose** | Shared services | Workload hosting |
-| **Ownership** | Platform team | Application team |
-| **Examples** | Identity, Connectivity, Management | Line-of-business apps |
-| **Subscriptions** | 3 (Identity, Management, Connectivity) | 1+ per workload |
-| **Policy** | Defines baseline | Inherits + extends |
-| **Network** | Hub VNet, Firewall | Spoke VNets |
+Threat actors include a compromised workload contributor, platform engineer, CI
+workflow, service principal, managed identity, partner/guest, subscription owner,
+network appliance, or control-plane dependency.
 
----
+## Threat model and abuse cases
 
-## Management Group Hierarchy
+| Abuse case | Control strategy | Validation evidence |
+| --- | --- | --- |
+| Workload owner grants broad external access | inherited policy, narrow owner model, access review and activity-log detection | violating role-assignment fixtures and tenant audit |
+| CI subject from another repo/branch gets tenant role | exact federated credential issuer/subject/audience plus protected environment | negative OIDC claim test and sign-in/activity logs |
+| Broad policy `deny` interrupts platform | audit-first/canary rollout, exemptions with owner/expiry, what-if and rollback | compliance impact report and canary results |
+| Subscription moved to escape controls | restrict management-group move authority; alert and reconcile hierarchy | move attempt test/audit rule |
+| Workload routes around inspection/DNS | UDR/firewall/DNS/private endpoint policy and effective-route tests | synthetic connectivity and exfiltration tests |
+| Platform identity changes its own guardrails | separate policy/identity deployment roles and approvals | authorization graph and pipeline tests |
+| Central logging disabled or excluded | immutable/central destinations, diagnostic policy, independent health alert | log-delivery failure exercise |
+| Emergency identity becomes normal admin | excluded from routine use, strong independent credential, alert and post-use review | sign-in exercise and evidence review |
+| Vending creates orphaned subscription | required owner/cost/data/lifecycle metadata and periodic reconciliation | catalog-to-Azure inventory test |
+| Tenant-root compromise | separate privileged workstations, PIM/JIT, least privilege, emergency recovery | tabletop and privileged-access review |
 
-### Recommended Structure
+## Architecture decision record
 
-```
-Tenant Root Group
-└── Contoso (Intermediate Root)
-    ├── Platform
-    │   ├── Identity
-    │   │   └── Identity Subscription
-    │   ├── Management
-    │   │   └── Management Subscription
-    │   └── Connectivity
-    │       └── Connectivity Subscription
-    ├── Landing Zones
-    │   ├── Corp
-    │   │   ├── HR App Subscription
-    │   │   ├── Finance App Subscription
-    │   │   └── ...
-    │   ├── Online
-    │   │   ├── E-commerce Subscription
-    │   │   ├── Public Website Subscription
-    │   │   └── ...
-    │   └── Confidential (Custom archetype)
-    │       └── High-security workloads
-    ├── Sandbox
-    │   └── Development/Testing Subscriptions
-    └── Decommissioned
-        └── Retired Subscriptions
-```
+### Selected organization model
 
-### Policy Assignment Strategy
+Use the tenant root only for controls that genuinely apply everywhere and need the
+widest scope. Beneath it:
 
-| Management Group | Key Policies |
-|-----------------|--------------|
-| **Intermediate Root** | Microsoft Cloud Security Benchmark (MCSB), Allowed regions, Required tags, Audit diagnostic settings |
-| **Platform** | Platform-specific security controls |
-| **Landing Zones** | Application baseline policies |
-| **Corp** | Private endpoint enforcement, No public IPs |
-| **Online** | WAF requirement, DDoS protection |
-| **Sandbox** | Relaxed policies for experimentation |
+- **Platform:** centrally operated identity, management/security, and connectivity
+  subscriptions.
+- **Landing zones:** workload subscriptions grouped only when they share policy and
+  connectivity archetypes, commonly corp/internal and online/external patterns.
+- **Sandbox:** experimentation with restricted connectivity/data/identity, quotas,
+  expiry, and no route to production trust.
+- **Decommissioned:** a controlled quarantine/lifecycle scope for retired
+  subscriptions before final closure, subject to retention/legal requirements.
 
----
+Avoid management groups per department, region, environment, or application unless
+they represent durable policy divergence. Use subscriptions, resource groups, tags,
+policy parameters, and application portfolios for other classification.
 
-## Identity and Access Management
+### Alternatives
 
-### Microsoft Entra ID Integration
+| Alternative | Why not the default | When it fits |
+| --- | --- | --- |
+| One subscription per environment for all workloads | shared RBAC/quota/blast radius and lifecycle coupling | very small temporary platform with explicit migration plan |
+| Management group per business unit/application | deep volatile hierarchy and inherited-policy complexity | legally/operationally autonomous portfolios with durable policy differences |
+| Portal/manual subscription setup | inconsistent controls, weak evidence and orphan risk | emergency process only, followed by vending reconciliation |
+| One highly privileged pipeline identity | easy operation but unacceptable cross-environment/tenant-root blast radius | not selected; split by scope/function |
+| Immediate deny policy everywhere | fast nominal compliance but high outage/bypass pressure | only for well-tested non-negotiable controls with safe exceptions |
 
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Identity Architecture                             │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  ON-PREMISES                           AZURE                         │
-│  ┌─────────────┐                      ┌──────────────────┐          │
-│  │ Active      │ ←── Entra Connect ──→│ Microsoft        │          │
-│  │ Directory   │     Cloud Sync       │ Entra ID         │          │
-│  │ Domain      │                      │                  │          │
-│  │ Services    │                      │ ├─ Users         │          │
-│  └─────────────┘                      │ ├─ Groups        │          │
-│        │                              │ ├─ App Regs      │          │
-│        │                              │ └─ Service       │          │
-│        ▼                              │   Principals     │          │
-│  ┌─────────────┐                      └────────┬─────────┘          │
-│  │ Defender    │                               │                    │
-│  │ for         │                               ▼                    │
-│  │ Identity    │                      ┌──────────────────┐          │
-│  │ Sensors     │                      │ Azure Resources  │          │
-│  └─────────────┘                      │                  │          │
-│                                       │ ├─ Subscriptions │          │
-│                                       │ ├─ Resource Grps │          │
-│                                       │ └─ Resources     │          │
-│                                       └──────────────────┘          │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
-```
+## Subscription vending product
 
-### RBAC Best Practices
+Subscription vending is an API/workflow with a contract, not a ticket that ends at
+subscription creation. Required input:
 
-```bicep
-// Example: Custom Role Definition for Landing Zone Owner
-resource landingZoneOwnerRole 'Microsoft.Authorization/roleDefinitions@2022-04-01' = {
-  name: guid('landing-zone-owner', subscription().id)
-  properties: {
-    roleName: 'Landing Zone Owner'
-    description: 'Can manage resources within landing zone but not RBAC or networking'
-    type: 'CustomRole'
-    permissions: [
-      {
-        actions: [
-          '*'
-        ]
-        notActions: [
-          'Microsoft.Authorization/*/Delete'
-          'Microsoft.Authorization/*/Write'
-          'Microsoft.Authorization/elevateAccess/Action'
-          'Microsoft.Network/virtualNetworks/subnets/join/action'
-          'Microsoft.Network/virtualNetworks/peer/action'
-        ]
-        dataActions: []
-        notDataActions: []
-      }
-    ]
-    assignableScopes: [
-      subscription().id
-    ]
-  }
-}
-```
+- business, technical, security, data, and cost owners;
+- workload/environment/criticality/data classification and residency;
+- management-group/archetype and connectivity/DNS/ingress/egress needs;
+- identity groups, privileged roles, managed/workload identities, and deployment
+  federation subject;
+- budgets, quotas, backup/recovery objectives and retention;
+- central logging/Defender/Sentinel routing, incident contacts, and on-call;
+- policy exemptions with rationale/owner/expiry;
+- lifecycle dates and decommissioning plan.
 
-### Privileged Identity Management (PIM)
+Workflow stages:
 
-| Configuration | Recommendation |
-|--------------|----------------|
-| **Activation Duration** | 8 hours maximum for standard roles |
-| **Justification** | Required for all activations |
-| **MFA** | Required for activation |
-| **Approval** | Required for Global Admin, Security Admin |
-| **Notification** | Enabled for all role activations |
-| **Access Reviews** | Quarterly for all privileged roles |
+1. authenticate/authorize requester and validate metadata;
+2. allocate subscription/billing and target management group;
+3. apply baseline policy, budgets, diagnostic/security contacts, and role groups;
+4. connect network/DNS/private resolution according to archetype;
+5. create narrow federated deployment identity and environment protections;
+6. run negative connectivity/identity/policy/log-delivery tests;
+7. publish catalog/CMDB evidence and transfer documented responsibilities;
+8. continuously reconcile drift and ownership.
 
-### Conditional Access Policies
+Vending must be idempotent and restartable. Partial completion fails closed: do not
+hand a subscription to a workload before required identity, policy, telemetry, and
+ownership gates pass.
 
-```json
-{
-  "displayName": "Require MFA for Azure Management",
-  "state": "enabled",
-  "conditions": {
-    "applications": {
-      "includeApplications": [
-        "797f4846-ba00-4fd7-ba43-dac1f8f63013"  // Azure Management
-      ]
-    },
-    "users": {
-      "includeUsers": ["All"],
-      "excludeUsers": ["BreakGlassAccounts"]
-    },
-    "locations": {
-      "includeLocations": ["All"],
-      "excludeLocations": ["AllTrusted"]
-    }
-  },
-  "grantControls": {
-    "operator": "AND",
-    "builtInControls": [
-      "mfa",
-      "compliantDevice"
-    ]
-  },
-  "sessionControls": {
-    "signInFrequency": {
-      "value": 4,
-      "type": "hours"
-    }
-  }
-}
-```
+## Identity and privileged access
 
----
+Use groups rather than direct user assignments, least privilege, PIM/JIT activation,
+approval for high-impact roles, access reviews, and separate privileged identities/
+workstations. Minimize permanent tenant and subscription owners. Protect role-
+assignable groups and the identities that administer PIM, Conditional Access,
+federated credentials, service principals, managed identities, and policy exemptions.
 
-## Network Security
+Maintain at least two independently secured emergency access accounts according to
+Microsoft's current guidance and organizational threat model. Exclude them only from
+controls that would defeat emergency purpose, protect credentials independently, do
+not use them routinely, alert every sign-in/change, and test/review on schedule.
 
-### Hub-Spoke Topology
+For automation, prefer managed identity within Azure and workload identity federation
+from GitHub/Azure DevOps. A federated credential must match the exact trusted issuer
+and narrow repository/environment/branch or service connection subject. Grant the
+resulting identity only its deployment scope/actions; federation removes a stored
+secret but does not make broad Azure roles safe.
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                         HUB-SPOKE NETWORK ARCHITECTURE                       │
-├─────────────────────────────────────────────────────────────────────────────┤
-│                                                                              │
-│                           ┌─────────────────┐                               │
-│                           │   ON-PREMISES   │                               │
-│                           │    DATACENTER   │                               │
-│                           └────────┬────────┘                               │
-│                                    │                                         │
-│                           ExpressRoute / VPN                                │
-│                                    │                                         │
-│  ┌─────────────────────────────────┴─────────────────────────────────────┐  │
-│  │                         HUB VNET (10.0.0.0/16)                         │  │
-│  │  ┌─────────────────────────────────────────────────────────────────┐  │  │
-│  │  │ Gateway Subnet (10.0.0.0/27)                                    │  │  │
-│  │  │ ├─ VPN Gateway                                                  │  │  │
-│  │  │ └─ ExpressRoute Gateway                                         │  │  │
-│  │  └─────────────────────────────────────────────────────────────────┘  │  │
-│  │  ┌─────────────────────────────────────────────────────────────────┐  │  │
-│  │  │ AzureFirewallSubnet (10.0.1.0/26)                               │  │  │
-│  │  │ └─ Azure Firewall (Premium)                                     │  │  │
-│  │  └─────────────────────────────────────────────────────────────────┘  │  │
-│  │  ┌─────────────────────────────────────────────────────────────────┐  │  │
-│  │  │ AzureBastionSubnet (10.0.2.0/26)                                │  │  │
-│  │  │ └─ Azure Bastion                                                │  │  │
-│  │  └─────────────────────────────────────────────────────────────────┘  │  │
-│  │  ┌─────────────────────────────────────────────────────────────────┐  │  │
-│  │  │ DNS Subnet (10.0.3.0/28)                                        │  │  │
-│  │  │ └─ DNS Private Resolver                                         │  │  │
-│  │  └─────────────────────────────────────────────────────────────────┘  │  │
-│  └────────────────────────────────┬──────────────────────────────────────┘  │
-│                                   │                                          │
-│              ┌────────────────────┼────────────────────┐                    │
-│              │                    │                    │                    │
-│              ▼                    ▼                    ▼                    │
-│  ┌───────────────────┐ ┌───────────────────┐ ┌───────────────────┐         │
-│  │ SPOKE 1 (Corp)    │ │ SPOKE 2 (Online)  │ │ SPOKE 3 (Data)    │         │
-│  │ 10.1.0.0/16       │ │ 10.2.0.0/16       │ │ 10.3.0.0/16       │         │
-│  │                   │ │                   │ │                   │         │
-│  │ ├─ Web Subnet     │ │ ├─ App Gateway    │ │ ├─ AKS Subnet     │         │
-│  │ ├─ App Subnet     │ │ ├─ Web Subnet     │ │ ├─ SQL Subnet     │         │
-│  │ ├─ DB Subnet      │ │ └─ Private EP     │ │ └─ Private EP     │         │
-│  │ └─ Private EP     │ │                   │ │                   │         │
-│  └───────────────────┘ └───────────────────┘ └───────────────────┘         │
-│                                                                              │
-└─────────────────────────────────────────────────────────────────────────────┘
+See [identity and access management](iam.md) for deeper design patterns. Validate old
+snippets against current APIs before use.
+
+## Network and data paths
+
+Select hub-spoke, Virtual WAN, or another topology based on scale, routing, region,
+appliance, hybrid, and operating constraints. Centralization is not automatically
+secure: document who controls routes/firewalls/DNS/private endpoints, failure domains,
+regional egress, east-west inspection, and workload autonomy.
+
+Baseline decisions:
+
+- private/restricted management endpoints where feasible;
+- explicit ingress and egress paths; no accidental direct public service endpoint;
+- DDoS/WAF/firewall controls matched to exposure;
+- DNS ownership, private zones/resolvers/forwarders and exfiltration/tunneling
+  monitoring;
+- service endpoints/private endpoints selected with documented data-exfiltration and
+  name-resolution behavior;
+- route propagation/effective routes tested before and after changes;
+- platform/workload network roles separated.
+
+See [networking](networking.md). Test actual packets, DNS, identity, failover, and
+asymmetric routes; a diagram or policy assignment is not runtime evidence.
+
+## Policy governance and control mapping
+
+Map requirements to the Azure landing-zone design areas, Microsoft cloud security
+benchmark v1, and organization/regulatory requirements. Microsoft cloud security
+benchmark v2 is preview as of this review and must not silently replace v1 mappings.
+
+Policy lifecycle:
+
+1. define threat/requirement, scope, owner, effect, parameters, exclusions, and
+   remediation behavior;
+2. test compliant/violating/exempt/edge resources and API aliases;
+3. deploy disabled/audit/auditIfNotExists before deny/modify/deployIfNotExists;
+4. measure impact across representative subscriptions/regions/services;
+5. approve named exemptions with rationale, compensating controls, and expiry;
+6. promote by canary management group, then broader rings;
+7. monitor compliance, deployment/remediation identity, failures, and policy drift;
+8. version and retire with migration/rollback evidence.
+
+`deployIfNotExists` and `modify` can mutate resources and require managed identity/
+permissions; removing an assignment does not necessarily undo the mutation. `deny`
+can block incident recovery or platform provisioning. Treat policy as privileged code.
+
+See [policy governance](policy-governance.md).
+
+## IaC and deployment identities
+
+Protect Bicep/Terraform modules, parameters, deployment stacks/state, module/provider
+dependencies, pipelines, and review rules. Separate tenant/management-group platform
+identity from subscription workload identity. No untrusted pull request receives a
+tenant credential. Compile/validate untrusted source without credentials, then run
+what-if/plan for a reviewed commit in a protected context.
+
+Bind approval evidence to template/module revision, parameters, target tenant/scope,
+what-if/plan, policy results, tool versions, and deployment identity. What-if is useful
+but predictive; validate runtime after deployment. Do not automatically deploy merely
+because compilation or policy checks pass.
+
+The [lab](../../../labs/azure-landing-zone/README.md) supplies a tested Bicep compile
+target and illustrative GitHub OIDC what-if workflow. The broader
+[implementation templates](implementation-templates.md) are a pattern catalog and
+contain mixed illustrative examples; review API versions, modules, secrets, and
+organization assumptions individually.
+
+## Failure modes
+
+- **Entra/PIM dependency outage:** use tested emergency identities and narrow recovery
+  procedures; do not create permanent owner assignments as fallback.
+- **Bad tenant-root policy:** stop promotion, use preauthorized policy rollback,
+  preserve audit, and assess resources mutated by modify/deploy effects.
+- **Connectivity change isolates control/monitoring:** out-of-band management,
+  staged regional changes, known-good route/firewall revision, and synthetic tests.
+- **Federated deployment trust too broad:** restrict credential/role, disable affected
+  identity, investigate sign-in/activity/deployment logs, and rebuild affected
+  artifacts/resources as required.
+- **Subscription vending partial failure:** quarantine/not hand off; resume idempotently
+  or decommission after inventorying created objects.
+- **Central logging/security service outage:** detect independently, buffer/route where
+  supported, preserve local sources, and never interpret missing alerts as no threat.
+- **Management-group move:** evaluate inherited policy/RBAC before move, restrict
+  authority, and reconcile immediately after.
+- **Region/platform dependency loss:** workload RTO/RPO, paired/alternate region,
+  DNS/network/control-plane recovery, and data consistency are workload-specific.
+
+## Deployment and rollback strategy
+
+Adopt in rings:
+
+1. inventory tenant roles, subscriptions, management groups, policies, exemptions,
+   networks, logs, service principals, and billing/ownership;
+2. protect tenant-root/admin/emergency identity and central audit;
+3. establish hierarchy and platform subscriptions without disruptive policy;
+4. deploy policy in audit and validate representative workloads;
+5. pilot subscription vending and onboarding in non-production;
+6. canary connectivity/security services and policy enforcement;
+7. migrate workload subscriptions with per-workload go/no-go and recovery;
+8. enforce continuous ownership, drift, exemption, access, and lifecycle review.
+
+Rollback is component-specific. Policy assignment rollback does not undo modifications;
+network rollback restores a known-good route/firewall/DNS revision; identity rollback
+must not reintroduce exposed credentials; subscription moves require inherited-control
+analysis. Rehearse before broad enforcement.
+
+## Validation evidence
+
+Local reproducible checks:
+
+```powershell
+az bicep build --file labs/azure-landing-zone/main.bicep
+npm run code:check
+npm run actions:check
 ```
 
-### Azure Firewall Configuration
-
-```bicep
-// Azure Firewall Policy with Premium features
-resource firewallPolicy 'Microsoft.Network/firewallPolicies@2023-05-01' = {
-  name: 'hub-firewall-policy'
-  location: location
-  properties: {
-    sku: {
-      tier: 'Premium'
-    }
-    threatIntelMode: 'Deny'
-    threatIntelWhitelist: {
-      fqdns: []
-      ipAddresses: []
-    }
-    dnsSettings: {
-      enableProxy: true
-      servers: []
-    }
-    intrusionDetection: {
-      mode: 'Deny'
-      configuration: {
-        signatureOverrides: []
-        bypassTrafficSettings: []
-      }
-    }
-    transportSecurity: {
-      certificateAuthority: {
-        name: 'tls-inspection-ca'
-        keyVaultSecretId: keyVaultCertSecretId
-      }
-    }
-  }
-}
-
-// Network Rule Collection - Spoke to Spoke
-resource networkRules 'Microsoft.Network/firewallPolicies/ruleCollectionGroups@2023-05-01' = {
-  parent: firewallPolicy
-  name: 'DefaultNetworkRuleCollectionGroup'
-  properties: {
-    priority: 200
-    ruleCollections: [
-      {
-        ruleCollectionType: 'FirewallPolicyFilterRuleCollection'
-        name: 'AllowSpokeToSpoke'
-        priority: 100
-        action: {
-          type: 'Allow'
-        }
-        rules: [
-          {
-            ruleType: 'NetworkRule'
-            name: 'CorpToData'
-            sourceAddresses: ['10.1.0.0/16']
-            destinationAddresses: ['10.3.0.0/16']
-            destinationPorts: ['443', '1433']
-            ipProtocols: ['TCP']
-          }
-        ]
-      }
-    ]
-  }
-}
-```
-
-### Network Security Groups (NSGs)
-
-```bicep
-// NSG for Web Tier
-resource webNsg 'Microsoft.Network/networkSecurityGroups@2023-05-01' = {
-  name: 'nsg-web-tier'
-  location: location
-  properties: {
-    securityRules: [
-      {
-        name: 'AllowHTTPSInbound'
-        properties: {
-          priority: 100
-          direction: 'Inbound'
-          access: 'Allow'
-          protocol: 'Tcp'
-          sourceAddressPrefix: 'Internet'
-          sourcePortRange: '*'
-          destinationAddressPrefix: '*'
-          destinationPortRange: '443'
-        }
-      }
-      {
-        name: 'AllowAzureLoadBalancer'
-        properties: {
-          priority: 110
-          direction: 'Inbound'
-          access: 'Allow'
-          protocol: '*'
-          sourceAddressPrefix: 'AzureLoadBalancer'
-          sourcePortRange: '*'
-          destinationAddressPrefix: '*'
-          destinationPortRange: '*'
-        }
-      }
-      {
-        name: 'DenyAllInbound'
-        properties: {
-          priority: 4096
-          direction: 'Inbound'
-          access: 'Deny'
-          protocol: '*'
-          sourceAddressPrefix: '*'
-          sourcePortRange: '*'
-          destinationAddressPrefix: '*'
-          destinationPortRange: '*'
-        }
-      }
-    ]
-  }
-}
-```
-
-### Private Endpoints Strategy
-
-| Service Type | Private Endpoint Zone | Hub/Spoke Placement |
-|--------------|----------------------|---------------------|
-| Storage Blob | privatelink.blob.core.windows.net | Spoke (workload) |
-| SQL Database | privatelink.database.windows.net | Spoke (workload) |
-| Key Vault | privatelink.vaultcore.azure.net | Spoke (workload) |
-| Container Registry | privatelink.azurecr.io | Hub (shared) |
-| Log Analytics | privatelink.ods.opinsights.azure.net | Hub (management) |
-
----
-
-## Azure Policy and Governance
-
-### ALZ Default Policy Initiatives
-
-| Initiative | Management Group | Purpose |
-|------------|-----------------|---------|
-| **Microsoft Cloud Security Benchmark** | Intermediate Root | Baseline security controls |
-| **Configure Defender for Cloud** | Intermediate Root | Enable all Defender plans |
-| **Deploy Diagnostic Settings** | Intermediate Root | Central logging |
-| **Deny Public IP** | Corp | Enforce private connectivity |
-| **Deploy Private DNS Zones** | Connectivity | Private endpoint resolution |
-| **Enforce TLS 1.2** | Landing Zones | Secure communications |
-
-### Custom Policy Examples
-
-```json
-// Policy: Require TLS 1.2 for Storage Accounts
-{
-  "mode": "All",
-  "policyRule": {
-    "if": {
-      "allOf": [
-        {
-          "field": "type",
-          "equals": "Microsoft.Storage/storageAccounts"
-        },
-        {
-          "field": "Microsoft.Storage/storageAccounts/minimumTlsVersion",
-          "notEquals": "TLS1_2"
-        }
-      ]
-    },
-    "then": {
-      "effect": "deny"
-    }
-  }
-}
-```
-
-```json
-// Policy: Deny Public Network Access for Key Vault
-{
-  "mode": "All",
-  "policyRule": {
-    "if": {
-      "allOf": [
-        {
-          "field": "type",
-          "equals": "Microsoft.KeyVault/vaults"
-        },
-        {
-          "field": "Microsoft.KeyVault/vaults/publicNetworkAccess",
-          "notEquals": "Disabled"
-        }
-      ]
-    },
-    "then": {
-      "effect": "deny"
-    }
-  }
-}
-```
-
-```json
-// Policy: Deploy Defender for Storage (DeployIfNotExists)
-{
-  "mode": "All",
-  "policyRule": {
-    "if": {
-      "field": "type",
-      "equals": "Microsoft.Storage/storageAccounts"
-    },
-    "then": {
-      "effect": "deployIfNotExists",
-      "details": {
-        "type": "Microsoft.Security/defenderForStorageSettings",
-        "name": "current",
-        "existenceCondition": {
-          "field": "Microsoft.Security/defenderForStorageSettings/isEnabled",
-          "equals": true
-        },
-        "roleDefinitionIds": [
-          "/providers/Microsoft.Authorization/roleDefinitions/17d1049b-9a84-46fb-8f53-869881c3d3ab"
-        ],
-        "deployment": {
-          "properties": {
-            "mode": "incremental",
-            "template": {
-              "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-              "contentVersion": "1.0.0.0",
-              "resources": [
-                {
-                  "type": "Microsoft.Security/defenderForStorageSettings",
-                  "apiVersion": "2022-12-01-preview",
-                  "name": "current",
-                  "properties": {
-                    "isEnabled": true,
-                    "malwareScanning": {
-                      "onUpload": {
-                        "isEnabled": true,
-                        "capGBPerMonth": 5000
-                      }
-                    },
-                    "sensitiveDataDiscovery": {
-                      "isEnabled": true
-                    }
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
-
-### Policy Enforcement Flow
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Policy Enforcement Flow                           │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  1. DEPLOYMENT REQUEST                                              │
-│     └─ ARM/Bicep/Terraform deployment initiated                     │
-│                                                                      │
-│  2. POLICY EVALUATION                                               │
-│     ├─ Inherited policies from parent management groups             │
-│     ├─ Policies assigned at subscription level                      │
-│     └─ Policies assigned at resource group level                    │
-│                                                                      │
-│  3. POLICY EFFECTS                                                  │
-│     ├─ Deny → Block non-compliant resources                        │
-│     ├─ Audit → Log non-compliance, allow deployment                │
-│     ├─ Modify → Auto-remediate configuration                       │
-│     ├─ DeployIfNotExists → Deploy required configurations          │
-│     ├─ Append → Add tags or properties                             │
-│     └─ AuditIfNotExists → Audit missing related resources          │
-│                                                                      │
-│  4. COMPLIANCE REPORTING                                            │
-│     ├─ Policy compliance dashboard                                  │
-│     ├─ Microsoft Defender for Cloud regulatory compliance           │
-│     └─ Azure Resource Graph queries                                 │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
----
-
-## Microsoft Defender for Cloud
-
-### Defender Plans for Landing Zones
-
-| Defender Plan | Target Resources | Key Features |
-|--------------|------------------|--------------|
-| **Defender for Servers** | VMs, Arc servers | Vulnerability assessment, EDR, JIT access |
-| **Defender for Containers** | AKS, ACR, Arc K8s | Runtime protection, image scanning |
-| **Defender for SQL** | Azure SQL, SQL on VMs | Threat detection, vulnerability assessment |
-| **Defender for Storage** | Storage accounts | Malware scanning, sensitive data discovery |
-| **Defender for Key Vault** | Key Vaults | Unusual access detection |
-| **Defender for App Service** | Web Apps, Functions | Threat detection, vulnerability assessment |
-| **Defender for DNS** | DNS queries | Malicious domain detection |
-| **Defender CSPM** | All resources | Attack path analysis, cloud security graph |
-
-### Defender for Cloud Configuration
-
-```bicep
-// Enable Defender for Cloud at subscription level
-resource defenderForServers 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'VirtualMachines'
-  properties: {
-    pricingTier: 'Standard'
-    subPlan: 'P2'  // Plan 2 includes Defender for Endpoint
-    extensions: [
-      {
-        name: 'MdeDesignatedSubscription'
-        isEnabled: 'True'
-      }
-      {
-        name: 'AgentlessVmScanning'
-        isEnabled: 'True'
-      }
-    ]
-  }
-}
-
-resource defenderForContainers 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'Containers'
-  properties: {
-    pricingTier: 'Standard'
-    extensions: [
-      {
-        name: 'ContainerRegistriesVulnerabilityAssessments'
-        isEnabled: 'True'
-      }
-    ]
-  }
-}
-
-resource defenderForStorage 'Microsoft.Security/pricings@2023-01-01' = {
-  name: 'StorageAccounts'
-  properties: {
-    pricingTier: 'Standard'
-    subPlan: 'DefenderForStorageV2'
-    extensions: [
-      {
-        name: 'OnUploadMalwareScanning'
-        isEnabled: 'True'
-        additionalExtensionProperties: {
-          CapGBPerMonthPerStorageAccount: '5000'
-        }
-      }
-      {
-        name: 'SensitiveDataDiscovery'
-        isEnabled: 'True'
-      }
-    ]
-  }
-}
-```
-
-### Security Contact Configuration
-
-```bicep
-resource securityContacts 'Microsoft.Security/securityContacts@2020-01-01-preview' = {
-  name: 'default'
-  properties: {
-    emails: 'security-team@contoso.com'
-    phone: '+1-555-555-5555'
-    alertNotifications: {
-      state: 'On'
-      minimalSeverity: 'Medium'
-    }
-    notificationsByRole: {
-      state: 'On'
-      roles: ['Owner', 'Contributor']
-    }
-  }
-}
-```
-
----
-
-## Zero Trust Implementation
-
-### Zero Trust Pillars in Landing Zones
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Zero Trust in Azure Landing Zones                 │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  IDENTITY PILLAR                                                    │
-│  ├─ Microsoft Entra ID as primary IdP                               │
-│  ├─ Conditional Access policies                                     │
-│  ├─ PIM for privileged access                                       │
-│  ├─ Managed identities for workloads                                │
-│  └─ Separate admin accounts (cloud-only)                            │
-│                                                                      │
-│  ENDPOINTS PILLAR                                                   │
-│  ├─ Microsoft Intune for device management                          │
-│  ├─ Defender for Endpoint on all servers                            │
-│  ├─ Compliant device requirement                                    │
-│  └─ Azure Virtual Desktop with conditional access                   │
-│                                                                      │
-│  NETWORK PILLAR                                                     │
-│  ├─ Micro-segmentation with NSGs                                    │
-│  ├─ Private endpoints for all PaaS                                  │
-│  ├─ Azure Firewall for traffic inspection                           │
-│  ├─ No public IPs for Corp workloads                                │
-│  └─ TLS 1.2+ enforcement                                            │
-│                                                                      │
-│  DATA PILLAR                                                        │
-│  ├─ Encryption at rest (CMK where required)                         │
-│  ├─ Encryption in transit                                           │
-│  ├─ Microsoft Purview for data governance                           │
-│  └─ Azure Information Protection                                    │
-│                                                                      │
-│  APPLICATIONS PILLAR                                                │
-│  ├─ Application Gateway with WAF                                    │
-│  ├─ API Management for API security                                 │
-│  ├─ Defender for App Service                                        │
-│  └─ Container security scanning                                     │
-│                                                                      │
-│  INFRASTRUCTURE PILLAR                                              │
-│  ├─ Just-in-time VM access                                          │
-│  ├─ Azure Bastion for secure RDP/SSH                                │
-│  ├─ Azure Policy guardrails                                         │
-│  └─ Infrastructure-as-Code validation                               │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-### Implementation Mapping
-
-| Zero Trust Principle | Landing Zone Implementation |
-|---------------------|----------------------------|
-| **Verify explicitly** | Conditional Access, MFA everywhere, Managed identities |
-| **Least privilege access** | RBAC, PIM, JIT, custom roles |
-| **Assume breach** | Network segmentation, Defender XDR, Sentinel SIEM |
-
----
-
-## Subscription Vending
-
-### Subscription Vending Process
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Subscription Vending Workflow                     │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  1. REQUEST                                                         │
-│     ├─ Application team submits request                             │
-│     ├─ ServiceNow / Forms / Custom portal                           │
-│     └─ Captures: Owner, budget, workload type, network needs        │
-│                                                                      │
-│  2. APPROVAL                                                        │
-│     ├─ Platform team reviews request                                │
-│     ├─ Budget approval                                              │
-│     └─ Security classification validation                           │
-│                                                                      │
-│  3. PROVISIONING (Automated via IaC)                                │
-│     ├─ Create subscription (Bicep/Terraform module)                 │
-│     ├─ Move to appropriate management group                         │
-│     ├─ Apply tags (cost center, owner, environment)                 │
-│     ├─ Assign RBAC roles                                            │
-│     ├─ Create spoke VNet and peer to hub                            │
-│     ├─ Configure DNS settings                                       │
-│     └─ Create budget alerts                                         │
-│                                                                      │
-│  4. HANDOVER                                                        │
-│     ├─ Notify application team                                      │
-│     ├─ Provide documentation                                        │
-│     └─ Schedule onboarding session                                  │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-### Terraform Subscription Vending Example
-
-```hcl
-# Subscription vending with Terraform
-module "subscription_vending" {
-  source  = "Azure/lz-vending/azurerm"
-  version = "~> 4.0"
-
-  # Subscription creation
-  subscription_alias_enabled = true
-  subscription_billing_scope = "/providers/Microsoft.Billing/billingAccounts/xxx/enrollmentAccounts/xxx"
-  subscription_display_name  = "sub-${var.workload_name}-${var.environment}"
-  subscription_alias_name    = "sub-${var.workload_name}-${var.environment}"
-  subscription_workload      = var.environment == "prod" ? "Production" : "DevTest"
-
-  # Management group placement
-  subscription_management_group_association_enabled = true
-  subscription_management_group_id = var.workload_type == "corp" ? (
-    "/providers/Microsoft.Management/managementGroups/mg-corp"
-  ) : "/providers/Microsoft.Management/managementGroups/mg-online"
-
-  # Tags
-  subscription_tags = {
-    workload      = var.workload_name
-    environment   = var.environment
-    costCenter    = var.cost_center
-    owner         = var.owner_email
-    createdBy     = "subscription-vending"
-    createdDate   = timestamp()
-  }
-
-  # RBAC assignments
-  role_assignment_enabled = true
-  role_assignments = {
-    owner = {
-      principal_id   = var.owner_group_id
-      definition     = "Owner"
-      relative_scope = ""
-    }
-    reader = {
-      principal_id   = var.security_group_id
-      definition     = "Reader"
-      relative_scope = ""
-    }
-  }
-
-  # Network configuration
-  virtual_network_enabled = true
-  virtual_networks = {
-    spoke = {
-      name                    = "vnet-${var.workload_name}-${var.location}"
-      address_space           = [var.address_space]
-      resource_group_name     = "rg-networking-${var.workload_name}"
-      location                = var.location
-      
-      hub_peering_enabled                     = true
-      hub_network_resource_id                 = data.azurerm_virtual_network.hub.id
-      hub_peering_use_remote_gateways         = true
-      hub_peering_allow_forwarded_traffic     = true
-      
-      resource_group_lock_enabled = true
-      resource_group_lock_name    = "CanNotDelete"
-    }
-  }
-
-  # Budget
-  budget_enabled = true
-  budgets = {
-    monthly = {
-      amount     = var.monthly_budget
-      time_grain = "Monthly"
-      time_period = {
-        start_date = "2024-01-01T00:00:00Z"
-        end_date   = "2027-12-31T23:59:59Z"
-      }
-      notifications = {
-        forecast90 = {
-          enabled        = true
-          operator       = "GreaterThan"
-          threshold      = 90
-          threshold_type = "Forecasted"
-          contact_emails = [var.owner_email, var.finance_email]
-        }
-        actual100 = {
-          enabled        = true
-          operator       = "GreaterThan"
-          threshold      = 100
-          threshold_type = "Actual"
-          contact_emails = [var.owner_email, var.finance_email]
-          contact_roles  = ["Owner"]
-        }
-      }
-    }
-  }
-}
-```
-
-### Bicep Subscription Vending Example
-
-```bicep
-// main.bicep
-targetScope = 'managementGroup'
-
-@description('Workload name')
-param workloadName string
-
-@description('Environment')
-@allowed(['dev', 'test', 'prod'])
-param environment string
-
-@description('Billing scope for subscription creation')
-param billingScope string
-
-@description('Address space for spoke VNet')
-param addressSpace string
-
-@description('Hub VNet resource ID')
-param hubVnetId string
-
-@description('Owner group object ID')
-param ownerGroupId string
-
-module subscriptionVending 'br/public:avm/ptn/lz/sub-vending:0.3.0' = {
-  name: 'sub-vending-${workloadName}-${environment}'
-  params: {
-    subscriptionAliasEnabled: true
-    subscriptionBillingScope: billingScope
-    subscriptionAliasName: 'sub-${workloadName}-${environment}'
-    subscriptionDisplayName: 'sub-${workloadName}-${environment}'
-    subscriptionWorkload: environment == 'prod' ? 'Production' : 'DevTest'
-    
-    subscriptionManagementGroupAssociationEnabled: true
-    subscriptionManagementGroupId: environment == 'prod' 
-      ? '/providers/Microsoft.Management/managementGroups/mg-corp'
-      : '/providers/Microsoft.Management/managementGroups/mg-sandbox'
-    
-    subscriptionTags: {
-      workload: workloadName
-      environment: environment
-      createdBy: 'subscription-vending'
-    }
-    
-    roleAssignments: [
-      {
-        principalId: ownerGroupId
-        definition: '/providers/Microsoft.Authorization/roleDefinitions/8e3af657-a8ff-443c-a75c-2fe8c4bcb635' // Owner
-        relativeScope: ''
-        principalType: 'Group'
-      }
-    ]
-    
-    virtualNetworkEnabled: true
-    virtualNetworkResourceGroupName: 'rg-networking-${workloadName}'
-    virtualNetworkName: 'vnet-${workloadName}-${environment}'
-    virtualNetworkAddressSpace: [addressSpace]
-    virtualNetworkLocation: 'eastus'
-    
-    hubNetworkResourceId: hubVnetId
-    virtualNetworkPeeringEnabled: true
-    virtualNetworkUseRemoteGateway: true
-  }
-}
-
-output subscriptionId string = subscriptionVending.outputs.subscriptionId
-output virtualNetworkId string = subscriptionVending.outputs.virtualNetworkResourceId
-```
-
----
-
-## Monitoring and Logging
-
-### Centralized Logging Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                    Centralized Logging Architecture                  │
-├─────────────────────────────────────────────────────────────────────┤
-│                                                                      │
-│  DATA SOURCES                                                       │
-│  ├─ Azure Activity Logs (all subscriptions)                         │
-│  ├─ Resource Diagnostic Logs                                        │
-│  ├─ Microsoft Entra ID Sign-in/Audit Logs                          │
-│  ├─ Azure Firewall Logs                                             │
-│  ├─ NSG Flow Logs                                                   │
-│  ├─ VM/Container Logs (Azure Monitor Agent)                         │
-│  └─ Defender for Cloud Alerts                                       │
-│                                                                      │
-│                          │                                          │
-│                          ▼                                          │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │            LOG ANALYTICS WORKSPACE (Management Sub)          │   │
-│  │                                                              │   │
-│  │  ├─ Tables: SecurityEvent, AzureActivity, SigninLogs, etc.  │   │
-│  │  ├─ Retention: 90 days hot, 7 years archive                 │   │
-│  │  ├─ Data Export to Storage (compliance)                     │   │
-│  │  └─ Private Link for secure ingestion                       │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                          │                                          │
-│                          ▼                                          │
-│  ┌─────────────────────────────────────────────────────────────┐   │
-│  │                    MICROSOFT SENTINEL                        │   │
-│  │                                                              │   │
-│  │  ├─ Data Connectors (Azure, M365, third-party)              │   │
-│  │  ├─ Analytics Rules (scheduled, NRT, fusion)                │   │
-│  │  ├─ Workbooks (security dashboards)                         │   │
-│  │  ├─ Hunting Queries                                          │   │
-│  │  ├─ Playbooks (automated response)                          │   │
-│  │  └─ SOAR integration                                         │   │
-│  └─────────────────────────────────────────────────────────────┘   │
-│                                                                      │
-└─────────────────────────────────────────────────────────────────────┘
-```
-
-### Diagnostic Settings Policy
-
-```json
-// Policy: Deploy diagnostic settings for all supported resources
-{
-  "mode": "All",
-  "policyRule": {
-    "if": {
-      "field": "type",
-      "equals": "Microsoft.KeyVault/vaults"
-    },
-    "then": {
-      "effect": "deployIfNotExists",
-      "details": {
-        "type": "Microsoft.Insights/diagnosticSettings",
-        "name": "setByPolicy",
-        "existenceCondition": {
-          "allOf": [
-            {
-              "field": "Microsoft.Insights/diagnosticSettings/logs.enabled",
-              "equals": "true"
-            },
-            {
-              "field": "Microsoft.Insights/diagnosticSettings/workspaceId",
-              "equals": "[parameters('logAnalyticsWorkspaceId')]"
-            }
-          ]
-        },
-        "roleDefinitionIds": [
-          "/providers/microsoft.authorization/roleDefinitions/749f88d5-cbae-40b8-bcfc-e573ddc772fa",
-          "/providers/microsoft.authorization/roleDefinitions/92aaf0da-9dab-42b6-94a3-d43ce8d16293"
-        ],
-        "deployment": {
-          "properties": {
-            "mode": "incremental",
-            "template": {
-              "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-              "contentVersion": "1.0.0.0",
-              "parameters": {
-                "resourceName": { "type": "string" },
-                "logAnalyticsWorkspaceId": { "type": "string" }
-              },
-              "resources": [
-                {
-                  "type": "Microsoft.KeyVault/vaults/providers/diagnosticSettings",
-                  "apiVersion": "2021-05-01-preview",
-                  "name": "[concat(parameters('resourceName'), '/Microsoft.Insights/setByPolicy')]",
-                  "properties": {
-                    "workspaceId": "[parameters('logAnalyticsWorkspaceId')]",
-                    "logs": [
-                      {
-                        "categoryGroup": "allLogs",
-                        "enabled": true
-                      }
-                    ],
-                    "metrics": [
-                      {
-                        "category": "AllMetrics",
-                        "enabled": true
-                      }
-                    ]
-                  }
-                }
-              ]
-            },
-            "parameters": {
-              "resourceName": { "value": "[field('name')]" },
-              "logAnalyticsWorkspaceId": { "value": "[parameters('logAnalyticsWorkspaceId')]" }
-            }
-          }
-        }
-      }
-    }
-  },
-  "parameters": {
-    "logAnalyticsWorkspaceId": {
-      "type": "String",
-      "metadata": {
-        "displayName": "Log Analytics Workspace ID",
-        "description": "Central Log Analytics workspace for diagnostic logs"
-      }
-    }
-  }
-}
-```
-
----
-
-## Security Checklists
-
-### Pre-Deployment Checklist
-
-| Category | Check | Status |
-|----------|-------|--------|
-| **Tenant Setup** | | |
-| | Microsoft Entra ID tenant configured | ☐ |
-| | Break-glass accounts created and secured | ☐ |
-| | Conditional Access baseline policies | ☐ |
-| | PIM configured for privileged roles | ☐ |
-| **Management Groups** | | |
-| | Hierarchy designed and documented | ☐ |
-| | Root management group secured | ☐ |
-| | Policy inheritance validated | ☐ |
-| **Platform Subscriptions** | | |
-| | Identity subscription created | ☐ |
-| | Management subscription created | ☐ |
-| | Connectivity subscription created | ☐ |
-| **Network Foundation** | | |
-| | Hub VNet deployed | ☐ |
-| | Azure Firewall configured | ☐ |
-| | Private DNS zones created | ☐ |
-| | ExpressRoute/VPN configured | ☐ |
-| **Security Baseline** | | |
-| | Defender for Cloud enabled | ☐ |
-| | Microsoft Sentinel deployed | ☐ |
-| | Diagnostic settings policy assigned | ☐ |
-| | Security contacts configured | ☐ |
-
-### Application Landing Zone Checklist
-
-| Category | Check | Status |
-|----------|-------|--------|
-| **Subscription** | | |
-| | Created via subscription vending | ☐ |
-| | Placed in correct management group | ☐ |
-| | Required tags applied | ☐ |
-| | Budget configured | ☐ |
-| **RBAC** | | |
-| | Owner role assigned to workload team | ☐ |
-| | Reader role for security team | ☐ |
-| | No standing privileged access | ☐ |
-| **Network** | | |
-| | Spoke VNet created | ☐ |
-| | Peered to hub with correct settings | ☐ |
-| | NSGs applied to all subnets | ☐ |
-| | UDRs routing through firewall | ☐ |
-| **Security** | | |
-| | Private endpoints for PaaS | ☐ |
-| | No public IPs (Corp) | ☐ |
-| | Diagnostic logs flowing | ☐ |
-| | Defender plans active | ☐ |
-
-### Ongoing Security Review
-
-| Review Item | Frequency | Owner |
-|-------------|-----------|-------|
-| PIM access reviews | Quarterly | Security Team |
-| Policy compliance | Weekly | Platform Team |
-| Defender recommendations | Weekly | Security Team |
-| Network flow analysis | Monthly | Network Team |
-| Cost anomaly review | Weekly | FinOps Team |
-| Sentinel incident review | Daily | SOC |
-| Subscription inventory | Monthly | Platform Team |
-
----
-
-## Resources
-
-### Microsoft Documentation
-- [Azure Landing Zones](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/)
-- [Azure Landing Zone Policies](https://github.com/Azure/Enterprise-Scale/wiki/ALZ-Policies)
-- [Security Design Area](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/design-area/security)
-- [Zero Trust in Landing Zones](https://learn.microsoft.com/azure/cloud-adoption-framework/ready/landing-zone/design-area/security-zero-trust)
-
-### GitHub Repositories
-- [Azure Landing Zones (Enterprise-Scale)](https://github.com/Azure/Enterprise-Scale)
-- [ALZ Bicep](https://github.com/Azure/ALZ-Bicep)
-- [ALZ Terraform](https://github.com/Azure/terraform-azurerm-caf-enterprise-scale)
-- [Subscription Vending - Bicep](https://github.com/Azure/bicep-lz-vending)
-- [Subscription Vending - Terraform](https://github.com/Azure/terraform-azurerm-lz-vending)
-
-### Tools
-- [AzAdvertizer](https://www.azadvertizer.net/) - Azure Policy and RBAC reference
-- [Azure Governance Visualizer](https://github.com/JulianHayward/Azure-MG-Sub-Governance-Reporting)
-- [PSRule for Azure](https://azure.github.io/PSRule.Rules.Azure/) - Azure best practices validation
+Environment-specific preproduction evidence:
+
+- tenant-scope what-if reviewed by platform/security owner;
+- negative OIDC issuer/subject/audience exchange and narrow role authorization;
+- policy compliant/violating/exempt/missing-parameter fixtures;
+- subscription-vending partial failure/idempotency and ownership reconciliation;
+- cross-subscription network/DNS/egress and management endpoint tests;
+- diagnostic log delivery, alert, retention, and access tests;
+- emergency access, bad policy, compromised deployment identity, and regional outage
+  exercises.
+
+Repository validation compiles the lab when Azure CLI/Bicep is available and reports
+an explicit limitation otherwise. It does not log into or deploy to an Azure tenant.
+
+## Observability and operations
+
+Centralize and protect Entra sign-in/audit, Azure Activity Log, resource diagnostics,
+policy compliance/remediation, Defender for Cloud, network flows/firewall/WAF/DNS,
+Key Vault, deployment, subscription/management-group changes, service-principal/
+federated credential, PIM, Conditional Access, billing/cost, backup, and vending audit.
+
+Alert on tenant/subscription owner changes, management-group moves, policy/exemption
+changes, disabled diagnostics/security plans, public exposure, route/firewall/DNS
+changes, emergency-account use, unusual workload federation, broad role assignment,
+unowned subscriptions, failed vending stages, and log-delivery gaps.
+
+Operational ownership must identify platform, identity, network, security operations,
+FinOps, workload, data, and incident-response duties. Use error budgets and maintenance
+windows for shared platform services; a central control outage can affect every
+subscription.
+
+## Residual risk, cost, and usability
+
+Central policy and network services reduce inconsistency but increase shared blast
+radius and platform-team responsibility. Subscription isolation adds cost/quotas/
+inventory but improves ownership and lifecycle. Private connectivity, regional
+redundancy, premium security/logging, privileged tooling, and data retention can be
+expensive. Poor vending ergonomics drives shadow subscriptions and exemptions.
+
+Residual risk includes tenant-root/admin compromise, overbroad automation, Azure
+control-plane/service outage, policy alias/coverage gaps, workload-owner bypass,
+telemetry loss, malicious insiders, supply-chain compromise, and misclassified data.
+Landing zones constrain and expose risk; they do not transfer workload security to the
+platform team.
+
+## Limitations
+
+This is a provider-current architectural guide as of 2026-07-21. Azure landing-zone
+guidance and APIs are living; validate current documentation, region/provider
+availability, tenant/billing model, and module releases. The repository has no access
+to the author's Azure tenant, so tenant what-if/deployment assertions remain unmade.
+
+## Operational checklist
+
+- [ ] Hierarchy represents durable policy archetypes, not organizational fashion.
+- [ ] Tenant-root controls and emergency access are minimal, monitored, and tested.
+- [ ] Subscription vending establishes owner, budget, identity, network, policy,
+      logging, recovery, and lifecycle controls before handoff.
+- [ ] CI uses exact federated trust and narrow split identities; no client secret.
+- [ ] Policy progresses audit/canary to enforcement with expiring exemptions.
+- [ ] Network and DNS paths are tested, not assumed from diagrams.
+- [ ] Deployment evidence binds reviewed source, parameters, target, plan/what-if,
+      identity, approval, and runtime verification.
+- [ ] Central logs/security services have independent health and incident procedures.
+- [ ] Component-specific rollback and tenant/control-plane incidents are rehearsed.
+- [ ] Costs, shared blast radius, ownership, and residual risk are accepted explicitly.
+
+## References
+
+- [Azure landing zones](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/)
+- [Landing-zone design areas](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/design-areas)
+- [Management-group design](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/design-area/resource-org-management-groups)
+- [Subscription vending](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/design-area/subscription-vending)
+- [Azure landing-zone implementation options](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/implementation-options)
+- [GitHub OIDC access to Azure](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)
+- [Microsoft cloud security benchmark](https://learn.microsoft.com/en-us/security/benchmark/azure/)
+- [Cloud Adoption Framework changes](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/whats-new)
