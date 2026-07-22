@@ -646,6 +646,6 @@ This project reinforced the importance of **automated, enforceable security cont
 - [SLSA Supply Chain Levels for Software Artifacts](https://slsa.dev/)
 - [GitHub Actions Security Documentation](https://docs.github.com/en/actions/security-guides)
 - [GitHub Advanced Security Documentation](https://docs.github.com/en/code-security)
-- [Azure DevOps Advanced Security](https://learn.microsoft.com/en-us/azure/devops/repos/security/)
+- [Azure DevOps Advanced Security overview](https://learn.microsoft.com/en-us/azure/devops/repos/security/github-advanced-security-security-overview?view=azure-devops)
 - [Trivy Documentation](https://aquasecurity.github.io/trivy/)
 - [CISA Secure Software Development Attestation Form](https://www.cisa.gov/secure-software-attestation-form)

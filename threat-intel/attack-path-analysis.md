@@ -195,6 +195,6 @@ Implement a defense-in-depth monitoring chain using specialized tools:
 
 ## References
 
-* *MITRE ATT&CK Matrix for Cloud*: [MITRE ATT&CK Matrix](https://attack.mitre.org/matrices/updates/2023-cloud/)
-* *AWS EC2 Instance Metadata Service v2 Security*: [AWS Security Blog](https://aws.amazon.com/blogs/security/defense-in-depth-introducing-instance-metadata-service-v2/)
+* *MITRE ATT&CK Matrix for Cloud*: [MITRE ATT&CK Cloud Matrix](https://attack.mitre.org/matrices/enterprise/cloud/)
+* *AWS EC2 Instance Metadata Service v2 Security*: [AWS Security Blog](https://aws.amazon.com/blogs/security/defense-in-depth-open-firewalls-reverse-proxies-ssrf-vulnerabilities-ec2-instance-metadata-service/)
 * *Kubernetes Container Breakout Mitigation*: [SIG-Security Best Practices Guide](https://kubernetes.io/docs/concepts/security/pod-security-standards/)

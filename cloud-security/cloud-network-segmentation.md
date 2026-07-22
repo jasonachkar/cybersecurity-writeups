@@ -56,13 +56,13 @@ The network-layer threat model assumes the adversary has established a foothold 
 
 ### Transit Gateway (TGW) Routing Architecture and Traffic Isolation
 
-AWS Transit Gateway (TGW) acts as a centralized cloud router. It allows organizations to connect thousands of VPCs and on-premises networks. However, to maintain security boundaries, you must configure TGW route tables carefully. 
+AWS Transit Gateway (TGW) acts as a centralized cloud router. It allows organizations to connect thousands of VPCs and on-premises networks. However, to maintain security boundaries, you must configure TGW route tables carefully.
 
 #### The Shared Routing Table Trap
 If all VPC attachments are associated with a single default TGW route table, every VPC can communicate with every other VPC. This creates a flat network across the entire organization.
 
 #### The Isolated Hub-and-Spoke Pattern
-To prevent unauthorized lateral movement, assign VPC attachments to separate, dedicated TGW route tables. 
+To prevent unauthorized lateral movement, assign VPC attachments to separate, dedicated TGW route tables.
 
 ```mermaid
 flowchart LR
@@ -196,5 +196,5 @@ Maintain continuous visibility and enforcement across the network plane:
 
 * *AWS Transit Gateway Routing Architecture*: [AWS Documentation](https://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html)
 * *AWS PrivateLink and Interface Endpoints*: [AWS Documentation](https://docs.aws.amazon.com/vpc/latest/userguide/endpoint-service.html)
-* *Route 53 Resolver DNS Firewall*: [AWS Security Blog](https://aws.amazon.com/blogs/security/how-to-use-amazon-route-53-resolver-dns-firewall-to-block-dns-exfiltration/)
+* *Route 53 Resolver DNS Firewall*: [AWS Documentation](https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall.html)
 * *NIST Special Publication 800-207 (Zero Trust Architecture)*: [NIST SP 800-207](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-207.pdf)

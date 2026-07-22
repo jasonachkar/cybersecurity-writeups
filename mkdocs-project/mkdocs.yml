@@ -8,6 +8,13 @@ edit_uri: "edit/main/"
 
 docs_dir: docs
 site_dir: site
+# Runnable labs intentionally live outside the published documentation tree. The
+# repository link validator still requires those relative targets to exist; MkDocs
+# reports them as informational so strict mode remains focused on build warnings.
+validation:
+  links:
+    not_found: info
+
 
 theme:
   name: material
@@ -160,5 +167,3 @@ nav:
     - Application Security: docs/scripts/app-security.md
     - DevSecOps: docs/scripts/devsecops.md
     - Threat Intelligence: docs/scripts/threat-intel.md
-
-

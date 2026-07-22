@@ -249,4 +249,4 @@ Implementing a multi-account landing zone requires combining native CSP tools wi
 
 * *AWS Organizations User Guide - Service Control Policies*: [AWS Documentation](https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html)
 * *NIST Special Publication 800-162 (Attribute-Based Access Control)*: [NIST SP 800-162](https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-162.pdf)
-* *Mitigating Confused Deputy Problems in Cross-Account Integrations*: [AWS Security Blog](https://aws.amazon.com/blogs/security/how-to-use-an-external-id-when-granting-access-to-your-aws-resources-to-a-third-party/)
+* *The confused deputy problem and external IDs*: [AWS IAM Documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/confused-deputy.html)
