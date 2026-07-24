@@ -82,16 +82,16 @@ The following is the "if you only do ten things" distilled list. Each maps to a 
 
 | # | Recommendation | Section |
 |---|----------------|---------|
-| 1 | **Kill long-lived cloud secrets in CI/CD.** Replace service-principal client secrets and static cloud keys with OIDC **workload identity federation**; scope the federated subject to a single repo + branch/environment. | [IAM §1.1](./iam-workload-identity.md#11-workload-identities--machine-authentication) |
-| 2 | **Make privileged access just-in-time.** Use PIM (for roles *and* groups) with approval, MFA, short activation windows, and access reviews; no standing Owner/Global Admin. | [IAM §1.2](./iam-workload-identity.md#12-enterprise-governance--zero-trust) |
-| 3 | **Layer Conditional Access** (block legacy auth → require phishing-resistant MFA + compliant device for admin → sign-in-risk step-up). | [IAM §1.2](./iam-workload-identity.md#12-enterprise-governance--zero-trust) |
-| 4 | **Gate IaC with Policy-as-Code** at PR time; fail on critical findings; centralize reusable Rego/Checkov policies; emit SARIF. | [DevSecOps §2.1](./devsecops-pipeline-hardening.md#21-policy-as-code-pac) |
-| 5 | **Generate an SBOM and sign every artifact** (Syft/Trivy + Cosign keyless via OIDC) and **verify signatures at admission** (Kyverno/Gatekeeper). | [DevSecOps §2.2](./devsecops-pipeline-hardening.md#22-supply-chain-security--attestation) |
-| 6 | **Aggregate findings** into one system of record (DefectDojo), de-duplicate, set remediation SLOs, and auto-file tickets only above a severity threshold. | [DevSecOps §2.3](./devsecops-pipeline-hardening.md#23-vulnerability-orchestration--centralised-findings) |
-| 7 | **Private-Link your PaaS** (Storage, SQL, Key Vault) and force east-west traffic through inspection; default-deny NSGs; immutable VM images. | [Architecture §3.1](./cloud-security-architecture.md#31-immutable-infrastructure--micro-segmentation) |
+| 1 | **Kill long-lived cloud secrets in CI/CD.** Replace service-principal client secrets and static cloud keys with OIDC **workload identity federation**; scope the federated subject to a single repo + branch/environment. | [IAM §1.1](./iam-workload-identity.md#11-workload-identities-machine-authentication) |
+| 2 | **Make privileged access just-in-time.** Use PIM (for roles *and* groups) with approval, MFA, short activation windows, and access reviews; no standing Owner/Global Admin. | [IAM §1.2](./iam-workload-identity.md#12-enterprise-governance-zero-trust) |
+| 3 | **Layer Conditional Access** (block legacy auth → require phishing-resistant MFA + compliant device for admin → sign-in-risk step-up). | [IAM §1.2](./iam-workload-identity.md#12-enterprise-governance-zero-trust) |
+| 4 | **Gate IaC with Policy-as-Code** at PR time; fail on critical findings; centralize reusable Rego/Checkov policies; emit SARIF. | [DevSecOps §2.1](./devsecops-pipeline-hardening.md#policy-layers) |
+| 5 | **Generate an SBOM and sign every artifact** (Syft/Trivy + Cosign keyless via OIDC) and **verify signatures at admission** (Kyverno/Gatekeeper). | [DevSecOps §2.2](./devsecops-pipeline-hardening.md#slsa-v12-interpretation) |
+| 6 | **Aggregate findings** into one system of record (DefectDojo), de-duplicate, set remediation SLOs, and auto-file tickets only above a severity threshold. | [DevSecOps §2.3](./devsecops-pipeline-hardening.md#failure-behavior-and-rollout) |
+| 7 | **Private-Link your PaaS** (Storage, SQL, Key Vault) and force east-west traffic through inspection; default-deny NSGs; immutable VM images. | [Architecture §3.1](./cloud-security-architecture.md#31-immutable-infrastructure-micro-segmentation) |
 | 8 | **Use envelope encryption with customer-managed keys**; enable soft-delete + purge protection; rotate keys; separate Key Vaults per environment/app. | [Architecture §3.2](./cloud-security-architecture.md#32-cloud-data-protection) |
 | 9 | **Centralize telemetry** (Entra sign-in/audit, PIM, Activity, Key Vault, NSG flow) into Sentinel via diagnostic settings enforced by Azure Policy; shape with DCRs. | [Detection §4.1](./detection-engineering.md#41-advanced-telemetry-orchestration) |
-| 10 | **Treat detections as code:** version-controlled analytics rules, MITRE ATT&CK mapping, suppression to fight fatigue, and validation via attack simulation. | [Detection §4.2](./detection-engineering.md#42-practical-kql--analytics) |
+| 10 | **Treat detections as code:** version-controlled analytics rules, MITRE ATT&CK mapping, suppression to fight fatigue, and validation via attack simulation. | [Detection §4.2](./detection-engineering.md#42-practical-kql-analytics) |
 
 ---
 

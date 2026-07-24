@@ -3,7 +3,7 @@
 > A secure landing zone gets you a baseline; modern threats require **defense in depth inside the network** and **cryptographic control over data**. This section covers **immutable infrastructure and micro-segmentation** (constraining where workloads can talk and reducing exfiltration paths) and **cloud data protection** (envelope encryption, customer-managed keys, secret management, and classification).
 
 **Contents**
-- [3.1 Immutable infrastructure & micro-segmentation](#31-immutable-infrastructure--micro-segmentation)
+- [3.1 Immutable infrastructure & micro-segmentation](#31-immutable-infrastructure-micro-segmentation)
 - [3.2 Cloud data protection](#32-cloud-data-protection)
 - [Reference topology](#reference-topology)
 - [Best practices summary](#best-practices-summary)
@@ -71,7 +71,7 @@ Flat networks let one compromised workload reach everything. Micro-segmentation 
 | Failure mode | Consequence | Mitigation |
 |--------------|-------------|------------|
 | Private endpoint without Private DNS | Clients hit public endpoint or break | Link Private DNS zone to VNet; verify resolution; enforce via Policy. |
-| Public network access left enabled | Exfiltration/attack path remains | `public_network_access_enabled=false`; deny via Azure Policy (see [§2.1 Rego](./devsecops-pipeline-hardening.md#writing-a-rego-policy-to-block-insecure-terraform)). |
+| Public network access left enabled | Exfiltration/attack path remains | `public_network_access_enabled=false`; deny via Azure Policy (see [§2.1 Rego](./devsecops-pipeline-hardening.md#policy-layers)). |
 | Allow-all egress | Easy data exfiltration / C2 | Default-deny egress; FQDN allow-list via Azure Firewall. |
 | Flat spoke, no intra-segmentation | One pod/VM compromise = lateral sweep | NSGs/ASGs default-deny; K8s NetworkPolicy. |
 | In-place patching | Drift + persistence foothold | Immutable images; redeploy to change. |

@@ -1,11 +1,23 @@
 # 1. Identity & Access Management (IAM)
 
-> Identity is the new perimeter. In cloud environments, the overwhelming majority of impactful incidents trace back to an identity problem: a leaked secret, an over-privileged role, a consented malicious app, or a stolen token. This section covers how to authenticate *workloads* without secrets, how to govern *human* privilege just-in-time, and how to anticipate and detect identity attacks.
+> **Evidence status:** This is a broad legacy survey that has been corrected for the
+> workload-identity claims and examples below. The cloud snippets remain
+> **illustrative** and were not deployed. Exact trust behavior is **partially tested**
+> by the dependency-free
+> [`labs/iam-oidc`](../../../labs/iam-oidc/README.md) fixture lab. Product guidance
+> outside that lab still requires tenant/account-specific review.
+
+Identity compromise is a common path to cloud impact: leaked secrets,
+over-privileged roles, malicious application consent, and stolen tokens can all turn
+an initial foothold into control-plane access. This section explains how to
+authenticate workloads without long-lived cloud secrets, govern human privilege
+just-in-time, and detect identity attacks.
 
 **Contents**
-- [1.1 Workload identities & machine authentication](#11-workload-identities--machine-authentication)
-- [1.2 Enterprise governance & Zero Trust](#12-enterprise-governance--zero-trust)
-- [1.3 Identity attack vectors & defenses](#13-identity-attack-vectors--defenses)
+
+- [1.1 Workload identities & machine authentication](#11-workload-identities-machine-authentication)
+- [1.2 Enterprise governance & Zero Trust](#12-enterprise-governance-zero-trust)
+- [1.3 Identity attack vectors & defenses](#13-identity-attack-vectors-defenses)
 - [Best practices summary](#best-practices-summary)
 - [Further reading](#further-reading)
 
@@ -15,125 +27,188 @@
 
 ### The problem with long-lived secrets
 
-A service principal client secret (or an AWS access key) is a **bearer credential**: anyone who holds it *is* the identity. These secrets are:
+A service-principal client secret or AWS access key is a bearer credential: a caller
+that obtains it can use it within the credential's permissions and other applicable
+controls. Long-lived credentials create recurring engineering risks:
 
-- **Hard to rotate** — rotation requires coordinated updates across every consumer, so in practice they live for years.
-- **Easy to leak** — they end up in CI variables, `.env` files, container layers, Terraform state, and chat messages. Secret scanners (GitGuardian, GitHub secret scanning, `trufflehog`) find them constantly.
-- **A lateral-movement multiplier** — a single leaked secret often grants broad, standing access with no device or location binding.
+- **Rotation is coordinated work.** Every consumer needs a safe update/rollback path,
+  so poorly owned credentials can remain valid far longer than intended.
+- **Copies proliferate.** Secrets can reach CI variables, `.env` files, container
+  layers, Terraform state, tickets, and chat.
+- **Standing privilege persists.** Rotation changes credential material; it does not
+  reduce an over-privileged identity's authorization.
 
-The strategic fix is **workload identity federation (WIF)**: instead of storing a secret, the workload *proves who it is* to its own platform (GitHub, Azure DevOps, Kubernetes, another cloud) and exchanges that proof for a **short-lived** cloud access token.
+The strategic replacement for supported external workloads is workload identity
+federation (WIF): the workload obtains an assertion from its platform (for example,
+GitHub or Kubernetes) and exchanges that assertion for a short-lived cloud access
+token. WIF removes the need to provision a long-lived cloud client secret to the
+workload. The platform assertion and resulting bearer token are still sensitive and
+must be protected.
 
 ### OpenID Connect (OIDC), briefly
 
-WIF is built on **OIDC**, which layers identity on top of OAuth 2.0. The key artifact is the **ID token** — a signed JWT whose claims the cloud trusts:
+GitHub Actions and Kubernetes workload federation commonly use a signed OIDC JWT. The
+cloud first authenticates the assertion against a configured issuer/provider and then
+evaluates the configured trust relationship.
 
 | Claim | Meaning | Why it matters for WIF |
-|-------|---------|------------------------|
-| `iss` | Issuer (the IdP's URL) | The cloud pins the trusted issuer (e.g., `https://token.actions.githubusercontent.com`). |
-| `sub` | Subject (the workload's identity) | The most important claim to scope tightly (e.g., `repo:org/repo:ref:refs/heads/main`). |
-| `aud` | Audience (who the token is for) | Must match what the cloud expects, preventing token reuse across services. |
-| `exp` / `iat` / `nbf` | Expiry / issued / not-before | Tokens are short-lived; replay window is minimal. |
+| --- | --- | --- |
+| `iss` | Issuer URL | Selects the configured identity provider and its verification material. |
+| `sub` | Workload subject | Binds trust to an exact repository/ref/environment or Kubernetes service account. |
+| `aud` | Intended audience | Prevents an assertion minted for another exchange from being accepted here. |
+| `exp` / `iat` / `nbf` | Expiry / issued / not-before | Bounds when the assertion may be accepted. |
 
-The cloud validates the JWT signature against the issuer's **JWKS** (published at `/.well-known/openid-configuration` → `jwks_uri`), then checks `iss`/`sub`/`aud` against a configured **federated credential**. No secret is ever stored.
+Issuer/JWKS discovery and signature verification authenticate the claim set; they do
+not authorize every authenticated subject. The cloud must also match the exact
+issuer/audience/subject trust and then separately evaluate the resulting principal's
+permissions.
 
-```
-  GitHub Actions runner                 Azure AD (Entra ID)              Azure Resource
-  ─────────────────────                ────────────────────             ───────────────
+```text
+  GitHub Actions runner                 Microsoft Entra ID               Azure resource
+  ─────────────────────                ────────────────────             ──────────────
         │                                      │                              │
-   (1)  │  request OIDC token (aud=api://AzureADTokenExchange)               │
-        │─────────────► GitHub OIDC provider   │                              │
-        │◄───────────── signed JWT (sub=repo:org/repo:environment:prod)      │
-        │                                      │                              │
-   (2)  │  POST /oauth2/v2.0/token             │                              │
-        │  grant_type=client_credentials       │                              │
-        │  client_assertion=<the JWT>          │                              │
+   (1)  │ request GitHub OIDC token            │                              │
+        │◄──────── signed JWT assertion         │                              │
+        │           iss / aud / sub             │                              │
+   (2)  │ token exchange with client assertion │                              │
         │─────────────────────────────────────►│                              │
-        │                                      │ validate sig via JWKS,       │
-        │                                      │ match iss/sub/aud to a        │
-        │                                      │ federated credential          │
+        │                                      │ verify signature/claims;     │
+        │                                      │ exact-match federated trust  │
         │◄─────────────────────────────────────│                              │
-        │   short-lived Azure access token (≈1h)│                              │
+        │        short-lived Azure access token│                              │
    (3)  │───────────────────────────────────────────────────────────────────►│
-        │                          call ARM / data plane with bearer token    │
+        │                         resource API performs authorization         │
 ```
 
-### Hands-on: GitHub Actions → Azure with WIF (no secrets)
+### Keep four decisions separate
 
-**Step 1 — Create an app registration / service principal** and grant it *only* the RBAC it needs (e.g., `Contributor` scoped to one resource group, never subscription Owner).
+Do not report all failures as “OIDC failed”:
 
-**Step 2 — Register a federated credential** mapping GitHub's OIDC token to the app. Note the tight `subject`:
+1. **Signature invalid:** no claim is trusted.
+2. **Signature valid but claims rejected:** issuer, audience, or token lifetime is
+   unacceptable.
+3. **Claims accepted but trust rejected:** the exact subject/principal, external ID,
+   or requested session tags do not satisfy the federated credential/role trust.
+4. **Role/token issued but permissions denied:** the session exists, but RBAC/IAM,
+   resource policy, boundary/session policy, organization guardrail, or
+   service-specific check denies the requested API/resource.
+
+The [offline IAM/OIDC lab](../../../labs/iam-oidc/README.md) reproduces every stage and
+tests exact AWS GitHub branch/environment trust, Microsoft Entra federation, EKS IRSA,
+third-party external ID/session tags, permission-boundary mutation, and restricted
+`iam:PassRole`. Its `"signatureVerified": true` field represents a trusted verifier
+adapter result; it does not perform cryptographic verification or a live cloud
+exchange.
+
+### Hands-on design: GitHub Actions to Azure with WIF
+
+The following commands and workflow are **illustrative**. Use a disposable tenant/
+subscription to perform the negative exchanges documented in the lab README before
+production use.
+
+**Step 1 — Create an application/service principal or supported managed identity.**
+Grant only the Azure RBAC data/control-plane actions the workload needs at the narrow
+resource scope. A broad built-in role such as Contributor is not a default
+recommendation merely because it is convenient.
+
+**Step 2 — Register a federated credential** that exactly maps the GitHub assertion to
+the Azure identity:
 
 ```bash
-# Federate a specific environment ("prod") of one repo. Nothing else can mint a token.
+# Illustrative: substitute a non-production application object ID.
 az ad app federated-credential create \
-  --id "$APP_OBJECT_ID" \
+  --id "<app-object-id>" \
   --parameters '{
-    "name": "github-myorg-myrepo-prod",
+    "name": "github-example-security-cloud-controls-production",
     "issuer": "https://token.actions.githubusercontent.com",
-    "subject": "repo:myorg/myrepo:environment:prod",
+    "subject": "repo:example-security/cloud-controls:environment:production",
     "audiences": ["api://AzureADTokenExchange"]
   }'
 ```
 
-Common `subject` formats for GitHub:
+Baseline Microsoft Entra federated credentials exact-match `issuer`, `subject`, and
+the single configured audience. Wildcards are not supported in that baseline model.
+A correctly signed token for another repository or environment must not match this
+credential.
 
-| Trigger | `subject` value |
-|---------|-----------------|
-| A branch | `repo:ORG/REPO:ref:refs/heads/main` |
-| A tag | `repo:ORG/REPO:ref:refs/tags/v1.2.3` |
-| A GitHub **Environment** (recommended) | `repo:ORG/REPO:environment:prod` |
-| A pull request | `repo:ORG/REPO:pull_request` |
+Common readable GitHub `sub` formats include:
 
-**Step 3 — The workflow** requests the token and logs in. The crucial line is `permissions: id-token: write`:
+| Job context | Example subject |
+| --- | --- |
+| Branch (no environment) | `repo:ORG/REPO:ref:refs/heads/main` |
+| Tag (no environment) | `repo:ORG/REPO:ref:refs/tags/v1.2.3` |
+| GitHub environment | `repo:ORG/REPO:environment:production` |
+| Pull request (no environment) | `repo:ORG/REPO:pull_request` |
+
+A branch and environment are not simultaneously encoded in the default subject:
+referencing an environment selects the environment form. GitHub also documents
+immutable owner/repository-ID subject formats for repositories created after
+July 15, 2026, repositories that opt in, and qualifying renames/transfers. Inspect
+the actual token and configure the exact format your repository emits.
+
+**Step 3 — Request OIDC permission and use a full-SHA-pinned login action:**
 
 ```yaml
 name: deploy
 on:
   push:
-    branches: [ main ]
+    branches: [main]
 
 permissions:
-  id-token: write      # allow the runner to request an OIDC token
+  id-token: write
   contents: read
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    environment: prod   # binds to the federated subject above
+    environment: production
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Azure login (federated, secretless)
-        uses: azure/login@v2
+      - name: Check out reviewed source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
-          client-id: ${{ vars.AZURE_CLIENT_ID }}      # not a secret
+          persist-credentials: false
+
+      - name: Exchange GitHub OIDC assertion for Azure access
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-          # NOTE: no client-secret. Login uses the OIDC token exchange.
 
-      - name: Deploy
-        run: az group list -o table
+      - name: Exercise one explicitly allowed read
+        run: az group show --name cloud-controls-production --output none
 ```
 
-> **Result:** there is no secret to leak, rotate, or steal from CI. The credential is valid only for that repo's `prod` environment, only for the lifetime of the run, and only with the RBAC you scoped.
+`id-token: write` allows the job to request a GitHub OIDC token; it does not itself
+grant Azure access. The federated credential and Azure authorization remain decisive.
+This pattern removes a stored Azure client secret from the workflow, but a compromised
+trusted workflow can still request and misuse short-lived bearer tokens within the
+identity's permissions. Protect the referenced environment, allowed deployment
+branches, workflow changes, action pins, and backing identity.
 
-### Managed identities (inside Azure)
+### Managed identities inside Azure
 
-For workloads *running in Azure* (VMs, App Service, Container Apps, AKS, Functions), prefer **managed identities** — Azure manages the credential lifecycle entirely:
+For supported workloads running in Azure (for example, VMs, App Service, Container
+Apps, AKS, or Functions), prefer managed identities:
 
-- **System-assigned:** tied 1:1 to a resource's lifecycle; deleted with it. Good for single-purpose resources.
-- **User-assigned:** a standalone identity you can attach to many resources; good for shared identity and pre-provisioning RBAC.
+- **System-assigned:** lifecycle-coupled to one Azure resource.
+- **User-assigned:** a standalone identity that can be attached to supported
+  resources and pre-provisioned with RBAC.
 
-Code retrieves tokens via `DefaultAzureCredential` (Azure SDK) or IMDS — again, no secret in the app.
+Applications can request tokens through the supported Azure SDK credential chain or
+managed-identity endpoint without embedding a client secret. The returned access
+token remains a bearer token and should not be logged or persisted.
 
 ### Kubernetes: Microsoft Entra Workload ID
 
-AAD Pod Identity is deprecated; the replacement is **Microsoft Entra Workload ID** (`azure-workload-identity`), which uses the **same OIDC federation** mechanism:
+Microsoft Entra Workload ID replaces the retired AAD Pod Identity pattern for
+supported AKS workload federation:
 
-1. The AKS cluster exposes an **OIDC issuer**.
-2. A Kubernetes **ServiceAccount** is annotated with an Azure client ID.
-3. A **federated credential** trusts `system:serviceaccount:<namespace>:<sa-name>` for that issuer.
-4. The pod's projected SA token is exchanged for an Azure token. No secrets in the pod.
+1. The AKS cluster exposes an OIDC issuer.
+2. A Kubernetes service account is associated with an Azure client ID.
+3. A federated credential trusts the exact cluster issuer and
+   `system:serviceaccount:<namespace>:<service-account>` subject.
+4. A projected service-account token is exchanged for an Azure token.
 
 ```yaml
 apiVersion: v1
@@ -142,147 +217,226 @@ metadata:
   name: workload-sa
   namespace: payments
   annotations:
-    azure.workload.identity/client-id: "<USER_ASSIGNED_CLIENT_ID>"
+    azure.workload.identity/client-id: "<user-assigned-managed-identity-client-id>"
 ```
 
-### Cross-cloud / multi-cloud federation
+Restrict who may create/patch pods and service accounts, because that Kubernetes
+authority can confer the workload's cloud identity. Disable automounting service
+account tokens where they are unnecessary.
 
-The same pattern generalizes — the cloud trusts an external OIDC issuer:
+### Cross-cloud federation
 
-- **AWS:** `AssumeRoleWithWebIdentity` via an IAM **OIDC identity provider** and a role trust policy that pins `token.actions.githubusercontent.com:sub`. Always constrain both `:sub` (repo/branch) **and** `:aud` (`sts.amazonaws.com`) in the trust policy — a wildcard `sub` lets *any* repo assume the role.
-- **GCP:** **Workload Identity Federation** with a workload identity pool + provider, mapping `attribute.repository` to allow only specific repos.
-- **Azure ↔ AWS/GCP:** federate Azure apps against AWS/GCP IdPs (and vice versa) for genuine multi-cloud automation without cross-cloud secrets.
+The pattern generalizes, but each provider implements its own trust language:
 
-### Common misconfigurations & failure modes
+- **AWS GitHub OIDC:** `AssumeRoleWithWebIdentity` against an IAM OIDC provider and a
+  role trust policy with exact `token.actions.githubusercontent.com:aud` and `:sub`
+  conditions. Broad subject patterns delegate to every matching workflow identity,
+  not literally every GitHub repository.
+- **AWS EKS IRSA:** exact cluster OIDC provider, `sts.amazonaws.com` audience, and
+  `system:serviceaccount:<namespace>:<service-account>` subject.
+- **GCP Workload Identity Federation:** workload identity pool/provider plus attribute
+  conditions/mappings that constrain the intended repository/workload.
+- **Microsoft Entra federation:** exact baseline issuer/audience/subject matching for
+  applications or user-assigned managed identities in supported scenarios.
 
-| Misconfiguration | Why it's dangerous | Fix |
-|------------------|--------------------|-----|
-| **Overly broad `subject`** (e.g., `repo:org/repo:*` or only pinning the repo, not the branch/environment) | Any workflow — including one from a malicious PR — can mint a production token. | Pin to a specific branch or, better, a protected **Environment** with required reviewers. |
-| **Missing/loose `aud` validation** (AWS especially) | Tokens minted for another service can be replayed. | Always require the exact expected audience in the trust policy/federated credential. |
-| **`pull_request` subject with deploy permissions** | Forked-PR or untrusted contributor code can trigger privileged deploys. | Never grant deploy roles to `pull_request` subjects; use `environment` + branch protection. |
-| **Over-privileged backing identity** | WIF removes the *secret* but not *standing privilege*; a compromised pipeline still has whatever RBAC the SP holds. | Scope RBAC to least privilege (resource-group, specific roles), separate per environment. |
-| **Forgotten/leftover federated credentials** | Stale trust to old repos/branches becomes an unmonitored door. | Periodically review and prune federated credential definitions. |
+Do not infer that successful federation grants useful resource access. Cloud IAM/RBAC
+still evaluates the exchanged principal.
+
+### AWS delegation details often missed
+
+- For a third-party service assuming customer roles, require the exact vendor
+  principal and a unique vendor-managed customer external ID. AWS does not treat the
+  external ID as a secret; it mitigates cross-account confused-deputy risk.
+- If a caller supplies AWS session tags, authorize `sts:TagSession` in the trust
+  policy and restrict both `aws:TagKeys` and `aws:RequestTag/<key>`.
+- A permission boundary limits maximum identity-policy permissions; it grants
+  nothing. Delegated administrators must be required to create roles with the
+  approved boundary and denied permission to remove or replace it.
+- Restrict `iam:PassRole` to exact role ARNs/paths and, where supported and tested,
+  `iam:PassedToService` and `iam:AssociatedResourceArn`. Review the destination API,
+  passed role trust policy, and passed role permissions together.
+
+AWS's IAM Policy Simulator does not prove a workload-identity exchange. AWS documents
+that it does not simulate role/user cross-account access, resource-based policies for
+IAM roles, RCPs, or SCPs with conditions. It also does not validate a GitHub/EKS token
+signature or call STS. Use it for supported identity-policy/boundary checks, then
+perform allowed and denied exchanges in a disposable account.
+
+### Common misconfigurations and failure modes
+
+| Misconfiguration | Risk | Correction |
+| --- | --- | --- |
+| Broad or copied `sub` pattern | Every matching workflow identity can reach the trust boundary; copied formats may not match current immutable subjects. | Inspect actual claims and exact-match the intended repository/ref/environment or immutable IDs. |
+| Missing/loose audience check | An assertion intended for another exchange may be accepted if the provider/trust configuration permits it. | Require the provider-specific exact audience. |
+| Privileged pull-request subject | Untrusted code may reach a privileged job when event, token-permission, workflow, and environment controls are unsafe. | Keep PR validation unprivileged; put deployment behind a separately protected branch/environment workflow. |
+| Over-privileged backing identity | WIF removes a stored secret, not standing authorization. | Scope per environment and resource; test an explicit allowed and denied API. |
+| Stale federated credentials | Old repositories/branches/environments remain trusted. | Inventory owners and expiry/review dates; remove stale trust through review. |
+| Boundary can be removed/replaced | Delegated administrators can escape the intended maximum permission set. | Constrain creation and explicitly deny boundary mutation for the delegated role. |
 
 ---
 
 ## 1.2 Enterprise governance & Zero Trust
 
-Large organizations span many subscriptions/accounts and management groups. The governance goal is **least privilege, granted just-in-time, verified continuously** — the essence of **Zero Trust** (NIST SP 800-207): *never trust, always verify, assume breach.*
+Large organizations span subscriptions/accounts, management groups, and tenants. The
+governance goal is least privilege, granted just in time where appropriate, with
+continuous verification and evidence.
 
-### Privileged Identity Management (PIM) — including PIM for Groups
+### Privileged Identity Management (PIM), including PIM for Groups
 
-Standing privilege is the root of most escalation. **PIM** makes privileged roles **eligible** rather than **active**: a user must *activate* the role on demand, subject to controls.
+PIM can make supported privileged assignments eligible rather than continuously
+active. Activation controls vary by role/resource/license and should be validated in
+the target tenant.
 
-- **PIM for Azure roles & Entra roles:** time-bound activation, MFA on activation, justification, and approval workflows.
-- **PIM for Groups:** instead of assigning dozens of roles to a user, make them *eligible* for membership in a **role-assignable group** that holds the roles. Activating membership grants all the group's roles at once — drastically reducing assignment sprawl and making reviews tractable.
+- Use time-bounded activation for sensitive Entra and Azure roles.
+- Require approval for selected high-impact roles where an independent approver and
+  emergency path are operationally sustainable.
+- Require an appropriate authentication strength and justification/ticket reference.
+- Review eligibility and remove access that no longer has an owner or business need.
+- Avoid permanent active Tier-0 assignments except documented emergency access.
 
-**Recommended PIM configuration:**
+PIM for Groups can centralize eligibility for group membership/ownership. Treat a
+role-assignable group's membership controls as part of the same privilege boundary as
+the roles assigned to it.
 
-- Activation duration **1–4 hours**, not days.
-- **Require approval** for the most sensitive roles (Owner, Global Administrator, Privileged Role Administrator).
-- **Require MFA / authentication strength** on activation (phishing-resistant where possible).
-- **Require justification** and ticket reference.
-- **Access reviews** quarterly for eligibility; auto-remove unused eligibility.
-- **No permanent active assignments** for Tier-0 roles — eligibility only.
+### Conditional Access (CA): layered policy design
 
-### Conditional Access (CA) — layered policy design
+Conditional Access evaluates supported identity/device/risk/application signals and
+applies grant/session controls. A typical design may include:
 
-Conditional Access is the Zero Trust policy engine for Entra ID. Evaluate **signals** (user/sign-in risk, device compliance, location, client app, authentication strength) and apply **grant/session controls**. Design in **layers**, from broadest to most specific:
-
+```text
+Baseline:                  block legacy authentication where supported
+Broad user protection:     require an approved MFA/authentication strength
+Privileged users:          phishing-resistant authentication + managed device
+Risk policies:             block or remediate according to validated risk appetite
+Sensitive applications:   stronger device/client/session requirements
 ```
-Layer 0 (baseline, all users):     Block legacy authentication (no modern auth = no access)
-Layer 1 (all users):               Require MFA for all cloud apps
-Layer 2 (admins / privileged):     Require phishing-resistant MFA + compliant/Hybrid-joined device
-Layer 3 (risk-based):              If sign-in risk = High  -> block; Medium -> require step-up MFA
-                                    If user risk   = High  -> require secure password change
-Layer 4 (app/data-specific):       For finance/HR apps -> require compliant device + approved app
-Layer 5 (session):                 Sign-in frequency limits; no persistent browser for unmanaged devices
-```
 
-**Design principles & guardrails:**
+Roll out in report-only mode, inspect actual impact, exclude only controlled emergency
+accounts, and validate unsupported/authentication-protocol cases. Keep at least two
+cloud-only emergency-access accounts with independently protected credentials,
+purpose-specific monitoring, and rehearsed use/recovery.
 
-- **Always keep break-glass accounts excluded** from CA (two cloud-only emergency accounts, long random passwords in a vault, FIDO2 keys, heavily monitored). Locking yourself out of the tenant is a real and common failure mode.
-- **Use Report-only mode first** to measure impact before enforcing.
-- **Block legacy authentication** explicitly — it bypasses MFA entirely and is a top initial-access vector.
-- **Prefer authentication strength** (e.g., require FIDO2/passkey or certificate) over generic "require MFA" for privileged scenarios.
-- **Restrict the device code flow** and other "other clients" grant types for users who don't need them (a common consent/phishing vector — see §1.3).
+### Tenant and subscription isolation
 
-### Tenant & subscription isolation
-
-- Consider **separate Entra ID tenants** for production vs. non-production where blast-radius isolation justifies the operational overhead; otherwise, isolate via **management group hierarchy** and subscription boundaries.
-- Use **cross-tenant access settings** to control inbound/outbound B2B collaboration; default-deny unknown tenants; require MFA/compliant device claims to be **trusted** from partner tenants only where warranted.
-- Enforce structure with **Azure Policy** at the management-group level (allowed regions, required tags, deny public IPs, require diagnostic settings — see Section 4).
+- Use separate tenants only when the blast-radius/compliance benefit justifies the
+  added identity, governance, and incident-response complexity.
+- Within a tenant, use management groups, subscriptions, resource groups, Azure Policy,
+  RBAC, and network/data boundaries according to their documented semantics.
+- Configure cross-tenant access deliberately; do not trust partner MFA/device claims
+  without an explicit partner decision and ongoing review.
 
 ---
 
 ## 1.3 Identity attack vectors & defenses
 
-Modern attackers rarely "crack passwords." They **steal tokens** or **abuse consent**, often bypassing MFA entirely.
+### Token theft and adversary-in-the-middle attacks
 
-### Token theft & replay (incl. PRT and AiTM)
+Endpoint malware and adversary-in-the-middle phishing can steal bearer/session tokens
+after authentication. A completed MFA event does not make a stolen bearer token
+unusable.
 
-- **Refresh / Primary Refresh Token (PRT) theft:** malware on an endpoint extracts the Windows PRT or browser refresh/session tokens and replays them from attacker infrastructure, inheriting the user's authenticated session — **including MFA** — because the token already represents a completed MFA.
-- **Adversary-in-the-Middle (AiTM):** reverse-proxy phishing kits (e.g., Evilginx-style) sit between the user and the real IdP, relay credentials *and* the MFA prompt, and capture the resulting **session cookie**. This defeats traditional (non-phishing-resistant) MFA.
+Defenses include:
 
-**Defenses:**
-1. **Phishing-resistant MFA** (FIDO2/passkeys, Windows Hello for Business, certificate-based auth) — the cryptographic binding can't be relayed by a proxy.
-2. **Token Protection / token binding** (Entra) — binds the refresh token/session to the device so a stolen token is useless elsewhere.
-3. **Continuous Access Evaluation (CAE)** — near-real-time revocation: when risk is detected or the user is disabled, access is cut within minutes instead of waiting for token expiry.
-4. **Conditional Access** requiring **compliant devices** for sensitive apps — a stolen token from an unmanaged device fails policy.
+1. phishing-resistant authentication for privileged/high-risk use;
+2. supported token-protection/device-binding controls for compatible clients and
+   resources;
+3. Conditional Access and Continuous Access Evaluation where supported;
+4. endpoint, browser, identity, and workload protections that reduce token theft;
+5. rapid session/token revocation and investigation procedures.
 
-### Consent phishing (illicit consent grants)
+Do not promise immediate universal revocation: propagation and support depend on token
+type, client, resource, and event.
 
-A malicious **multi-tenant OAuth app** requests high-privilege Microsoft Graph scopes (e.g., `Mail.Read`, `Files.ReadWrite.All`, `offline_access`). A tricked user clicks **Accept**, and the attacker gets **persistent, MFA-independent** access via the granted OAuth token — no password needed, survives password resets.
+### Consent phishing and illicit application grants
 
-**Defenses:**
-1. **Restrict user consent** to verified publishers and low-impact, well-understood permissions only; route everything else through an **admin consent workflow**.
-2. **Publisher verification** — surface and require verified publisher status.
-3. **App governance** (Defender for Cloud Apps) to detect risky/over-privileged OAuth apps and anomalous app behavior.
-4. **Periodically review and revoke** unused enterprise app grants and delegated permissions.
+A malicious or compromised OAuth application can request delegated/application
+permissions and retain useful access according to the grant and token lifetimes.
+Password changes alone do not necessarily remove an application consent grant.
 
-### OAuth / OIDC implementation misconfiguration
+Defenses include:
 
-(See the companion writeup [`docs/research/oauth-misconfigurations`](../oauth-misconfigurations/README.md) for depth.) Briefly: overly broad redirect URIs, missing `state`/`nonce` validation, implicit flow, and excessive scopes lead to token leakage and CSRF/code-injection. **Mitigations:** exact-match redirect URIs, mandatory PKCE (S256), `state`+`nonce` validation, least-scope requests, short-lived tokens.
+1. restrict user consent to a reviewed low-risk policy and route other requests
+   through an admin-consent workflow;
+2. treat publisher verification as one signal, not proof of application safety;
+3. monitor risky applications, grants, credential additions, and anomalous use;
+4. review/revoke unused grants and remove compromised app credentials/sessions.
 
-### Service principal & key theft
+### OAuth/OIDC implementation misconfiguration
 
-Hard-coded client secrets in repos, pipeline variables, or container images are prime targets and are continuously scanned for by adversaries. **Mitigation:** migrate to **workload identity federation** (§1.1) and managed identities; where secrets are unavoidable, store them in Key Vault with rotation and access logging (see Section 3).
+See the companion
+[`docs/research/oauth-misconfigurations`](../oauth-misconfigurations/README.md).
+Use exact redirect-URI matching except the narrowly defined native-app loopback port
+exception, authorization code plus PKCE (`S256`), transaction-bound `state`, OIDC
+`nonce` and ID-token validation, least scopes, and explicit issuer/audience/token-type
+checks.
 
 ### Turning control failures into detections
 
-Every defense above has a telemetry signal. Wire these into the SIEM (Section 4):
+Telemetry names and availability vary by license, resource, and connector. Candidate
+signals include:
 
-| Attack | Primary signal(s) | Sentinel table |
-|--------|-------------------|----------------|
-| AiTM / token replay | Impossible travel, unfamiliar sign-in properties, token issuer anomalies | `SigninLogs`, `AADUserRiskEvents` |
-| Consent phishing | New OAuth grant to high-privilege scopes | `AuditLogs` (Category `ApplicationManagement`, "Consent to application") |
-| PIM abuse | Activation outside business hours; activation immediately followed by resource changes | `AuditLogs` (PIM) joined to `AzureActivity` |
-| SP secret abuse | Non-interactive sign-ins from new IPs/ASNs for a service principal | `AADServicePrincipalSignInLogs` |
+| Attack/control failure | Candidate signal | Example Entra/Sentinel table |
+| --- | --- | --- |
+| Token replay/AiTM | unfamiliar sign-in properties, risk detections, session anomalies | `SigninLogs`, risk-event tables |
+| Consent abuse | new high-impact OAuth grant or application credential | `AuditLogs`, service-principal sign-in logs |
+| PIM abuse | unusual activation followed by control-plane change | `AuditLogs` joined to `AzureActivity` |
+| Workload identity abuse | new location/workload pattern or failed federation | service-principal/workload identity sign-in logs |
+
+Validate exact schemas and retention in the target workspace before publishing a
+detection as runnable.
 
 ---
 
 ## Best practices summary
 
-- **Eliminate secrets:** WIF/OIDC for CI/CD and cross-cloud; managed identities inside Azure; Entra Workload ID for Kubernetes.
-- **Scope federation tightly:** pin `sub` to a repo + branch/environment and validate `aud`; prune stale federated credentials.
-- **Least privilege, just-in-time:** PIM for roles and groups; no standing Tier-0 access; approvals, MFA, short activations, access reviews.
-- **Layered Conditional Access:** block legacy auth; phishing-resistant MFA for admins; risk-based step-up; break-glass exclusions; report-only first.
-- **Beat token theft & consent abuse:** phishing-resistant MFA, Token Protection, CAE, restricted user consent + admin consent workflow, app governance.
-- **Instrument everything:** route identity telemetry to the SIEM and build the detections in Section 4.
+- Prefer WIF/OIDC for supported CI/CD and external workloads; use managed identities
+  inside Azure where supported.
+- Exact-match the issuer, audience, and actual current subject format; protect the
+  trusted repository branch/environment and its workflow changes.
+- Keep token authentication, federated trust, and resulting authorization as separate
+  tests with separate evidence.
+- For AWS, test external ID/session tags, boundary immutability, and restricted
+  PassRole—not only a happy-path OIDC policy.
+- Use just-in-time privileged activation and layered Conditional Access with controlled
+  emergency access and report-only rollout.
+- Protect, monitor, and rapidly revoke bearer/session tokens and application grants.
+- Route identity telemetry to the SIEM only after validating source, schema, and
+  retention.
 
 ---
 
 ## Further reading
 
-- NIST SP 800-207, *Zero Trust Architecture* — <https://csrc.nist.gov/pubs/sp/800/207/final>
-- NIST SP 800-63B, *Digital Identity Guidelines — Authentication* — <https://pages.nist.gov/800-63-3/sp800-63b.html>
-- Microsoft — *Configure a federated identity credential* — <https://learn.microsoft.com/entra/workload-id/workload-identity-federation-create-trust>
-- GitHub — *About security hardening with OpenID Connect* — <https://docs.github.com/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect>
-- Microsoft Entra Workload ID — <https://learn.microsoft.com/entra/workload-id/workload-identities-overview>
-- Microsoft — *Conditional Access design principles* — <https://learn.microsoft.com/entra/identity/conditional-access/plan-conditional-access>
-- Microsoft — *Privileged Identity Management* — <https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure>
-- AWS — *Configure OIDC for GitHub Actions* — <https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html>
+- NIST SP 800-207, *Zero Trust Architecture* —
+  <https://csrc.nist.gov/pubs/sp/800/207/final>
+- Microsoft, configure a federated identity credential —
+  <https://learn.microsoft.com/entra/workload-id/workload-identity-federation-create-trust>
+- Microsoft, configure user-assigned managed-identity federation —
+  <https://learn.microsoft.com/entra/workload-id/workload-identity-federation-create-trust-user-assigned-managed-identity>
+- GitHub, OpenID Connect reference and subject formats —
+  <https://docs.github.com/en/actions/reference/security/oidc>
+- GitHub, configure OIDC in Azure —
+  <https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure>
+- AWS, create a role for OIDC federation —
+  <https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html>
+- AWS, IAM roles for EKS service accounts —
+  <https://docs.aws.amazon.com/eks/latest/userguide/iam-roles-for-service-accounts.html>
+- AWS, third-party role access and external IDs —
+  <https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_common-scenarios_third-party.html>
+- AWS, STS session tags —
+  <https://docs.aws.amazon.com/IAM/latest/UserGuide/id_session-tags.html>
+- AWS, permission boundaries —
+  <https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_boundaries.html>
+- AWS, grant permission to pass a role —
+  <https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_passrole.html>
+- AWS, IAM Policy Simulator capabilities and limitations —
+  <https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_testing-policies.html>
+- Microsoft, Conditional Access planning —
+  <https://learn.microsoft.com/entra/identity/conditional-access/plan-conditional-access>
+- Microsoft, Privileged Identity Management —
+  <https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure>
 
 ---
 
-[← Back to overview](./README.md) · [Next: DevSecOps & Pipeline Hardening →](./devsecops-pipeline-hardening.md)
+[← Back to overview](./README.md) ·
+[Next: DevSecOps & Pipeline Hardening →](./devsecops-pipeline-hardening.md)

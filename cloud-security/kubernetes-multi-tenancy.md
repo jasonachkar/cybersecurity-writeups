@@ -7,13 +7,16 @@ tags:
   - admission-control
   - network-security
 date: "2026-07-21"
-lastReviewed: "2026-07-21"
-readingTime: 27
+lastReviewed: "2026-07-23"
+readingTime: 31
 reviewStatus: "verified"
 validatedAgainst:
-  - "Kubernetes multi-tenancy, node authorization, service-account, Pod Security Standards, and ValidatingAdmissionPolicy documentation checked 2026-07-21"
+  - "Kubernetes 1.34 fixture API shapes plus current multi-tenancy, node authorization, service-account, Pod Security Standards, NetworkPolicy, and ValidatingAdmissionPolicy documentation reviewed 2026-07-23"
+  - "Kyverno CLI 1.18.2 native tests for the policies.kyverno.io/v1 hardened-pod ValidatingPolicy: 7 expected outcomes passed on 2026-07-23"
+  - "labs/kubernetes-security dependency-free policy-shape, 10-case image-identity model, and NetworkPolicy structural tests"
+  - "Kyverno 1.18 policy-type lifecycle and ImageValidatingPolicy documentation checked 2026-07-23"
 sourceQuality: "primary-sources-reviewed"
-implementationStatus: "illustrative"
+implementationStatus: "partially-tested"
 reviewIntervalDays: 180
 ---
 
@@ -108,8 +111,13 @@ expressions. A robust policy design defines:
 - exclusions for platform/system components with explicit owners;
 - unit fixtures and server-side integration tests across supported versions.
 
-Admission controls creation/update; they do not repair existing violating objects or
-detect runtime compromise by themselves.
+Kyverno has its own policy APIs. The local lab uses Kyverno 1.18
+`policies.kyverno.io/v1` `ValidatingPolicy` and `ImageValidatingPolicy`, not the
+deprecated legacy `kyverno.io/v1` `ClusterPolicy` type. Pin the CLI/controller version
+and validate policy API availability before rollout.
+
+Admission controls creation/update; it does not repair existing violating objects or
+detect runtime compromise by itself.
 
 ## Network, DNS, and service discovery
 
@@ -164,6 +172,50 @@ mode, negative test tenants, default-deny networking, restricted pod baseline, r
 controls, dedicated node/account tiers, and incident exercises. Do not move hostile
 tenants into a shared cluster merely because policies compile.
 
+## Reproducible fixture evidence
+
+The [Kubernetes admission, network, and image-policy lab](../labs/kubernetes-security/README.md)
+is **partially tested** against Kubernetes `1.34` fixture API shapes and Kyverno CLI
+`1.18.2`. From the repository root:
+
+```powershell
+node labs/kubernetes-security/tests/run-tests.js
+kyverno test labs/kubernetes-security --remove-color
+```
+
+On 2026-07-23, the Node harness reported:
+
+```text
+PASS: Kubernetes admission, image identity (10 cases), and NetworkPolicy structural tests completed.
+```
+
+The pinned Kyverno CLI applied the hardened-pod `ValidatingPolicy` to seven Pod
+fixtures and reported `7 tests passed and 0 tests failed`. One compliant Pod was
+accepted; the six expected-denial fixtures covered:
+
+- privileged containers/privilege escalation;
+- host network and PID namespaces;
+- `hostPath`;
+- added `NET_ADMIN`;
+- missing CPU/memory requests and limits; and
+- service-account token automount.
+
+The CLI reports each negative fixture as a passing *test* because the expected policy
+result is denial.
+
+The Node harness also parses the `ImageValidatingPolicy` and asserts its exact
+registry, keyless issuer/workflow identity, SLSA predicate, failure policy, and digest
+configuration. Its ten-case local decision model accepts one expected image and
+rejects nine candidates: unsigned, wrong repository, wrong workflow, wrong branch,
+wrong issuer, missing attestation, malformed provenance, mutable tag without a digest,
+and digest substitution. These identity decisions are a pedagogical structural model;
+the native Kyverno test above does not execute the image policy or perform Sigstore
+cryptography.
+
+Finally, the Node harness verifies that the NetworkPolicy fixture contains namespace-
+wide default-deny ingress/egress and a TCP/UDP 53 DNS exception. It sends no packets
+and does not establish CNI enforcement.
+
 ## Observability and validation
 
 Collect API audit, admission decisions, RBAC denials, service-account token exchanges,
@@ -171,7 +223,7 @@ cloud identity sessions, network flows/denies, DNS, runtime detections, node cha
 exec/attach/port-forward, secret access, resource exhaustion, policy exemptions, and
 telemetry-query authorization.
 
-Test at minimum:
+Beyond the local fixtures, test at minimum:
 
 - cross-namespace list/get/create/exec and RBAC escalation;
 - privileged, host namespace/path/network, unsafe capability and device requests;
@@ -190,8 +242,19 @@ observability leaks, cloud identity mistakes, and denial of service remain possi
 Dedicated clusters/accounts reduce some shared blast radius but add cost, fleet
 management, patching, policy distribution, and incident complexity.
 
-Examples are architectural. Kubernetes and managed-service versions/features differ;
-perform server-side tests on each supported cluster/CNI/runtime/provider combination.
+The local fixtures were not submitted to a Kubernetes API server and no cluster,
+Kyverno controller/webhook, CNI, DNS service, container runtime, registry, Fulcio,
+Rekor, or workload-identity provider was exercised. Kubernetes `1.34` identifies the
+reviewed fixture schema target, not a deployed cluster version. Kyverno CLI success
+does not prove admission failure behavior, controller availability, background scan
+behavior, image signature/provenance verification, exception governance, or network
+isolation in a cluster.
+
+Before production enforcement, run server-side dry-run/schema checks and allowed/
+denied admission tests on every supported Kubernetes/Kyverno version. Test signed and
+unsigned organization-owned images against the actual registry and transparency
+services, then run cross-namespace/CNI/DNS/host-network packet tests. Preserve a
+reviewed rollback and fail-closed outage procedure.
 
 ## References
 
@@ -200,4 +263,8 @@ perform server-side tests on each supported cluster/CNI/runtime/provider combina
 - [Kubernetes service accounts](https://kubernetes.io/docs/concepts/security/service-accounts/)
 - [Kubernetes Pod Security Standards](https://kubernetes.io/docs/concepts/security/pod-security-standards/)
 - [Kubernetes ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/)
+- [Kubernetes NetworkPolicy](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 - [Removed PodSecurityPolicy documentation](https://kubernetes.io/docs/concepts/security/pod-security-policy/)
+- [Kyverno policy type lifecycle](https://kyverno.io/docs/policy-types/overview/)
+- [Kyverno ValidatingPolicy](https://kyverno.io/docs/policy-types/validating-policy/)
+- [Kyverno ImageValidatingPolicy](https://kyverno.io/docs/policy-types/image-validating-policy/)

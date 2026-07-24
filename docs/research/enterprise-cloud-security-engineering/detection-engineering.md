@@ -6,8 +6,8 @@
 
 **Contents**
 - [4.1 Advanced telemetry orchestration](#41-advanced-telemetry-orchestration)
-- [4.2 Practical KQL & analytics](#42-practical-kql--analytics)
-- [4.3 Detection-as-code & operationalization](#43-detection-as-code--operationalization)
+- [4.2 Practical KQL & analytics](#42-practical-kql-analytics)
+- [4.3 Detection-as-code & operationalization](#43-detection-as-code-operationalization)
 - [Best practices summary](#best-practices-summary)
 - [Further reading](#further-reading)
 
