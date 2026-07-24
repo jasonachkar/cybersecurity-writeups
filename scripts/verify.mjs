@@ -312,14 +312,29 @@ async function suiteOpa() {
   const opaVersion = toolVersion("opa", ["version"], {
     installHint: `install OPA ${OPA_VERSION} from https://www.openpolicyagent.org/docs/latest/#running-opa`
   });
-  run("opa", ["test", "labs/iac-policy/policy", "-v"], {
-    installHint: `install OPA ${OPA_VERSION}`
-  });
+  // Each fixture JSON exports overlapping data.* keys, so fixtures must be tested one at a time.
+  const cases = [
+    ["labs/iac-policy/policy/secure_fixture_test.rego", "labs/iac-policy/fixtures/secure_plan.json"],
+    ["labs/iac-policy/policy/insecure_fixture_test.rego", "labs/iac-policy/fixtures/insecure_plan.json"],
+    ["labs/iac-policy/policy/unknown_fixture_test.rego", "labs/iac-policy/fixtures/unknown_plan.json"],
+    ["labs/iac-policy/policy/deleted_fixture_test.rego", "labs/iac-policy/fixtures/deleted_control_plan.json"]
+  ];
+  for (const [testFile, fixture] of cases) {
+    run(
+      "opa",
+      ["test", "labs/iac-policy/policy/terraform.rego", testFile, fixture, "-v"],
+      {installHint: `install OPA ${OPA_VERSION}`}
+    );
+  }
   stamp("opa-report.json", {
     command: "npm run verify:opa",
     toolVersions: {opa: opaVersion},
     result: "passed",
-    extra: {policyDir: "labs/iac-policy/policy", expectedVersion: OPA_VERSION}
+    extra: {
+      policy: "labs/iac-policy/policy/terraform.rego",
+      cases,
+      expectedVersion: OPA_VERSION
+    }
   });
 }
 
