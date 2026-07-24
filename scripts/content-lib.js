@@ -6,7 +6,17 @@ const YAML = require("yaml");
 
 const ROOT = path.resolve(__dirname, "..");
 const CONTENT_ROOTS = ["appsec", "cloud-security", "devsecops", "threat-intel", "docs"];
-const EXCLUDED_DIRECTORIES = new Set([".git", "node_modules", "site", ".venv"]);
+const EXCLUDED_DIRECTORIES = new Set([
+  ".git",
+  ".idea",
+  ".terraform",
+  ".tools",
+  ".venv",
+  "__pycache__",
+  "generated-docs",
+  "node_modules",
+  "site",
+]);
 
 function walk(directory, predicate = () => true) {
   if (!fs.existsSync(directory)) return [];
