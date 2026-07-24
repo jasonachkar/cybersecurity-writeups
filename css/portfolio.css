@@ -616,6 +616,14 @@ body[data-md-color-scheme="slate"] .portfolio-button--primary:hover {
   color: var(--docs-text-muted) !important;
 }
 
+/* The muted line color above isn't enough contrast/distinction for the link inside
+   it on its own (axe: link-in-text-block, color-contrast) — give it the normal
+   link color and an underline so it reads as a link independent of color alone. */
+.docs-provenance-line a {
+  color: var(--docs-accent) !important;
+  border-bottom: 1px solid currentColor !important;
+}
+
 /* First section heading sits right under a hero that already carries its own
    bottom padding — the default 44px H2 top margin would double up the gap. */
 .portfolio-hero + section > h2:first-child {
@@ -846,9 +854,13 @@ body[data-md-color-scheme="slate"] .docs-prevnext__cat {
   font-size: .8rem;
 }
 
+/* .docs-footer sits inside <footer class="md-footer">, which Material always gives
+   a dark background regardless of the page's own light/dark palette — so this needs
+   the same light-on-dark footer color already established below for md-copyright,
+   not --docs-text-muted (tuned for the light-background content area instead). */
 .docs-footer__copyright {
   margin: 0 0 .5rem;
-  color: var(--docs-text-muted);
+  color: #e2e8f0;
 }
 
 .docs-footer__links {
@@ -863,7 +875,7 @@ body[data-md-color-scheme="slate"] .docs-prevnext__cat {
 .docs-footer__detail {
   margin-top: .6rem;
   font-size: .74rem;
-  color: var(--docs-text-muted);
+  color: #cbd5e1;
 }
 
 .docs-footer__detail summary {
