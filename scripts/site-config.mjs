@@ -93,12 +93,19 @@ const engineering = {
   },
   "appsec/ai-agent-security/index.html": {
     reviewIntervalDays: 30,
-    evidence: ["External authorization model is linked to broker fixtures covering approval binding, replay, and kill-switch behavior."],
-    limitations: ["No model provider, MCP deployment, or production agent runtime is exercised."],
+    evidence: [
+      "Local broker fixtures cover authorized low-impact calls, missing/expired/mismatched approvals, sequential and concurrent replay, kill-switch, and unknown-argument denial.",
+      "ApprovalStore.consumeIfUnused enforces one successful consumption under concurrent tests via an in-memory compare-and-set that models a durable conditional write."
+    ],
+    limitations: [
+      "In-memory ApprovalStore is a teaching model, not a distributed durable store.",
+      "No production identity validation, MCP enforcement, network sandboxing, or real payment execution is proven.",
+      "No model provider or production agent runtime is exercised."
+    ],
     sources: ["MCP specification 2025-11-25", "OWASP agentic security guidance", "NIST AI RMF"],
     runnableEvidence: "labs/ai-agent-security/tests/broker.test.js",
-    proves: "The local broker denies tested unauthorized tool requests.",
-    notProves: "That prompts or content filters form an authorization boundary."
+    proves: "The local broker rejects the tested unauthorized requests; approvals are action-bound; concurrent local consumption succeeds once.",
+    notProves: "Distributed durability, MCP enforcement, network sandboxing, real payments, or that prompts/content filters form an authorization boundary."
   },
   "cloud-security/iam-at-scale/index.html": {
     evidence: ["Federation, delegation, PassRole, external-ID, and boundary decisions have runnable local policy cases."],
@@ -262,12 +269,18 @@ const labs = {
   "labs/ai-agent-security/index.html": {
     status: "validated-lab",
     reviewIntervalDays: 30,
-    evidence: ["External authorization, approval binding, replay defense, tool scoping, and kill-switch cases execute locally."],
-    limitations: ["No model provider or MCP server is integrated."],
+    evidence: [
+      "Broker fixtures include concurrent replay: exactly one executor invocation and APPROVAL_REPLAYED for the loser.",
+      "Action-bound approval, expiry, kill-switch, and unknown-argument cases execute locally."
+    ],
+    limitations: [
+      "In-memory atomic consumption models a durable CAS; it does not prove Redis/PostgreSQL/DynamoDB durability.",
+      "No model provider, MCP server, or real payment path is integrated."
+    ],
     sources: ["MCP 2025-11-25", "NIST AI RMF"],
     runnableEvidence: "node --test labs/ai-agent-security/tests/broker.test.js",
-    proves: "The local broker denies the enumerated unauthorized calls.",
-    notProves: "Prompt safety, model behavior, or production agent isolation."
+    proves: "The local broker denies the enumerated unauthorized calls and consumes a high-impact approval only once under concurrent tests.",
+    notProves: "Distributed durability, prompt safety, MCP enforcement, or production agent isolation."
   },
   "labs/iac-policy/index.html": {
     status: "partially-tested",

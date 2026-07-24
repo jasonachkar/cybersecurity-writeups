@@ -7,6 +7,12 @@
  * This broker receives authenticated context separately from the model-proposed
  * call. It demonstrates deterministic authorization; it does not validate
  * identity tokens, make network requests, or issue real credentials.
+ *
+ * Approval consumption uses an in-memory atomic compare-and-set that models a
+ * durable conditional write. Production systems must use a durable store such
+ * as a PostgreSQL conditional update / unique insert, Redis SET NX, DynamoDB
+ * conditional write, or another transactionally enforced compare-and-set.
+ * A JavaScript Set is not equivalent to a distributed durable store.
  */
 
 class BrokerDenied extends Error {
@@ -48,6 +54,16 @@ function hasOwn(object, key) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
+function digestAction(binding) {
+  return [
+    binding.principalId,
+    binding.tenantId,
+    binding.tool,
+    String(binding.amountCents),
+    binding.destinationRef,
+  ].join("\u0000");
+}
+
 function safeAuditMetadata(authenticatedContext, proposedCall) {
   const args = isRecord(proposedCall?.arguments) ? proposedCall.arguments : {};
   return {
@@ -70,18 +86,103 @@ function safeAuditMetadata(authenticatedContext, proposedCall) {
   };
 }
 
+/**
+ * In-memory approval store that models durable conditional consumption.
+ *
+ * getApprovedAction is read-only. consumeIfUnused serializes consumption so
+ * only one concurrent caller can observe an unused approval and mark it
+ * consumed. Consumed state is not reverted if a later executor fails;
+ * production systems should reconcile by idempotency key before retrying.
+ */
+class ApprovalStore {
+  #approvals = new Map();
+  #consumed = new Map();
+  #mutex = Promise.resolve();
+  #readDelayMs;
+
+  constructor(approvals = [], {readDelayMs = 0} = {}) {
+    this.#readDelayMs = readDelayMs;
+    for (const approval of approvals) {
+      if (!isRecord(approval) || typeof approval.id !== "string") {
+        throw new TypeError("each approval must be an object with an id");
+      }
+      this.#approvals.set(approval.id, Object.freeze({...approval}));
+    }
+  }
+
+  async getApprovedAction(approvalId) {
+    if (this.#readDelayMs > 0) {
+      await new Promise((resolve) => setTimeout(resolve, this.#readDelayMs));
+    }
+    return this.#approvals.get(approvalId) ?? null;
+  }
+
+  /**
+   * Atomically consume an approval if it is unused and still bound to the
+   * supplied action digest. Returns true only for the first valid consumption.
+   */
+  async consumeIfUnused({approvalId, actionDigest, nowMs}) {
+    const run = this.#mutex.then(() => {
+      if (typeof approvalId !== "string" || approvalId.length < 1) {
+        return false;
+      }
+      if (typeof actionDigest !== "string" || actionDigest.length < 1) {
+        return false;
+      }
+      if (!Number.isSafeInteger(nowMs)) {
+        return false;
+      }
+      if (this.#consumed.has(approvalId)) {
+        return false;
+      }
+
+      const approval = this.#approvals.get(approvalId);
+      if (!isRecord(approval) || approval.decision !== "approved") {
+        return false;
+      }
+      if (!Number.isSafeInteger(approval.expiresAtMs) || approval.expiresAtMs <= nowMs) {
+        return false;
+      }
+
+      const expectedDigest = digestAction({
+        principalId: approval.principalId,
+        tenantId: approval.tenantId,
+        tool: approval.tool,
+        amountCents: approval.amountCents,
+        destinationRef: approval.destinationRef,
+      });
+      if (expectedDigest !== actionDigest) {
+        return false;
+      }
+
+      // Durable CAS model: mark consumed before returning success. Executor
+      // failure must not free the approval for a second attempt.
+      this.#consumed.set(approvalId, {
+        actionDigest,
+        consumedAtMs: nowMs,
+      });
+      return true;
+    });
+
+    this.#mutex = run.then(
+      () => undefined,
+      () => undefined,
+    );
+    return run;
+  }
+}
+
 class ToolBroker {
-  #approvalVerifier;
+  #approvalStore;
   #audit;
   #clock;
-  #consumedApprovalIds = new Set();
   #executor;
   #isExecutionEnabled;
   #policy;
 
   constructor({
     policy,
-    approvalVerifier,
+    approvalStore,
     executor,
     isExecutionEnabled = () => true,
     audit = () => {},
@@ -90,8 +191,14 @@ class ToolBroker {
     if (!isRecord(policy) || !isRecord(policy.principals)) {
       throw new TypeError("policy.principals must be an object");
     }
-    if (typeof approvalVerifier !== "function") {
-      throw new TypeError("approvalVerifier must be a function");
+    if (
+      approvalStore == null ||
+      typeof approvalStore.getApprovedAction !== "function" ||
+      typeof approvalStore.consumeIfUnused !== "function"
+    ) {
+      throw new TypeError(
+        "approvalStore must implement getApprovedAction and consumeIfUnused",
+      );
     }
     if (typeof executor !== "function") {
       throw new TypeError("executor must be a function");
@@ -107,7 +214,7 @@ class ToolBroker {
     }
 
     this.#policy = policy;
-    this.#approvalVerifier = approvalVerifier;
+    this.#approvalStore = approvalStore;
     this.#executor = executor;
     this.#isExecutionEnabled = isExecutionEnabled;
     this.#audit = audit;
@@ -306,11 +413,23 @@ class ToolBroker {
         "approvalEvidence.id",
       );
 
-      if (this.#consumedApprovalIds.has(approvalId)) {
-        deny("APPROVAL_REPLAYED", "approval has already been consumed");
+      const actionDigest = digestAction({
+        principalId,
+        tenantId,
+        tool,
+        amountCents,
+        destinationRef,
+      });
+      const nowMs = this.#clock();
+
+      // Verification (read) and consumption (atomic write) are separated.
+      let approval;
+      try {
+        approval = await this.#approvalStore.getApprovedAction(approvalId);
+      } catch {
+        deny("APPROVAL_STORE_ERROR", "approval store failed closed");
       }
 
-      const approval = await this.#approvalVerifier({ id: approvalId });
       if (!isRecord(approval) || approval.decision !== "approved") {
         deny("INVALID_APPROVAL", "approval service did not approve the action");
       }
@@ -319,7 +438,7 @@ class ToolBroker {
       }
       if (
         !Number.isSafeInteger(approval.expiresAtMs) ||
-        approval.expiresAtMs <= this.#clock()
+        approval.expiresAtMs <= nowMs
       ) {
         deny("APPROVAL_EXPIRED", "approval has expired");
       }
@@ -340,9 +459,22 @@ class ToolBroker {
         }
       }
 
-      // Consume before invoking the executor. If execution becomes uncertain,
-      // production systems should reconcile by idempotency key before retrying.
-      this.#consumedApprovalIds.add(approvalId);
+      // Consume before invoking the executor. Only one concurrent request may
+      // succeed; the loser receives APPROVAL_REPLAYED. Consumed state is not
+      // reverted if the executor later fails.
+      let consumed;
+      try {
+        consumed = await this.#approvalStore.consumeIfUnused({
+          approvalId,
+          actionDigest,
+          nowMs,
+        });
+      } catch {
+        deny("APPROVAL_STORE_ERROR", "approval store failed closed");
+      }
+      if (consumed !== true) {
+        deny("APPROVAL_REPLAYED", "approval has already been consumed");
+      }
     }
 
     return Object.freeze({
@@ -359,6 +491,8 @@ class ToolBroker {
 }
 
 module.exports = {
+  ApprovalStore,
   BrokerDenied,
   ToolBroker,
+  digestAction,
 };

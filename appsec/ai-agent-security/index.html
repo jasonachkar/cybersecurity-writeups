@@ -261,7 +261,7 @@
   <strong>Partially verified engineering investigation</strong>
   <dl>
     <dt>Last reviewed</dt><dd>2026-07-24</dd>
-    <dt>Validated evidence</dt><dd><ul><li>External authorization model is linked to broker fixtures covering approval binding, replay, and kill-switch behavior.</li></ul></dd>
+    <dt>Validated evidence</dt><dd><ul><li>Local broker fixtures cover approval binding, sequential and concurrent consumption, kill-switch, and unauthorized-call denial. The ApprovalStore is an in-memory teaching CAS, not a distributed durable store.</li></ul></dd>
     <dt>Not established</dt><dd><ul><li>No model provider, MCP deployment, or production agent runtime is exercised.</li></ul></dd>
     <dt>Review cadence</dt><dd>Every 30 days; next review due 2026-08-23.</dd>
   </dl>
@@ -275,7 +275,7 @@ external effect should pass through a policy-enforcing broker that receives
 authenticated identity and tenant context from outside the model, applies
 resource and value constraints, obtains bound approval when required, and emits
 an audit decision before invoking a narrowly scoped tool.</p>
-<p>system prompts/content filters are not authorization boundaries.</p>
+<p>System prompts and content filters are not authorization boundaries.</p>
 <p>They remain useful defense-in-depth controls for steering behavior and reducing
 unsafe content, but neither establishes identity, tenant membership, entitlement,
 consent, or transaction authority. An injected instruction, poisoned retrieval,

@@ -188,7 +188,7 @@ function homeBody() {
   const cards = [
     ["Secure CI/CD trust boundaries", "/devsecops/secure-cicd-pipeline-design/", "Workflow identity, untrusted validation, protected build and attestation policy.", "Partially verified · tested gate fixtures"],
     ["Multi-tenant SaaS isolation", "/appsec/saas-multitenancy-isolation/", "Authorization across API, database, pool, cache, queue, storage and telemetry boundaries.", "Partially tested investigation"],
-    ["AI-agent authorization", "/appsec/ai-agent-security/", "External authorization, approval binding, replay control and bounded tool execution.", "Partially verified · tested broker"],
+    ["AI-agent authorization", "/appsec/ai-agent-security/", "External authorization, action-bound approval, concurrent local consumption, and bounded tool execution.", "Partially verified · tested broker"],
     ["IAM and workload federation", "/cloud-security/iam-at-scale/", "Issuer, audience, subject, delegation, PassRole and permission-boundary decisions.", "Partially verified · policy fixtures"],
     ["OAuth 2.0 and OIDC", "/appsec/oauth2-oidc-deep-dive/", "Exact redirects, PKCE, state, nonce, token audience, JWKS and resource authorization.", "Partially verified · token fixtures"],
     ["Kubernetes isolation", "/cloud-security/kubernetes-multi-tenancy/", "Namespace, workload identity, network, admission, image and operational failure boundaries.", "Partially verified · image integration partial"],

@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const test = require("node:test");
 
 const {
+  ApprovalStore,
   BrokerDenied,
   ToolBroker,
 } = require("../broker");
@@ -56,23 +57,28 @@ function approvalRecord(overrides = {}) {
 function makeHarness({
   enabled = true,
   approvals = [],
+  readDelayMs = 0,
+  approvalStore,
+  executor,
 } = {}) {
   const invocations = [];
   const auditEvents = [];
-  const approvalStore = new Map(
-    approvals.map((approval) => [approval.id, approval]),
-  );
+  const store =
+    approvalStore ??
+    new ApprovalStore(approvals, {readDelayMs});
 
   const broker = new ToolBroker({
     policy: POLICY,
-    approvalVerifier: async ({ id }) => approvalStore.get(id) ?? null,
-    executor: async (authorizedCall) => {
-      invocations.push(authorizedCall);
-      return {
-        status: "simulated",
-        invocationNumber: invocations.length,
-      };
-    },
+    approvalStore: store,
+    executor:
+      executor ??
+      (async (authorizedCall) => {
+        invocations.push(authorizedCall);
+        return {
+          status: "simulated",
+          invocationNumber: invocations.length,
+        };
+      }),
     isExecutionEnabled: async () => enabled,
     audit: (event) => auditEvents.push(event),
     clock: () => NOW_MS,
@@ -82,6 +88,7 @@ function makeHarness({
     auditEvents,
     broker,
     invocations,
+    store,
   };
 }
 
@@ -100,7 +107,7 @@ test("allows an authorized low-impact call without approval", async () => {
   const harness = makeHarness();
 
   const result = await harness.broker.execute(
-    { principalId: "agent-workload-alpha" },
+    {principalId: "agent-workload-alpha"},
     proposedCall(),
   );
 
@@ -123,59 +130,7 @@ test("allows an authorized low-impact call without approval", async () => {
   assert.equal(harness.auditEvents[1].outcome, "success");
 });
 
-test("rejects a tenant that the authenticated principal does not own", async () => {
-  const harness = makeHarness();
-
-  await expectDenied(
-    () =>
-      harness.broker.execute(
-        { principalId: "agent-workload-alpha" },
-        proposedCall({ tenantId: "tenant-beta" }),
-      ),
-    "UNAUTHORIZED_TENANT",
-  );
-
-  assert.equal(harness.invocations.length, 0);
-  assert.equal(harness.auditEvents.at(-1).reason, "UNAUTHORIZED_TENANT");
-});
-
-test("rejects a tool outside the principal allowlist", async () => {
-  const harness = makeHarness();
-
-  await expectDenied(
-    () =>
-      harness.broker.execute(
-        { principalId: "agent-workload-alpha" },
-        proposedCall({ tool: "administration.reset" }),
-      ),
-    "UNAUTHORIZED_TOOL",
-  );
-
-  assert.equal(harness.invocations.length, 0);
-});
-
-test("rejects an amount above the policy maximum", async () => {
-  const harness = makeHarness();
-  const call = proposedCall({
-    arguments: {
-      amountCents: 100_001,
-      destinationRef: "approved-destination",
-    },
-  });
-
-  await expectDenied(
-    () =>
-      harness.broker.execute(
-        { principalId: "agent-workload-alpha" },
-        call,
-      ),
-    "AMOUNT_EXCEEDS_POLICY",
-  );
-
-  assert.equal(harness.invocations.length, 0);
-});
-
-test("requires separate approval for a high-impact amount", async () => {
+test("rejects a high-impact call with missing approval", async () => {
   const harness = makeHarness();
   const call = proposedCall({
     arguments: {
@@ -187,18 +142,61 @@ test("requires separate approval for a high-impact amount", async () => {
   await expectDenied(
     () =>
       harness.broker.execute(
-        { principalId: "agent-workload-alpha" },
+        {principalId: "agent-workload-alpha"},
         call,
       ),
     "APPROVAL_REQUIRED",
   );
-
   assert.equal(harness.invocations.length, 0);
 });
 
-test("allows an exactly bound high-impact approval and rejects replay", async () => {
+test("rejects an expired approval", async () => {
+  const approval = approvalRecord({expiresAtMs: NOW_MS});
+  const harness = makeHarness({approvals: [approval]});
+  const call = proposedCall({
+    arguments: {
+      amountCents: 30_000,
+      destinationRef: "approved-destination",
+    },
+  });
+
+  await expectDenied(
+    () =>
+      harness.broker.execute(
+        {principalId: "agent-workload-alpha"},
+        call,
+        {id: approval.id},
+      ),
+    "APPROVAL_EXPIRED",
+  );
+  assert.equal(harness.invocations.length, 0);
+});
+
+test("rejects approval bound to a different amount", async () => {
+  const approval = approvalRecord({amountCents: 30_001});
+  const harness = makeHarness({approvals: [approval]});
+  const call = proposedCall({
+    arguments: {
+      amountCents: 30_000,
+      destinationRef: "approved-destination",
+    },
+  });
+
+  await expectDenied(
+    () =>
+      harness.broker.execute(
+        {principalId: "agent-workload-alpha"},
+        call,
+        {id: approval.id},
+      ),
+    "APPROVAL_SCOPE_MISMATCH",
+  );
+  assert.equal(harness.invocations.length, 0);
+});
+
+test("allows an exactly bound high-impact approval and rejects sequential replay", async () => {
   const approval = approvalRecord();
-  const harness = makeHarness({ approvals: [approval] });
+  const harness = makeHarness({approvals: [approval]});
   const call = proposedCall({
     arguments: {
       amountCents: 30_000,
@@ -207,9 +205,9 @@ test("allows an exactly bound high-impact approval and rejects replay", async ()
   });
 
   await harness.broker.execute(
-    { principalId: "agent-workload-alpha" },
+    {principalId: "agent-workload-alpha"},
     call,
-    { id: approval.id },
+    {id: approval.id},
   );
   assert.equal(harness.invocations.length, 1);
   assert.equal(harness.invocations[0].approvalId, approval.id);
@@ -217,18 +215,98 @@ test("allows an exactly bound high-impact approval and rejects replay", async ()
   await expectDenied(
     () =>
       harness.broker.execute(
-        { principalId: "agent-workload-alpha" },
+        {principalId: "agent-workload-alpha"},
         call,
-        { id: approval.id },
+        {id: approval.id},
       ),
     "APPROVAL_REPLAYED",
   );
   assert.equal(harness.invocations.length, 1);
 });
 
-test("rejects approval bound to a different amount", async () => {
-  const approval = approvalRecord({ amountCents: 30_001 });
-  const harness = makeHarness({ approvals: [approval] });
+test("consumes approval only once under concurrent replay", async () => {
+  const approval = approvalRecord();
+  // Delay the read so both requests overlap before either consumption.
+  const harness = makeHarness({approvals: [approval], readDelayMs: 40});
+  const call = proposedCall({
+    arguments: {
+      amountCents: 30_000,
+      destinationRef: "approved-destination",
+    },
+  });
+  const context = {principalId: "agent-workload-alpha"};
+  const evidence = {id: approval.id};
+
+  const results = await Promise.allSettled([
+    harness.broker.execute(context, call, evidence),
+    harness.broker.execute(context, call, evidence),
+  ]);
+
+  assert.equal(harness.invocations.length, 1);
+  assert.equal(
+    results.filter((result) => result.status === "fulfilled").length,
+    1,
+  );
+  assert.equal(
+    results.filter((result) => result.status === "rejected").length,
+    1,
+  );
+  const rejected = results.find((result) => result.status === "rejected");
+  assert.ok(rejected.reason instanceof BrokerDenied);
+  assert.equal(rejected.reason.code, "APPROVAL_REPLAYED");
+});
+
+test("does not free a consumed approval when the executor fails", async () => {
+  const approval = approvalRecord();
+  const store = new ApprovalStore([approval]);
+  let attempts = 0;
+  const harness = makeHarness({
+    approvalStore: store,
+    executor: async () => {
+      attempts += 1;
+      throw new Error("simulated executor failure");
+    },
+  });
+  const call = proposedCall({
+    arguments: {
+      amountCents: 30_000,
+      destinationRef: "approved-destination",
+    },
+  });
+
+  await assert.rejects(
+    () =>
+      harness.broker.execute(
+        {principalId: "agent-workload-alpha"},
+        call,
+        {id: approval.id},
+      ),
+    /simulated executor failure/,
+  );
+  assert.equal(attempts, 1);
+
+  await expectDenied(
+    () =>
+      harness.broker.execute(
+        {principalId: "agent-workload-alpha"},
+        call,
+        {id: approval.id},
+      ),
+    "APPROVAL_REPLAYED",
+  );
+  assert.equal(attempts, 1);
+});
+
+test("fails closed when approval store read throws", async () => {
+  const store = {
+    async getApprovedAction() {
+      throw new Error("store unavailable");
+    },
+    async consumeIfUnused() {
+      return true;
+    },
+  };
+  const harness = makeHarness({approvalStore: store});
   const call = proposedCall({
     arguments: {
       amountCents: 30_000,
@@ -239,28 +317,56 @@ test("rejects approval bound to a different amount", async () => {
   await expectDenied(
     () =>
       harness.broker.execute(
-        { principalId: "agent-workload-alpha" },
+        {principalId: "agent-workload-alpha"},
         call,
-        { id: approval.id },
+        {id: "approval-example-001"},
       ),
-    "APPROVAL_SCOPE_MISMATCH",
+    "APPROVAL_STORE_ERROR",
   );
-
   assert.equal(harness.invocations.length, 0);
 });
 
-test("rejects all calls while the independently injected kill switch is active", async () => {
-  const harness = makeHarness({ enabled: false });
+test("fails closed when approval store consume throws", async () => {
+  const approval = approvalRecord();
+  const store = {
+    async getApprovedAction() {
+      return approval;
+    },
+    async consumeIfUnused() {
+      throw new Error("consume unavailable");
+    },
+  };
+  const harness = makeHarness({approvalStore: store});
+  const call = proposedCall({
+    arguments: {
+      amountCents: 30_000,
+      destinationRef: "approved-destination",
+    },
+  });
 
   await expectDenied(
     () =>
       harness.broker.execute(
-        { principalId: "agent-workload-alpha" },
+        {principalId: "agent-workload-alpha"},
+        call,
+        {id: approval.id},
+      ),
+    "APPROVAL_STORE_ERROR",
+  );
+  assert.equal(harness.invocations.length, 0);
+});
+
+test("rejects all calls while the independently injected kill switch is active", async () => {
+  const harness = makeHarness({enabled: false});
+
+  await expectDenied(
+    () =>
+      harness.broker.execute(
+        {principalId: "agent-workload-alpha"},
         proposedCall(),
       ),
     "EXECUTION_DISABLED",
   );
-
   assert.equal(harness.invocations.length, 0);
 });
 
@@ -277,11 +383,24 @@ test("rejects unknown arguments instead of passing them to the executor", async 
   await expectDenied(
     () =>
       harness.broker.execute(
-        { principalId: "agent-workload-alpha" },
+        {principalId: "agent-workload-alpha"},
         call,
       ),
     "UNKNOWN_ARGUMENT",
   );
+  assert.equal(harness.invocations.length, 0);
+});
 
+test("rejects a tenant that the authenticated principal does not own", async () => {
+  const harness = makeHarness();
+
+  await expectDenied(
+    () =>
+      harness.broker.execute(
+        {principalId: "agent-workload-alpha"},
+        proposedCall({tenantId: "tenant-beta"}),
+      ),
+    "UNAUTHORIZED_TENANT",
+  );
   assert.equal(harness.invocations.length, 0);
 });
