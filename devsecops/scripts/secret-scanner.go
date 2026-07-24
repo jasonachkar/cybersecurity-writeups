@@ -134,9 +134,11 @@ func require(condition bool, message string) {
 
 func main() {
 	// Construct synthetic values at runtime so the repository never contains a
-	// literal that resembles a usable provider credential.
+	// literal that resembles a usable provider credential. Short parts also keep
+	// the self-test compatible with repository secret scanning.
 	syntheticAccessKey := "AKIA" + strings.Repeat("A", 16)
-	syntheticToken := "M7xQ2vN9pR4sT8wY3zK6"
+	syntheticTokenParts := []string{"ABCDE", "FGHIJ", "klmno", "pqrst"}
+	syntheticToken := strings.Join(syntheticTokenParts, "")
 	diff := fmt.Sprintf(
 		"--- a/config.env\n+++ b/config.env\n context=%s\n-OLD_TOKEN=%s\n+AWS_KEY=%s\n+AUTH_TOKEN=\"%s\"\n+MODE=test\n",
 		syntheticAccessKey,
