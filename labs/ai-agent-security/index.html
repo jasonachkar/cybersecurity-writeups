@@ -45,7 +45,7 @@
 
     
     
-              <link rel="canonical" href="https://docs.jasonachkardiab.com/labs/ai-agent-security/">
+                <link rel="canonical" href="https://docs.jasonachkardiab.com/labs/ai-agent-security/">
   <meta name="robots" content="index, follow">
 </head>
   
@@ -261,8 +261,8 @@
   <strong>Validated lab</strong>
   <dl>
     <dt>Last reviewed</dt><dd>2026-07-24</dd>
-    <dt>Validated evidence</dt><dd><ul><li>External authorization, approval binding, replay defense, tool scoping, and kill-switch cases execute locally.</li></ul></dd>
-    <dt>Not established</dt><dd><ul><li>No model provider or MCP server is integrated.</li></ul></dd>
+    <dt>Validated evidence</dt><dd><ul><li>Broker fixtures include concurrent replay: exactly one executor invocation and APPROVAL_REPLAYED for the loser.</li><li>Action-bound approval, expiry, kill-switch, and unknown-argument cases execute locally.</li></ul></dd>
+    <dt>Not established</dt><dd><ul><li>In-memory atomic consumption models a durable CAS; it does not prove Redis/PostgreSQL/DynamoDB durability.</li><li>No model provider, MCP server, or real payment path is integrated.</li></ul></dd>
     <dt>Review cadence</dt><dd>Every 30 days; next review due 2026-08-23.</dd>
   </dl>
 </aside>
@@ -389,6 +389,7 @@ behavior at every boundary.</p>
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+<script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
       
     
   </body>

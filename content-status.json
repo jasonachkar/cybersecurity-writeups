@@ -40,10 +40,13 @@
     "status": "partially-verified",
     "lastReviewed": "2026-07-24",
     "evidence": [
-      "External authorization model is linked to broker fixtures covering approval binding, replay, and kill-switch behavior."
+      "Local broker fixtures cover authorized low-impact calls, missing/expired/mismatched approvals, sequential and concurrent replay, kill-switch, and unknown-argument denial.",
+      "ApprovalStore.consumeIfUnused enforces one successful consumption under concurrent tests via an in-memory compare-and-set that models a durable conditional write."
     ],
     "limitations": [
-      "No model provider, MCP deployment, or production agent runtime is exercised."
+      "In-memory ApprovalStore is a teaching model, not a distributed durable store.",
+      "No production identity validation, MCP enforcement, network sandboxing, or real payment execution is proven.",
+      "No model provider or production agent runtime is exercised."
     ],
     "reviewIntervalDays": 30
   },
@@ -1193,10 +1196,12 @@
     "status": "validated-lab",
     "lastReviewed": "2026-07-24",
     "evidence": [
-      "External authorization, approval binding, replay defense, tool scoping, and kill-switch cases execute locally."
+      "Broker fixtures include concurrent replay: exactly one executor invocation and APPROVAL_REPLAYED for the loser.",
+      "Action-bound approval, expiry, kill-switch, and unknown-argument cases execute locally."
     ],
     "limitations": [
-      "No model provider or MCP server is integrated."
+      "In-memory atomic consumption models a durable CAS; it does not prove Redis/PostgreSQL/DynamoDB durability.",
+      "No model provider, MCP server, or real payment path is integrated."
     ],
     "reviewIntervalDays": 30
   },

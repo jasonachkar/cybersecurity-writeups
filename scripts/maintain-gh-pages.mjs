@@ -286,6 +286,14 @@ function normalizePage(file, html, entry) {
   const portfolioHref = customCss[1].replace(/custom\.css$/, "portfolio.css");
   html = html.replace(customCss[0], `${customCss[0]}\n<link rel="stylesheet" href="${portfolioHref}">`);
 
+  const bundleScript = html.match(/<script\b[^>]*src=["']([^"']*assets\/javascripts\/bundle[^"']+)["'][^>]*>\s*<\/script>/i);
+  if (bundleScript) {
+    const a11yHref = bundleScript[1].replace(/assets\/javascripts\/bundle[^"']+$/, "assets/javascripts/portfolio-a11y.js");
+    if (!html.includes("portfolio-a11y.js")) {
+      html = html.replace(bundleScript[0], `${bundleScript[0]}\n<script src="${a11yHref}" defer></script>`);
+    }
+  }
+
   html = removeDivByClass(html, "md-sidebar--primary");
   html = removeDivByClass(html, "md-sidebar--secondary");
 

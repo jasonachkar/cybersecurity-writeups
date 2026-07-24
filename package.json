@@ -8,9 +8,19 @@
     "maintain": "node scripts/maintain-gh-pages.mjs",
     "check:defects": "node scripts/check-known-defects.mjs",
     "validate": "node scripts/validate-gh-pages.mjs && node scripts/run-html-validation.mjs && node scripts/check-known-defects.mjs",
-    "check:external": "node scripts/check-external-links.mjs",
     "validate:html": "node scripts/run-html-validation.mjs",
-    "audit:a11y": "node scripts/run-accessibility-audit.mjs"
+    "check:external": "node scripts/check-external-links.mjs",
+    "audit:a11y": "node scripts/run-accessibility-audit.mjs",
+    "verify:static": "node scripts/stamp-qa-reports.mjs static",
+    "verify:labs": "node scripts/verify.mjs labs",
+    "verify:go": "node scripts/verify.mjs go",
+    "verify:terraform": "node scripts/verify.mjs terraform",
+    "verify:a11y": "node scripts/run-accessibility-audit.mjs",
+    "verify:links": "node scripts/stamp-qa-reports.mjs links",
+    "verify:secrets": "node scripts/stamp-qa-reports.mjs secrets",
+    "verify:provenance": "node scripts/verify-qa-provenance.mjs",
+    "verify:summary": "node scripts/stamp-qa-reports.mjs summary",
+    "verify:all": "node scripts/verify.mjs static && node scripts/verify.mjs labs && node scripts/verify.mjs go && node scripts/verify.mjs terraform && node scripts/run-accessibility-audit.mjs && node scripts/stamp-qa-reports.mjs links && node scripts/stamp-qa-reports.mjs secrets && node scripts/stamp-qa-reports.mjs summary && node scripts/verify-qa-provenance.mjs"
   },
   "engines": {
     "node": ">=20"
@@ -18,6 +28,6 @@
   "devDependencies": {
     "axe-core": "4.12.1",
     "html-validate": "11.5.6",
-    "playwright": "^1.61.1"
+    "playwright": "1.61.1"
   }
 }

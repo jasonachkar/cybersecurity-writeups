@@ -4,13 +4,43 @@ import {fileURLToPath} from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
+const SKIP_DIR_NAMES = new Set([".git", "node_modules", "qa"]);
+const PUBLIC_CONTENT = /\.(?:html|json|css|ya?ml)$/i;
+const EXECUTABLE = /\.(?:go|js|mjs|ts|tf|rego|sql|bicep|ps1|sh|md)$/i;
+const EXECUTABLE_ROOTS = [
+  "labs",
+  "appsec/scripts",
+  "cloud-security/scripts",
+  "devsecops/scripts",
+  "threat-intel/scripts",
+  ".github/workflows"
+];
+
+function isUnderExecutableRoot(relativePath) {
+  const normalized = relativePath.split(path.sep).join("/");
+  return EXECUTABLE_ROOTS.some(
+    (prefix) => normalized === prefix || normalized.startsWith(`${prefix}/`)
+  );
+}
+
 function filesBelow(directory = root) {
   const files = [];
   for (const item of fs.readdirSync(directory, {withFileTypes: true})) {
-    if ([".git", "node_modules"].includes(item.name)) continue;
+    if (SKIP_DIR_NAMES.has(item.name)) continue;
     const full = path.join(directory, item.name);
-    if (item.isDirectory()) files.push(...filesBelow(full));
-    else if (item.isFile() && /\.(?:html|json|css|ya?ml)$/i.test(item.name)) files.push(full);
+    if (item.isDirectory()) {
+      files.push(...filesBelow(full));
+      continue;
+    }
+    if (!item.isFile()) continue;
+    const relative = path.relative(root, full);
+    if (PUBLIC_CONTENT.test(item.name)) {
+      files.push(full);
+      continue;
+    }
+    if (EXECUTABLE.test(item.name) && isUnderExecutableRoot(relative)) {
+      files.push(full);
+    }
   }
   return files;
 }
@@ -32,7 +62,11 @@ const checks = [
   ["stale embedded source SHA", /55312d775b5fd520a07b2797eb6163501120aab8/g],
   ["remote Font Awesome dependency", /font-awesome|cdnjs\.cloudflare\.com\/ajax\/libs\/font-awesome/gi],
   ["remote Google font dependency", /fonts\.(?:googleapis|gstatic)\.com/gi],
-  ["remote JavaScript dependency", /<script\b[^>]*src=["']https?:\/\//gi]
+  ["remote JavaScript dependency", /<script\b[^>]*src=["']https?:\/\//gi],
+  ["wildcard RDP default in Terraform", /allowed_rdp_source_ip\s*=\s*"\*"/gi],
+  ["pull_request_target with untrusted checkout", /pull_request_target[\s\S]{0,400}ref:\s*\$\{\{\s*github\.event\.pull_request\.head\.(sha|ref)\s*\}\}/gi],
+  ["token printed to logs", /console\.(?:log|info|debug|error)\([^\)]*(?:token|secret|password|api[_-]?key)/gi],
+  ["manually trusted JWT key URL from token input", /jwks(?:Uri|URL)\s*[:=]\s*[^\n]*(?:header|payload|token)/gi]
 ];
 
 const failures = [];
@@ -51,4 +85,5 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Known-defect check passed across ${files.length} public HTML/JSON/CSS/YAML artifacts (${checks.length} deterministic patterns).`);
+console.log(`Known-defect check passed across ${files.length} public/executable artifacts (${checks.length} deterministic patterns).`);
+console.log("Note: string absence is not semantic proof; compilers, tests, and native policy tooling remain authoritative.");

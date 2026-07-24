@@ -45,7 +45,7 @@
 
     
     
-              <link rel="canonical" href="https://docs.jasonachkardiab.com/appsec/ai-agent-security/">
+                <link rel="canonical" href="https://docs.jasonachkardiab.com/appsec/ai-agent-security/">
   <meta name="robots" content="index, follow">
 </head>
   
@@ -261,8 +261,8 @@
   <strong>Partially verified engineering investigation</strong>
   <dl>
     <dt>Last reviewed</dt><dd>2026-07-24</dd>
-    <dt>Validated evidence</dt><dd><ul><li>Local broker fixtures cover approval binding, sequential and concurrent consumption, kill-switch, and unauthorized-call denial. The ApprovalStore is an in-memory teaching CAS, not a distributed durable store.</li></ul></dd>
-    <dt>Not established</dt><dd><ul><li>No model provider, MCP deployment, or production agent runtime is exercised.</li></ul></dd>
+    <dt>Validated evidence</dt><dd><ul><li>Local broker fixtures cover authorized low-impact calls, missing/expired/mismatched approvals, sequential and concurrent replay, kill-switch, and unknown-argument denial.</li><li>ApprovalStore.consumeIfUnused enforces one successful consumption under concurrent tests via an in-memory compare-and-set that models a durable conditional write.</li></ul></dd>
+    <dt>Not established</dt><dd><ul><li>In-memory ApprovalStore is a teaching model, not a distributed durable store.</li><li>No production identity validation, MCP enforcement, network sandboxing, or real payment execution is proven.</li><li>No model provider or production agent runtime is exercised.</li></ul></dd>
     <dt>Review cadence</dt><dd>Every 30 days; next review due 2026-08-23.</dd>
   </dl>
 </aside>
@@ -1225,6 +1225,7 @@ should remain read-only, require approval permanently, or not use an agent.</p>
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+<script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
       
     
   </body>
