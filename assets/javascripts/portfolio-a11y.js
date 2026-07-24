@@ -21,4 +21,19 @@
   // Material may inject code tooling after first paint.
   window.setTimeout(labelCodeNav, 0);
   window.setTimeout(labelCodeNav, 250);
+
+  function focusableScrollRegions() {
+    document.querySelectorAll(".md-typeset__scrollwrap").forEach(function (wrap, index) {
+      if (!wrap.hasAttribute("tabindex")) {
+        wrap.setAttribute("tabindex", "0");
+      }
+      if (!wrap.getAttribute("role")) {
+        wrap.setAttribute("role", "region");
+      }
+      wrap.setAttribute("aria-label", "Scrollable content " + (index + 1));
+    });
+  }
+  focusableScrollRegions();
+  window.setTimeout(focusableScrollRegions, 0);
+  window.setTimeout(focusableScrollRegions, 250);
 })();

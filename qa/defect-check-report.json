@@ -1,16 +1,15 @@
 {
-  "executedAt": "2026-07-24T13:26:59.101Z",
+  "executedAt": "2026-07-24T13:19:18.407Z",
   "gitCommit": "67996b297423dc4de6d65898f12c8ceebcbcc6ed",
   "gitTree": "4ade029a10aca1141c5e66c84b02b3cf2dc8b955",
   "repository": "jasonachkar/cybersecurity-writeups",
   "branch": "codex/validated-gh-pages-deployment",
-  "dirtyWorkingTree": true,
-  "command": "gitleaks dir . --redact",
+  "dirtyWorkingTree": false,
+  "command": "npm run verify:static",
   "toolVersions": {
-    "gitleaks": "8.30.0"
+    "node": "v24.12.0",
+    "htmlValidate": "11.5.6"
   },
   "result": "passed",
-  "scanScope": "working-tree",
-  "findingCount": 0,
-  "findings": []
+  "patternsChecked": 17
 }

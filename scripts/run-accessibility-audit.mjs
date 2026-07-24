@@ -87,6 +87,11 @@ async function auditCombination(palette, viewport) {
           nav.setAttribute("aria-label", `Code block actions ${index + 1}`);
         }
       });
+      document.querySelectorAll(".md-typeset__scrollwrap").forEach((wrap, index) => {
+        if (!wrap.hasAttribute("tabindex")) wrap.setAttribute("tabindex", "0");
+        if (!wrap.getAttribute("role")) wrap.setAttribute("role", "region");
+        wrap.setAttribute("aria-label", `Scrollable content ${index + 1}`);
+      });
     }, palette);
 
     await page.evaluate(axeSource);

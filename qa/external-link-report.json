@@ -996,5 +996,16 @@
       "status": 406,
       "finalUrl": "https://www.uber.com/newsroom/security-update/"
     }
-  ]
+  ],
+  "executedAt": "2026-07-24T13:26:55.571Z",
+  "gitCommit": "67996b297423dc4de6d65898f12c8ceebcbcc6ed",
+  "gitTree": "4ade029a10aca1141c5e66c84b02b3cf2dc8b955",
+  "repository": "jasonachkar/cybersecurity-writeups",
+  "branch": "codex/validated-gh-pages-deployment",
+  "dirtyWorkingTree": true,
+  "command": "npm run verify:links",
+  "toolVersions": {
+    "node": "v24.12.0"
+  },
+  "result": "passed"
 }
