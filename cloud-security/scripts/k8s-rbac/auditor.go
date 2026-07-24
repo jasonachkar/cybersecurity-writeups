@@ -2,9 +2,10 @@
 // Role/ClusterRole fixtures.
 //
 // It validates roleRef API group and kind, distinguishes RoleBinding versus
-// ClusterRoleBinding authorization scope, and classifies a fixed set of
-// built-in resources as namespaced or cluster-scoped for the analyzer's known
-// risk classes.
+// ClusterRoleBinding authorization scope for ordinary API resources, and
+// models selected Kubernetes special authorization verbs (bind, escalate,
+// impersonate) separately from ordinary resource scope. TokenRequest detection
+// is limited to the core serviceaccounts/token subresource.
 //
 // It is not a full effective-permissions analysis and does not evaluate
 // SubjectAccessReview, SelfSubjectRulesReview, aggregation, admission
@@ -297,8 +298,9 @@ func knownResourceScope(apiGroup, resource string) ResourceScope {
 	return ResourceScopeUnknown
 }
 
-// permissionEffective reports whether a matched resource can take effect
-// through the binding under this bounded model.
+// permissionEffective reports whether an ordinary API resource permission can
+// take effect through the binding under this bounded model. Special
+// authorization verbs (bind, escalate, impersonate) use dedicated helpers.
 func permissionEffective(binding BindingLike, apiGroup, resourceName string) bool {
 	if binding.Kind == "ClusterRoleBinding" {
 		return true
@@ -314,20 +316,99 @@ func permissionEffective(binding BindingLike, apiGroup, resourceName string) boo
 	}
 }
 
+// specialRBACPermissionEffective models Kubernetes special bind/escalate checks
+// against roles and clusterroles. RoleBindings and ClusterRoleBindings are not
+// valid special-verb targets.
+func specialRBACPermissionEffective(binding BindingLike, resource, verb string) bool {
+	switch verb {
+	case "bind":
+		switch resource {
+		case "roles", "clusterroles":
+			return binding.Kind == "RoleBinding" || binding.Kind == "ClusterRoleBinding"
+		}
+	case "escalate":
+		switch resource {
+		case "roles":
+			return binding.Kind == "RoleBinding" || binding.Kind == "ClusterRoleBinding"
+		case "clusterroles":
+			// Escalating ClusterRole definitions is cluster-scoped.
+			return binding.Kind == "ClusterRoleBinding"
+		}
+	}
+	return false
+}
+
+// impersonationEffective reports whether identity impersonation can take effect
+// through the binding. Impersonation is cluster-scoped identity authorization.
+func impersonationEffective(binding BindingLike) bool {
+	return binding.Kind == "ClusterRoleBinding"
+}
+
+func impersonationTargetAPIGroup(resource string) (string, bool) {
+	switch resource {
+	case "users", "groups", "serviceaccounts":
+		return "", true
+	case "userextras":
+		return "authentication.k8s.io", true
+	default:
+		return "", false
+	}
+}
+
+func specialRBACVerbs(verbs []string) []string {
+	if contains(verbs, "*") {
+		return []string{"bind", "escalate"}
+	}
+	var out []string
+	if contains(verbs, "bind") {
+		out = append(out, "bind")
+	}
+	if contains(verbs, "escalate") {
+		out = append(out, "escalate")
+	}
+	return out
+}
+
+func specialRBACDescription(binding BindingLike, verb, resource, scope string) string {
+	switch verb {
+	case "bind":
+		switch resource {
+		case "roles":
+			if binding.Kind == "RoleBinding" {
+				return fmt.Sprintf("bind on roles can permit binding selected Roles through RoleBindings in namespace %q", scope)
+			}
+			return "bind on roles can permit binding selected Roles cluster-wide"
+		case "clusterroles":
+			if binding.Kind == "RoleBinding" {
+				return fmt.Sprintf("bind on clusterroles can permit binding selected ClusterRoles through RoleBindings in namespace %q", scope)
+			}
+			return "bind on clusterroles can permit binding selected ClusterRoles cluster-wide"
+		}
+	case "escalate":
+		switch resource {
+		case "roles":
+			if binding.Kind == "RoleBinding" {
+				return fmt.Sprintf("escalate on roles can permit creating or modifying Roles beyond the caller's currently held permissions in namespace %q", scope)
+			}
+			return "escalate on roles can permit creating or modifying Roles beyond the caller's currently held permissions"
+		case "clusterroles":
+			return "escalate on clusterroles can permit cluster-wide privilege escalation"
+		}
+	}
+	return fmt.Sprintf("%s on %s expands RBAC authority", verb, resource)
+}
+
 func evaluateRule(roleKey RoleKey, binding BindingLike, scope string, subjects []string, rule PolicyRule) []Finding {
 	var findings []Finding
-	add := func(code, severity, description, apiGroup, resourceName string) {
-		if !permissionEffective(binding, apiGroup, resourceName) {
-			return
-		}
+	appendFinding := func(code, severity, description, resourceNamesNote string) {
 		desc := description
 		resourceNames := append([]string(nil), rule.ResourceNames...)
 		if len(resourceNames) > 0 {
-			desc = fmt.Sprintf(
-				"%s; constrained to resourceNames %v (named constraints do not make the permission safe by themselves)",
-				description,
-				resourceNames,
-			)
+			note := resourceNamesNote
+			if note == "" {
+				note = "named constraints do not make the permission safe by themselves"
+			}
+			desc = fmt.Sprintf("%s; constrained to resourceNames %v; %s", description, resourceNames, note)
 		}
 		findings = append(findings, Finding{
 			Code:          code,
@@ -341,6 +422,12 @@ func evaluateRule(roleKey RoleKey, binding BindingLike, scope string, subjects [
 			ResourceNames: resourceNames,
 		})
 	}
+	addOrdinary := func(code, severity, description, apiGroup, resourceName string) {
+		if !permissionEffective(binding, apiGroup, resourceName) {
+			return
+		}
+		appendFinding(code, severity, description, "named constraints do not make the permission safe by themselves")
+	}
 
 	if isAllResourcesAllVerbs(rule) {
 		// Wildcard grant is still meaningful inside a RoleBinding namespace, but
@@ -349,7 +436,7 @@ func evaluateRule(roleKey RoleKey, binding BindingLike, scope string, subjects [
 		if binding.Kind == "RoleBinding" {
 			desc = "apiGroups/resources/verbs wildcards grant unrestricted authorization for namespaced resources within the RoleBinding namespace; known cluster-scoped resources are not treated as effective through this binding"
 		}
-		add("all-resources-all-verbs", "critical", desc, "", "pods")
+		addOrdinary("all-resources-all-verbs", "critical", desc, "", "pods")
 	}
 
 	apiGroups := rule.APIGroups
@@ -359,70 +446,78 @@ func evaluateRule(roleKey RoleKey, binding BindingLike, scope string, subjects [
 
 	for _, group := range apiGroups {
 		for _, resource := range expandResources(rule.Resources) {
-			if groupMatches(group, "", "authentication.k8s.io") &&
+			// TokenRequest is core serviceaccounts/token only.
+			if groupMatches(group, "") &&
 				resourceMatches(resource, "serviceaccounts", "token") &&
 				hasAnyVerb(rule.Verbs, "create", "*") {
-				add("sa-token-create", "high", "create on serviceaccounts/token can mint TokenRequest-bound service-account tokens", "", "serviceaccounts")
+				addOrdinary("sa-token-create", "high", "create on serviceaccounts/token can mint TokenRequest-bound service-account tokens", "", "serviceaccounts")
 			}
 			if groupMatches(group, "certificates.k8s.io") &&
 				resourceMatches(resource, "certificatesigningrequests", "approval") &&
 				hasAnyVerb(rule.Verbs, "update", "patch", "*") {
-				add("csr-approval", "high", "update/patch on certificatesigningrequests/approval can approve certificate requests", "certificates.k8s.io", "certificatesigningrequests")
+				addOrdinary("csr-approval", "high", "update/patch on certificatesigningrequests/approval can approve certificate requests", "certificates.k8s.io", "certificatesigningrequests")
 			}
 			if groupMatches(group, "certificates.k8s.io") &&
 				resourceMatches(resource, "signers", "") &&
 				hasAnyVerb(rule.Verbs, "approve", "*") {
-				add("csr-signer-approve", "high", "approve on certificatesigningrequests signers grants signer approval authority", "certificates.k8s.io", "signers")
+				addOrdinary("csr-signer-approve", "high", "approve on certificatesigningrequests signers grants signer approval authority", "certificates.k8s.io", "signers")
 			}
 			if groupMatches(group, "authentication.k8s.io") &&
 				resourceMatches(resource, "tokenreviews", "") &&
 				hasAnyVerb(rule.Verbs, "create", "*") {
-				add("tokenreview-oracle", "medium", "create on tokenreviews is a token-authentication oracle capability; it does not mint service-account tokens", "authentication.k8s.io", "tokenreviews")
+				addOrdinary("tokenreview-oracle", "medium", "create on tokenreviews is a token-authentication oracle capability; it does not mint service-account tokens", "authentication.k8s.io", "tokenreviews")
 			}
-			if groupMatches(group, "", "authentication.k8s.io") &&
-				(resourceMatches(resource, "users", "") || resourceMatches(resource, "groups", "") ||
-					resourceMatches(resource, "serviceaccounts", "") || resourceMatches(resource, "userextras", "")) &&
-				hasAnyVerb(rule.Verbs, "impersonate", "*") {
-				targets := []struct {
-					name string
-					api  string
-				}{}
-				if resource.name == "*" {
-					targets = []struct {
-						name string
-						api  string
-					}{
-						{"users", ""},
-						{"groups", ""},
-						{"serviceaccounts", ""},
-						{"userextras", ""},
-					}
-				} else {
-					targets = []struct {
-						name string
-						api  string
-					}{{resource.name, ""}}
+
+			if hasAnyVerb(rule.Verbs, "impersonate", "*") && impersonationEffective(binding) {
+				var targets []string
+				switch {
+				case resource.name == "*":
+					targets = []string{"users", "groups", "serviceaccounts", "userextras"}
+				case resource.subresource == "" && (resource.name == "users" || resource.name == "groups" ||
+					resource.name == "serviceaccounts" || resource.name == "userextras"):
+					targets = []string{resource.name}
 				}
 				for _, target := range targets {
-					add("impersonate", "high",
-						fmt.Sprintf("impersonate on %s expands identity authority", target.name),
-						target.api, target.name)
+					wantGroup, ok := impersonationTargetAPIGroup(target)
+					if !ok || !groupMatches(group, wantGroup) {
+						continue
+					}
+					appendFinding("impersonate", "high",
+						fmt.Sprintf("impersonate on %s expands identity authority", target),
+						"named constraints do not make the permission safe by themselves")
 				}
 			}
-			if groupMatches(group, "rbac.authorization.k8s.io") &&
-				(resourceMatches(resource, "roles", "") || resourceMatches(resource, "clusterroles", "") ||
-					resourceMatches(resource, "rolebindings", "") || resourceMatches(resource, "clusterrolebindings", "")) &&
-				hasAnyVerb(rule.Verbs, "bind", "escalate", "*") {
-				candidates := []string{"roles", "clusterroles", "rolebindings", "clusterrolebindings"}
+
+			if groupMatches(group, "rbac.authorization.k8s.io") {
+				candidates := []string{"roles", "clusterroles"}
 				if resource.name != "*" {
-					candidates = []string{resource.name}
+					if resource.subresource != "" {
+						candidates = nil
+					} else {
+						candidates = []string{resource.name}
+					}
 				}
 				for _, candidate := range candidates {
-					add("rbac-bind-escalate", "high",
-						fmt.Sprintf("%s on %s can expand RBAC authority beyond the role's own permissions", joinedVerbs(rule.Verbs), candidate),
-						"rbac.authorization.k8s.io", candidate)
+					if candidate != "roles" && candidate != "clusterroles" {
+						continue
+					}
+					for _, verb := range specialRBACVerbs(rule.Verbs) {
+						if !specialRBACPermissionEffective(binding, candidate, verb) {
+							continue
+						}
+						code := "rbac-bind"
+						if verb == "escalate" {
+							code = "rbac-escalate"
+						}
+						note := "named constraints do not make the permission safe by themselves"
+						if verb == "bind" {
+							note = "the restriction narrows which roles may be bound but does not make the permission safe by itself"
+						}
+						appendFinding(code, "high", specialRBACDescription(binding, verb, candidate, scope), note)
+					}
 				}
 			}
+
 			if groupMatches(group, "apps", "batch", "extensions") &&
 				isWorkloadController(resource.name) &&
 				hasAnyVerb(rule.Verbs, "create", "update", "patch", "*") {
@@ -436,12 +531,12 @@ func evaluateRule(roleKey RoleKey, binding BindingLike, scope string, subjects [
 				if api == "*" {
 					api = "apps"
 				}
-				add("workload-controller-mutate", "medium", fmt.Sprintf("mutate %s; review pod templates and service-account bindings", name), api, effective)
+				addOrdinary("workload-controller-mutate", "medium", fmt.Sprintf("mutate %s; review pod templates and service-account bindings", name), api, effective)
 			}
 			if groupMatches(group, "") &&
 				resourceMatches(resource, "pods", "") &&
 				hasAnyVerb(rule.Verbs, "create", "*") {
-				add("pod-create", "medium", "create pods is a heuristic risk when combined with privileged service accounts or permissive admission; not proof of breakout alone", "", "pods")
+				addOrdinary("pod-create", "medium", "create pods is a heuristic risk when combined with privileged service accounts or permissive admission; not proof of breakout alone", "", "pods")
 			}
 			if groupMatches(group, "") &&
 				(resourceMatches(resource, "pods", "exec") || resourceMatches(resource, "pods", "attach") || resourceMatches(resource, "pods", "portforward")) &&
@@ -450,17 +545,17 @@ func evaluateRule(roleKey RoleKey, binding BindingLike, scope string, subjects [
 				if resource.name == "*" || sub == "" {
 					sub = "exec|attach|portforward"
 				}
-				add("pod-interactive", "high", fmt.Sprintf("pods/%s enables interactive access to running workloads", sub), "", "pods")
+				addOrdinary("pod-interactive", "high", fmt.Sprintf("pods/%s enables interactive access to running workloads", sub), "", "pods")
 			}
 			if groupMatches(group, "") &&
 				resourceMatches(resource, "secrets", "") &&
 				hasAnyVerb(rule.Verbs, "get", "list", "watch", "*") {
-				add("secrets-read", "high", "read access to secrets can expose credentials mounted or stored as Secret objects", "", "secrets")
+				addOrdinary("secrets-read", "high", "read access to secrets can expose credentials mounted or stored as Secret objects", "", "secrets")
 			}
 			if groupMatches(group, "") &&
 				resourceMatches(resource, "nodes", "proxy") &&
 				hasAnyVerb(rule.Verbs, "create", "get", "update", "*") {
-				add("nodes-proxy", "high", "nodes/proxy can reach kubelet APIs and bypass some network controls", "", "nodes")
+				addOrdinary("nodes-proxy", "high", "nodes/proxy can reach kubelet APIs and bypass some network controls", "", "nodes")
 			}
 			if groupMatches(group, "admissionregistration.k8s.io") &&
 				(resourceMatches(resource, "validatingwebhookconfigurations", "") ||
@@ -472,7 +567,7 @@ func evaluateRule(roleKey RoleKey, binding BindingLike, scope string, subjects [
 					name = "admission webhook configurations"
 					effective = "validatingwebhookconfigurations"
 				}
-				add("admission-policy-mutate", "high", fmt.Sprintf("mutation of %s can weaken or bypass admission controls", name), "admissionregistration.k8s.io", effective)
+				addOrdinary("admission-policy-mutate", "high", fmt.Sprintf("mutation of %s can weaken or bypass admission controls", name), "admissionregistration.k8s.io", effective)
 			}
 		}
 	}
@@ -605,10 +700,6 @@ func isWorkloadController(name string) bool {
 	default:
 		return false
 	}
-}
-
-func joinedVerbs(verbs []string) string {
-	return strings.Join(verbs, ",")
 }
 
 func contains(values []string, want string) bool {

@@ -63,7 +63,7 @@ func TestWildcardAPIGroupResourcesAndVerbs(t *testing.T) {
 		t.Fatalf("expected all-resources-all-verbs, got %#v", findings)
 	}
 	// Derived risk classes should also evaluate under full wildcards.
-	for _, code := range []string{"sa-token-create", "secrets-read", "pod-interactive", "rbac-bind-escalate"} {
+	for _, code := range []string{"sa-token-create", "secrets-read", "pod-interactive", "rbac-bind", "rbac-escalate", "impersonate"} {
 		if !k8srbac.HasCode(findings, code) {
 			t.Fatalf("expected derived risk %s under wildcards, got %#v", code, findings)
 		}
@@ -405,7 +405,16 @@ func TestRiskClasses(t *testing.T) {
 				Resources: []string{"clusterroles"},
 				Verbs:     []string{"bind", "escalate"},
 			}}},
-			want: "rbac-bind-escalate",
+			want: "rbac-bind",
+		},
+		{
+			name: "escalate clusterroles",
+			role: k8srbac.RoleLike{Kind: "ClusterRole", Name: "r", Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"clusterroles"},
+				Verbs:     []string{"escalate"},
+			}}},
+			want: "rbac-escalate",
 		},
 		{
 			name: "workload controller mutate",
@@ -691,9 +700,14 @@ func TestRoleBindingDoesNotActivateClusterScopedRisks(t *testing.T) {
 			notWant: []string{"csr-signer-approve"},
 		},
 		{
-			name:    "clusterroles bind/escalate",
-			rules:   []k8srbac.PolicyRule{{APIGroups: []string{"rbac.authorization.k8s.io"}, Resources: []string{"clusterroles"}, Verbs: []string{"bind", "escalate"}}},
-			notWant: []string{"rbac-bind-escalate"},
+			name: "clusterroles bind is effective; escalate is not",
+			rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"clusterroles"},
+				Verbs:     []string{"bind", "escalate"},
+			}},
+			want:    []string{"rbac-bind"},
+			notWant: []string{"rbac-escalate"},
 		},
 		{
 			name:    "admission webhooks",
@@ -752,7 +766,7 @@ func TestClusterRoleBindingActivatesClusterScopedRisks(t *testing.T) {
 	})
 	for _, code := range []string{
 		"nodes-proxy", "tokenreview-oracle", "csr-approval", "csr-signer-approve",
-		"rbac-bind-escalate", "admission-policy-mutate", "secrets-read",
+		"rbac-bind", "admission-policy-mutate", "secrets-read",
 	} {
 		assertHas(t, findings, code)
 	}
@@ -777,10 +791,12 @@ func TestNamespacedWildcardOmitsClusterScopedFindings(t *testing.T) {
 	assertHas(t, nsFindings, "sa-token-create")
 	assertHas(t, nsFindings, "pod-create")
 	assertHas(t, nsFindings, "workload-controller-mutate")
-	// namespaced RBAC bind/escalate on roles/rolebindings may still apply
-	assertHas(t, nsFindings, "rbac-bind-escalate")
+	// Special verbs: bind on roles/clusterroles and escalate on roles remain effective.
+	assertHas(t, nsFindings, "rbac-bind")
+	assertHas(t, nsFindings, "rbac-escalate")
 	assertNotHas(t, nsFindings,
-		"nodes-proxy", "tokenreview-oracle", "csr-approval", "csr-signer-approve", "admission-policy-mutate",
+		"nodes-proxy", "tokenreview-oracle", "csr-approval", "csr-signer-approve",
+		"admission-policy-mutate", "impersonate",
 	)
 
 	clusterFindings := k8srbac.Audit(roles, []k8srbac.BindingLike{
@@ -792,4 +808,382 @@ func TestNamespacedWildcardOmitsClusterScopedFindings(t *testing.T) {
 	assertHas(t, clusterFindings, "tokenreview-oracle")
 	assertHas(t, clusterFindings, "csr-approval")
 	assertHas(t, clusterFindings, "admission-policy-mutate")
+	assertHas(t, clusterFindings, "rbac-bind")
+	assertHas(t, clusterFindings, "rbac-escalate")
+	assertHas(t, clusterFindings, "impersonate")
+}
+
+func TestSpecialBindSemantics(t *testing.T) {
+	t.Run("RoleBinding bind on clusterroles is effective in namespace", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "binder",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"clusterroles"},
+				Verbs:     []string{"bind"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding("payments", "ns-bind", "binder", "system:serviceaccount:payments:sa"),
+		})
+		got := findingsWithCode(findings, "rbac-bind")
+		if len(got) != 1 {
+			t.Fatalf("expected rbac-bind, got %#v", findings)
+		}
+		if got[0].BindingKind != "RoleBinding" || got[0].BindingScope != "payments" {
+			t.Fatalf("binding metadata = %#v", got[0])
+		}
+		if !strings.Contains(got[0].Description, "bind on clusterroles") {
+			t.Fatalf("description = %q", got[0].Description)
+		}
+		assertNotHas(t, findings, "rbac-escalate")
+	})
+
+	t.Run("RoleBinding bind on roles is effective", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "Role", Name: "binder", Namespace: "app",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"roles"},
+				Verbs:     []string{"bind"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindRole("app", "b", "binder", "user:a"),
+		})
+		assertHas(t, findings, "rbac-bind")
+		got := findingsWithCode(findings, "rbac-bind")
+		if got[0].BindingScope != "app" {
+			t.Fatalf("BindingScope = %q", got[0].BindingScope)
+		}
+	})
+
+	t.Run("ClusterRoleBinding bind on clusterroles is effective", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "binder",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"clusterroles"},
+				Verbs:     []string{"bind"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRole("b", "binder", "user:a"),
+		})
+		got := findingsWithCode(findings, "rbac-bind")
+		if len(got) != 1 || got[0].BindingKind != "ClusterRoleBinding" || got[0].BindingScope != "cluster" {
+			t.Fatalf("unexpected finding %#v", findings)
+		}
+	})
+
+	t.Run("bind on rolebindings is not a special binding risk", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "binder",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"rolebindings"},
+				Verbs:     []string{"bind"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole("b", "binder", "user:a")})
+		assertNotHas(t, findings, "rbac-bind", "rbac-escalate")
+	})
+
+	t.Run("bind on clusterrolebindings is not a special binding risk", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "binder",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"clusterrolebindings"},
+				Verbs:     []string{"bind"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole("b", "binder", "user:a")})
+		assertNotHas(t, findings, "rbac-bind", "rbac-escalate")
+	})
+
+	t.Run("resourceNames retained for bind on clusterroles", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "binder",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups:     []string{"rbac.authorization.k8s.io"},
+				Resources:     []string{"clusterroles"},
+				ResourceNames: []string{"view", "edit"},
+				Verbs:         []string{"bind"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding("payments", "b", "binder", "user:a"),
+		})
+		got := findingsWithCode(findings, "rbac-bind")
+		if len(got) != 1 {
+			t.Fatalf("expected rbac-bind, got %#v", findings)
+		}
+		if len(got[0].ResourceNames) != 2 {
+			t.Fatalf("ResourceNames = %#v", got[0].ResourceNames)
+		}
+		if !strings.Contains(got[0].Description, "resourceNames") ||
+			!strings.Contains(got[0].Description, "does not make the permission safe") {
+			t.Fatalf("description = %q", got[0].Description)
+		}
+	})
+}
+
+func TestSpecialEscalateSemantics(t *testing.T) {
+	t.Run("RoleBinding escalate on roles is effective", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "Role", Name: "esc", Namespace: "app",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"roles"},
+				Verbs:     []string{"escalate"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindRole("app", "b", "esc", "user:a")})
+		assertHas(t, findings, "rbac-escalate")
+		assertNotHas(t, findings, "rbac-bind")
+	})
+
+	t.Run("RoleBinding escalate on clusterroles is not effective", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "esc",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"clusterroles"},
+				Verbs:     []string{"escalate"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding("app", "b", "esc", "user:a"),
+		})
+		assertNotHas(t, findings, "rbac-escalate", "rbac-bind")
+	})
+
+	t.Run("ClusterRoleBinding escalate on clusterroles is effective", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "esc",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"clusterroles"},
+				Verbs:     []string{"escalate"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole("b", "esc", "user:a")})
+		assertHas(t, findings, "rbac-escalate")
+	})
+
+	t.Run("escalate on rolebindings is not a special escalation risk", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "esc",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"rolebindings"},
+				Verbs:     []string{"escalate"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole("b", "esc", "user:a")})
+		assertNotHas(t, findings, "rbac-escalate", "rbac-bind")
+	})
+
+	t.Run("escalate on clusterrolebindings is not a special escalation risk", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "esc",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"clusterrolebindings"},
+				Verbs:     []string{"escalate"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole("b", "esc", "user:a")})
+		assertNotHas(t, findings, "rbac-escalate", "rbac-bind")
+	})
+
+	t.Run("RoleBinding bind+escalate on clusterroles reports only bind", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "both",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"rbac.authorization.k8s.io"},
+				Resources: []string{"clusterroles"},
+				Verbs:     []string{"bind", "escalate"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding("payments", "b", "both", "user:a"),
+		})
+		assertHas(t, findings, "rbac-bind")
+		assertNotHas(t, findings, "rbac-escalate")
+		got := findingsWithCode(findings, "rbac-bind")
+		if strings.Contains(got[0].Description, "escalate") {
+			t.Fatalf("bind finding must not use vague joined-verb wording: %q", got[0].Description)
+		}
+	})
+}
+
+func TestImpersonationScope(t *testing.T) {
+	targets := []struct {
+		name  string
+		group string
+	}{
+		{"users", ""},
+		{"groups", ""},
+		{"serviceaccounts", ""},
+		{"userextras", "authentication.k8s.io"},
+	}
+
+	for _, target := range targets {
+		t.Run("RoleBinding impersonate "+target.name+" suppressed", func(t *testing.T) {
+			roles := []k8srbac.RoleLike{{
+				Kind: "ClusterRole", Name: "imp",
+				Rules: []k8srbac.PolicyRule{{
+					APIGroups: []string{target.group},
+					Resources: []string{target.name},
+					Verbs:     []string{"impersonate"},
+				}},
+			}}
+			findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+				bindClusterRoleViaRoleBinding("app", "b", "imp", "user:a"),
+			})
+			assertNotHas(t, findings, "impersonate")
+		})
+
+		t.Run("ClusterRoleBinding impersonate "+target.name+" effective", func(t *testing.T) {
+			roles := []k8srbac.RoleLike{{
+				Kind: "ClusterRole", Name: "imp",
+				Rules: []k8srbac.PolicyRule{{
+					APIGroups: []string{target.group},
+					Resources: []string{target.name},
+					Verbs:     []string{"impersonate"},
+				}},
+			}}
+			findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole("b", "imp", "user:a")})
+			assertHas(t, findings, "impersonate")
+		})
+	}
+
+	t.Run("userextras under core API group rejected", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "imp",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{""},
+				Resources: []string{"userextras"},
+				Verbs:     []string{"impersonate"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole("b", "imp", "user:a")})
+		assertNotHas(t, findings, "impersonate")
+	})
+
+	t.Run("users under unrelated API group rejected", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "imp",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"example.com"},
+				Resources: []string{"users"},
+				Verbs:     []string{"impersonate"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole("b", "imp", "user:a")})
+		assertNotHas(t, findings, "impersonate")
+	})
+
+	t.Run("namespaced wildcard RoleBinding does not produce impersonate", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "wild",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"*"},
+				Resources: []string{"*"},
+				Verbs:     []string{"*"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding("app", "b", "wild", "user:a"),
+		})
+		assertNotHas(t, findings, "impersonate")
+	})
+
+	t.Run("ClusterRoleBinding wildcards produce impersonate", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "wild",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"*"},
+				Resources: []string{"*"},
+				Verbs:     []string{"*"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole("b", "wild", "user:a")})
+		assertHas(t, findings, "impersonate")
+	})
+}
+
+func TestTokenRequestAPIGroup(t *testing.T) {
+	t.Run("core group serviceaccounts/token create", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "Role", Name: "tok", Namespace: "ns",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{""},
+				Resources: []string{"serviceaccounts/token"},
+				Verbs:     []string{"create"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindRole("ns", "b", "tok", "user:a")})
+		assertHas(t, findings, "sa-token-create")
+	})
+
+	t.Run("wildcard API group serviceaccounts/token create", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "Role", Name: "tok", Namespace: "ns",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"*"},
+				Resources: []string{"serviceaccounts/token"},
+				Verbs:     []string{"create"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindRole("ns", "b", "tok", "user:a")})
+		assertHas(t, findings, "sa-token-create")
+	})
+
+	t.Run("authentication.k8s.io serviceaccounts/token does not mint", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "Role", Name: "tok", Namespace: "ns",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{"authentication.k8s.io"},
+				Resources: []string{"serviceaccounts/token"},
+				Verbs:     []string{"create"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindRole("ns", "b", "tok", "user:a")})
+		assertNotHas(t, findings, "sa-token-create")
+	})
+
+	t.Run("bare serviceaccounts create is not TokenRequest", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "Role", Name: "sa", Namespace: "ns",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{""},
+				Resources: []string{"serviceaccounts"},
+				Verbs:     []string{"create"},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindRole("ns", "b", "sa", "user:a")})
+		assertNotHas(t, findings, "sa-token-create")
+	})
+
+	t.Run("bare serviceaccounts impersonate follows impersonation rules", func(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: "ClusterRole", Name: "imp",
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{""},
+				Resources: []string{"serviceaccounts"},
+				Verbs:     []string{"impersonate"},
+			}},
+		}}
+		nsFindings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding("app", "b", "imp", "user:a"),
+		})
+		assertNotHas(t, nsFindings, "impersonate", "sa-token-create")
+
+		clusterFindings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole("b", "imp", "user:a")})
+		assertHas(t, clusterFindings, "impersonate")
+		assertNotHas(t, clusterFindings, "sa-token-create")
+	})
 }

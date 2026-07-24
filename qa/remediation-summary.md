@@ -31,7 +31,7 @@ CI (`.github/workflows/gh-pages-quality.yml`) splits the same suites across jobs
 | Area | Resolution |
 |------|------------|
 | AI broker | In-memory `ApprovalStore` CAS; action binding is SHA-256 of canonical JSON (`hashActionBinding`); concurrent/sequential replay and delimiter-collision tests |
-| K8s RBAC auditor | `RoleKey` identity; strict `roleRef.apiGroup` / kind / namespace validation; RoleBinding grants only known namespaced permissions; ClusterRoleBinding may activate cluster-scoped risks; bounded heuristic, not API discovery or SubjectAccessReview |
+| K8s RBAC auditor | `RoleKey` identity; strict `roleRef.apiGroup` / kind / namespace validation; ordinary RoleBinding grants only known namespaced resources; special `bind`/`escalate` modeled separately (including namespaced `bind` on ClusterRoles); identity `impersonate` is ClusterRoleBinding-only; TokenRequest limited to core `serviceaccounts/token`; bounded built-in coverage. The utility is a bounded static teaching heuristic. It does not perform Kubernetes API discovery, SubjectAccessReview, SelfSubjectRulesReview, aggregation analysis or complete effective-permissions evaluation. |
 | Accessibility | Production helper labels landmarks via MutationObserver; audit asserts shipped attributes then runs axe |
 | 404 page | `site-utility` missing-page experience; not archived guidance |
 | Provenance wording | Timeless publication target `gh-pages` / publication review PR #5 |
@@ -45,7 +45,7 @@ CI (`.github/workflows/gh-pages-quality.yml`) splits the same suites across jobs
 - No cloud resources deployed during validation.
 - PowerShell: syntax-parse only; the script is not executed.
 - Some external sites may limit automated link checking.
-- K8s RBAC utility: bounded static heuristic covering known built-in risk classes; not complete effective-permissions analysis.
+- K8s RBAC utility: bounded static teaching heuristic covering known built-in risk classes and selected special authorization verbs; it does not perform Kubernetes API discovery, SubjectAccessReview, SelfSubjectRulesReview, aggregation analysis or complete effective-permissions evaluation.
 
 ## PR state
 
