@@ -524,7 +524,7 @@
     "reviewIntervalDays": 90
   },
   "/docs/certification-notes/security-plus/labs/lab-iam/": {
-    "title": "Archived reference: Security+ Lab: Identity & Access Management (IAM) — Enterprise-Style (Local Lab)",
+    "title": "Archived reference: Security+ Lab: Identity & Access Management (IAM) - Enterprise-Style (Local Lab)",
     "status": "archived",
     "indexable": false,
     "lastReviewed": "2026-07-24",
@@ -537,7 +537,7 @@
     "reviewIntervalDays": 365
   },
   "/docs/certification-notes/security-plus/labs/lab-network-security/": {
-    "title": "Archived reference: Security+ Lab: Network Security & Segmentation — Firewall + Packet Capture + Mini-IDS (Local Lab)",
+    "title": "Archived reference: Security+ Lab: Network Security & Segmentation - Firewall + Packet Capture + Mini-IDS (Local Lab)",
     "status": "archived",
     "indexable": false,
     "lastReviewed": "2026-07-24",

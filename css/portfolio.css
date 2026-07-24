@@ -59,6 +59,7 @@ label.md-header__button[for="__search"] {
 .md-main__inner.md-grid {
   max-width: var(--docs-shell-max);
   margin-inline: auto;
+  margin-bottom: var(--docs-space-7);
   gap: var(--docs-gutter);
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -102,7 +103,6 @@ label.md-header__button[for="__search"] {
 .md-typeset > .admonition,
 .md-typeset > img,
 .docs-breadcrumbs,
-.content-evidence,
 .study-currency,
 .docs-prevnext {
   max-width: var(--docs-article-max);
@@ -139,6 +139,37 @@ label.md-header__button[for="__search"] {
 .md-typeset a,
 .md-typeset code {
   overflow-wrap: anywhere;
+}
+
+/* ========================================================
+   CHECKLIST — real checkboxes for engineering/operational checklists
+   ======================================================== */
+.md-typeset ul.docs-checklist {
+  list-style: none;
+  padding-left: 0;
+}
+
+.md-typeset li.docs-checklist-item {
+  margin: .4rem 0;
+}
+
+/* The checkbox and its text share one <label> (implicit label association, so
+   screen readers get an accessible name without a separate aria-label string per
+   item) and that label is the flex container so the box aligns with the first
+   line of text instead of centering against the item's full wrapped height. */
+.docs-checklist-item label {
+  display: flex;
+  align-items: flex-start;
+  gap: .6rem;
+  cursor: default;
+}
+
+.docs-checklist-item input[type="checkbox"] {
+  margin: .3rem 0 0;
+  flex: none;
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--docs-accent);
 }
 
 /* The desktop TOC is display:none below the three-column breakpoint (see the "RIGHT
@@ -481,133 +512,8 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs a:hover {
 }
 
 /* ========================================================
-   EVIDENCE STATUS — compact row + disclosure
+   STUDY CURRENCY — official-owner check banner (certification pages)
    ======================================================== */
-.content-evidence {
-  margin: var(--docs-space-5) 0 var(--docs-space-6);
-  padding: var(--docs-space-3) var(--docs-space-4);
-  border: 1px solid var(--docs-border);
-  border-left-width: .3rem;
-  border-radius: var(--docs-radius-md);
-  background: var(--docs-surface-subtle);
-}
-
-.docs-evidence-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: .4rem 1rem;
-  font-size: .82rem;
-  color: var(--docs-text-muted);
-}
-
-.docs-evidence-row__status {
-  color: var(--docs-text);
-  font-size: .88rem;
-}
-
-.docs-evidence-detail {
-  margin-top: var(--docs-space-2);
-}
-
-/* Reset Material's own admonition-style <details>/<summary> treatment (background
-   tint, icon padding, border) — this is a plain compact disclosure, not a callout.
-   (.docs-inline-toc gets its own dedicated reset further down, since unlike these
-   two it intentionally keeps a visible border/background of its own.) */
-.md-typeset .docs-evidence-detail,
-.md-typeset .docs-footer__detail {
-  border: 0 !important;
-  box-shadow: none !important;
-  background: transparent !important;
-}
-
-.md-typeset .docs-evidence-detail summary,
-.md-typeset .docs-footer__detail summary {
-  padding: 0 !important;
-  background: transparent !important;
-}
-
-.docs-evidence-detail summary {
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: .35rem;
-  font-weight: 600;
-  color: var(--docs-accent);
-  list-style: none;
-}
-
-.docs-evidence-detail summary::-webkit-details-marker {
-  display: none;
-}
-
-.docs-evidence-detail summary::before {
-  content: "";
-  width: .4rem;
-  height: .4rem;
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
-  transform: rotate(-45deg);
-  transition: transform .15s ease;
-  flex: none;
-}
-
-.docs-evidence-detail[open] summary::before {
-  transform: rotate(45deg);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .docs-evidence-detail summary::before {
-    transition: none;
-  }
-}
-
-.docs-evidence-detail dl {
-  display: grid;
-  grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
-  gap: .45rem 1rem;
-  margin: var(--docs-space-3) 0 0;
-}
-
-.docs-evidence-detail dt {
-  font-size: .72rem;
-  font-weight: 700;
-  letter-spacing: .04em;
-  text-transform: uppercase;
-}
-
-.docs-evidence-detail dd {
-  margin: 0;
-}
-
-.docs-evidence-detail dd ul {
-  margin: 0;
-  padding-left: 1.1rem;
-}
-
-.content-evidence--verified,
-.content-evidence--validated-lab {
-  border-color: #15803d;
-}
-
-.content-evidence--partially-verified,
-.content-evidence--partially-tested {
-  border-color: #b45309;
-}
-
-.content-evidence--conceptual,
-.content-evidence--study-notes {
-  border-color: var(--docs-accent);
-}
-
-.content-evidence--archived {
-  border-color: #b91c1c;
-}
-
-.content-evidence--site-utility {
-  border-color: var(--docs-text-muted);
-}
-
 .study-currency {
   margin: var(--docs-space-3) 0 var(--docs-space-5);
   padding: var(--docs-space-3) var(--docs-space-4);
@@ -616,13 +522,19 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs a:hover {
   background: color-mix(in srgb, var(--docs-accent) 8%, var(--docs-bg));
 }
 
-@media (max-width: 44rem) {
-  .docs-evidence-detail dl {
-    grid-template-columns: 1fr;
-  }
-  .docs-evidence-detail dd {
-    margin-bottom: .5rem;
-  }
+/* Reset Material's own admonition-style <details>/<summary> treatment (background
+   tint, icon padding, border) on the footer's own compact disclosure — it is a plain
+   disclosure, not a callout. (.docs-inline-toc gets its own dedicated reset further
+   down, since unlike this one it intentionally keeps a visible border/background.) */
+.md-typeset .docs-footer__detail {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.md-typeset .docs-footer__detail summary {
+  padding: 0 !important;
+  background: transparent !important;
 }
 
 /* ========================================================
@@ -702,10 +614,6 @@ body[data-md-color-scheme="slate"] .portfolio-button--primary:hover {
   background: #1e40af;
 }
 
-.portfolio-hero .content-evidence {
-  margin: var(--docs-space-3) 0 var(--docs-space-4);
-}
-
 .docs-provenance-line {
   margin: .9rem 0 0 !important;
   font-size: .78rem !important;
@@ -763,22 +671,6 @@ body[data-md-color-scheme="slate"] .portfolio-button--primary:hover {
   }
 }
 
-.docs-card__chip {
-  align-self: flex-start;
-  padding: .2rem .55rem;
-  border-radius: 999px;
-  border: 1px solid #b45309;
-  color: #b45309;
-  font-size: .68rem;
-  font-weight: 700;
-  letter-spacing: .03em;
-}
-
-body[data-md-color-scheme="slate"] .docs-card__chip {
-  border-color: #fbbf24;
-  color: #fbbf24;
-}
-
 .docs-card__title {
   margin: 0 !important;
   font-size: 1.05rem !important;
@@ -816,13 +708,45 @@ body[data-md-color-scheme="slate"] .docs-card__chip {
 }
 
 .docs-link-list a {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
   padding: .6rem .9rem;
   border-bottom: 0 !important;
+  transition: border-color .15s ease;
+}
+
+/* An arrow cue, matching the homepage cards' own "Open investigation →" affordance,
+   so a plain bordered list row still reads as clickable rather than as static text. */
+.docs-link-list a::after {
+  content: "\2192";
+  flex: none;
+  color: var(--docs-accent);
+  transition: transform .15s ease;
+}
+
+.docs-link-list li:hover,
+.docs-link-list li:focus-within {
+  border-color: var(--docs-accent);
 }
 
 .docs-link-list a:hover {
   background: var(--docs-surface);
+}
+
+.docs-link-list a:hover::after {
+  transform: translateX(.15rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-link-list a,
+  .docs-link-list a::after {
+    transition: none;
+  }
+  .docs-link-list a:hover::after {
+    transform: none;
+  }
 }
 
 @media (max-width: 74.9375em) {
@@ -926,19 +850,47 @@ body[data-md-color-scheme="slate"] .docs-prevnext__cat {
   background: color-mix(in srgb, #b91c1c 8%, var(--docs-bg));
 }
 
+/* This table carries its own class (evidence-registry), so it falls outside
+   custom.css's `table:not([class])` styling and needs its own border/padding/
+   header treatment to actually read as a table instead of stacked cell blocks. */
 .evidence-registry {
   width: 100%;
+  border-collapse: collapse;
+  font-size: .85rem;
 }
 
 .evidence-registry th,
 .evidence-registry td {
   min-width: 9rem;
+  padding: .65rem .85rem;
   vertical-align: top;
+  border-bottom: 1px solid var(--docs-border);
+  text-align: left;
 }
 
 .evidence-registry th:first-child,
 .evidence-registry td:first-child {
   min-width: 15rem;
+}
+
+.evidence-registry thead th {
+  border-bottom: 2px solid var(--docs-border);
+  background: var(--docs-surface);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.evidence-registry tbody tr:hover td {
+  background: var(--docs-surface-subtle);
+}
+
+.evidence-registry td ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.evidence-registry td ul li + li {
+  margin-top: .25rem;
 }
 
 /* ========================================================

@@ -93,8 +93,11 @@ for (const file of htmlFiles) {
   if (titleCount !== 1) fail(file, `expected one title; found ${titleCount}`);
   if (h1Count !== 1) fail(file, `expected one H1; found ${h1Count}`);
   if (canonicalTags.length !== 1) fail(file, `expected one canonical; found ${canonicalTags.length}`);
+  // The per-page evidence-status card was removed from the shell; evidence data still
+  // lives in content-status.json and the evidence registry table, just not as an
+  // on-page card, so this checks its complete absence rather than its presence.
+  if (evidenceCount !== 0) fail(file, `evidence-status card was removed from the shell; found ${evidenceCount}`);
   if (isUtility) {
-    if (evidenceCount !== 0) fail(file, `site-utility page must not have evidence blocks; found ${evidenceCount}`);
     if (/archive-notice/i.test(html)) fail(file, "site-utility page must not use archive notice");
     if (/Archived reference/i.test(html)) fail(file, "site-utility page must not claim archived reference content");
     if (file === "404.html") {
@@ -102,8 +105,6 @@ for (const file of htmlFiles) {
       if (!/Go to the homepage/i.test(html)) fail(file, "404 page missing homepage action");
       if (!/evidence registry/i.test(html)) fail(file, "404 page missing evidence registry action");
     }
-  } else if (evidenceCount !== 1) {
-    fail(file, `expected one server-rendered evidence block; found ${evidenceCount}`);
   }
   if ((html.match(/<!-- docs-left-nav:start -->/g) || []).length !== 1) fail(file, "missing or duplicate left navigation");
   if ((html.match(/<!-- docs-footer:start -->/g) || []).length !== 1) fail(file, "missing or duplicate provenance footer");

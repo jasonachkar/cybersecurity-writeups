@@ -82,7 +82,7 @@ function archivedEntry(file, title) {
     evidence: ["The public URL is retained to avoid a broken historical link."],
     limitations: ["This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."],
     sources: [],
-    runnableEvidence: "None — archived reference",
+    runnableEvidence: "None - archived reference",
     proves: "Only that the previous URL has an explicit lifecycle state.",
     notProves: "Technical currency, implementation, or security effectiveness.",
     replacement,
@@ -212,32 +212,6 @@ function stripGenerated(html) {
     .replace(/<aside\b[^>]*class=["'][^"']*content-evidence[^"']*["'][^>]*>[\s\S]*?<\/aside>/gi, "")
     // Also inserted with a leading "\n" and no trailing whitespace of its own (see above).
     .replace(/\n?<aside\b[^>]*class=["'][^"']*study-currency[^"']*["'][^>]*>[\s\S]*?<\/aside>/gi, "");
-}
-
-function evidenceSummary(entry) {
-  const label = entry.label || STATUS_LABELS[entry.status];
-  const next = addDays(REVIEW_DATE, entry.reviewIntervalDays);
-  const evidenceCount = entry.evidence.length;
-  const limitationCount = entry.limitations.length;
-  return `<!-- docs-evidence:start -->
-<aside class="content-evidence content-evidence--${entry.status}" aria-label="Content evidence status">
-  <div class="docs-evidence-row">
-    <strong class="docs-evidence-row__status">${escapeHtml(label)}</strong>
-    <span class="docs-evidence-row__item">Last reviewed: ${escapeHtml(formatLongDate(REVIEW_DATE))}</span>
-    <span class="docs-evidence-row__item">${evidenceCount} validated ${evidenceCount === 1 ? "check" : "checks"}</span>
-    <span class="docs-evidence-row__item">${limitationCount} ${limitationCount === 1 ? "limitation" : "limitations"}</span>
-    <span class="docs-evidence-row__item">Next review: ${escapeHtml(formatLongDate(next))}</span>
-  </div>
-  <details class="docs-evidence-detail">
-    <summary>View evidence and limitations</summary>
-    <dl>
-      <dt>Validated evidence</dt><dd>${listHtmlItems(entry.evidence)}</dd>
-      <dt>Not established</dt><dd>${listHtmlItems(entry.limitations)}</dd>
-      <dt>Review cadence</dt><dd>Every ${entry.reviewIntervalDays} days; next review due ${next}.</dd>
-    </dl>
-  </details>
-</aside>
-<!-- docs-evidence:end -->`;
 }
 
 function breadcrumbs(currentUrl) {
@@ -370,24 +344,24 @@ function docsFooter() {
 
 function homeBody() {
   const cards = [
-    ["Secure CI/CD trust boundaries", "/devsecops/secure-cicd-pipeline-design/", "Workflow identity, untrusted validation, protected build and attestation policy.", "Partially verified · tested gate fixtures"],
-    ["Multi-tenant SaaS isolation", "/appsec/saas-multitenancy-isolation/", "Authorization across API, database, pool, cache, queue, storage and telemetry boundaries.", "Partially tested investigation"],
-    ["AI-agent authorization", "/appsec/ai-agent-security/", "External authorization, action-bound approval, concurrent local consumption, and bounded tool execution.", "Partially verified · tested broker"],
-    ["IAM and workload federation", "/cloud-security/iam-at-scale/", "Issuer, audience, subject, delegation, PassRole and permission-boundary decisions.", "Partially verified · policy fixtures"],
-    ["OAuth 2.0 and OIDC", "/appsec/oauth2-oidc-deep-dive/", "Exact redirects, PKCE, state, nonce, token audience, JWKS and resource authorization.", "Partially verified · token fixtures"],
-    ["Kubernetes isolation", "/cloud-security/kubernetes-multi-tenancy/", "Namespace, workload identity, network, admission, image and operational failure boundaries.", "Partially verified · image integration partial"],
-    ["IaC policy engineering", "/devsecops/iac-security-and-policy-as-code/", "Unknown values, deleted controls, plan semantics, policy failure and rollout design.", "Partially verified · plan fixtures"],
-    ["Supply-chain evidence", "/devsecops/supply-chain-sbom-signing/", "Artifact bytes, SBOM, provenance, signer, builder, source and policy kept distinct.", "Partially tested · no crypto integration"],
-    ["SecureObs architecture", "/devsecops/secureobs-multitenant-security-scanner/", "Owner-confirmed architecture separated from reproduced patterns and future controls.", "Partially verified · sanitized scope"],
-    ["Incident case studies", "/threat-intel/cloud-breach-case-studies/", "Owner disclosures, chronology, inference limits, control lessons and residual uncertainty.", "Partially verified · public evidence"]
+    ["Secure CI/CD trust boundaries", "/devsecops/secure-cicd-pipeline-design/", "Workflow identity, untrusted validation, protected build and attestation policy."],
+    ["Multi-tenant SaaS isolation", "/appsec/saas-multitenancy-isolation/", "Authorization across API, database, pool, cache, queue, storage and telemetry boundaries."],
+    ["AI-agent authorization", "/appsec/ai-agent-security/", "External authorization, action-bound approval, concurrent local consumption, and bounded tool execution."],
+    ["IAM and workload federation", "/cloud-security/iam-at-scale/", "Issuer, audience, subject, delegation, PassRole and permission-boundary decisions."],
+    ["OAuth 2.0 and OIDC", "/appsec/oauth2-oidc-deep-dive/", "Exact redirects, PKCE, state, nonce, token audience, JWKS and resource authorization."],
+    ["Kubernetes isolation", "/cloud-security/kubernetes-multi-tenancy/", "Namespace, workload identity, network, admission, image and operational failure boundaries."],
+    ["IaC policy engineering", "/devsecops/iac-security-and-policy-as-code/", "Unknown values, deleted controls, plan semantics, policy failure and rollout design."],
+    ["Supply-chain evidence", "/devsecops/supply-chain-sbom-signing/", "Artifact bytes, SBOM, provenance, signer, builder, source and policy kept distinct."],
+    ["SecureObs architecture", "/devsecops/secureobs-multitenant-security-scanner/", "Owner-confirmed architecture separated from reproduced patterns and future controls."],
+    ["Incident case studies", "/threat-intel/cloud-breach-case-studies/", "Owner disclosures, chronology, inference limits, control lessons and residual uncertainty."]
   ];
-  const cardHtml = cards.map(([title, href, copy, status]) => `<a class="docs-card" href="${href}"><span class="docs-card__chip">${escapeHtml(status)}</span><h3 class="docs-card__title">${escapeHtml(title)}</h3><p class="docs-card__desc">${escapeHtml(copy)}</p><span class="docs-card__cta">Open investigation <span aria-hidden="true">&rarr;</span></span></a>`).join("");
+  const cardHtml = cards.map(([title, href, copy]) => `<a class="docs-card" href="${href}"><h3 class="docs-card__title">${escapeHtml(title)}</h3><p class="docs-card__desc">${escapeHtml(copy)}</p><span class="docs-card__cta">Open investigation <span aria-hidden="true">&rarr;</span></span></a>`).join("");
   return `<section class="portfolio-hero">
   <p class="portfolio-hero__kicker">Evidence-first security engineering</p>
   <h1 id="security-engineering-decisions-you-can-audit">Security engineering decisions you can audit.</h1>
-  <p class="portfolio-hero__lede">Threat models, enforcement points, negative tests and residual risk across cloud identity, application security, delivery pipelines, Kubernetes, detection and software supply chains—without turning a local test into a production claim.</p>
+  <p class="portfolio-hero__lede">Threat models, enforcement points, negative tests and residual risk across cloud identity, application security, delivery pipelines, Kubernetes, detection and software supply chains, without turning a local test into a production claim.</p>
   <div class="portfolio-actions"><a class="portfolio-button portfolio-button--primary" href="#featured-engineering">Review engineering work</a><a class="portfolio-button" href="/docs/research-audit/content-inventory/">Inspect the evidence registry</a></div>
-  <p class="docs-provenance-line">Published from <code>gh-pages</code> · reviewed <time datetime="${REVIEW_TIMESTAMP}">${formatLongDate(REVIEW_DATE)}</time> · <a href="/about/site-provenance/">Site provenance</a></p>
+  <p class="docs-provenance-line">Reviewed <time datetime="${REVIEW_TIMESTAMP}">${formatLongDate(REVIEW_DATE)}</time> · <a href="/about/site-provenance/">Site provenance</a></p>
 </section>
 <section aria-labelledby="featured-engineering"><h2 id="featured-engineering">Featured engineering</h2><p>Each page leads with what was checked, what was executed, what remains untested, and when it must be reviewed again.</p><div class="docs-card-grid">${cardHtml}</div></section>
 <section aria-labelledby="validated-labs"><h2 id="validated-labs">Runnable labs</h2><p>Repository labs exercise bounded decisions; their status blocks distinguish local models and structural checks from native platform or cryptographic integration.</p><ul class="docs-link-list"><li><a href="/labs/secure-cicd/">Secure CI/CD gate and workflow fixtures</a></li><li><a href="/labs/iam-oidc/">IAM and workload-identity decision cases</a></li><li><a href="/labs/oauth-oidc/">OAuth/OIDC token-boundary cases</a></li><li><a href="/labs/ai-agent-security/">AI external tool-broker cases</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL row-level security</a></li><li><a href="/labs/kubernetes-security/">Kubernetes policy and image-decision fixtures</a></li><li><a href="/labs/supply-chain/">Offline provenance and SBOM policy</a></li><li><a href="/labs/iac-policy/">Terraform plan and Rego fixtures</a></li><li><a href="/labs/azure-landing-zone/">Azure landing-zone Bicep boundary</a></li></ul></section>
@@ -509,11 +483,17 @@ function normalizePage(file, html, entry) {
     /(<a href="[^"]*" title="Go to repository" class="md-source")(?![^>]*aria-label)/,
     '$1 aria-label="GitHub repository: jasonachkar/cybersecurity-writeups"'
   );
-  // Make search visually prominent (icon + label) with an explicit accessible name;
-  // the visible text is aria-hidden since the label itself already carries the name.
+  // Material's inline search box already sits right next to this icon at desktop
+  // widths, so it only needs an accessible name here, not a second visible label.
+  // One-time cleanup of an earlier run's injected visible label span, which was
+  // written in place (not strip/reinject) and so survived past its own removal here.
   html = html.replace(
-    /(<label class="md-header__button md-icon" for="__search">)([\s\S]*?)(<\/label>)/,
-    (_, open, inner, close) => `${open.replace('for="__search">', 'for="__search" aria-label="Search documentation">')}${inner}<span class="docs-search-label" aria-hidden="true">Search documentation</span>${close}`
+    /(<label class="md-header__button md-icon" for="__search"(?:\s+aria-label="[^"]*")?>)([\s\S]*?)<span class="docs-search-label" aria-hidden="true">Search documentation<\/span>(<\/label>)/,
+    "$1$2$3"
+  );
+  html = html.replace(
+    /<label class="md-header__button md-icon" for="__search">/,
+    '<label class="md-header__button md-icon" for="__search" aria-label="Search documentation">'
   );
 
   html = html.replace(/<meta\b[^>]*name=["']author["'][^>]*>/i, '<meta name="author" content="Jason Achkar Diab">');
@@ -545,23 +525,25 @@ function normalizePage(file, html, entry) {
   const currentUrl = pageUrl(file);
   if (entry.status !== "site-utility") {
     const crumbs = breadcrumbs(currentUrl);
-    const evidence = evidenceSummary(entry);
-    html = html.replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, match => `${crumbs ? `${crumbs}\n` : ""}${match}\n${evidence}`);
-
     // Tracks the literal string right after which the next front-matter block should
-    // be inserted, so the inline TOC lands after evidence *and* the study-currency
+    // be inserted, so the inline TOC lands after the H1 *and* the study-currency
     // banner (when present) without a second, more fragile regex search for it.
-    let afterEvidence = "<!-- docs-evidence:end -->";
+    let afterHeading = null;
+    html = html.replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, match => {
+      afterHeading = match;
+      return `${crumbs ? `${crumbs}\n` : ""}${match}`;
+    });
+
     const currency = CERTIFICATION_CURRENCY.find(([prefix]) => file.startsWith(prefix));
     if (currency && entry.status === "study-notes") {
       const banner = `<aside class="study-currency" aria-label="Official-owner check"><strong>Official-owner check</strong><p>${currency[1]}</p></aside>`;
-      html = html.replace(afterEvidence, `${afterEvidence}\n${banner}`);
-      afterEvidence = banner;
+      html = html.replace(afterHeading, `${afterHeading}\n${banner}`);
+      afterHeading = banner;
     }
 
     const headings = articleHeadings(html);
     const includeToc = needsToc(entry, headings);
-    if (includeToc) html = html.replace(afterEvidence, `${afterEvidence}\n${inlineToc(headings)}`);
+    if (includeToc) html = html.replace(afterHeading, `${afterHeading}\n${inlineToc(headings)}`);
 
     html = wrapDivByClass(html, "md-content", leftNav(currentUrl), includeToc ? desktopToc(headings) : "");
 
