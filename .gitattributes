@@ -1,0 +1,2 @@
+# Keep shell scripts LF so ShellCheck and bash behave the same on Windows and CI.
+*.sh text eol=lf

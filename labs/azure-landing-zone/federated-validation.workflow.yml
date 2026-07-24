@@ -1,0 +1,39 @@
+name: Azure landing-zone what-if example
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  what-if:
+    runs-on: ubuntu-24.04
+    environment: landing-zone-plan
+    timeout-minutes: 15
+    steps:
+      - name: Check out reviewed source without persisting credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Exchange GitHub OIDC identity for a short-lived Azure token
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          allow-no-subscriptions: true
+
+      - name: Compile without deployment
+        shell: bash
+        run: az bicep build --file labs/azure-landing-zone/main.bicep
+
+      - name: Produce a tenant deployment what-if for human review
+        shell: bash
+        run: |
+          az deployment tenant what-if \
+            --name "landing-zone-${GITHUB_RUN_ID}" \
+            --location canadacentral \
+            --template-file labs/azure-landing-zone/main.bicep \
+            --parameters @labs/azure-landing-zone/parameters.example.json

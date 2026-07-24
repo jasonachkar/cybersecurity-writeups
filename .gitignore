@@ -1,0 +1,6 @@
+node_modules/
+qa/runtime/
+qa-artifacts/
+# Generated runtime QA evidence lives in GitHub Actions artifacts, not git.
+qa/*.json
+!qa/.gitkeep

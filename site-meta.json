@@ -1,0 +1,14 @@
+{
+  "site": "https://docs.jasonachkardiab.com",
+  "repository": "jasonachkar/cybersecurity-writeups",
+  "publicationTarget": "gh-pages",
+  "publicationReview": "PR #5",
+  "reviewBranch": "codex/validated-gh-pages-deployment",
+  "pullRequest": 5,
+  "artifactType": "static GitHub Pages site",
+  "contentReviewTimestamp": "2026-07-24T11:48:39Z",
+  "contentReviewDate": "July 24, 2026",
+  "evidenceModel": "page-level status and validation disclosures",
+  "runtimeEvidence": "GitHub Actions artifacts for the checked-out revision",
+  "note": "Static files do not claim to identify their own final containing commit."
+}
