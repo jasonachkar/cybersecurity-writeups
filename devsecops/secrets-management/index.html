@@ -246,6 +246,14 @@
   </details>
 </aside>
 <!-- docs-evidence:end -->
+<!-- docs-inline-toc:start -->
+<details class="docs-inline-toc">
+  <summary>On this page</summary>
+  <nav aria-label="On this page (inline)">
+    <ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-assets-and-threats">Scope, assets and threats</a></li><li><a href="#identity-and-delivery-patterns">Identity and delivery patterns</a></li><li><a href="#kubernetes-secrets">Kubernetes Secret semantics and exposure</a></li><li><a href="#environment-and-memory-exposure">Environment variables and memory exposure</a></li><li><a href="#vault-dynamic-credentials">Vault dynamic credentials and workload binding</a></li><li><a href="#rotation-and-revocation">Rotation and revocation semantics</a></li><li><a href="#failure-modes">Failure modes</a></li><li><a href="#negative-test-matrix">Negative test matrix</a></li><li><a href="#observability-rollout-and-rollback">Observability, rollout and rollback</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol>
+  </nav>
+</details>
+<!-- docs-inline-toc:end -->
 <p>A secrets manager is a control plane, not a guarantee of least privilege. The security boundary is the complete path from workload identity through authorization and delivery to runtime use, rotation, revocation, audit, and recovery.</p>
 
 <h2 id="executive-decision">Executive decision</h2>
@@ -396,7 +404,14 @@ spec:
 
 <!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/devsecops/supply-chain-sbom-signing/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">DevSecOps</span><span class="docs-prevnext__title">Supply-chain evidence</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/devsecops/secureobs-multitenant-security-scanner/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">DevSecOps</span><span class="docs-prevnext__title">SecureObs architecture</span></a></nav><!-- docs-prevnext:end -->
 </article>
-            </div><!-- docs-toc:start --><details class="docs-right-toc" open><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-assets-and-threats">Scope, assets and threats</a></li><li><a href="#identity-and-delivery-patterns">Identity and delivery patterns</a></li><li><a href="#kubernetes-secrets">Kubernetes Secret semantics and exposure</a></li><li><a href="#environment-and-memory-exposure">Environment variables and memory exposure</a></li><li><a href="#vault-dynamic-credentials">Vault dynamic credentials and workload binding</a></li><li><a href="#rotation-and-revocation">Rotation and revocation semantics</a></li><li><a href="#failure-modes">Failure modes</a></li><li><a href="#negative-test-matrix">Negative test matrix</a></li><li><a href="#observability-rollout-and-rollback">Observability, rollout and rollback</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol></nav></details><!-- docs-toc:end -->
+            </div><!-- docs-desktop-toc:start -->
+<aside class="docs-right-toc" aria-label="On this page">
+  <strong class="docs-right-toc__title">On this page</strong>
+  <nav aria-label="On this page">
+    <ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-assets-and-threats">Scope, assets and threats</a></li><li><a href="#identity-and-delivery-patterns">Identity and delivery patterns</a></li><li><a href="#kubernetes-secrets">Kubernetes Secret semantics and exposure</a></li><li><a href="#environment-and-memory-exposure">Environment variables and memory exposure</a></li><li><a href="#vault-dynamic-credentials">Vault dynamic credentials and workload binding</a></li><li><a href="#rotation-and-revocation">Rotation and revocation semantics</a></li><li><a href="#failure-modes">Failure modes</a></li><li><a href="#negative-test-matrix">Negative test matrix</a></li><li><a href="#observability-rollout-and-rollback">Observability, rollout and rollback</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol>
+  </nav>
+</aside>
+<!-- docs-desktop-toc:end -->
           
           
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
@@ -430,12 +445,7 @@ spec:
   </details>
 </div>
 <!-- docs-footer:end -->
-<div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">&copy; 2026 Jason Achkar Diab. Security guidance is scoped by page-level evidence.</div>
-      
-    </div>
-  </div>
+
 </footer>
       
     </div>

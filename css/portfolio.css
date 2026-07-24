@@ -65,8 +65,16 @@ label.md-header__button[for="__search"] {
   align-items: start;
 }
 
+/* overflow-x:hidden here (rather than on html/body) clips any stray few-px content
+   overflow from inside the article without affecting position:sticky on the left-nav
+   or right-toc siblings — those live outside .md-content in the shell grid, and
+   sticky elements stop sticking if overflow-x/-y is set on one of their ancestors
+   (it forces the paired axis to a scroll container per the CSS Overflow spec's
+   visible/non-visible fixup rule), which is exactly what happened when this was
+   previously applied to html/body. */
 .md-content {
   min-width: 0;
+  overflow-x: hidden;
 }
 
 .md-content__inner {
@@ -100,25 +108,51 @@ label.md-header__button[for="__search"] {
   max-width: var(--docs-article-max);
 }
 
-.docs-right-toc {
-  grid-column: 1 / -1;
+/* Material's own code-block wrappers (.highlight for code fences, .md-typeset__scrollwrap
+   for tables) bleed 16px past the article column on each side by default — a small
+   intentional edge-touch effect when the article has surrounding padding to bleed
+   into. The article is edge-to-edge with no such padding at narrow viewports, so
+   that same bleed pushes 16px past the actual viewport edge and causes real
+   horizontal page overflow — not merely a contained internal scrollbar, which is
+   what overflow-x on these wrappers is otherwise for. Removing the bleed keeps
+   their own horizontal scrolling untouched. */
+.md-typeset .highlight,
+.md-typeset__scrollwrap {
+  margin-left: 0;
+  margin-right: 0;
 }
 
+/* A long unwrapped code line (white-space: pre) can still poke a few px past its own
+   box when the box's own overflow is the default `visible` — contain it in its own
+   horizontal scrollbar instead of letting it bleed into the page. */
+.md-typeset pre {
+  overflow-x: auto;
+}
+
+/* Standard defensive wrapping for ordinary prose text (not code/pre, which keep
+   their own horizontal scroll above) — without this, an unlucky text measurement
+   at a narrow viewport can leave a plain paragraph or list a few px wider than its
+   container instead of wrapping. */
+.md-typeset p,
+.md-typeset li,
+.md-typeset dd,
+.md-typeset a,
+.md-typeset code {
+  overflow-wrap: anywhere;
+}
+
+/* The desktop TOC is display:none below the three-column breakpoint (see the "RIGHT
+   TOC" section below), so it never participates in the two-column grid at all —
+   readers get the inline in-article TOC instead at those widths. */
 @media (min-width: 56.25em) {
   .md-main__inner.md-grid {
     grid-template-columns: var(--docs-left-rail) minmax(0, 1fr);
-  }
-  .docs-right-toc {
-    grid-column: 2 / 3;
   }
 }
 
 @media (min-width: 80em) {
   .md-main__inner.md-grid:has(.docs-right-toc) {
     grid-template-columns: var(--docs-left-rail) minmax(0, 1fr) var(--docs-right-rail);
-  }
-  .docs-right-toc {
-    grid-column: 3 / 4;
   }
 }
 
@@ -316,39 +350,105 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs a:hover {
 }
 
 /* ========================================================
-   RIGHT TOC — sticky at desktop, collapsible disclosure below
+   RIGHT TOC — desktop only (>=80em / 1280px), permanently visible, sticky.
+   Plain <aside>, not a <details> — nothing to open/close at this breakpoint, and a
+   native disclosure's content sizing does not survive being force-opened by CSS.
+   Below 80em it is display:none; the inline in-article TOC covers that range instead.
    ======================================================== */
 .docs-right-toc {
-  font-size: .78rem;
-  border: 1px solid var(--docs-border);
-  border-radius: var(--docs-radius-md);
-  padding: var(--docs-space-3);
-  margin: var(--docs-space-5) 0;
-  background: var(--docs-surface-subtle);
-}
-
-.docs-right-toc summary {
-  cursor: pointer;
-  font-weight: 700;
-  list-style: none;
-}
-
-.docs-right-toc summary::-webkit-details-marker {
   display: none;
 }
 
-.docs-right-toc nav ol {
+@media (min-width: 80em) {
+  .docs-right-toc {
+    display: block;
+    grid-column: 3 / 4;
+    position: sticky;
+    top: calc(var(--md-header-height) + var(--docs-space-4));
+    max-height: calc(100vh - var(--md-header-height) - var(--docs-space-6));
+    overflow-y: auto;
+    font-size: .78rem;
+    padding: var(--docs-space-5) 0 var(--docs-space-6);
+  }
+}
+
+.docs-right-toc__title {
+  display: block;
+  margin: 0 0 var(--docs-space-2);
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+/* ========================================================
+   INLINE RESPONSIVE TOC — below 80em / 1280px only. Rendered in the article, right
+   after the evidence summary and before the introduction, so it never depends on
+   scrolling past the whole article to reach it. Native <details>, closed by default.
+   ======================================================== */
+.docs-inline-toc {
+  /* !important: Material's own `.md-typeset details { display: flow-root }` reset
+     is more specific than a plain .docs-inline-toc selector and otherwise wins,
+     regardless of which one is later in source order. */
+  display: block !important;
+  max-width: var(--docs-article-max);
+  margin: 0 0 var(--docs-space-5);
+  font-size: .85rem;
+}
+
+/* Reset Material's own admonition-style <details> treatment (icon padding, blue
+   background tint) and apply this component's own subtle, compact styling instead —
+   combined in one place so the two don't fight over which one "wins" the cascade. */
+.md-typeset .docs-inline-toc {
+  border: 1px solid var(--docs-border) !important;
+  border-radius: var(--docs-radius-md);
+  background: var(--docs-surface-subtle) !important;
+  box-shadow: none !important;
+}
+
+.md-typeset .docs-inline-toc > summary {
+  padding: 0 var(--docs-space-4) !important;
+  background: transparent !important;
+}
+
+.docs-inline-toc > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+}
+
+.docs-inline-toc > summary::-webkit-details-marker {
+  display: none;
+}
+
+.docs-inline-toc nav {
+  padding: 0 var(--docs-space-4) var(--docs-space-4);
+}
+
+@media (min-width: 80em) {
+  .docs-inline-toc {
+    display: none !important;
+  }
+}
+
+/* Shared link semantics between the desktop aside and the inline disclosure — same
+   heading data, same visual language, so the two feel like one component. */
+.docs-right-toc nav ol,
+.docs-inline-toc nav ol {
   list-style: none;
   margin: var(--docs-space-2) 0 0;
   padding: 0;
   border-left: 2px solid var(--docs-border);
 }
 
-.docs-right-toc nav li {
+.docs-right-toc nav li,
+.docs-inline-toc nav li {
   margin: 0;
 }
 
-.docs-right-toc nav a {
+.docs-right-toc nav a,
+.docs-inline-toc nav a {
   display: block;
   padding: .3rem .6rem;
   margin-left: -2px;
@@ -358,30 +458,26 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs a:hover {
   text-decoration: none;
 }
 
+/* More generous tap targets in the inline (touch-first) presentation. */
+.docs-inline-toc nav a {
+  padding: .6rem .6rem;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
 .docs-right-toc nav a:hover,
-.docs-right-toc nav a:focus-visible {
+.docs-right-toc nav a:focus-visible,
+.docs-inline-toc nav a:hover,
+.docs-inline-toc nav a:focus-visible {
   color: var(--docs-accent) !important;
 }
 
-.docs-right-toc nav a[data-docs-toc-active="true"] {
+.docs-right-toc nav a[data-docs-toc-active="true"],
+.docs-inline-toc nav a[data-docs-toc-active="true"] {
   color: var(--docs-accent) !important;
   border-left-color: var(--docs-accent);
   font-weight: 600;
-}
-
-@media (min-width: 80em) {
-  .docs-right-toc {
-    position: sticky;
-    top: var(--md-header-height);
-    max-height: calc(100vh - var(--md-header-height) - var(--docs-space-6));
-    overflow-y: auto;
-    background: transparent;
-    border: 0;
-    padding: var(--docs-space-5) 0 var(--docs-space-6);
-  }
-  .docs-right-toc summary {
-    display: none;
-  }
 }
 
 /* ========================================================
@@ -415,9 +511,10 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs a:hover {
 }
 
 /* Reset Material's own admonition-style <details>/<summary> treatment (background
-   tint, icon padding, border) — this is a plain compact disclosure, not a callout. */
+   tint, icon padding, border) — this is a plain compact disclosure, not a callout.
+   (.docs-inline-toc gets its own dedicated reset further down, since unlike these
+   two it intentionally keeps a visible border/background of its own.) */
 .md-typeset .docs-evidence-detail,
-.md-typeset .docs-right-toc,
 .md-typeset .docs-footer__detail {
   border: 0 !important;
   box-shadow: none !important;
@@ -425,7 +522,6 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs a:hover {
 }
 
 .md-typeset .docs-evidence-detail summary,
-.md-typeset .docs-right-toc summary,
 .md-typeset .docs-footer__detail summary {
   padding: 0 !important;
   background: transparent !important;

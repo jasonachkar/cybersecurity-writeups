@@ -254,6 +254,14 @@
   </details>
 </aside>
 <!-- docs-evidence:end -->
+<!-- docs-inline-toc:start -->
+<details class="docs-inline-toc">
+  <summary>On this page</summary>
+  <nav aria-label="On this page (inline)">
+    <ol><li><a href="#evidence-and-implementation-status">Evidence and implementation status</a></li><li><a href="#executive-security-decision">Executive security decision</a></li><li><a href="#scope-non-goals-and-assumptions">Scope, non-goals, and assumptions</a></li><li><a href="#assets-actors-and-security-invariants">Assets, actors, and security invariants</a></li><li><a href="#architecture-and-trust-boundaries">Architecture and trust boundaries</a></li><li><a href="#threat-model-and-required-negative-evidence">Threat model and required negative evidence</a></li><li><a href="#control-design">Control design</a></li><li><a href="#failure-modes-and-explicit-semantics">Failure modes and explicit semantics</a></li><li><a href="#evaluation-and-release-evidence">Evaluation and release evidence</a></li><li><a href="#staged-rollout-and-rollback-gates">Staged rollout and rollback gates</a></li><li><a href="#observability-and-operations">Observability and operations</a></li><li><a href="#incident-response">Incident response</a></li><li><a href="#model-and-agent-supply-chain">Model and agent supply chain</a></li><li><a href="#standards-and-version-baseline">Standards and version baseline</a></li><li><a href="#residual-risks-and-limitations">Residual risks and limitations</a></li><li><a href="#engineering-and-operational-checklist">Engineering and operational checklist</a></li></ol>
+  </nav>
+</details>
+<!-- docs-inline-toc:end -->
 <p>An AI agent is an untrusted planner operating inside a conventional security
 system. The model may propose a tool, target, parameters, or workflow, but a
 deterministic control plane must decide whether that proposal is allowed. Every
@@ -1167,7 +1175,14 @@ should remain read-only, require approval permanently, or not use an agent.</p>
 
 <!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/cloud-security/serverless-security/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Cloud Security</span><span class="docs-prevnext__title">Serverless security</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/appsec/saas-multitenancy-isolation/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Application Security</span><span class="docs-prevnext__title">Multi-tenant SaaS isolation</span></a></nav><!-- docs-prevnext:end -->
 </article>
-            </div><!-- docs-toc:start --><details class="docs-right-toc" open><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#evidence-and-implementation-status">Evidence and implementation status</a></li><li><a href="#executive-security-decision">Executive security decision</a></li><li><a href="#scope-non-goals-and-assumptions">Scope, non-goals, and assumptions</a></li><li><a href="#assets-actors-and-security-invariants">Assets, actors, and security invariants</a></li><li><a href="#architecture-and-trust-boundaries">Architecture and trust boundaries</a></li><li><a href="#threat-model-and-required-negative-evidence">Threat model and required negative evidence</a></li><li><a href="#control-design">Control design</a></li><li><a href="#failure-modes-and-explicit-semantics">Failure modes and explicit semantics</a></li><li><a href="#evaluation-and-release-evidence">Evaluation and release evidence</a></li><li><a href="#staged-rollout-and-rollback-gates">Staged rollout and rollback gates</a></li><li><a href="#observability-and-operations">Observability and operations</a></li><li><a href="#incident-response">Incident response</a></li><li><a href="#model-and-agent-supply-chain">Model and agent supply chain</a></li><li><a href="#standards-and-version-baseline">Standards and version baseline</a></li><li><a href="#residual-risks-and-limitations">Residual risks and limitations</a></li><li><a href="#engineering-and-operational-checklist">Engineering and operational checklist</a></li></ol></nav></details><!-- docs-toc:end -->
+            </div><!-- docs-desktop-toc:start -->
+<aside class="docs-right-toc" aria-label="On this page">
+  <strong class="docs-right-toc__title">On this page</strong>
+  <nav aria-label="On this page">
+    <ol><li><a href="#evidence-and-implementation-status">Evidence and implementation status</a></li><li><a href="#executive-security-decision">Executive security decision</a></li><li><a href="#scope-non-goals-and-assumptions">Scope, non-goals, and assumptions</a></li><li><a href="#assets-actors-and-security-invariants">Assets, actors, and security invariants</a></li><li><a href="#architecture-and-trust-boundaries">Architecture and trust boundaries</a></li><li><a href="#threat-model-and-required-negative-evidence">Threat model and required negative evidence</a></li><li><a href="#control-design">Control design</a></li><li><a href="#failure-modes-and-explicit-semantics">Failure modes and explicit semantics</a></li><li><a href="#evaluation-and-release-evidence">Evaluation and release evidence</a></li><li><a href="#staged-rollout-and-rollback-gates">Staged rollout and rollback gates</a></li><li><a href="#observability-and-operations">Observability and operations</a></li><li><a href="#incident-response">Incident response</a></li><li><a href="#model-and-agent-supply-chain">Model and agent supply chain</a></li><li><a href="#standards-and-version-baseline">Standards and version baseline</a></li><li><a href="#residual-risks-and-limitations">Residual risks and limitations</a></li><li><a href="#engineering-and-operational-checklist">Engineering and operational checklist</a></li></ol>
+  </nav>
+</aside>
+<!-- docs-desktop-toc:end -->
           
           
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
@@ -1201,12 +1216,7 @@ should remain read-only, require approval permanently, or not use an agent.</p>
   </details>
 </div>
 <!-- docs-footer:end -->
-<div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">&copy; 2026 Jason Achkar Diab. Security guidance is scoped by page-level evidence.</div>
-      
-    </div>
-  </div>
+
 </footer>
       
     </div>

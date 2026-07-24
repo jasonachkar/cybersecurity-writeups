@@ -246,6 +246,14 @@
   </details>
 </aside>
 <!-- docs-evidence:end -->
+<!-- docs-inline-toc:start -->
+<details class="docs-inline-toc">
+  <summary>On this page</summary>
+  <nav aria-label="On this page (inline)">
+    <ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-and-non-goals">Scope and non-goals</a></li><li><a href="#reachability-versus-exploitability">Graph reachability versus exploitability</a></li><li><a href="#evidence-model">Evidence, time and unknowns</a></li><li><a href="#scenario-ci-federated-role">Scenario 1: CI workflow → federated cloud role → sensitive deployment</a></li><li><a href="#scenario-kubernetes-workload">Scenario 2: compromised Kubernetes workload → workload identity → cloud data plane</a></li><li><a href="#scenario-cross-tenant">Scenario 3: cross-tenant application flaw → data-store authorization boundary</a></li><li><a href="#control-prioritization">Control breaks and prioritization</a></li><li><a href="#negative-tests-and-operations">Negative tests and operations</a></li><li><a href="#attack-mappings">MITRE ATT&amp;CK mappings</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol>
+  </nav>
+</details>
+<!-- docs-inline-toc:end -->
 <p>An attack path is a conditional argument, not a line in a graph. Each edge needs a starting capability, reachable target, accepted credential or trust relationship, satisfied policy conditions, and a consequential action. Missing evidence leaves an unknown edge; it does not justify colouring the edge exploitable.</p>
 
 <h2 id="executive-decision">Executive decision</h2>
@@ -397,7 +405,14 @@
 
 <!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/devsecops/secureobs-multitenant-security-scanner/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">DevSecOps</span><span class="docs-prevnext__title">SecureObs architecture</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/threat-intel/cloud-breach-case-studies/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Threat Intelligence</span><span class="docs-prevnext__title">Incident case studies</span></a></nav><!-- docs-prevnext:end -->
 </article>
-            </div><!-- docs-toc:start --><details class="docs-right-toc" open><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-and-non-goals">Scope and non-goals</a></li><li><a href="#reachability-versus-exploitability">Graph reachability versus exploitability</a></li><li><a href="#evidence-model">Evidence, time and unknowns</a></li><li><a href="#scenario-ci-federated-role">Scenario 1: CI workflow → federated cloud role → sensitive deployment</a></li><li><a href="#scenario-kubernetes-workload">Scenario 2: compromised Kubernetes workload → workload identity → cloud data plane</a></li><li><a href="#scenario-cross-tenant">Scenario 3: cross-tenant application flaw → data-store authorization boundary</a></li><li><a href="#control-prioritization">Control breaks and prioritization</a></li><li><a href="#negative-tests-and-operations">Negative tests and operations</a></li><li><a href="#attack-mappings">MITRE ATT&amp;CK mappings</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol></nav></details><!-- docs-toc:end -->
+            </div><!-- docs-desktop-toc:start -->
+<aside class="docs-right-toc" aria-label="On this page">
+  <strong class="docs-right-toc__title">On this page</strong>
+  <nav aria-label="On this page">
+    <ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-and-non-goals">Scope and non-goals</a></li><li><a href="#reachability-versus-exploitability">Graph reachability versus exploitability</a></li><li><a href="#evidence-model">Evidence, time and unknowns</a></li><li><a href="#scenario-ci-federated-role">Scenario 1: CI workflow → federated cloud role → sensitive deployment</a></li><li><a href="#scenario-kubernetes-workload">Scenario 2: compromised Kubernetes workload → workload identity → cloud data plane</a></li><li><a href="#scenario-cross-tenant">Scenario 3: cross-tenant application flaw → data-store authorization boundary</a></li><li><a href="#control-prioritization">Control breaks and prioritization</a></li><li><a href="#negative-tests-and-operations">Negative tests and operations</a></li><li><a href="#attack-mappings">MITRE ATT&amp;CK mappings</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol>
+  </nav>
+</aside>
+<!-- docs-desktop-toc:end -->
           
           
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
@@ -431,12 +446,7 @@
   </details>
 </div>
 <!-- docs-footer:end -->
-<div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">&copy; 2026 Jason Achkar Diab. Security guidance is scoped by page-level evidence.</div>
-      
-    </div>
-  </div>
+
 </footer>
       
     </div>

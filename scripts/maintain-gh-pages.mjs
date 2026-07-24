@@ -195,9 +195,16 @@ function stripGenerated(html) {
     // strip must eat it too), but never with trailing whitespace of our own — whatever
     // follows in the template belongs to the original page, not to us.
     .replace(/\n?<!-- docs-evidence:start -->[\s\S]*?<!-- docs-evidence:end -->/g, "")
-    // No trailing \s* here: unlike the others, whatever follows this marker in the
-    // template (e.g. the tab-hash <script>) is original content, not ours to eat.
+    // Legacy single-TOC marker (replaced by docs-desktop-toc/docs-inline-toc below),
+    // one-time cleanup only — never re-generated.
     .replace(/<!-- docs-toc:start -->[\s\S]*?<!-- docs-toc:end -->/g, "")
+    // Inserted as the sibling `after` half of wrapDivByClass(html, "md-content", ...),
+    // directly abutting whatever originally followed .md-content's closing </div> —
+    // same no-trailing-whitespace reasoning as docs-toc above.
+    .replace(/<!-- docs-desktop-toc:start -->[\s\S]*?<!-- docs-desktop-toc:end -->/g, "")
+    // Inserted with a leading "\n" straight after the evidence/study-currency anchor,
+    // no trailing whitespace of our own (matches docs-evidence above).
+    .replace(/\n?<!-- docs-inline-toc:start -->[\s\S]*?<!-- docs-inline-toc:end -->/g, "")
     .replace(/\n?<!-- docs-prevnext:start -->[\s\S]*?<!-- docs-prevnext:end -->\s*/g, "")
     // No trailing \s* here either: what follows in the template (the footer-meta div)
     // is original content, not ours to eat.
@@ -287,21 +294,56 @@ function leftNav(currentUrl) {
 <!-- docs-left-nav:end -->`;
 }
 
-function rightToc(html, entry) {
-  if (entry.status === "archived" || entry.status === "site-utility") return "";
+// Single source of heading data for both TOC presentations: a permanently-visible
+// desktop <aside> (outside the article, third grid column) and a native <details>
+// disclosure rendered inline in the article for narrower widths, where the desktop
+// aside is display:none and there is no third grid column to put it in. Both read
+// from the same articleHeadings()/tocItems() so there is only ever one heading list.
+function articleHeadings(html) {
   const article = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "";
   const headings = [];
   for (const match of article.matchAll(/<h2\b[^>]*id=["']([^"']+)["'][^>]*>([\s\S]*?)<\/h2>/gi)) {
     const title = stripHtml(match[2]);
     if (title && !headings.some(item => item.id === match[1])) headings.push({id: match[1], title});
   }
-  if (headings.length < 3) return "";
-  const items = headings.slice(0, 16).map(item => `<li><a href="#${escapeHtml(item.id)}">${escapeHtml(item.title)}</a></li>`).join("");
-  // Rendered open by default (desktop wants it permanently expanded, and native
-  // <details> content sizing does not reliably survive a CSS-only "force open
-  // regardless of the attribute" override). Narrower breakpoints show the summary
-  // toggle and readers can collapse it themselves via the normal native behavior.
-  return `<!-- docs-toc:start --><details class="docs-right-toc" open><summary>On this page</summary><nav aria-label="On this page"><ol>${items}</ol></nav></details><!-- docs-toc:end -->`;
+  return headings.slice(0, 16);
+}
+
+function needsToc(entry, headings) {
+  return entry.status !== "archived" && entry.status !== "site-utility" && headings.length >= 3;
+}
+
+function tocItems(headings) {
+  return headings.map(item => `<li><a href="#${escapeHtml(item.id)}">${escapeHtml(item.title)}</a></li>`).join("");
+}
+
+function desktopToc(headings) {
+  const items = tocItems(headings);
+  return `<!-- docs-desktop-toc:start -->
+<aside class="docs-right-toc" aria-label="On this page">
+  <strong class="docs-right-toc__title">On this page</strong>
+  <nav aria-label="On this page">
+    <ol>${items}</ol>
+  </nav>
+</aside>
+<!-- docs-desktop-toc:end -->`;
+}
+
+function inlineToc(headings) {
+  const items = tocItems(headings);
+  // The nested <nav> gets its own aria-label distinct from the desktop TOC's
+  // ("On this page") — both are always present in the static DOM even though CSS
+  // shows only one at a given viewport, and two same-role landmarks sharing one
+  // accessible name fails unique-landmark validation. The visible text a reader
+  // sees (the <summary>) still reads "On this page" either way.
+  return `<!-- docs-inline-toc:start -->
+<details class="docs-inline-toc">
+  <summary>On this page</summary>
+  <nav aria-label="On this page (inline)">
+    <ol>${items}</ol>
+  </nav>
+</details>
+<!-- docs-inline-toc:end -->`;
 }
 
 function docsFooter() {
@@ -494,8 +536,10 @@ function normalizePage(file, html, entry) {
   const title = h1Title(html);
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)} | Jason Achkar Diab</title>`);
 
-  html = html.replace(/<div class="md-copyright">[\s\S]*?<div class="md-copyright__highlight site-provenance"[\s\S]*?<\/div>\s*<\/div>/i,
-    '<div class="md-copyright">&copy; 2026 Jason Achkar Diab. Security guidance is scoped by page-level evidence.</div>');
+  // Material's own footer-meta copyright block is removed entirely — not merely
+  // hidden — so docsFooter() below is the single footer the page ships, not a
+  // duplicate stacked on top of Material's original one.
+  html = removeDivByClass(html, "md-footer-meta");
   html = html.replace(/<footer\b([^>]*)>/i, `<footer$1>\n${docsFooter()}`);
 
   const currentUrl = pageUrl(file);
@@ -504,14 +548,22 @@ function normalizePage(file, html, entry) {
     const evidence = evidenceSummary(entry);
     html = html.replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, match => `${crumbs ? `${crumbs}\n` : ""}${match}\n${evidence}`);
 
+    // Tracks the literal string right after which the next front-matter block should
+    // be inserted, so the inline TOC lands after evidence *and* the study-currency
+    // banner (when present) without a second, more fragile regex search for it.
+    let afterEvidence = "<!-- docs-evidence:end -->";
     const currency = CERTIFICATION_CURRENCY.find(([prefix]) => file.startsWith(prefix));
     if (currency && entry.status === "study-notes") {
       const banner = `<aside class="study-currency" aria-label="Official-owner check"><strong>Official-owner check</strong><p>${currency[1]}</p></aside>`;
-      html = html.replace("<!-- docs-evidence:end -->", `<!-- docs-evidence:end -->\n${banner}`);
+      html = html.replace(afterEvidence, `${afterEvidence}\n${banner}`);
+      afterEvidence = banner;
     }
 
-    const toc = rightToc(html, entry);
-    html = wrapDivByClass(html, "md-content", leftNav(currentUrl), toc);
+    const headings = articleHeadings(html);
+    const includeToc = needsToc(entry, headings);
+    if (includeToc) html = html.replace(afterEvidence, `${afterEvidence}\n${inlineToc(headings)}`);
+
+    html = wrapDivByClass(html, "md-content", leftNav(currentUrl), includeToc ? desktopToc(headings) : "");
 
     const nav = prevNext(currentUrl);
     if (nav) html = insertBeforeArticleClose(html, nav);

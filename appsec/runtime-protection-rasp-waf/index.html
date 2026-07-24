@@ -246,6 +246,14 @@
   </details>
 </aside>
 <!-- docs-evidence:end -->
+<!-- docs-inline-toc:start -->
+<details class="docs-inline-toc">
+  <summary>On this page</summary>
+  <nav aria-label="On this page (inline)">
+    <ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-and-threat-model">Scope and threat model</a></li><li><a href="#control-comparison">Control comparison</a></li><li><a href="#waf-boundary">WAF boundary</a></li><li><a href="#in-process-boundary">In-process controls</a></li><li><a href="#ebpf-boundary">eBPF and kernel runtime boundary</a></li><li><a href="#tetragon-example">Tetragon v1.7.0 schema-validated example</a></li><li><a href="#failure-modes">Failure modes</a></li><li><a href="#telemetry-and-operations">Telemetry and operations</a></li><li><a href="#rollout-rollback-and-tests">Rollout, rollback and tests</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol>
+  </nav>
+</details>
+<!-- docs-inline-toc:end -->
 <p>No runtime control is an application security boundary by itself. Use these controls to reduce exploitability, detect abuse, and contain selected behavior while continuing to patch vulnerable components, fix authorization, isolate workloads, and test the application.</p>
 
 <h2 id="executive-decision">Executive decision</h2>
@@ -368,7 +376,14 @@ spec:
 
 <!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/appsec/api-microservices-threat-modeling/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Application Security</span><span class="docs-prevnext__title">API threat modeling</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/devsecops/secure-cicd-pipeline-design/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">DevSecOps</span><span class="docs-prevnext__title">Secure CI/CD</span></a></nav><!-- docs-prevnext:end -->
 </article>
-            </div><!-- docs-toc:start --><details class="docs-right-toc" open><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-and-threat-model">Scope and threat model</a></li><li><a href="#control-comparison">Control comparison</a></li><li><a href="#waf-boundary">WAF boundary</a></li><li><a href="#in-process-boundary">In-process controls</a></li><li><a href="#ebpf-boundary">eBPF and kernel runtime boundary</a></li><li><a href="#tetragon-example">Tetragon v1.7.0 schema-validated example</a></li><li><a href="#failure-modes">Failure modes</a></li><li><a href="#telemetry-and-operations">Telemetry and operations</a></li><li><a href="#rollout-rollback-and-tests">Rollout, rollback and tests</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol></nav></details><!-- docs-toc:end -->
+            </div><!-- docs-desktop-toc:start -->
+<aside class="docs-right-toc" aria-label="On this page">
+  <strong class="docs-right-toc__title">On this page</strong>
+  <nav aria-label="On this page">
+    <ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-and-threat-model">Scope and threat model</a></li><li><a href="#control-comparison">Control comparison</a></li><li><a href="#waf-boundary">WAF boundary</a></li><li><a href="#in-process-boundary">In-process controls</a></li><li><a href="#ebpf-boundary">eBPF and kernel runtime boundary</a></li><li><a href="#tetragon-example">Tetragon v1.7.0 schema-validated example</a></li><li><a href="#failure-modes">Failure modes</a></li><li><a href="#telemetry-and-operations">Telemetry and operations</a></li><li><a href="#rollout-rollback-and-tests">Rollout, rollback and tests</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol>
+  </nav>
+</aside>
+<!-- docs-desktop-toc:end -->
           
           
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
@@ -402,12 +417,7 @@ spec:
   </details>
 </div>
 <!-- docs-footer:end -->
-<div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">&copy; 2026 Jason Achkar Diab. Security guidance is scoped by page-level evidence.</div>
-      
-    </div>
-  </div>
+
 </footer>
       
     </div>

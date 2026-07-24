@@ -112,6 +112,27 @@ for (const file of htmlFiles) {
   if (!/name=["']author["'][^>]*content=["']Jason Achkar Diab["']/.test(html)) fail(file, "correct author metadata is missing");
   if (!/css\/portfolio\.css/.test(html)) fail(file, "portfolio stylesheet is missing");
 
+  // Footer: Material's original copyright block must be removed from the shipped DOM
+  // (not merely hidden with CSS), leaving exactly one footer and one visible copyright.
+  if (/md-footer-meta/.test(html)) fail(file, "legacy Material footer-meta block remains (duplicate footer)");
+  const footerTagCount = (html.match(/<footer\b[^>]*class=["'][^"']*\bmd-footer\b[^"']*["']/gi) || []).length;
+  if (footerTagCount !== 1) fail(file, `expected exactly one <footer class="md-footer">; found ${footerTagCount}`);
+  const copyrightCount = (html.match(/docs-footer__copyright/g) || []).length;
+  if (copyrightCount !== 1) fail(file, `expected exactly one visible copyright line; found ${copyrightCount}`);
+
+  // TOC: the legacy single-marker/details component must be gone, and the desktop
+  // (outside the article) and inline (inside the article) presentations — generated
+  // together from the same heading data — must appear together or not at all.
+  if (/<!-- docs-toc:start -->|<!-- docs-toc:end -->/.test(html)) fail(file, "legacy single-TOC docs-toc marker remains");
+  if (/class=["'][^"']*\barticle-toc\b/.test(html)) fail(file, "legacy .article-toc class remains");
+  const desktopTocCount = (html.match(/<!-- docs-desktop-toc:start -->/g) || []).length;
+  const inlineTocCount = (html.match(/<!-- docs-inline-toc:start -->/g) || []).length;
+  if (desktopTocCount > 1) fail(file, `duplicate desktop TOC; found ${desktopTocCount}`);
+  if (inlineTocCount > 1) fail(file, `duplicate inline TOC; found ${inlineTocCount}`);
+  if (desktopTocCount !== inlineTocCount) {
+    fail(file, `desktop TOC (${desktopTocCount}) and inline TOC (${inlineTocCount}) must be generated together or both omitted`);
+  }
+
   // Documentation-shell invariants: one left nav (every page), breadcrumbs/prev-next
   // only for pages the central NAV_TREE actually knows about, and no orphaned aria-current.
   const ariaCurrentMatches = [...html.matchAll(/<a\b[^>]*\baria-current=["']page["'][^>]*href=["']([^"']+)["']/gi)]

@@ -2,7 +2,8 @@
 // Everything here is progressive: the shell works without JavaScript (the left-nav
 // drawer is a plain checkbox + CSS, disclosures are native <details>). This file only
 // adds Escape handling with focus return, persisted left-nav group state across page
-// loads, and right-TOC active-section highlighting.
+// loads, and TOC active-section highlighting (synced across the desktop and inline
+// TOC presentations, since only one is visible at a given viewport width).
 (function () {
   "use strict";
 
@@ -57,43 +58,67 @@
     });
   }
 
-  // Highlight the right-TOC entry for the section currently in view.
-  var tocLinks = document.querySelectorAll(".docs-right-toc nav a[href^='#']");
-  if (tocLinks.length && "IntersectionObserver" in window) {
-    var byId = {};
-    var targets = [];
+  // Highlight the TOC entry for the section currently being read, in both the
+  // desktop aside and the inline in-article disclosure at once (only one of the two
+  // is ever visible at a given viewport width, but both exist in the DOM and share
+  // heading ids, so both get the active marker kept in sync).
+  var tocLinks = document.querySelectorAll(".docs-right-toc nav a[href^='#'], .docs-inline-toc nav a[href^='#']");
+  if (tocLinks.length) {
+    var linksById = {};
+    var headings = [];
     tocLinks.forEach(function (link) {
       var id = link.getAttribute("href").slice(1);
       var heading = id && document.getElementById(id);
       if (!heading) return;
-      byId[id] = link;
-      targets.push(heading);
+      linksById[id] = linksById[id] || [];
+      linksById[id].push(link);
+      if (headings.indexOf(heading) === -1) headings.push(heading);
+    });
+    headings.sort(function (a, b) {
+      return a.getBoundingClientRect().top - b.getBoundingClientRect().top;
     });
 
-    var active = null;
+    var activeLinks = [];
     function setActive(id) {
-      if (active) active.removeAttribute("data-docs-toc-active");
-      var link = id ? byId[id] : null;
-      active = link || null;
-      if (link) link.setAttribute("data-docs-toc-active", "true");
+      activeLinks.forEach(function (link) {
+        link.removeAttribute("data-docs-toc-active");
+      });
+      activeLinks = (id && linksById[id]) || [];
+      activeLinks.forEach(function (link) {
+        link.setAttribute("data-docs-toc-active", "true");
+      });
     }
 
-    var visible = new Set();
-    var observer = new IntersectionObserver(
-      function (entries) {
-        entries.forEach(function (entry) {
-          if (entry.isIntersecting) visible.add(entry.target.id);
-          else visible.delete(entry.target.id);
-        });
-        var current = targets.find(function (heading) {
-          return visible.has(heading.id);
-        });
-        setActive(current ? current.id : null);
-      },
-      {rootMargin: "-96px 0px -70% 0px"}
-    );
-    targets.forEach(function (heading) {
-      observer.observe(heading);
-    });
+    // The active section is the last heading whose top has scrolled up past the
+    // reading offset — not "whichever heading currently intersects a narrow zone",
+    // which clears itself out during a long section once the heading has scrolled
+    // well past the top and the next one hasn't arrived yet.
+    var READING_OFFSET = 96;
+    function updateActiveToc() {
+      var current = headings.length ? headings[0].id : null;
+      headings.forEach(function (heading) {
+        if (heading.getBoundingClientRect().top <= READING_OFFSET) current = heading.id;
+      });
+      setActive(current);
+    }
+
+    var ticking = false;
+    function requestTocUpdate() {
+      if (ticking) return;
+      ticking = true;
+      window.requestAnimationFrame(function () {
+        updateActiveToc();
+        ticking = false;
+      });
+    }
+
+    window.addEventListener("scroll", requestTocUpdate, {passive: true});
+    window.addEventListener("resize", requestTocUpdate);
+
+    if (location.hash && linksById[location.hash.slice(1)]) {
+      setActive(location.hash.slice(1));
+    } else {
+      updateActiveToc();
+    }
   }
 })();

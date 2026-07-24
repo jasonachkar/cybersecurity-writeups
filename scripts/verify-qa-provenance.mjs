@@ -22,6 +22,7 @@ const REPORTS = [
   "html-validation-report.json",
   "defect-check-report.json",
   "accessibility-report.json",
+  "ui-layout-report.json",
   "external-link-report.json",
   "gitleaks-report.json",
   "labs-report.json",

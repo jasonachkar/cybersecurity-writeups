@@ -246,6 +246,14 @@
   </details>
 </aside>
 <!-- docs-evidence:end -->
+<!-- docs-inline-toc:start -->
+<details class="docs-inline-toc">
+  <summary>On this page</summary>
+  <nav aria-label="On this page (inline)">
+    <ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-assets-and-actors">Scope, assets and actors</a></li><li><a href="#event-trust-boundaries">Event trust boundaries</a></li><li><a href="#api-gateway-integration">API Gateway to Lambda integration</a></li><li><a href="#function-identity">Function identity and permission boundaries</a></li><li><a href="#runtime-reuse">Runtime reuse and data lifetime</a></li><li><a href="#secrets">Secrets retrieval, caching and rotation</a></li><li><a href="#networking">Network attachment and egress</a></li><li><a href="#waf-decision">Threat-based WAF decision</a></li><li><a href="#failure-and-negative-test-matrix">Failure and negative-test matrix</a></li><li><a href="#observability-rollout-and-rollback">Observability, rollout and rollback</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol>
+  </nav>
+</details>
+<!-- docs-inline-toc:end -->
 <p>Serverless removes server administration from the application team; it does not remove trust boundaries. Authenticate the event source, authorize invocation, validate event content and replay behavior, give the function only the downstream permissions it needs, and assume an execution environment can be reused.</p>
 
 <h2 id="executive-decision">Executive decision</h2>
@@ -372,7 +380,14 @@ Client → API Gateway → VPC link → ALB/NLB → ECS or private HTTP service<
 
 <!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/cloud-security/cloud-detection-and-response/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Cloud Security</span><span class="docs-prevnext__title">Detection and response</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/appsec/ai-agent-security/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Application Security</span><span class="docs-prevnext__title">AI-agent authorization</span></a></nav><!-- docs-prevnext:end -->
 </article>
-            </div><!-- docs-toc:start --><details class="docs-right-toc" open><summary>On this page</summary><nav aria-label="On this page"><ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-assets-and-actors">Scope, assets and actors</a></li><li><a href="#event-trust-boundaries">Event trust boundaries</a></li><li><a href="#api-gateway-integration">API Gateway to Lambda integration</a></li><li><a href="#function-identity">Function identity and permission boundaries</a></li><li><a href="#runtime-reuse">Runtime reuse and data lifetime</a></li><li><a href="#secrets">Secrets retrieval, caching and rotation</a></li><li><a href="#networking">Network attachment and egress</a></li><li><a href="#waf-decision">Threat-based WAF decision</a></li><li><a href="#failure-and-negative-test-matrix">Failure and negative-test matrix</a></li><li><a href="#observability-rollout-and-rollback">Observability, rollout and rollback</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol></nav></details><!-- docs-toc:end -->
+            </div><!-- docs-desktop-toc:start -->
+<aside class="docs-right-toc" aria-label="On this page">
+  <strong class="docs-right-toc__title">On this page</strong>
+  <nav aria-label="On this page">
+    <ol><li><a href="#executive-decision">Executive decision</a></li><li><a href="#scope-assets-and-actors">Scope, assets and actors</a></li><li><a href="#event-trust-boundaries">Event trust boundaries</a></li><li><a href="#api-gateway-integration">API Gateway to Lambda integration</a></li><li><a href="#function-identity">Function identity and permission boundaries</a></li><li><a href="#runtime-reuse">Runtime reuse and data lifetime</a></li><li><a href="#secrets">Secrets retrieval, caching and rotation</a></li><li><a href="#networking">Network attachment and egress</a></li><li><a href="#waf-decision">Threat-based WAF decision</a></li><li><a href="#failure-and-negative-test-matrix">Failure and negative-test matrix</a></li><li><a href="#observability-rollout-and-rollback">Observability, rollout and rollback</a></li><li><a href="#residual-risk">Residual risk</a></li><li><a href="#references">References</a></li></ol>
+  </nav>
+</aside>
+<!-- docs-desktop-toc:end -->
           
           
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
@@ -406,12 +421,7 @@ Client → API Gateway → VPC link → ALB/NLB → ECS or private HTTP service<
   </details>
 </div>
 <!-- docs-footer:end -->
-<div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">&copy; 2026 Jason Achkar Diab. Security guidance is scoped by page-level evidence.</div>
-      
-    </div>
-  </div>
+
 </footer>
       
     </div>
