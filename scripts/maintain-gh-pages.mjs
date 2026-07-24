@@ -287,6 +287,45 @@ function needsToc(entry, headings) {
   return entry.status !== "archived" && entry.status !== "site-utility" && headings.length >= 3;
 }
 
+// Splits an article into its H2 sections (heading id/title + the section's own text,
+// from that heading up to the next one) so the search index can offer one focused,
+// short result per section — the same location#anchor + per-section-text shape
+// mkdocs-material's own search plugin produces, and the shape its bundled
+// search-worker already knows how to group under one page with a "N more on this
+// page" expander. Without this, a single blob-per-page index gives every match a
+// wall-of-text teaser instead of a short, relevant excerpt.
+function articleSections(html) {
+  const article = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "";
+  const matches = [...article.matchAll(/<h2\b[^>]*id=["']([^"']+)["'][^>]*>([\s\S]*?)<\/h2>/gi)];
+  const sections = [];
+  for (let i = 0; i < matches.length; i++) {
+    const id = matches[i][1];
+    const title = stripHtml(matches[i][2]);
+    if (!title) continue;
+    const start = matches[i].index + matches[i][0].length;
+    const end = i + 1 < matches.length ? matches[i + 1].index : article.length;
+    const text = stripHtml(article.slice(start, end));
+    if (text) sections.push({id, title, text: text.slice(0, 1200)});
+  }
+  return sections;
+}
+
+// The page-level search teaser needs the actual intro prose, not the breadcrumb
+// trail and inline-TOC section list that also live inside <article> before the
+// first heading (both would otherwise flatten into the teaser as one run-on line
+// of unrelated phrases). Restricting to real <p> tag content before the first H2
+// sidesteps both, since neither breadcrumbs (a <nav>/<ol>) nor the TOC
+// (<details>/<nav>/<ol>) render as <p> elements.
+function articleIntro(html) {
+  const article = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "";
+  const firstH2 = article.search(/<h2\b/i);
+  const introHtml = firstH2 === -1 ? article : article.slice(0, firstH2);
+  const paragraphs = [...introHtml.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)]
+    .map(match => stripHtml(match[1]))
+    .filter(Boolean);
+  return paragraphs.join(" ").slice(0, 400);
+}
+
 function tocItems(headings) {
   return headings.map(item => `<li><a href="#${escapeHtml(item.id)}">${escapeHtml(item.title)}</a></li>`).join("");
 }
@@ -648,13 +687,28 @@ const searchDocs = [];
 for (const [file, entry] of entries) {
   if (!entry.indexable) continue;
   const html = read(file);
-  const article = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "";
+  const location = file === "index.html" ? "" : file.replace(/index\.html$/, "");
+  const title = records.get(file).title;
+  // A short page-level document (title-boosted, brief teaser) plus one document per
+  // H2 section with its own #anchor and just that section's text. Material's search
+  // worker groups documents sharing a location by page and shows the page-level one
+  // first with any matching sections underneath, matching mkdocs-material's own
+  // stock search index shape instead of one 40,000-character blob per page, which
+  // made every result a wall of text and gave every match the same one location.
   searchDocs.push({
-    location: file === "index.html" ? "" : file.replace(/index\.html$/, ""),
-    title: records.get(file).title,
-    text: stripHtml(article).slice(0, 40000),
-    tags: entry.tags.join(" ")
+    location,
+    title,
+    text: articleIntro(html),
+    // Material's search UI renders each string in this array as its own tag chip
+    // (and, per lunr, indexes each array entry as its own token) — a joined string
+    // like "engineering investigation" was instead getting iterated character by
+    // character (strings are iterable in JS), producing one single-letter chip per
+    // character instead of one real tag chip.
+    tags: entry.tags
   });
+  for (const section of articleSections(html)) {
+    searchDocs.push({location: `${location}#${section.id}`, title: section.title, text: section.text});
+  }
 }
 const searchIndex = {
   config: {lang: ["en"], separator: "[\\s\\-]+", pipeline: ["stopWordFilter"], fields: {title: {boost: 1000}, text: {boost: 1}, tags: {boost: 1000000}}},
