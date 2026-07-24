@@ -1,0 +1,4 @@
+# False positive: deliberately synthetic, non-provider token in the secret-scanner
+# self-test. The current source constructs it from short parts; this exact fingerprint
+# covers only the already-pushed historical line in commit 2f0a1f6.
+2f0a1f670c3698cbea399539a959d3c4d809a665:devsecops/scripts/secret-scanner.go:generic-api-key:139

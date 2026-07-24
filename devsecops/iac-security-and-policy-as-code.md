@@ -7,14 +7,17 @@ tags:
   - policy-as-code
   - cloud-security
 date: "2026-07-21"
-lastReviewed: "2026-07-21"
-readingTime: 25
+lastReviewed: "2026-07-23"
+readingTime: 29
 reviewStatus: "verified"
 validatedAgainst:
-  - "Terraform S3 backend documentation checked 2026-07-21"
-  - "GitHub Actions secure-use guidance checked 2026-07-21"
+  - "Terraform CLI 1.14.6 formatting plus offline init -backend=false and validate for labs/iac-policy backend fixtures on 2026-07-23"
+  - "Open Policy Agent 1.17.0 Rego v1 tests against secure, insecure, unknown-value, and deleted-control plan JSON fixtures on 2026-07-23"
+  - "labs/iac-policy dependency-free structural tests and Terraform plan JSON format_version 1.2 fixtures"
+  - "Terraform S3 backend, state, dependency lock, plan, and JSON output documentation checked 2026-07-23"
+  - "GitHub Actions secure-use guidance checked 2026-07-23"
 sourceQuality: "primary-sources-reviewed"
-implementationStatus: "illustrative"
+implementationStatus: "partially-tested"
 reviewIntervalDays: 180
 ---
 
@@ -131,6 +134,55 @@ regions, tags/ownership, managed service configurations, and destructive lifecyc
 behavior according to risk. Avoid counting policies as equivalent controls without
 testing their actual provider semantics.
 
+## Reproducible local evidence
+
+The [Terraform plan and Rego policy lab](../labs/iac-policy/README.md) is
+**partially tested**. It separates three offline checks:
+
+1. dependency-free Node.js assertions over backend text, policy text, and serialized
+   plan fixtures;
+2. OPA `1.17.0` Rego v1 unit tests over four reviewed plan JSON inputs; and
+3. Terraform `1.14.6` formatting plus `init -backend=false` and `validate` for
+   deliberately insecure and hardened backend examples.
+
+From the repository root, the tested commands are:
+
+```powershell
+node labs/iac-policy/tests/run-tests.js
+
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/secure_fixture_test.rego labs/iac-policy/fixtures/secure_plan.json -v
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/insecure_fixture_test.rego labs/iac-policy/fixtures/insecure_plan.json -v
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/unknown_fixture_test.rego labs/iac-policy/fixtures/unknown_plan.json -v
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/deleted_fixture_test.rego labs/iac-policy/fixtures/deleted_control_plan.json -v
+
+terraform fmt -check -recursive labs/iac-policy/terraform
+terraform -chdir=labs/iac-policy/terraform/insecure init -backend=false -input=false
+terraform -chdir=labs/iac-policy/terraform/insecure validate
+terraform -chdir=labs/iac-policy/terraform/hardened init -backend=false -input=false
+terraform -chdir=labs/iac-policy/terraform/hardened validate
+```
+
+On 2026-07-23, the structural harness ended with `PASS`; all five OPA assertions
+passed across the four invocations; and both Terraform configurations initialized
+offline and validated successfully. `-backend=false` prevented backend initialization,
+and the configurations declare no provider/resource operations. No AWS API, remote
+state, plan, or apply was used.
+
+The secure plan fixture is accepted. Negative fixtures require findings for:
+
+- a public S3 ACL and missing public-access block, encryption, or access logging;
+- public security-group ingress;
+- a publicly accessible or unencrypted database;
+- an IAM statement with wildcard action and resource;
+- missing `Environment`/`Owner` tags used by this example policy;
+- security-relevant database values that are unknown at evaluation time; and
+- deletion of a modeled public-access/encryption/logging control.
+
+The unknown-value fixture fails closed by design. An organization may instead defer a
+decision, but the later enforcement point must remain blocking until the value is
+known. Plan JSON `format_version: "1.2"` is a fixture contract, not a promise that all
+future Terraform output will retain that version or shape.
+
 ## Drift response
 
 Drift is a signal, not authorization to run `terraform apply` automatically. An
@@ -188,13 +240,26 @@ need resource-specific recovery procedures.
 
 ## Limitations
 
-The backend snippet is illustrative and omits organization-specific account, KMS,
-network, replication, and disaster-recovery configuration. Validate the current
-Terraform or OpenTofu implementation and cloud provider before use.
+The backend examples are not deployable baselines. They omit organization-specific
+bucket creation, public-access block, versioning, logging, KMS key/resource policy,
+replication, network, identity, retention, and disaster-recovery controls. Terraform
+offline validation checks syntax and internal consistency only; it does not establish
+backend reachability, permissions, locking behavior, provider semantics, or cloud
+runtime state.
+
+The Rego policy intentionally supports a small set of AWS resource shapes from
+reviewed fixtures. It is not a complete control catalog, a general Terraform JSON
+validator, or evidence that an independently generated plan is authentic and bound to
+the reviewed commit. OPA evaluation does not replace SCPs/cloud policy, configuration
+monitoring, or drift investigation. OpenTofu was not executed by this lab.
 
 ## References
 
 - [Terraform S3 backend](https://developer.hashicorp.com/terraform/language/backend/s3)
+- [Terraform state and sensitive data](https://developer.hashicorp.com/terraform/language/state/sensitive-data)
 - [Terraform dependency lock file](https://developer.hashicorp.com/terraform/language/files/dependency-lock)
 - [Terraform saved plan options and security warning](https://developer.hashicorp.com/terraform/cli/commands/plan)
+- [Terraform JSON output format](https://developer.hashicorp.com/terraform/internals/json-format)
+- [OPA policy testing](https://www.openpolicyagent.org/docs/policy-testing)
+- [OpenTofu S3 backend](https://opentofu.org/docs/language/settings/backends/s3/)
 - [GitHub secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)

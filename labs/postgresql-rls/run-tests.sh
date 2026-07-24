@@ -16,10 +16,14 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
+run_sql_test() {
+  test_file=$1
+  docker compose --project-directory "$lab_root" exec -T postgres \
+    psql -v ON_ERROR_STOP=1 -U postgres -d tenant_lab -f /dev/stdin \
+    < "$lab_root/tests/$test_file"
+}
+
 docker compose --project-directory "$lab_root" up --detach --wait
-docker compose --project-directory "$lab_root" exec -T postgres \
-  psql -v ON_ERROR_STOP=1 -U postgres -d tenant_lab -f /dev/stdin \
-  < "$lab_root/tests/rls-tests.sql"
-docker compose --project-directory "$lab_root" exec -T postgres \
-  psql -v ON_ERROR_STOP=1 -U postgres -d tenant_lab -f /dev/stdin \
-  < "$lab_root/tests/catalog-tests.sql"
+run_sql_test rls-tests.sql
+run_sql_test boundary-tests.sql
+run_sql_test catalog-tests.sql

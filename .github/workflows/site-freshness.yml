@@ -1,0 +1,41 @@
+name: Site deployment freshness
+
+on:
+  schedule:
+    - cron: "17 9 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: site-deployment-freshness
+  cancel-in-progress: true
+
+jobs:
+  verify-public-site:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out current authoritative source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: main
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.12.0"
+
+      - name: Record expected main revision
+        shell: bash
+        run: |
+          printf 'SITE_SOURCE_COMMIT=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          printf 'SITE_SOURCE_BRANCH=main\n' >> "$GITHUB_ENV"
+
+      - name: Verify public deployment provenance and freshness
+        env:
+          DEPLOY_CHECK_ATTEMPTS: "3"
+          DEPLOY_CHECK_DELAY_MS: "10000"
+        run: node scripts/check-deployed-site.js

@@ -6,15 +6,16 @@ repo_name: "jasonachkar/cybersecurity-writeups"
 repo_url: "https://github.com/jasonachkar/cybersecurity-writeups"
 edit_uri: "edit/main/"
 
-docs_dir: docs
+# scripts/prepare-mkdocs.js replaces the historical Git symlinks with a clean,
+# dereferenced staging tree on both Windows and Linux. It also includes runnable
+# lab files so links from published investigations do not point to missing pages.
+docs_dir: generated-docs
 site_dir: site
-# Runnable labs intentionally live outside the published documentation tree. The
-# repository link validator still requires those relative targets to exist; MkDocs
-# reports them as informational so strict mode remains focused on build warnings.
 validation:
   links:
+    # Links to downloadable repository fixtures may not be Markdown pages. The
+    # repository link checker and generated-site validator provide the hard gates.
     not_found: info
-
 
 theme:
   name: material
@@ -72,6 +73,7 @@ markdown_extensions:
 
 nav:
   - "<i class='fa-solid fa-house'></i> Home": index.md
+  - "<i class='fa-solid fa-circle-info'></i> Build provenance": about/site-provenance.md
   - "<i class='fa-solid fa-cloud'></i> Cloud Security":
     - Multi-Account Landing Zones: cloud-security/multi-account-landing-zones.md
     - IAM at Scale: cloud-security/iam-at-scale.md
@@ -83,11 +85,13 @@ nav:
     - API & Microservices Threat Modeling: appsec/api-microservices-threat-modeling.md
     - OAuth 2.0 & OIDC Deep Dive: appsec/oauth2-oidc-deep-dive.md
     - SaaS Multi-Tenancy Isolation: appsec/saas-multitenancy-isolation.md
+    - AI Agent Security Architecture: appsec/ai-agent-security.md
     - Runtime Protection (RASP & WAF): appsec/runtime-protection-rasp-waf.md
   - "<i class='fa-solid fa-gears'></i> DevSecOps":
     - Secure CI/CD Pipeline Design: devsecops/secure-cicd-pipeline-design.md
     - IaC Security & Policy as Code: devsecops/iac-security-and-policy-as-code.md
     - Supply Chain (SBOM, Signing): devsecops/supply-chain-sbom-signing.md
+    - SecureObs Security Architecture: devsecops/secureobs-multitenant-security-scanner.md
     - Secrets Management: devsecops/secrets-management.md
   - "<i class='fa-solid fa-bullseye'></i> Threat Intelligence":
     - Attack Path Analysis: threat-intel/attack-path-analysis.md
@@ -160,8 +164,8 @@ nav:
       - Overview: docs/certification-notes/sc-500/README.md
       - Domain 1 - Identity & Access: docs/certification-notes/sc-500/domain-1-identity.md
       - Domain 2 - Storage, DB & Network: docs/certification-notes/sc-500/domain-2-storage-networking.md
-      - Domain 3 - Compute & Posture: docs/certification-notes/sc-500/domain-3-compute-posture.md
-      - Domain 4 - AI Workload Security: docs/certification-notes/sc-500/domain-4-ai-security.md
+      - Domain 3 - Secure Compute: docs/certification-notes/sc-500/domain-3-secure-compute.md
+      - Domain 4 - Manage & Monitor Security Posture: docs/certification-notes/sc-500/domain-4-manage-monitor-posture.md
   - "<i class='fa-solid fa-wrench'></i> Security Automation Scripts":
     - Cloud Security: docs/scripts/cloud-security.md
     - Application Security: docs/scripts/app-security.md

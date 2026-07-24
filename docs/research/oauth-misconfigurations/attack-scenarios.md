@@ -308,25 +308,25 @@ A secure OAuth/OIDC implementation should include:
 ---
 
 # Sources
-- Egor Homakov — *The Most Common OAuth2 Vulnerability* (2012)  
+- Egor Homakov — *The Most Common OAuth2 Vulnerability* (2012)
   http://homakov.blogspot.com/2012/07/saferweb-most-common-oauth2.html
 - Salt Security — *Booking.com OAuth Flaw* (2023)
-- Vishal Sharma — *OAuth Vulnerabilities* (2025, Medium)  
+- Vishal Sharma — *OAuth Vulnerabilities* (2025, Medium)
   https://medium.com/@vishalsharma445500/hacking-apis-series-12-36-oauth-vulnerabilities-common-exploits-and-how-to-prevent-them-84061265f0ba
-- Outpost24 — *7 common OAuth vulnerabilities (plus mitigations)*  
+- Outpost24 — *7 common OAuth vulnerabilities (plus mitigations)*
   https://outpost24.com/blog/common-oauth-vulnerabilities-mitigations/
-- CSO Online — *Booking.com account takeover flaw shows pitfalls in OAuth implementations*  
+- CSO Online — *Booking.com account takeover flaw shows pitfalls in OAuth implementations*
   https://www.csoonline.com/article/574669/booking-com-account-takeover-flaw-shows-possible-pitfalls-in-oauth-implementations.html
-- Fitbit Community — *Authentication iOS*  
+- Fitbit Community — *Authentication iOS*
   https://community.fitbit.com/t5/Web-API-Development/Authentication-ios/td-p/2612265?nobounce
-- Coupa — *How to Identify OAuth2 Vulnerabilities and Mitigate Risks*  
+- Coupa — *How to Identify OAuth2 Vulnerabilities and Mitigate Risks*
   https://careers.coupa.com/how-to-identify-oauth2-vulnerabilities-and-mitigate-risks
-- InfoSec Write-ups — *OAuth Misconfiguration Leads To Pre-Account Takeover*  
+- InfoSec Write-ups — *OAuth Misconfiguration Leads To Pre-Account Takeover*
   https://infosecwriteups.com/oauth-misconfiguration-leads-to-pre-account-takeover-8f94c1ef50be?gi=62e03c7f013e
-- GitHub — `auth0-misconfigurations.md`  
+- GitHub — `auth0-misconfigurations.md`
   https://github.com/h0tak88r/Sec-88/blob/720ae22260f3cb71b5d2e5955456b3ab282040e3/web-appsec/auth0-misconfigurations.md#L9-L16
-- Medium — *OAuth Gone Wrong: When “Sign in with Google” Opens a Pandora’s Box*  
+- Medium — *OAuth Gone Wrong: When “Sign in with Google” Opens a Pandora’s Box*
   https://medium.com/@instatunnel/oauth-gone-wrong-when-sign-in-with-google-opens-a-pandoras-box-e7cfa048f908
-- Wu et al. — *OAuth 2.0 Case Study on Dropbox* (2013 PDF)  
+- Wu et al. — *OAuth 2.0 Case Study on Dropbox* (2013 PDF)
   https://www.cpp.edu/polysec/project/dropbox/dropbox-paper.pdf
 

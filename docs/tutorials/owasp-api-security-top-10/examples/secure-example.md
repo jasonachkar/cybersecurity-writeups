@@ -1,85 +1,53 @@
-# Secure API Example (Python / Flask)
+---
+title: "API authorization example: bounded design checklist"
+type: tutorial
+status: superseded
+lastReviewed: 2026-07-23
+implementationStatus: illustrative
+---
 
-This example refactors the insecure Flask API to address the OWASP API Security Top 10 vulnerabilities.
+# API authorization example: bounded design checklist
 
-```python
-from flask import Flask, request, jsonify
-from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
-import sqlite3
-import os
+This page previously presented a short Flask snippet as a complete secure API. It
+has been retired because disabling debug mode, using a parameterized query, and
+checking one identifier do not establish a complete API security boundary.
 
-app = Flask(__name__)
+The former snippet also used a fallback JWT secret, omitted issuer and audience
+validation, did not show database-connection cleanup, and coupled object
+authorization directly to a route parameter. Those omissions make it unsuitable
+as runnable hardened guidance.
 
-# Security Misconfiguration Mitigation: Ensure strong secret key and disable debug mode
-app.config['JWT_SECRET_KEY'] = os.environ.get('JWT_SECRET_KEY', 'default_fallback_change_in_prod')
-jwt = JWTManager(app)
+## Control checklist
 
-def get_db():
-    return sqlite3.connect('ecommerce.db')
+A maintained implementation should test all of these controls:
 
-@app.route('/api/v1/users/<int:user_id>/payment_methods', methods=['GET'])
-@jwt_required()
-def get_payment_methods(user_id):
-    """
-    MITIGATION 1: Broken Object Level Authorization (BOLA)
-    We extract the identity of the currently logged-in user from the verified JWT.
-    If the requested user_id doesn't match the token's identity, we reject the request.
-    """
-    current_user_id = get_jwt_identity()
-    
-    if current_user_id != user_id:
-        return jsonify({"error": "Unauthorized"}), 403
-        
-    conn = get_db()
-    cursor = conn.cursor()
-    
-    # MITIGATION 2: SQL Injection Prevention
-    # We use parameterized queries (?) to prevent injection attacks.
-    query = "SELECT card_number, exp_date FROM payments WHERE user_id = ?"
-    cursor.execute(query, (user_id,))
-    
-    records = cursor.fetchall()
-    
-    # MITIGATION 3: Broken Object Property Level Authorization (BOPLA)
-    # We mask the sensitive credit card numbers before returning them to the client.
-    safe_records = []
-    for row in records:
-        card_num, exp_date = row
-        masked_card = f"****-****-****-{card_num[-4:]}"
-        safe_records.append({"card_number": masked_card, "exp_date": exp_date})
-        
-    return jsonify(safe_records)
+1. Fail startup when signing or verification key configuration is absent.
+2. Validate the JWT algorithm allowlist, signature, issuer, audience, expiry, and
+   not-before time before using claims.
+3. Resolve the authenticated subject to an application principal; do not assume a
+   route identifier is the subject identifier.
+4. Authorize the requested action against the specific object and tenant after the
+   object is loaded.
+5. Use parameterized SQL and a database identity with only the required
+   permissions.
+6. Return an explicit response schema that omits secret and internal fields.
+7. Apply request-size, rate, and resource-consumption limits at enforceable layers.
+8. Record authorization denials without logging tokens, payment data, or other
+   secrets.
+9. Test horizontal and vertical authorization failures, malformed and expired
+   tokens, wrong issuer and audience, and cross-tenant identifiers.
+10. Deploy through a maintained WSGI server and reverse proxy with transport,
+    timeout, and error-handling controls appropriate to the environment.
 
-@app.route('/api/v1/users/profile', methods=['POST'])
-@jwt_required()
-def update_profile():
-    """
-    MITIGATION 4: Mass Assignment Prevention
-    We explicitly pull only the safe fields from the JSON payload instead of iterating 
-    over whatever the user provided. The "is_admin" field cannot be updated here.
-    """
-    current_user_id = get_jwt_identity()
-    data = request.json
-    
-    # Explicitly allowed fields (Allow-listing)
-    first_name = data.get('first_name')
-    last_name = data.get('last_name')
-    
-    if not first_name or not last_name:
-        return jsonify({"error": "Missing required fields"}), 400
-        
-    conn = get_db()
-    cursor = conn.cursor()
-    
-    # Parameterized update
-    query = "UPDATE users SET first_name = ?, last_name = ? WHERE id = ?"
-    cursor.execute(query, (first_name, last_name, current_user_id))
-    
-    conn.commit()
-    return jsonify({"status": "success"})
+## Validation evidence
 
-if __name__ == '__main__':
-    # MITIGATION 5: Production Ready
-    # Debug is strictly disabled in production to prevent stack trace leaks.
-    app.run(host='0.0.0.0', port=5000, debug=False)
-```
+This page is a design checklist, not a runnable Flask application. No production
+deployment is claimed. Protocol validation cases are exercised separately in the
+[OAuth/OIDC security lab](../../../../labs/oauth-oidc/README.md); object and tenant
+authorization require application-specific integration tests.
+
+## Primary sources
+
+- [RFC 8725: JSON Web Token Best Current Practices](https://www.rfc-editor.org/rfc/rfc8725)
+- [OWASP API1:2023 Broken Object Level Authorization](https://owasp.org/API-Security/editions/2023/en/0xa1-broken-object-level-authorization/)
+- [Flask: deploying to production](https://flask.palletsprojects.com/en/stable/deploying/)

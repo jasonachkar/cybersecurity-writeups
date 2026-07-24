@@ -8,14 +8,14 @@ tags:
   - oidc
   - security-gates
 date: "2026-07-21"
-lastReviewed: "2026-07-21"
+lastReviewed: "2026-07-23"
 readingTime: 32
 reviewStatus: "verified"
 validatedAgainst:
-  - "GitHub Actions secure-use, event, OIDC, and script-injection documentation checked 2026-07-21"
-  - "Runnable fail-closed gate and workflow fixtures at labs/secure-cicd"
+  - "GitHub Actions secure-use, event, OIDC, artifact-attestation, cache, and script-injection documentation checked 2026-07-23"
+  - "Runnable fail-closed gate and dependency-free positive/negative workflow policy tests at labs/secure-cicd"
 sourceQuality: "primary-sources-reviewed"
-implementationStatus: "tested"
+implementationStatus: "partially-tested"
 reviewIntervalDays: 180
 ---
 
@@ -28,7 +28,9 @@ change production. Security depends on keeping those capabilities separated and
 verifying every promotion input.
 
 The companion [`labs/secure-cicd`](../labs/secure-cicd/README.md) lab provides safe
-and intentionally unsafe workflow fixtures plus a fail-closed scanner gate.
+and intentionally unsafe workflow fixtures plus a fail-closed scanner gate. Its
+offline evidence is partially tested; hosted workflow execution, environment
+configuration, and a real cloud identity remain environment-specific verification.
 
 ## Executive decision
 
@@ -84,10 +86,10 @@ flowchart LR
 | Forked PR executes with write token or secrets | ordinary PR validation; explicit read permission; no deployment environment | workflow policy checks and fork test |
 | `pull_request_target` checks out attacker head | never combine privileged base-context event with untrusted checkout/execution | unsafe fixture detection |
 | PR title/body becomes shell syntax | pass expressions through environment variables or action inputs; quote as data | injection fixture and static rule |
-| Mutable action tag is retargeted | full 40-character commit SHA plus dependency review/update process | repository action-pin check |
+| Mutable action tag is retargeted | full 40-character commit SHA plus dependency review/update process | positive/negative workflow policy tests |
 | Compromised action steals credential | minimize permissions; no persistent checkout credential; isolate release; constrain OIDC | workflow review and cloud audit |
 | Scanner crashes but job appears green | validate report schema/status; missing/malformed input blocks | gate negative tests |
-| Privileged workflow consumes poisoned artifact/cache | rebuild trusted output or verify digest/provenance; isolate cache namespaces | promotion policy and tamper tests |
+| Privileged workflow consumes poisoned artifact/cache | verify digest/provenance; isolate cache namespaces and never execute untrusted cache content | artifact and shared-cache fixtures |
 | Artifact changes between approval and deploy | promote one digest; do not rebuild | registry/deployment digest correlation |
 | OIDC trust accepts another branch/repository | exact issuer, audience, subject/environment; narrow cloud role | trust-policy unit/review tests |
 | Self-hosted runner persists attacker state | ephemeral isolated runners or no untrusted code; egress and lifecycle controls | runner inventory and image/rebuild evidence |
@@ -137,10 +139,10 @@ bind data to a commit/digest, parse it as data, and avoid executing it.
 ### Token and checkout permissions
 
 Declare top-level `permissions: { contents: read }` or `{}` and grant only job-level
-exceptions. Use `id-token: write` only in the job that exchanges the token; it does
-not itself grant cloud access, but it enables minting an OIDC token that a cloud trust
-policy may accept. Keep `persist-credentials: false` unless a reviewed step must use
-the GitHub token.
+exceptions. Use `id-token: write` only in the job that exchanges the token or creates
+an attestation; it does not itself grant cloud access, but it enables minting an OIDC
+token that a relying trust policy may accept. Keep `persist-credentials: false` unless
+a reviewed step must use the GitHub token.
 
 Pin every third-party action to a full commit SHA. Retain a release comment for
 reviewability and update through a controlled dependency process. A tag or branch is
@@ -164,12 +166,17 @@ need scripts; execute them only in an appropriate boundary. Apply equivalent loc
 restore modes to other ecosystems. Package registries and build plugins remain supply-
 chain dependencies.
 
-### Runners
+### Runners and caches
 
 Hosted runners reduce persistence but do not eliminate action/dependency compromise.
 Self-hosted runners require image provenance, ephemeral lifecycle, network egress,
 host isolation, patching, telemetry, and prevention of untrusted jobs sharing state
 with privileged jobs. Do not place a long-lived production identity on the runner.
+
+Treat caches created from untrusted code as untrusted artifacts. Namespace caches by
+trust boundary and immutable inputs; do not let a privileged workflow restore a key
+that an untrusted workflow can populate. A privileged step must not execute tools or
+scripts restored from an untrusted cache. The safest release path avoids such caches.
 
 ## Azure DevOps boundary design
 
@@ -281,18 +288,24 @@ Run:
 
 ```powershell
 npm ci --ignore-scripts
+node labs/secure-cicd/tests/policy-tests.js
 node labs/secure-cicd/tests/run-tests.js
 node scripts/check-action-pins.js
 ```
 
-The tests cover a passing report, above-policy critical/secret findings, scanner
-failure, malformed values, immutable pins, minimal permissions, and an intentionally
-unsafe privileged-event fixture. Repository CI parses YAML, checks JavaScript syntax,
-checks internal links, and validates generated/index metadata.
+The dependency-free policy suite checks full-SHA action pins, least permissions,
+untrusted PR isolation, digest and provenance verification before privileged use,
+protected-environment binding, OIDC without stored cloud credentials, and cache-
+poisoning resistance. Each boundary has an accepted hardened fixture and an
+intentionally unsafe fixture expected to fail. The gate suite covers a passing report,
+above-policy critical/secret findings, scanner failure, and malformed values.
+Repository CI also parses YAML, checks JavaScript syntax, checks internal links, and
+validates generated/index metadata.
 
-The tests do not execute hosted workflows or prove cloud trust policy correctness.
-Add organization-specific policy tests and a non-production OIDC exchange before
-enabling release.
+These tests do not execute hosted workflows, prove a platform environment has required
+reviewers, perform a cloud OIDC exchange, validate the Azure role/trust policy, or
+prove cloud authorization. Add organization-specific policy tests and a
+non-production OIDC exchange before enabling release.
 
 ## Observability and operations
 
@@ -335,6 +348,8 @@ controls are outside this repository and require environment-specific verificati
 - [GitHub events that trigger workflows](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows)
 - [GitHub script injection guidance](https://docs.github.com/en/actions/concepts/security/script-injections)
 - [GitHub OIDC security hardening for AWS](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws)
+- [GitHub OIDC security hardening for Azure](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure)
 - [GitHub artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations)
+- [GitHub dependency caching reference](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching)
 - [Azure workload identity federation for GitHub](https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect)
 - [SLSA v1.2](https://slsa.dev/spec/v1.2/)

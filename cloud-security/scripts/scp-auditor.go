@@ -166,7 +166,7 @@ func main() {
 	// Build hierarchy
 	// Root -> SecurityOU -> ProdAccount
 	rootNode := &OrgNode{Name: "Root-OU", Type: "ROOT", Policies: []Policy{fullAWSAccess, denyLeavingOrg}}
-	
+
 	securityOU := &OrgNode{
 		Name:     "Security-Core-OU",
 		Type:     "OU",

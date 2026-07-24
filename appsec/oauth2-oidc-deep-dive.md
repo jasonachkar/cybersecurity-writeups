@@ -7,14 +7,16 @@ tags:
   - identity
   - api-security
 date: "2026-07-21"
-lastReviewed: "2026-07-21"
+lastReviewed: "2026-07-23"
 readingTime: 28
 reviewStatus: "verified"
 validatedAgainst:
   - "RFC 9700, RFC 9449, RFC 9126, RFC 8705, RFC 9207, and OpenID Connect Core checked 2026-07-21"
   - "FAPI 2.0 final specifications status checked 2026-07-21"
+  - "Local Node.js 24.12.0 token/redirect model: 14 cases passed 2026-07-23"
+  - "Local Go 1.26.1 RFC 7636 PKCE verifier: 8 cases passed 2026-07-23"
 sourceQuality: "primary-sources-reviewed"
-implementationStatus: "pseudocode"
+implementationStatus: "partially-tested"
 reviewIntervalDays: 180
 ---
 
@@ -212,6 +214,22 @@ logging raw tokens/codes/verifiers. Alert on issuer/audience/algorithm mismatch,
 refresh reuse, callback errors, abnormal consent/scope, discovery/key churn, and token
 use inconsistent with sender constraint.
 
+## Executable evidence
+
+The linked [OAuth/OIDC token-boundary lab](../labs/oauth-oidc/README.md) was run
+locally on 2026-07-23:
+
+| Runtime | Executable evidence | Result |
+| --- | --- | --- |
+| Node.js 24.12.0 | RS256 signature, issuer, string/array audience, expiration, `nbf`, tenant, scope, bounded key rotation, unknown `kid`, and exact web redirect matching | 14 of 14 positive and negative cases passed |
+| Go 1.26.1 | RFC 7636 S256 vector and generated round trip, with wrong verifier, `plain` downgrade, method case, verifier length/syntax, and malformed-challenge rejection | 8 of 8 cases passed |
+
+The Node code is a dependency-free executable model with injected time and in-memory
+trusted keys. The Go code demonstrates the PKCE verifier boundary and does not log
+verifiers or challenges. These checks support the described invariants; they do not
+establish the conformance of a production OAuth/OIDC library, provider, discovery or
+JWKS transport, session store, deployment, or end-to-end authorization design.
+
 ## Validation checklist
 
 - [ ] Authorization code with S256 PKCE is used; implicit is absent.
@@ -230,6 +248,8 @@ use inconsistent with sender constraint.
 Providers add profile-specific claims, logout, token exchange, device authorization,
 dynamic registration, and key-rotation behavior. Validate the provider's conformance
 and current documentation. Pseudocode is intentionally not a drop-in token validator.
+The executable model does not perform discovery, network JWKS retrieval, provider
+integration, library interoperability, session persistence, or deployment validation.
 
 ## References
 

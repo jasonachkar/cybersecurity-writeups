@@ -47,21 +47,21 @@ func getSlice(input interface{}) []string {
 // List of AWS actions that can lead to privilege escalation.
 // Source: https://rhinosecuritylabs.com/aws/aws-privilege-escalation-methods-mitigation/
 var privEscActions = map[string]string{
-	"iam:createpolicyversion":      "CreatePolicyVersion: Allows creating a new policy version, setting it to default, leading to full IAM privilege modification.",
-	"iam:setdefaultpolicyversion":  "SetDefaultPolicyVersion: Allows setting an existing inactive policy version as default, bypassing checks.",
-	"iam:passrole":                 "PassRole: Combined with EC2/Glue/Lambda creation, allows passing high-privilege roles to compute resources.",
-	"iam:createaccesskey":          "CreateAccessKey: Allows creating new access keys for other users, bypassing their MFA configuration.",
-	"iam:createuser":               "CreateUser: Allows creating arbitrary IAM users.",
-	"iam:addusertogroup":           "AddUserToGroup: Allows adding current user or arbitrary user to administrative groups.",
-	"iam:attachuserpolicy":         "AttachUserPolicy: Directly attaches administrative policies to user accounts.",
-	"iam:attachgrouppolicy":        "AttachGroupPolicy: Attaches administrative policies to a group the user belongs to.",
-	"iam:attachrolepolicy":         "AttachRolePolicy: Attaches administrative policies to a role the user can assume.",
-	"iam:putuserpolicy":            "PutUserPolicy: Creates/updates inline administrative policies on user accounts.",
-	"iam:putgrouppolicy":           "PutGroupPolicy: Creates/updates inline administrative policies on group accounts.",
-	"iam:putrolepolicy":            "PutRolePolicy: Creates/updates inline administrative policies on roles.",
-	"iam:updateassumerolepolicy":   "UpdateAssumeRolePolicy: Alters trust relationships of roles, allowing external cross-account access.",
-	"iam:createloginprofile":       "CreateLoginProfile: Allows setting/resetting passwords for console access.",
-	"iam:updateloginprofile":       "UpdateLoginProfile: Allows modifying console passwords for existing administrative users.",
+	"iam:createpolicyversion":     "CreatePolicyVersion: Allows creating a new policy version, setting it to default, leading to full IAM privilege modification.",
+	"iam:setdefaultpolicyversion": "SetDefaultPolicyVersion: Allows setting an existing inactive policy version as default, bypassing checks.",
+	"iam:passrole":                "PassRole: Combined with EC2/Glue/Lambda creation, allows passing high-privilege roles to compute resources.",
+	"iam:createaccesskey":         "CreateAccessKey: Allows creating new access keys for other users, bypassing their MFA configuration.",
+	"iam:createuser":              "CreateUser: Allows creating arbitrary IAM users.",
+	"iam:addusertogroup":          "AddUserToGroup: Allows adding current user or arbitrary user to administrative groups.",
+	"iam:attachuserpolicy":        "AttachUserPolicy: Directly attaches administrative policies to user accounts.",
+	"iam:attachgrouppolicy":       "AttachGroupPolicy: Attaches administrative policies to a group the user belongs to.",
+	"iam:attachrolepolicy":        "AttachRolePolicy: Attaches administrative policies to a role the user can assume.",
+	"iam:putuserpolicy":           "PutUserPolicy: Creates/updates inline administrative policies on user accounts.",
+	"iam:putgrouppolicy":          "PutGroupPolicy: Creates/updates inline administrative policies on group accounts.",
+	"iam:putrolepolicy":           "PutRolePolicy: Creates/updates inline administrative policies on roles.",
+	"iam:updateassumerolepolicy":  "UpdateAssumeRolePolicy: Alters trust relationships of roles, allowing external cross-account access.",
+	"iam:createloginprofile":      "CreateLoginProfile: Allows setting/resetting passwords for console access.",
+	"iam:updateloginprofile":      "UpdateLoginProfile: Allows modifying console passwords for existing administrative users.",
 }
 
 func main() {

@@ -32,6 +32,9 @@
     "MD028": false
   },
   "ignores": [
+    ".tools",
+    "mkdocs-project/generated-docs",
+    "mkdocs-project/site",
     "node_modules"
   ]
 }

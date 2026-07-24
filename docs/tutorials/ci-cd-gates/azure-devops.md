@@ -320,7 +320,7 @@ jobs:
       vmImage: 'windows-latest'
     steps:
       - checkout: self
-      
+
       - task: AdvancedSecurity-Codeql-Init@1
         displayName: 'Initialize CodeQL'
         inputs:
@@ -328,14 +328,14 @@ jobs:
           querysuite: 'security-extended'
           # Enable automatic installation
           enableAutomaticCodeQLInstall: true
-      
+
       - task: DotNetCoreCLI@2
         displayName: 'Build Project'
         inputs:
           command: 'build'
           projects: '**/*.csproj'
           arguments: '--configuration Release'
-      
+
       - task: AdvancedSecurity-Codeql-Analyze@1
         displayName: 'Analyze with CodeQL'
 ```
@@ -370,14 +370,14 @@ jobs:
 ```yaml
 steps:
   - checkout: self
-  
+
   # For .NET projects, restore packages first
   - task: DotNetCoreCLI@2
     displayName: 'Restore packages'
     inputs:
       command: 'restore'
       projects: '**/*.csproj'
-  
+
   - task: AdvancedSecurity-Dependency-Scanning@1
     displayName: 'Dependency Scanning'
 ```
@@ -459,10 +459,10 @@ Secret scanning runs automatically in the background for:
       # Install Gitleaks
       wget -q https://github.com/gitleaks/gitleaks/releases/latest/download/gitleaks_8.18.0_linux_x64.tar.gz
       tar -xzf gitleaks_8.18.0_linux_x64.tar.gz
-      
+
       # Run scan
       ./gitleaks detect --source . --verbose --report-format json --report-path gitleaks-report.json
-      
+
       # Check results
       if [ -s gitleaks-report.json ]; then
         echo "##vso[task.logissue type=error]Secrets detected in repository"
@@ -481,7 +481,7 @@ Secret scanning runs automatically in the background for:
     script: |
       pip install trufflehog
       trufflehog git file://$(Build.SourcesDirectory) --json --no-update > trufflehog-results.json
-      
+
       if [ -s trufflehog-results.json ]; then
         echo "##vso[task.logissue type=warning]Potential secrets found"
         cat trufflehog-results.json
@@ -502,7 +502,7 @@ Secret scanning runs automatically in the background for:
     script: |
       # Install Trivy
       curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin v0.50.0
-      
+
       # Scan image
       trivy image \
         --format sarif \
@@ -510,7 +510,7 @@ Secret scanning runs automatically in the background for:
         --severity HIGH,CRITICAL \
         --ignore-unfixed \
         $(containerRegistry)/$(imageRepository):$(Build.BuildId)
-      
+
       # Fail on critical
       trivy image \
         --exit-code 1 \
@@ -665,14 +665,14 @@ jobs:
     steps:
       - checkout: self
         fetchDepth: 0
-      
+
       - task: Bash@3
         displayName: 'Comprehensive Trivy Scan'
         inputs:
           targetType: 'inline'
           script: |
             trivy fs --format json --output full-scan.json --severity HIGH,CRITICAL,MEDIUM .
-      
+
       - task: PublishBuildArtifacts@1
         inputs:
           pathToPublish: 'full-scan.json'

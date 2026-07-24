@@ -19,7 +19,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - name: Check out reviewed revision
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -32,24 +32,95 @@ jobs:
           node-version: "24.12.0"
           cache: npm
 
+      - name: Set up Go
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
+        with:
+          go-version: "1.26.1"
+          cache: false
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
+        with:
+          terraform_version: "1.14.6"
+          terraform_wrapper: false
+
+      - name: Install pinned policy engines
+        shell: bash
+        env:
+          OPA_VERSION: "1.17.0"
+          OPA_SHA256: "e83da46804832578e9d9e1733dffbe4d3b5f8cc9c26eb124da9ceea4abfe189f"
+          KYVERNO_VERSION: "1.18.2"
+          KYVERNO_SHA256: "cb2feb8356149fd2fe774c894ccf0969f4a60a83867dd913af724f74ffbbc18b"
+        run: |
+          set -euo pipefail
+          tool_dir="$RUNNER_TEMP/security-policy-tools"
+          mkdir -p "$tool_dir"
+
+          opa_asset="$tool_dir/opa_linux_amd64_static"
+          curl --fail --location --silent --show-error \
+            "https://github.com/open-policy-agent/opa/releases/download/v${OPA_VERSION}/opa_linux_amd64_static" \
+            --output "$opa_asset"
+          printf '%s  %s\n' "$OPA_SHA256" "$opa_asset" | sha256sum --check --strict
+          chmod 0755 "$opa_asset"
+          mv "$opa_asset" "$tool_dir/opa"
+
+          kyverno_asset="$tool_dir/kyverno-cli.tar.gz"
+          curl --fail --location --silent --show-error \
+            "https://github.com/kyverno/kyverno/releases/download/v${KYVERNO_VERSION}/kyverno-cli_v${KYVERNO_VERSION}_linux_x86_64.tar.gz" \
+            --output "$kyverno_asset"
+          printf '%s  %s\n' "$KYVERNO_SHA256" "$kyverno_asset" | sha256sum --check --strict
+          tar --extract --gzip --file "$kyverno_asset" --directory "$tool_dir" kyverno
+          chmod 0755 "$tool_dir/kyverno"
+
+          "$tool_dir/opa" version
+          "$tool_dir/kyverno" version
+          printf '%s\n' "$tool_dir" >> "$GITHUB_PATH"
+
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
 
-      - name: Validate content and examples
+      - name: Validate content, examples, and policies
+        env:
+          REQUIRE_CODE_TOOLCHAINS: "1"
+          REQUIRE_NATIVE_SECURITY_TOOLS: "1"
         run: npm run validate
 
       - name: Check external links on scheduled runs
         if: github.event_name == 'schedule'
         run: npm run links:external
 
-  docs-build:
+  postgresql-rls:
+    needs: validate
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
-      - name: Check out reviewed revision with repository symlinks
+      - name: Check out reviewed revision
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.12.0"
+
+      - name: Run disposable PostgreSQL RLS integration
+        run: npm run rls:test
+
+  docs-build:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact reviewed revision
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.12.0"
 
       - name: Set up Python
         uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
@@ -61,8 +132,37 @@ jobs:
       - name: Install exact documentation dependencies
         run: python -m pip install --disable-pip-version-check -r requirements-docs.txt
 
-      - name: Build documentation in strict mode
-        run: python -m mkdocs build -f mkdocs-project/mkdocs.yml --strict
+      - name: Capture exact build provenance
+        shell: bash
+        env:
+          REVIEWED_REF_NAME: ${{ github.ref_name }}
+        run: |
+          printf 'SITE_SOURCE_BRANCH=%s\n' "$REVIEWED_REF_NAME" >> "$GITHUB_ENV"
+          printf 'SITE_SOURCE_COMMIT=%s\n' "$GITHUB_SHA" >> "$GITHUB_ENV"
+          printf 'SITE_BUILD_TIMESTAMP=%s\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+
+      - name: Prepare cross-platform documentation staging
+        run: node scripts/prepare-mkdocs.js
+
+      - name: Build documentation in strict clean mode
+        shell: bash
+        run: |
+          mkdir -p mkdocs-project/site
+          printf 'This file must be removed by mkdocs --clean.\n' > mkdocs-project/site/stale-output-sentinel.html
+          python -m mkdocs build -f mkdocs-project/mkdocs.yml --strict --clean
+          : > mkdocs-project/site/.nojekyll
+
+      - name: Validate generated site
+        run: node scripts/validate-generated-site.js mkdocs-project/site
+
+      - name: Upload generated site preview
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: mkdocs-site-${{ github.sha }}
+          path: mkdocs-project/site
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 7
 
   secret-scan:
     runs-on: ubuntu-24.04
@@ -81,3 +181,78 @@ jobs:
         uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  deploy-site:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs:
+      - validate
+      - postgresql-rls
+      - docs-build
+      - secret-scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      pages: write
+    concurrency:
+      group: github-pages-publication
+      cancel-in-progress: false
+    steps:
+      - name: Check out exact authoritative source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: ${{ github.sha }}
+          path: source
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.12.0"
+
+      - name: Download the validated site artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: mkdocs-site-${{ github.sha }}
+          path: built-site
+
+      - name: Validate downloaded provenance
+        env:
+          SITE_SOURCE_BRANCH: main
+          SITE_SOURCE_COMMIT: ${{ github.sha }}
+        run: node source/scripts/validate-generated-site.js built-site
+
+      - name: Check out generated publication branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          ref: gh-pages
+          path: published-site
+          fetch-depth: 1
+          persist-credentials: true
+
+      - name: Replace gh-pages with the validated clean tree
+        env:
+          SITE_SOURCE_BRANCH: main
+          SITE_SOURCE_COMMIT: ${{ github.sha }}
+        run: bash source/scripts/publish-gh-pages.sh "$GITHUB_WORKSPACE/built-site" "$GITHUB_WORKSPACE/published-site"
+
+      - name: Request a Pages build for the updated source branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          curl --fail-with-body --silent --show-error \
+            --request POST \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header "X-GitHub-Api-Version: 2022-11-28" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages/builds" \
+            > "$RUNNER_TEMP/pages-build.json"
+
+      - name: Verify public deployment
+        env:
+          SITE_SOURCE_BRANCH: main
+          SITE_SOURCE_COMMIT: ${{ github.sha }}
+          DEPLOY_CHECK_ATTEMPTS: "18"
+          DEPLOY_CHECK_DELAY_MS: "10000"
+        run: node source/scripts/check-deployed-site.js

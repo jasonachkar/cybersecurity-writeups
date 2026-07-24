@@ -188,9 +188,9 @@ func main() {
 	// Simulated Bindings
 	bindings := []RoleBinding{
 		{
-			Name:      "admin-binding",
-			RoleRef:   "cluster-admin-role",
-			Subjects:  []Subject{{Kind: "Group", Name: "system:masters"}},
+			Name:     "admin-binding",
+			RoleRef:  "cluster-admin-role",
+			Subjects: []Subject{{Kind: "Group", Name: "system:masters"}},
 		},
 		{
 			Name:      "app-deploy-binding",
