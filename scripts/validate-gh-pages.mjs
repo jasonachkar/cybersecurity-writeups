@@ -251,7 +251,13 @@ for (const url of sitemapUrls) if (!indexableUrls.has(url)) errors.push(`sitemap
 const inflated = gunzipSync(fs.readFileSync(path.join(root, "sitemap.xml.gz"))).toString("utf8");
 if (inflated !== sitemapText) errors.push("sitemap.xml.gz: content differs from sitemap.xml");
 
-const searchUrls = new Set((search.docs || []).map(doc => publicUrl(doc.location ? `${doc.location}index.html` : "index.html")));
+// Each indexable page now contributes one page-level doc plus one doc per H2
+// section (location carries a #anchor suffix) so search results are short and
+// section-focused instead of one full-page blob. Strip the fragment before
+// checking against the known indexable URL set, which is still exactly one
+// entry per page, not one per search doc.
+const searchLocations = (search.docs || []).map(doc => (doc.location || "").split("#")[0]);
+const searchUrls = new Set(searchLocations.map(loc => publicUrl(loc ? `${loc}index.html` : "index.html")));
 for (const url of indexableUrls) if (!searchUrls.has(url)) errors.push(`search index: missing ${url}`);
 for (const url of searchUrls) if (!indexableUrls.has(url)) errors.push(`search index: includes non-indexable ${url}`);
 

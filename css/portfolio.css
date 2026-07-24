@@ -24,33 +24,89 @@
   padding: 0 .3rem;
 }
 
-/* Search trigger: icon + visible label, pill-shaped, clearly the primary header action. */
-label.md-header__button[for="__search"] {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  width: auto;
-  padding: 0 .75rem;
+/* Search trigger: Material's own vendor CSS already hides this icon at >=60em,
+   once its real inline search box (styled below) takes over as the visible search
+   entry point — that rule must be left alone, not overridden, or both end up
+   visible together. Below 60em this is the only search entry point, so it gets a
+   plain round icon-button treatment consistent with the other header buttons. */
+@media (max-width: 59.9375em) {
+  label.md-header__button[for="__search"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* ========================================================
+   SEARCH — compact input + focused, scannable results
+   (Sonar/Learn-style: short titles, short highlighted snippets, no full-page dumps)
+   ======================================================== */
+@media (min-width: 60em) {
+  .md-search__form {
+    border-radius: 999px;
+  }
+}
+
+/* Material renders each result's title as a real .md-typeset <h1>, so without
+   scoping here it inherits this site's full article heading sizing above and a
+   search dropdown ends up rendering every match like a full article page. The
+   teaser text that follows the title is a bare text node (no wrapping <p> or
+   <span> at all), so it cannot get its own line-clamp; capping the whole
+   article's height and fading the cut edge is the truncation that's actually
+   reachable here. */
+.md-search-result__article,
+.md-search-result__article.md-typeset {
+  position: relative;
+  max-height: 6.2rem;
+  padding-top: .5rem;
+  padding-bottom: .5rem;
+  overflow: hidden;
+  font-size: .8rem;
+  line-height: 1.5;
+  color: var(--docs-text-muted);
+}
+
+.md-search-result__article::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.4rem;
+  background: linear-gradient(to bottom, transparent, var(--docs-bg));
+  pointer-events: none;
+}
+
+.md-search-result__article .md-typeset h1,
+.md-search-result__article h1 {
+  font-size: .95rem !important;
+  line-height: 1.35;
+  font-weight: 700 !important;
+  margin: 0 0 .2rem !important;
+  border: 0 !important;
+}
+
+.md-search-result mark {
+  background: transparent;
+  color: var(--docs-accent);
+  font-weight: 700;
+}
+
+/* The per-page tag chip (e.g. "engineering investigation") that follows the
+   teaser text. */
+.md-search-result .md-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem;
+  margin-top: .4rem;
+}
+
+.md-search-result .md-tag {
+  padding: .1rem .5rem;
   border-radius: 999px;
   border: 1px solid var(--docs-border);
-  background: var(--docs-surface);
-}
-
-.docs-search-label {
-  font-size: .78rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-@media (max-width: 59.9375em) {
-  .docs-search-label {
-    display: none;
-  }
-  label.md-header__button[for="__search"] {
-    padding: 0;
-    border: 0;
-    background: transparent;
-  }
+  font-size: .68rem;
+  color: var(--docs-text-muted);
 }
 
 /* ========================================================
@@ -380,6 +436,22 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs a:hover {
   font-weight: 600;
 }
 
+/* Setting color on the <ol> and relying on inheritance never beats a rule that
+   targets <li> directly (inherited values always lose to any direct match,
+   regardless of the direct rule's specificity), and custom.css's dark-mode body-
+   text rule targets <li> directly with `body[...] .md-typeset li { !important }` at
+   specificity (0,2,2) — a plain `.docs-breadcrumbs li { !important }` (0,1,1) still
+   loses outright. Matching that same (0,2,2)/(0,3,2) shape here, as with the link
+   color fix above, is what actually wins: non-current ancestors (e.g. "Labs") stay
+   muted instead of matching the bold current-page crumb's brightness. */
+body[data-md-color-scheme="slate"] .docs-breadcrumbs li {
+  color: var(--docs-text-muted) !important;
+}
+
+body[data-md-color-scheme="slate"] .docs-breadcrumbs li[aria-current="page"] {
+  color: var(--docs-text) !important;
+}
+
 /* ========================================================
    RIGHT TOC — desktop only (>=80em / 1280px), permanently visible, sticky.
    Plain <aside>, not a <details> — nothing to open/close at this breakpoint, and a
@@ -566,6 +638,16 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs a:hover {
   font-size: clamp(1rem, 1.4vw, 1.1rem);
 }
 
+/* Specificity-matched (attribute + class + type = same weight as custom.css's dark-
+   mode `body[...] .md-typeset p` rule) so this <p> actually gets the muted color
+   above instead of the brighter default body-text color that rule would otherwise
+   force via its own !important — a plain !important here alone is not enough
+   because that competing selector is more specific (see the breadcrumbs comment
+   above for the general pattern this project uses for dark-mode color fights). */
+body[data-md-color-scheme="slate"] p.portfolio-hero__lede {
+  color: var(--docs-text-muted) !important;
+}
+
 .portfolio-actions {
   display: flex;
   flex-wrap: wrap;
@@ -685,6 +767,11 @@ body[data-md-color-scheme="slate"] .portfolio-button--primary:hover {
   color: var(--docs-text-muted);
   font-size: .88rem;
   line-height: 1.5;
+}
+
+/* Specificity-matched dark-mode override — see the .portfolio-hero__lede comment above. */
+body[data-md-color-scheme="slate"] p.docs-card__desc {
+  color: var(--docs-text-muted) !important;
 }
 
 .docs-card__cta {
