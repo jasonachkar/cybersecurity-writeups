@@ -5,6 +5,9 @@ import {fileURLToPath} from "node:url";
 import {
   CERTIFICATION_CURRENCY,
   EXPLICIT_ARCHIVED_PATHS,
+  NAV_INDEX,
+  NAV_ORDER,
+  NAV_TREE,
   REPLACEMENT_PREFIXES,
   REVIEW_DATE,
   REVIEW_TIMESTAMP,
@@ -15,17 +18,19 @@ import {
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const toPosix = value => value.split(path.sep).join("/");
-const read = file => fs.readFileSync(path.join(root, file), "utf8");
+// Normalized on both ends so the script produces identical LF-only output no matter
+// whether the working tree was checked out with core.autocrlf converting to CRLF.
+const read = file => fs.readFileSync(path.join(root, file), "utf8").replace(/\r\n/g, "\n");
 const write = (file, value) => {
   const target = path.join(root, file);
   fs.mkdirSync(path.dirname(target), {recursive: true});
-  fs.writeFileSync(target, value);
+  fs.writeFileSync(target, value.replace(/\r\n/g, "\n"));
 };
 
 function listHtml(directory = root) {
   const result = [];
   for (const item of fs.readdirSync(directory, {withFileTypes: true})) {
-    if ([".git", "node_modules"].includes(item.name)) continue;
+    if ([".git", "node_modules", ".tools", ".venv", ".idea", "mkdocs-project"].includes(item.name)) continue;
     const full = path.join(directory, item.name);
     if (item.isDirectory()) result.push(...listHtml(full));
     else if (item.isFile() && item.name.endsWith(".html")) result.push(toPosix(path.relative(root, full)));
@@ -91,6 +96,11 @@ function addDays(dateText, days) {
   return date.toISOString().slice(0, 10);
 }
 
+function formatLongDate(dateText) {
+  const date = new Date(`${dateText}T00:00:00Z`);
+  return date.toLocaleDateString("en-US", {month: "long", day: "numeric", year: "numeric", timeZone: "UTC"});
+}
+
 function replaceArticle(html, inner) {
   const opening = /<article\b[^>]*class=["'][^"']*md-content__inner[^"']*md-typeset[^"']*["'][^>]*>/i.exec(html);
   if (!opening) throw new Error("Article container not found");
@@ -126,63 +136,237 @@ function removeDivByClass(html, className) {
   throw new Error(`Unbalanced div while removing ${className}`);
 }
 
+function findDivBoundsByClass(html, className) {
+  const pattern = new RegExp(`<div\\b[^>]*class=["'][^"']*\\b${className}\\b[^"']*["'][^>]*>`, "i");
+  const match = pattern.exec(html);
+  if (!match) return null;
+  const token = /<\/?div\b[^>]*>/gi;
+  token.lastIndex = match.index;
+  let depth = 0;
+  let item;
+  while ((item = token.exec(html))) {
+    if (/^<\/div/i.test(item[0])) depth -= 1;
+    else depth += 1;
+    if (depth === 0) {
+      return {openStart: match.index, openEnd: match.index + match[0].length, closeStart: item.index, closeEnd: token.lastIndex};
+    }
+  }
+  throw new Error(`Unbalanced div while locating ${className}`);
+}
+
+function wrapDivByClass(html, className, before, after) {
+  const bounds = findDivBoundsByClass(html, className);
+  if (!bounds) throw new Error(`div.${className} not found`);
+  return html.slice(0, bounds.openStart) + before + html.slice(bounds.openStart, bounds.closeEnd) + after + html.slice(bounds.closeEnd);
+}
+
+function insertBeforeArticleClose(html, inner) {
+  const idx = html.lastIndexOf("</article>");
+  if (idx === -1) throw new Error("No </article> closing tag found");
+  // Trim trailing whitespace from the "before" half first, otherwise the original
+  // indentation that used to sit directly in front of </article> is orphaned onto
+  // its own now-blank line.
+  const before = html.slice(0, idx).replace(/[ \t]+$/, "");
+  return `${before}\n${inner}\n${html.slice(idx)}`;
+}
+
 function listHtmlItems(items) {
   return `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
 }
 
-function evidenceBlock(entry) {
-  const label = entry.label || STATUS_LABELS[entry.status];
-  const next = addDays(REVIEW_DATE, entry.reviewIntervalDays);
-  return `<!-- portfolio-evidence:start -->
-<aside class="content-evidence content-evidence--${entry.status}" aria-label="Content evidence status">
-  <strong>${escapeHtml(label)}</strong>
-  <dl>
-    <dt>Last reviewed</dt><dd>${REVIEW_DATE}</dd>
-    <dt>Validated evidence</dt><dd>${listHtmlItems(entry.evidence)}</dd>
-    <dt>Not established</dt><dd>${listHtmlItems(entry.limitations)}</dd>
-    <dt>Review cadence</dt><dd>Every ${entry.reviewIntervalDays} days; next review due ${next}.</dd>
-  </dl>
-</aside>
-<!-- portfolio-evidence:end -->`;
+// ---------------------------------------------------------------------------
+// Generated documentation-shell components. Each is wrapped in its own
+// idempotent HTML-comment marker pair so `stripGenerated()` (used both to
+// clean a page before re-injecting and to fingerprint article prose for the
+// content-preservation check below) can remove exactly what this script adds.
+// ---------------------------------------------------------------------------
+
+function stripGenerated(html) {
+  return html
+    // Legacy markers from the previous single-bar portfolio chrome (one-time cleanup).
+    .replace(/<!-- portfolio-nav:start -->[\s\S]*?<!-- portfolio-nav:end -->\s*/g, "")
+    .replace(/<!-- portfolio-footer:start -->[\s\S]*?<!-- portfolio-footer:end -->\s*/g, "")
+    .replace(/<!-- portfolio-evidence:start -->[\s\S]*?<!-- portfolio-evidence:end -->\s*/g, "")
+    .replace(/<!-- portfolio-toc:start -->[\s\S]*?<!-- portfolio-toc:end -->\s*/g, "")
+    // Current documentation-shell markers.
+    .replace(/<!-- docs-left-nav:start -->[\s\S]*?<!-- docs-left-nav:end -->\s*/g, "")
+    .replace(/<!-- docs-breadcrumbs:start -->[\s\S]*?<!-- docs-breadcrumbs:end -->\s*/g, "")
+    // These three are inserted with an explicit leading "\n" by the code below (so the
+    // strip must eat it too), but never with trailing whitespace of our own — whatever
+    // follows in the template belongs to the original page, not to us.
+    .replace(/\n?<!-- docs-evidence:start -->[\s\S]*?<!-- docs-evidence:end -->/g, "")
+    // Legacy single-TOC marker (replaced by docs-desktop-toc/docs-inline-toc below),
+    // one-time cleanup only — never re-generated.
+    .replace(/<!-- docs-toc:start -->[\s\S]*?<!-- docs-toc:end -->/g, "")
+    // Inserted as the sibling `after` half of wrapDivByClass(html, "md-content", ...),
+    // directly abutting whatever originally followed .md-content's closing </div> —
+    // same no-trailing-whitespace reasoning as docs-toc above.
+    .replace(/<!-- docs-desktop-toc:start -->[\s\S]*?<!-- docs-desktop-toc:end -->/g, "")
+    // Inserted with a leading "\n" straight after the evidence/study-currency anchor,
+    // no trailing whitespace of our own (matches docs-evidence above).
+    .replace(/\n?<!-- docs-inline-toc:start -->[\s\S]*?<!-- docs-inline-toc:end -->/g, "")
+    .replace(/\n?<!-- docs-prevnext:start -->[\s\S]*?<!-- docs-prevnext:end -->\s*/g, "")
+    // No trailing \s* here either: what follows in the template (the footer-meta div)
+    // is original content, not ours to eat.
+    .replace(/\n?<!-- docs-footer:start -->[\s\S]*?<!-- docs-footer:end -->/g, "")
+    .replace(/<aside\b[^>]*class=["'][^"']*content-evidence[^"']*["'][^>]*>[\s\S]*?<\/aside>/gi, "")
+    // Also inserted with a leading "\n" and no trailing whitespace of its own (see above).
+    .replace(/\n?<aside\b[^>]*class=["'][^"']*study-currency[^"']*["'][^>]*>[\s\S]*?<\/aside>/gi, "");
 }
 
-const nav = `<!-- portfolio-nav:start -->
-<nav class="portfolio-nav" aria-label="Portfolio navigation">
-  <div class="portfolio-nav__inner">
-    <a class="portfolio-nav__brand" href="/">Jason Achkar Diab · Security Engineering</a>
-    <ul class="portfolio-nav__items">
-      <li><a href="/">Home</a></li>
-      <li><details><summary>Engineering</summary><ul class="portfolio-nav__menu">
-        <li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD trust boundaries</a></li>
-        <li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li>
-        <li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li>
-        <li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li>
-        <li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li>
-        <li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li>
-        <li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li>
-        <li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li>
-        <li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li>
-        <li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li>
-      </ul></details></li>
-      <li><a href="/#validated-labs">Labs</a></li>
-      <li><a href="/docs/research-audit/content-inventory/">Evidence registry</a></li>
-      <li><a href="/about/quality-methodology/">Methodology</a></li>
-      <li><a href="/#study-notes">Study notes</a></li>
-    </ul>
+function evidenceSummary(entry) {
+  const label = entry.label || STATUS_LABELS[entry.status];
+  const next = addDays(REVIEW_DATE, entry.reviewIntervalDays);
+  const evidenceCount = entry.evidence.length;
+  const limitationCount = entry.limitations.length;
+  return `<!-- docs-evidence:start -->
+<aside class="content-evidence content-evidence--${entry.status}" aria-label="Content evidence status">
+  <div class="docs-evidence-row">
+    <strong class="docs-evidence-row__status">${escapeHtml(label)}</strong>
+    <span class="docs-evidence-row__item">Last reviewed: ${escapeHtml(formatLongDate(REVIEW_DATE))}</span>
+    <span class="docs-evidence-row__item">${evidenceCount} validated ${evidenceCount === 1 ? "check" : "checks"}</span>
+    <span class="docs-evidence-row__item">${limitationCount} ${limitationCount === 1 ? "limitation" : "limitations"}</span>
+    <span class="docs-evidence-row__item">Next review: ${escapeHtml(formatLongDate(next))}</span>
   </div>
-</nav>
-<!-- portfolio-nav:end -->`;
+  <details class="docs-evidence-detail">
+    <summary>View evidence and limitations</summary>
+    <dl>
+      <dt>Validated evidence</dt><dd>${listHtmlItems(entry.evidence)}</dd>
+      <dt>Not established</dt><dd>${listHtmlItems(entry.limitations)}</dd>
+      <dt>Review cadence</dt><dd>Every ${entry.reviewIntervalDays} days; next review due ${next}.</dd>
+    </dl>
+  </details>
+</aside>
+<!-- docs-evidence:end -->`;
+}
 
-const footerProof = `<!-- portfolio-footer:start -->
-<section class="portfolio-footer-proof" aria-label="Publication provenance">
-  <ul>
-    <li><strong>Publication target:</strong> gh-pages</li>
-    <li><strong>Publication review:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></li>
-    <li><strong>Reviewed branch:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment">codex/validated-gh-pages-deployment</a></li>
-    <li><strong>Content review date:</strong> ${REVIEW_DATE}</li>
+function breadcrumbs(currentUrl) {
+  const record = NAV_INDEX.get(currentUrl);
+  if (!record) return "";
+  const items = [`<li><a href="/">Home</a></li>`];
+  for (const ancestor of record.trail) items.push(`<li>${escapeHtml(ancestor.title)}</li>`);
+  items.push(`<li aria-current="page">${escapeHtml(record.title)}</li>`);
+  return `<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol>${items.join("")}</ol></nav><!-- docs-breadcrumbs:end -->`;
+}
+
+function prevNext(currentUrl) {
+  const index = NAV_ORDER.indexOf(currentUrl);
+  if (index === -1) return "";
+  const prevUrl = index > 0 ? NAV_ORDER[index - 1] : null;
+  const nextUrl = index < NAV_ORDER.length - 1 ? NAV_ORDER[index + 1] : null;
+  if (!prevUrl && !nextUrl) return "";
+  const link = (url, direction) => {
+    if (!url) return "";
+    const record = NAV_INDEX.get(url);
+    const group = record.trail.length ? record.trail[record.trail.length - 1].title : "Documentation";
+    const order = direction === "prev" ? "&larr; Previous" : "Next &rarr;";
+    return `<a class="docs-prevnext__link docs-prevnext__link--${direction}" href="${url}"><span class="docs-prevnext__dir">${order}</span><span class="docs-prevnext__cat">${escapeHtml(group)}</span><span class="docs-prevnext__title">${escapeHtml(record.title)}</span></a>`;
+  };
+  return `<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation">${link(prevUrl, "prev")}${link(nextUrl, "next")}</nav><!-- docs-prevnext:end -->`;
+}
+
+function navContainsCurrent(node, currentUrl) {
+  if (node.href === currentUrl) return true;
+  if (node.children) return node.children.some(child => navContainsCurrent(child, currentUrl));
+  return false;
+}
+
+function renderNavNode(node, currentUrl) {
+  if (node.href) {
+    // A leaf link. AZ-900/SC-500 also carry `children` (their exam domains) so
+    // breadcrumbs/prev-next can walk into them, but the left nav intentionally
+    // stays flat here, matching the requested navigation structure.
+    const isCurrent = node.href === currentUrl;
+    const isAncestor = !isCurrent && node.children && navContainsCurrent(node, currentUrl);
+    const cls = isAncestor ? ' class="docs-nav-ancestor"' : "";
+    return `<li><a href="${node.href}"${cls}${isCurrent ? ' aria-current="page"' : ""}>${escapeHtml(node.title)}</a></li>`;
+  }
+  const open = navContainsCurrent(node, currentUrl);
+  return `<li><details class="docs-nav-group"${open ? " open" : ""}><summary>${escapeHtml(node.title)}</summary><ul>${node.children.map(child => renderNavNode(child, currentUrl)).join("")}</ul></details></li>`;
+}
+
+function leftNav(currentUrl) {
+  const items = NAV_TREE.map(node => renderNavNode(node, currentUrl)).join("");
+  return `<!-- docs-left-nav:start -->
+<aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
+  <nav aria-label="Documentation"><ul>${items}</ul></nav>
+</aside>
+<!-- docs-left-nav:end -->`;
+}
+
+// Single source of heading data for both TOC presentations: a permanently-visible
+// desktop <aside> (outside the article, third grid column) and a native <details>
+// disclosure rendered inline in the article for narrower widths, where the desktop
+// aside is display:none and there is no third grid column to put it in. Both read
+// from the same articleHeadings()/tocItems() so there is only ever one heading list.
+function articleHeadings(html) {
+  const article = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "";
+  const headings = [];
+  for (const match of article.matchAll(/<h2\b[^>]*id=["']([^"']+)["'][^>]*>([\s\S]*?)<\/h2>/gi)) {
+    const title = stripHtml(match[2]);
+    if (title && !headings.some(item => item.id === match[1])) headings.push({id: match[1], title});
+  }
+  return headings.slice(0, 16);
+}
+
+function needsToc(entry, headings) {
+  return entry.status !== "archived" && entry.status !== "site-utility" && headings.length >= 3;
+}
+
+function tocItems(headings) {
+  return headings.map(item => `<li><a href="#${escapeHtml(item.id)}">${escapeHtml(item.title)}</a></li>`).join("");
+}
+
+function desktopToc(headings) {
+  const items = tocItems(headings);
+  return `<!-- docs-desktop-toc:start -->
+<aside class="docs-right-toc" aria-label="On this page">
+  <strong class="docs-right-toc__title">On this page</strong>
+  <nav aria-label="On this page">
+    <ol>${items}</ol>
+  </nav>
+</aside>
+<!-- docs-desktop-toc:end -->`;
+}
+
+function inlineToc(headings) {
+  const items = tocItems(headings);
+  // The nested <nav> gets its own aria-label distinct from the desktop TOC's
+  // ("On this page") — both are always present in the static DOM even though CSS
+  // shows only one at a given viewport, and two same-role landmarks sharing one
+  // accessible name fails unique-landmark validation. The visible text a reader
+  // sees (the <summary>) still reads "On this page" either way.
+  return `<!-- docs-inline-toc:start -->
+<details class="docs-inline-toc">
+  <summary>On this page</summary>
+  <nav aria-label="On this page (inline)">
+    <ol>${items}</ol>
+  </nav>
+</details>
+<!-- docs-inline-toc:end -->`;
+}
+
+function docsFooter() {
+  return `<!-- docs-footer:start -->
+<div class="docs-footer">
+  <p class="docs-footer__copyright">&copy; 2026 Jason Achkar Diab</p>
+  <ul class="docs-footer__links">
+    <li><a href="/about/quality-methodology/">Evidence methodology</a></li>
+    <li><a href="/about/site-provenance/">Site provenance</a></li>
+    <li><a href="https://github.com/jasonachkar/cybersecurity-writeups">GitHub</a></li>
   </ul>
-</section>
-<!-- portfolio-footer:end -->`;
+  <details class="docs-footer__detail">
+    <summary>Publication details</summary>
+    <ul>
+      <li><strong>Publication target:</strong> gh-pages</li>
+      <li><strong>Publication review:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></li>
+      <li><strong>Reviewed branch:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment">codex/validated-gh-pages-deployment</a></li>
+      <li><strong>Content review date:</strong> ${REVIEW_DATE}</li>
+    </ul>
+  </details>
+</div>
+<!-- docs-footer:end -->`;
+}
 
 function homeBody() {
   const cards = [
@@ -197,16 +381,18 @@ function homeBody() {
     ["SecureObs architecture", "/devsecops/secureobs-multitenant-security-scanner/", "Owner-confirmed architecture separated from reproduced patterns and future controls.", "Partially verified · sanitized scope"],
     ["Incident case studies", "/threat-intel/cloud-breach-case-studies/", "Owner disclosures, chronology, inference limits, control lessons and residual uncertainty.", "Partially verified · public evidence"]
   ];
+  const cardHtml = cards.map(([title, href, copy, status]) => `<a class="docs-card" href="${href}"><span class="docs-card__chip">${escapeHtml(status)}</span><h3 class="docs-card__title">${escapeHtml(title)}</h3><p class="docs-card__desc">${escapeHtml(copy)}</p><span class="docs-card__cta">Open investigation <span aria-hidden="true">&rarr;</span></span></a>`).join("");
   return `<section class="portfolio-hero">
   <p class="portfolio-hero__kicker">Evidence-first security engineering</p>
   <h1 id="security-engineering-decisions-you-can-audit">Security engineering decisions you can audit.</h1>
   <p class="portfolio-hero__lede">Threat models, enforcement points, negative tests and residual risk across cloud identity, application security, delivery pipelines, Kubernetes, detection and software supply chains—without turning a local test into a production claim.</p>
   <div class="portfolio-actions"><a class="portfolio-button portfolio-button--primary" href="#featured-engineering">Review engineering work</a><a class="portfolio-button" href="/docs/research-audit/content-inventory/">Inspect the evidence registry</a></div>
+  <p class="docs-provenance-line">Published from <code>gh-pages</code> · reviewed <time datetime="${REVIEW_TIMESTAMP}">${formatLongDate(REVIEW_DATE)}</time> · <a href="/about/site-provenance/">Site provenance</a></p>
 </section>
-<section class="portfolio-facts" aria-label="Review facts"><div class="portfolio-fact"><strong>gh-pages</strong><span>Publication target</span></div><div class="portfolio-fact"><strong>PR #5</strong><span>Publication review</span></div><div class="portfolio-fact"><strong>${REVIEW_DATE}</strong><span>Content review date</span></div><div class="portfolio-fact"><strong>Page-level</strong><span>Evidence and limitation disclosure</span></div></section>
-<section aria-labelledby="featured-engineering"><h2 id="featured-engineering">Featured engineering investigations</h2><p>Each page leads with what was checked, what was executed, what remains untested, and when it must be reviewed again.</p><div class="portfolio-grid">${cards.map(([title, href, copy, status]) => `<div class="portfolio-card"><span class="portfolio-card__status">${status}</span><h3>${title}</h3><p>${copy}</p><a class="portfolio-card__link" href="${href}">Open investigation →</a></div>`).join("")}</div></section>
-<section aria-labelledby="validated-labs"><h2 id="validated-labs">Runnable evidence</h2><p>Repository labs exercise bounded decisions; their status blocks distinguish local models and structural checks from native platform or cryptographic integration.</p><ul><li><a href="/labs/secure-cicd/">Secure CI/CD gate and workflow fixtures</a></li><li><a href="/labs/iam-oidc/">IAM and workload-identity decision cases</a></li><li><a href="/labs/oauth-oidc/">OAuth/OIDC token-boundary cases</a></li><li><a href="/labs/ai-agent-security/">AI external tool-broker cases</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL row-level security</a></li><li><a href="/labs/kubernetes-security/">Kubernetes policy and image-decision fixtures</a></li><li><a href="/labs/supply-chain/">Offline provenance and SBOM policy</a></li><li><a href="/labs/iac-policy/">Terraform plan and Rego fixtures</a></li><li><a href="/labs/azure-landing-zone/">Azure landing-zone Bicep boundary</a></li></ul></section>
-<section aria-labelledby="study-notes"><h2 id="study-notes">Study notes</h2><p>Certification collections are visibly separated from implementation evidence and tied to their official owner material.</p><ul><li><a href="/docs/certification-notes/az-900/">Microsoft AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">Microsoft SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">CompTIA Security+ SY0-701</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity Certificate</a></li></ul></section>`;
+<section aria-labelledby="featured-engineering"><h2 id="featured-engineering">Featured engineering</h2><p>Each page leads with what was checked, what was executed, what remains untested, and when it must be reviewed again.</p><div class="docs-card-grid">${cardHtml}</div></section>
+<section aria-labelledby="validated-labs"><h2 id="validated-labs">Runnable labs</h2><p>Repository labs exercise bounded decisions; their status blocks distinguish local models and structural checks from native platform or cryptographic integration.</p><ul class="docs-link-list"><li><a href="/labs/secure-cicd/">Secure CI/CD gate and workflow fixtures</a></li><li><a href="/labs/iam-oidc/">IAM and workload-identity decision cases</a></li><li><a href="/labs/oauth-oidc/">OAuth/OIDC token-boundary cases</a></li><li><a href="/labs/ai-agent-security/">AI external tool-broker cases</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL row-level security</a></li><li><a href="/labs/kubernetes-security/">Kubernetes policy and image-decision fixtures</a></li><li><a href="/labs/supply-chain/">Offline provenance and SBOM policy</a></li><li><a href="/labs/iac-policy/">Terraform plan and Rego fixtures</a></li><li><a href="/labs/azure-landing-zone/">Azure landing-zone Bicep boundary</a></li></ul></section>
+<section aria-labelledby="evidence-methodology"><h2 id="evidence-methodology">Evidence and methodology</h2><p>How claims are classified, checked, and rechecked across the site.</p><ul class="docs-link-list"><li><a href="/docs/research-audit/content-inventory/">Evidence registry</a></li><li><a href="/about/quality-methodology/">Quality methodology</a></li><li><a href="/about/site-provenance/">Site provenance</a></li></ul></section>
+<section aria-labelledby="study-notes"><h2 id="study-notes">Study paths</h2><p>Certification collections are visibly separated from implementation evidence and tied to their official owner material.</p><ul class="docs-link-list"><li><a href="/docs/certification-notes/az-900/">Microsoft AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">Microsoft SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">CompTIA Security+ SY0-701</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity Certificate</a></li></ul></section>`;
 }
 
 function provenanceBody() {
@@ -263,25 +449,8 @@ function registryBody(records) {
   return `<h1 id="evidence-registry">Evidence Registry</h1><p>This registry is generated from explicit public-URL metadata. It does not infer topics from keywords or interpret arbitrary numbers as versions. Read each linked page for the full trust assumptions, enforcement points, failure behavior and residual risk.</p><div class="md-typeset__scrollwrap"><div class="md-typeset__table"><table class="evidence-registry"><thead><tr><th scope="col">Investigation</th><th scope="col">Public URL</th><th scope="col">Evidence status</th><th scope="col">Last reviewed</th><th scope="col">Primary sources</th><th scope="col">Runnable evidence</th><th scope="col">What the evidence proves</th><th scope="col">What it does not prove</th><th scope="col">Next review date</th></tr></thead><tbody>${rows.map(([file, entry]) => { const record = records.get(file); const url = pageUrl(file); return `<tr><th scope="row"><a href="${url}">${escapeHtml(record.title)}</a></th><td><code>${url}</code></td><td>${escapeHtml(entry.label || STATUS_LABELS[entry.status])}</td><td>${REVIEW_DATE}</td><td>${entry.sources.length ? listHtmlItems(entry.sources) : "Page reference section"}</td><td>${escapeHtml(entry.runnableEvidence)}</td><td>${escapeHtml(entry.proves)}</td><td>${escapeHtml(entry.notProves)}</td><td>${addDays(REVIEW_DATE, entry.reviewIntervalDays)}</td></tr>`; }).join("")}</tbody></table></div></div><h2 id="interpretation">Interpretation</h2><p>A passing finite test establishes only the declared cases. Schema validation is not a native admission test, an offline verifier adapter is not cryptographic verification, and an architecture investigation is not a production deployment.</p>`;
 }
 
-function articleToc(html, entry) {
-  if (entry.status === "archived" || entry.status === "site-utility") return "";
-  const article = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "";
-  const headings = [];
-  for (const match of article.matchAll(/<h2\b[^>]*id=["']([^"']+)["'][^>]*>([\s\S]*?)<\/h2>/gi)) {
-    const title = stripHtml(match[2]);
-    if (title && !headings.some(item => item.id === match[1])) headings.push({id: match[1], title});
-  }
-  if (headings.length < 3) return "";
-  return `<!-- portfolio-toc:start --><nav class="article-toc" aria-label="On this page"><strong>On this page</strong><ol>${headings.slice(0, 16).map(item => `<li><a href="#${escapeHtml(item.id)}">${escapeHtml(item.title)}</a></li>`).join("")}</ol></nav><!-- portfolio-toc:end -->`;
-}
-
 function normalizePage(file, html, entry) {
-  html = html.replace(/<!-- portfolio-nav:start -->[\s\S]*?<!-- portfolio-nav:end -->\s*/g, "")
-    .replace(/<!-- portfolio-footer:start -->[\s\S]*?<!-- portfolio-footer:end -->\s*/g, "")
-    .replace(/<!-- portfolio-evidence:start -->[\s\S]*?<!-- portfolio-evidence:end -->\s*/g, "")
-    .replace(/<!-- portfolio-toc:start -->[\s\S]*?<!-- portfolio-toc:end -->\s*/g, "")
-    .replace(/<aside\b[^>]*class=["'][^"']*content-evidence[^"']*["'][^>]*>[\s\S]*?<\/aside>\s*/gi, "")
-    .replace(/<aside\b[^>]*class=["'][^"']*study-currency[^"']*["'][^>]*>[\s\S]*?<\/aside>\s*/gi, "");
+  html = stripGenerated(html);
 
   // Material's source widget fetches GitHub API repo facts on every page load; the
   // repository has no releases, so /releases/latest returns 404 and logs a console
@@ -301,55 +470,105 @@ function normalizePage(file, html, entry) {
     .replace(/<link\b[^>]*(?:fonts\.googleapis\.com|fonts\.gstatic\.com|font-awesome|cdnjs\.cloudflare\.com)[^>]*>\s*/gi, "")
     .replace(/<style>\s*:root\{--md-text-font:[\s\S]*?<\/style>\s*/gi, "")
     .replace(/<i\b[^>]*class=["'][^"']*\bfa(?:s|r|b|-)[^"']*["'][^>]*><\/i>\s*/gi, "")
-    .replace(/<link\b[^>]*rel=["'](?:prev|next)["'][^>]*>\s*/gi, "")
-    .replace(/<link\b[^>]*rel=["']canonical["'][^>]*>\s*/gi, "")
-    .replace(/<meta\b[^>]*name=["']robots["'][^>]*>\s*/gi, "");
+    .replace(/<link\b[^>]*rel=["'](?:prev|next)["'][^>]*>\s*/gi, "");
 
-  html = html.replace(/<link\b[^>]*href=["'][^"']*css\/portfolio\.css["'][^>]*>\s*/gi, "");
+  // Replaced in place when present (rather than stripped-then-reinserted) so a stray
+  // line ending from the surrounding template can't get displaced by one line and
+  // flip-flop between runs.
   const customCss = html.match(/<link\b[^>]*href=["']([^"']*css\/custom\.css)["'][^>]*>/i);
   if (!customCss) throw new Error(`${file}: custom stylesheet link not found`);
   const portfolioHref = customCss[1].replace(/custom\.css$/, "portfolio.css");
-  html = html.replace(customCss[0], `${customCss[0]}\n<link rel="stylesheet" href="${portfolioHref}">`);
+  const portfolioTag = `<link rel="stylesheet" href="${portfolioHref}">`;
+  const portfolioLinkRe = /<link\b[^>]*href=["'][^"']*css\/portfolio\.css["'][^>]*>/i;
+  html = portfolioLinkRe.test(html)
+    ? html.replace(portfolioLinkRe, portfolioTag)
+    : html.replace(customCss[0], `${customCss[0]}\n${portfolioTag}`);
 
   const bundleScript = html.match(/<script\b[^>]*src=["']([^"']*assets\/javascripts\/bundle[^"']+)["'][^>]*>\s*<\/script>/i);
   if (bundleScript) {
-    const a11yHref = bundleScript[1].replace(/assets\/javascripts\/bundle[^"']+$/, "assets/javascripts/portfolio-a11y.js");
-    if (!html.includes("portfolio-a11y.js")) {
-      html = html.replace(bundleScript[0], `${bundleScript[0]}\n<script src="${a11yHref}" defer></script>`);
-    }
+    const jsDir = bundleScript[1].replace(/assets\/javascripts\/bundle[^"']+$/, "assets/javascripts/");
+    let injected = bundleScript[0];
+    if (!html.includes("portfolio-a11y.js")) injected += `\n<script src="${jsDir}portfolio-a11y.js" defer></script>`;
+    if (!html.includes("docs-ui.js")) injected += `\n<script src="${jsDir}docs-ui.js" defer></script>`;
+    if (injected !== bundleScript[0]) html = html.replace(bundleScript[0], injected);
   }
 
   html = removeDivByClass(html, "md-sidebar--primary");
   html = removeDivByClass(html, "md-sidebar--secondary");
 
+  // One compact header: Material's shadow modifier is replaced by a single bottom
+  // border in CSS, the visible product title is shortened, and the GitHub link gets
+  // an explicit accessible name now that its long repository text is visually hidden.
+  html = html.replace('class="md-header md-header--shadow"', 'class="md-header"');
+  // Scoped to the header element only: one archived page's title happens to contain
+  // this exact phrase, and a document-wide replace would rewrite it (and its derived
+  // id slug) a little further on every run — the header brand text is all this should touch.
+  html = html.replace(/<header\b[^>]*>[\s\S]*?<\/header>/i,
+    headerMatch => headerMatch.replaceAll("Cloud Security Engineering", "Security Engineering Docs"));
+  html = html.replace(
+    /(<a href="[^"]*" title="Go to repository" class="md-source")(?![^>]*aria-label)/,
+    '$1 aria-label="GitHub repository: jasonachkar/cybersecurity-writeups"'
+  );
+  // Make search visually prominent (icon + label) with an explicit accessible name;
+  // the visible text is aria-hidden since the label itself already carries the name.
+  html = html.replace(
+    /(<label class="md-header__button md-icon" for="__search">)([\s\S]*?)(<\/label>)/,
+    (_, open, inner, close) => `${open.replace('for="__search">', 'for="__search" aria-label="Search documentation">')}${inner}<span class="docs-search-label" aria-hidden="true">Search documentation</span>${close}`
+  );
+
   html = html.replace(/<meta\b[^>]*name=["']author["'][^>]*>/i, '<meta name="author" content="Jason Achkar Diab">');
   if (!/<meta\b[^>]*name=["']author["']/i.test(html)) html = html.replace(/<\/head>/i, '  <meta name="author" content="Jason Achkar Diab">\n</head>');
 
+  // Replaced in place (rather than stripped-then-reinserted) so repeated runs never
+  // leave orphaned leading whitespace from the previous tag behind.
   const canonicalPath = entry.replacement || pageUrl(file);
   const canonical = `${SITE_ORIGIN}${canonicalPath === "/" ? "/" : canonicalPath}`;
   const robots = entry.indexable ? "index, follow" : (entry.replacement ? "noindex, follow" : "noindex, nofollow");
-  html = html.replace(/<\/head>/i, `  <link rel="canonical" href="${canonical}">\n  <meta name="robots" content="${robots}">\n</head>`);
+  const canonicalTag = `<link rel="canonical" href="${canonical}">`;
+  html = /<link\b[^>]*rel=["']canonical["'][^>]*>/i.test(html)
+    ? html.replace(/<link\b[^>]*rel=["']canonical["'][^>]*>/i, canonicalTag)
+    : html.replace(/<\/head>/i, `  ${canonicalTag}\n</head>`);
+  const robotsTag = `<meta name="robots" content="${robots}">`;
+  html = /<meta\b[^>]*name=["']robots["'][^>]*>/i.test(html)
+    ? html.replace(/<meta\b[^>]*name=["']robots["'][^>]*>/i, robotsTag)
+    : html.replace(/<\/head>/i, `  ${robotsTag}\n</head>`);
 
   const title = h1Title(html);
   html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(title)} | Jason Achkar Diab</title>`);
-  html = html.replace(/<\/header>/i, `</header>\n${nav}`);
 
-  html = html.replace(/<div class="md-copyright">[\s\S]*?<div class="md-copyright__highlight site-provenance"[\s\S]*?<\/div>\s*<\/div>/i,
-    '<div class="md-copyright">&copy; 2026 Jason Achkar Diab. Security guidance is scoped by page-level evidence.</div>');
-  html = html.replace(/<footer\b([^>]*)>/i, `<footer$1>\n${footerProof}`);
+  // Material's own footer-meta copyright block is removed entirely — not merely
+  // hidden — so docsFooter() below is the single footer the page ships, not a
+  // duplicate stacked on top of Material's original one.
+  html = removeDivByClass(html, "md-footer-meta");
+  html = html.replace(/<footer\b([^>]*)>/i, `<footer$1>\n${docsFooter()}`);
 
+  const currentUrl = pageUrl(file);
   if (entry.status !== "site-utility") {
-    const evidence = evidenceBlock(entry);
-    html = html.replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, match => `${match}\n${evidence}`);
+    const crumbs = breadcrumbs(currentUrl);
+    const evidence = evidenceSummary(entry);
+    html = html.replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, match => `${crumbs ? `${crumbs}\n` : ""}${match}\n${evidence}`);
 
+    // Tracks the literal string right after which the next front-matter block should
+    // be inserted, so the inline TOC lands after evidence *and* the study-currency
+    // banner (when present) without a second, more fragile regex search for it.
+    let afterEvidence = "<!-- docs-evidence:end -->";
     const currency = CERTIFICATION_CURRENCY.find(([prefix]) => file.startsWith(prefix));
     if (currency && entry.status === "study-notes") {
-      const banner = `<aside class="study-currency" aria-label="Official guide currency"><strong>Official-owner check</strong><p>${currency[1]}</p></aside>`;
-      html = html.replace("<!-- portfolio-evidence:end -->", `<!-- portfolio-evidence:end -->\n${banner}`);
+      const banner = `<aside class="study-currency" aria-label="Official-owner check"><strong>Official-owner check</strong><p>${currency[1]}</p></aside>`;
+      html = html.replace(afterEvidence, `${afterEvidence}\n${banner}`);
+      afterEvidence = banner;
     }
 
-    const toc = articleToc(html, entry);
-    if (toc) html = html.replace("<!-- portfolio-evidence:end -->", `<!-- portfolio-evidence:end -->\n${toc}`);
+    const headings = articleHeadings(html);
+    const includeToc = needsToc(entry, headings);
+    if (includeToc) html = html.replace(afterEvidence, `${afterEvidence}\n${inlineToc(headings)}`);
+
+    html = wrapDivByClass(html, "md-content", leftNav(currentUrl), includeToc ? desktopToc(headings) : "");
+
+    const nav = prevNext(currentUrl);
+    if (nav) html = insertBeforeArticleClose(html, nav);
+  } else {
+    html = wrapDivByClass(html, "md-content", leftNav(currentUrl), "");
   }
 
   const h1Id = html.match(/<h1\b[^>]*id=["']([^"']+)["']/i)?.[1];
@@ -385,18 +604,46 @@ const records = new Map(files.map(file => {
   return [file, {file, title, entry}];
 }));
 
+// Pages whose <article> body this script fully regenerates on every run (via
+// replaceArticle) are exempt from the content-preservation fingerprint below —
+// there is no hand-authored prose there to protect.
+const GENERATOR_OWNED_PATHS = new Set([
+  "index.html",
+  "404.html",
+  "about/site-provenance/index.html",
+  qualityPath,
+  "docs/research-audit/content-inventory/index.html",
+  "docs/certification-notes/security-plus/index.html"
+]);
+
+function articleProse(html) {
+  return stripHtml(stripGenerated(html).match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "");
+}
+
 for (const record of records.values()) {
-  let html = read(record.file);
+  const originalHtml = read(record.file);
+  const isArchived = record.entry.status === "archived" || (!record.entry.indexable && record.entry.status !== "site-utility");
+  const isGeneratorOwned = GENERATOR_OWNED_PATHS.has(record.file) || isArchived;
+  const beforeProse = isGeneratorOwned ? null : articleProse(originalHtml);
+
+  let html = originalHtml;
   if (record.file === "index.html") html = replaceArticle(html, homeBody());
   else if (record.file === "404.html") html = replaceArticle(html, notFoundBody());
   else if (record.file === "about/site-provenance/index.html") html = replaceArticle(html, provenanceBody());
   else if (record.file === qualityPath) html = replaceArticle(html, qualityBody());
   else if (record.file === "docs/research-audit/content-inventory/index.html") html = replaceArticle(html, registryBody(records));
   else if (record.file === "docs/certification-notes/security-plus/index.html") html = replaceArticle(html, securityPlusBody());
-  else if (record.entry.status === "archived" || (!record.entry.indexable && record.entry.status !== "site-utility")) {
-    html = replaceArticle(html, archiveBody(record.entry));
-  }
+  else if (isArchived) html = replaceArticle(html, archiveBody(record.entry));
+
   html = normalizePage(record.file, html, record.entry);
+
+  if (!isGeneratorOwned) {
+    const afterProse = articleProse(html);
+    if (afterProse !== beforeProse) {
+      throw new Error(`${record.file}: article prose changed during maintenance (content-preservation check failed)`);
+    }
+  }
+
   write(record.file, html);
   record.title = h1Title(html);
 }

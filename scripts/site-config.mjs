@@ -418,6 +418,142 @@ addStudy(["docs/certification-notes/security-plus/index.html"], {
   source: "https://www.comptia.org/en-us/certifications/security/"
 });
 
+// Single source of truth for the persistent left navigation, breadcrumbs, and
+// prev/next order. Every href below must exist as a key in `entries` above.
+export const NAV_TREE = [
+  {title: "Home", href: "/"},
+  {
+    title: "Engineering",
+    children: [
+      {
+        title: "Cloud Security",
+        children: [
+          {title: "IAM and workload federation", href: "/cloud-security/iam-at-scale/"},
+          {title: "Network segmentation", href: "/cloud-security/cloud-network-segmentation/"},
+          {title: "Landing zones", href: "/cloud-security/multi-account-landing-zones/"},
+          {title: "Kubernetes isolation", href: "/cloud-security/kubernetes-multi-tenancy/"},
+          {title: "Detection and response", href: "/cloud-security/cloud-detection-and-response/"},
+          {title: "Serverless security", href: "/cloud-security/serverless-security/"}
+        ]
+      },
+      {
+        title: "Application Security",
+        children: [
+          {title: "AI-agent authorization", href: "/appsec/ai-agent-security/"},
+          {title: "Multi-tenant SaaS isolation", href: "/appsec/saas-multitenancy-isolation/"},
+          {title: "OAuth 2.0 and OIDC", href: "/appsec/oauth2-oidc-deep-dive/"},
+          {title: "API threat modeling", href: "/appsec/api-microservices-threat-modeling/"},
+          {title: "Runtime protection", href: "/appsec/runtime-protection-rasp-waf/"}
+        ]
+      },
+      {
+        title: "DevSecOps",
+        children: [
+          {title: "Secure CI/CD", href: "/devsecops/secure-cicd-pipeline-design/"},
+          {title: "IaC policy engineering", href: "/devsecops/iac-security-and-policy-as-code/"},
+          {title: "Supply-chain evidence", href: "/devsecops/supply-chain-sbom-signing/"},
+          {title: "Secrets management", href: "/devsecops/secrets-management/"},
+          {title: "SecureObs architecture", href: "/devsecops/secureobs-multitenant-security-scanner/"}
+        ]
+      },
+      {
+        title: "Threat Intelligence",
+        children: [
+          {title: "Attack-path analysis", href: "/threat-intel/attack-path-analysis/"},
+          {title: "Incident case studies", href: "/threat-intel/cloud-breach-case-studies/"}
+        ]
+      }
+    ]
+  },
+  {
+    title: "Labs",
+    children: [
+      {title: "Secure CI/CD", href: "/labs/secure-cicd/"},
+      {title: "IAM and OIDC", href: "/labs/iam-oidc/"},
+      {title: "OAuth and OIDC", href: "/labs/oauth-oidc/"},
+      {title: "AI-agent security", href: "/labs/ai-agent-security/"},
+      {title: "PostgreSQL RLS", href: "/labs/postgresql-rls/"},
+      {title: "Kubernetes security", href: "/labs/kubernetes-security/"},
+      {title: "Supply-chain policy", href: "/labs/supply-chain/"},
+      {title: "IaC policy", href: "/labs/iac-policy/"},
+      {title: "Azure landing zone", href: "/labs/azure-landing-zone/"}
+    ]
+  },
+  {
+    title: "Evidence",
+    children: [
+      {title: "Evidence registry", href: "/docs/research-audit/content-inventory/"},
+      {title: "Quality methodology", href: "/about/quality-methodology/"},
+      {title: "Site provenance", href: "/about/site-provenance/"}
+    ]
+  },
+  {
+    title: "Study notes",
+    children: [
+      {
+        title: "AZ-900",
+        href: "/docs/certification-notes/az-900/",
+        children: [
+          {title: "Domain 1: Cloud concepts", href: "/docs/certification-notes/az-900/domain-1-concepts/"},
+          {title: "Domain 2: Architecture & services", href: "/docs/certification-notes/az-900/domain-2-architecture-services/"},
+          {title: "Domain 3: Management & governance", href: "/docs/certification-notes/az-900/domain-3-management-governance/"}
+        ]
+      },
+      {
+        title: "SC-500",
+        href: "/docs/certification-notes/sc-500/",
+        children: [
+          {title: "Domain 1: Identity", href: "/docs/certification-notes/sc-500/domain-1-identity/"},
+          {title: "Domain 2: Storage & networking", href: "/docs/certification-notes/sc-500/domain-2-storage-networking/"},
+          {title: "Domain 3: Secure compute", href: "/docs/certification-notes/sc-500/domain-3-secure-compute/"},
+          {title: "Domain 4: Manage, monitor & posture", href: "/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/"}
+        ]
+      },
+      {title: "Security+", href: "/docs/certification-notes/security-plus/"},
+      {title: "Google Cybersecurity", href: "/docs/certification-notes/google-cybersecurity/"}
+    ]
+  }
+];
+
+// A node may be both a page (has `href`) and a group (has `children`) — AZ-900 and
+// SC-500 are the only such nodes, so they get their own breadcrumb/left-nav entry
+// while still expanding into their domain pages.
+function buildNavIndex(tree) {
+  const index = new Map();
+  const order = [];
+  function visit(nodes, trail) {
+    for (const node of nodes) {
+      if (node.href) {
+        index.set(node.href, {title: node.title, trail});
+        order.push(node.href);
+      }
+      if (node.children) visit(node.children, [...trail, {title: node.title, href: node.href || null}]);
+    }
+  }
+  visit(tree.filter(node => node.title !== "Home"), []);
+  return {index, order};
+}
+
+const navIndexed = buildNavIndex(NAV_TREE);
+export const NAV_INDEX = navIndexed.index;
+export const NAV_ORDER = navIndexed.order;
+
+// Hrefs that actually render as their own left-nav <a> leaf (stops descending at the
+// first href, mirroring the left-nav renderer). AZ-900/SC-500 are in this set; their
+// domain pages are not — they only exist in NAV_INDEX for breadcrumbs/prev-next.
+function buildLeftNavHrefs(tree) {
+  const hrefs = new Set();
+  function visit(nodes) {
+    for (const node of nodes) {
+      if (node.href) { hrefs.add(node.href); continue; }
+      if (node.children) visit(node.children);
+    }
+  }
+  visit(tree);
+  return hrefs;
+}
+export const NAV_LEFTNAV_HREFS = buildLeftNavHrefs(NAV_TREE);
+
 export const CERTIFICATION_CURRENCY = [
   ["docs/certification-notes/az-900/", "Microsoft study guide last updated <strong>2026-06-22</strong>; skills measured from <strong>2026-07-20</strong>. <a href=\"https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/az-900\">Official AZ-900 study guide</a>."],
   ["docs/certification-notes/sc-500/", "Microsoft study guide last updated <strong>2026-05-13</strong>. The maintained collection follows the current four domains. <a href=\"https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/sc-500\">Official SC-500 study guide</a>."],

@@ -1,46 +1,1048 @@
-/* Branch-local portfolio, evidence, and archive presentation. */
-.md-header label[for="__drawer"]{display:none}
-.portfolio-nav{position:sticky;top:2.4rem;z-index:3;background:color-mix(in srgb,var(--md-default-bg-color) 94%,transparent);border-bottom:1px solid color-mix(in srgb,var(--md-default-fg-color) 14%,transparent);backdrop-filter:blur(12px)}
-.portfolio-nav__inner{width:min(100% - 2rem,78rem);min-height:3.25rem;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:1rem}
-.portfolio-nav__brand{color:var(--md-default-fg-color);font-size:.76rem;font-weight:700;letter-spacing:.08em;line-height:1.25;text-transform:uppercase;white-space:nowrap}
-.portfolio-nav ul{list-style:none;padding:0;margin:0}
-.portfolio-nav__items{display:flex;align-items:center;gap:.25rem}
-.portfolio-nav__items>li{position:relative}
-.portfolio-nav a,.portfolio-nav summary{color:var(--md-default-fg-color);border:0;border-radius:.4rem;cursor:pointer;display:block;font-size:.72rem;font-weight:650;padding:.55rem .65rem;text-decoration:none}
-.portfolio-nav a:hover,.portfolio-nav summary:hover,.portfolio-nav a:focus-visible,.portfolio-nav summary:focus-visible{color:var(--md-typeset-a-color);background:color-mix(in srgb,var(--md-typeset-a-color) 10%,transparent);outline:2px solid transparent}
-.portfolio-nav details>summary{list-style:none}.portfolio-nav details>summary::-webkit-details-marker{display:none}
-.portfolio-nav details>summary::after{content:"  ▾";font-size:.65rem}.portfolio-nav details[open]>summary::after{content:"  ▴"}
-.portfolio-nav__menu{min-width:21rem;max-height:min(72vh,38rem);overflow:auto;position:absolute;right:0;top:calc(100% + .35rem);padding:.5rem!important;border:1px solid color-mix(in srgb,var(--md-default-fg-color) 16%,transparent);border-radius:.65rem;background:var(--md-default-bg-color);box-shadow:0 1rem 2.4rem rgba(15,23,42,.2)}
-.portfolio-nav__menu a{white-space:normal}
-.md-main__inner{max-width:78rem}.md-content{max-width:100%}.md-content__inner{max-width:76rem;margin-inline:auto}
-.content-evidence{margin:1.2rem 0 1.8rem;padding:1rem 1.15rem;border:1px solid #64748b;border-left-width:.35rem;border-radius:.65rem;background:color-mix(in srgb,#64748b 8%,var(--md-default-bg-color))}
-.content-evidence>strong{display:block;margin-bottom:.75rem;color:var(--md-default-fg-color);font-size:.9rem}
-.content-evidence dl{display:grid;grid-template-columns:minmax(8rem,12rem) minmax(0,1fr);gap:.45rem 1rem;margin:0}
-.content-evidence dt{font-size:.72rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase}.content-evidence dd{margin:0}.content-evidence dd ul{margin:0;padding-left:1.1rem}
-.content-evidence--verified,.content-evidence--validated-lab{border-color:#15803d;background:color-mix(in srgb,#15803d 8%,var(--md-default-bg-color))}
-.content-evidence--partially-verified,.content-evidence--partially-tested{border-color:#b45309;background:color-mix(in srgb,#b45309 8%,var(--md-default-bg-color))}
-.content-evidence--study-notes{border-color:#2563eb;background:color-mix(in srgb,#2563eb 8%,var(--md-default-bg-color))}
-.content-evidence--archived{border-color:#b91c1c;background:color-mix(in srgb,#b91c1c 8%,var(--md-default-bg-color))}
-.article-toc{margin:1rem 0 2rem;padding:.9rem 1rem;border:1px solid color-mix(in srgb,var(--md-default-fg-color) 15%,transparent);border-radius:.65rem;background:color-mix(in srgb,var(--md-default-fg-color) 3%,transparent)}
-.article-toc>strong{display:block;margin-bottom:.45rem;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}.article-toc ol{columns:2;gap:2rem;margin:0;padding-left:1.15rem}.article-toc li{break-inside:avoid;margin:.2rem 0}
-.portfolio-hero{padding:clamp(1.2rem,4vw,3.5rem) 0 1.5rem}.portfolio-hero__kicker{color:var(--md-typeset-a-color);font-size:.76rem;font-weight:750;letter-spacing:.12em;text-transform:uppercase}
-.portfolio-hero h1{max-width:18ch;margin:.55rem 0 1rem!important;font-size:clamp(2.5rem,7vw,5.4rem)!important;letter-spacing:-.055em;line-height:.98}.portfolio-hero__lede{max-width:70ch;color:var(--md-default-fg-color--light);font-size:clamp(1rem,2vw,1.2rem)}
-.portfolio-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin:1.3rem 0 0}.portfolio-button{display:inline-flex;align-items:center;min-height:2.5rem;padding:.6rem .9rem;border:1px solid var(--md-typeset-a-color)!important;border-radius:.45rem;font-weight:700}.md-typeset a.portfolio-button--primary,.md-typeset a.portfolio-button--primary:hover,.md-typeset a.portfolio-button--primary:focus-visible,.portfolio-button--primary{color:#fff!important;background:#1d4ed8}
-body[data-md-color-scheme=slate] .md-typeset a.portfolio-button--primary,body[data-md-color-scheme=slate] .md-typeset a.portfolio-button--primary:hover,body[data-md-color-scheme=slate] .md-typeset a.portfolio-button--primary:focus-visible{color:#fff!important;background:#1d4ed8}
-.portfolio-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,18rem),1fr));gap:1rem;margin:1.2rem 0 2.2rem}.portfolio-card{display:flex;flex-direction:column;gap:.55rem;min-height:13rem;padding:1.1rem;border:1px solid color-mix(in srgb,var(--md-default-fg-color) 14%,transparent);border-radius:.75rem;background:color-mix(in srgb,var(--md-default-fg-color) 2.5%,transparent)}
-.portfolio-card h3,.portfolio-card p{margin:0!important}.portfolio-card__status{color:#b45309;font-size:.68rem;font-weight:750;letter-spacing:.06em;text-transform:uppercase}body[data-md-color-scheme="slate"] .portfolio-card__status{color:#fbbf24}.portfolio-card__link{margin-top:auto;font-weight:700}
-.portfolio-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:.7rem;margin:1rem 0 2rem}.portfolio-fact{padding:.8rem;border-left:.25rem solid var(--md-typeset-a-color);background:color-mix(in srgb,var(--md-typeset-a-color) 7%,transparent)}.portfolio-fact strong,.portfolio-fact span{display:block}.portfolio-fact span{margin-top:.2rem;font-size:.75rem}
-.archive-notice,.study-currency{margin:1rem 0 1.5rem;padding:1rem 1.1rem;border-radius:.65rem}.archive-notice{border:1px solid #b91c1c;background:color-mix(in srgb,#b91c1c 8%,var(--md-default-bg-color))}.study-currency{border:1px solid #2563eb;background:color-mix(in srgb,#2563eb 8%,var(--md-default-bg-color))}
-.portfolio-footer-proof{padding:1rem max(1rem,calc((100% - 76rem)/2));color:#e2e8f0;background:#111827;border-bottom:1px solid #334155;font-size:.72rem}.portfolio-footer-proof ul{display:flex;flex-wrap:wrap;gap:.45rem 1rem;margin:0;padding:0;list-style:none}.portfolio-footer-proof a{color:#93c5fd}
-.evidence-registry{width:100%}.evidence-registry th,.evidence-registry td{min-width:9rem;vertical-align:top}.evidence-registry th:first-child,.evidence-registry td:first-child{min-width:15rem}
-a:focus-visible,button:focus-visible,summary:focus-visible,input:focus-visible{outline:3px solid #f59e0b!important;outline-offset:3px}
+/* Documentation shell: header chrome, left nav, breadcrumbs, right TOC, homepage,
+   cards, evidence-status component, prev/next, footer, responsive rules.
+   Global tokens/typography/dark-mode/Material integration live in custom.css. */
+
+:root {
+  --md-header-height: 3.5rem;
+}
+
+/* ========================================================
+   HEADER refinements
+   ======================================================== */
+.md-header__topic:first-child .md-ellipsis {
+  font-weight: 700;
+  font-size: .95rem;
+}
+
+/* Repository name is long and truncates awkwardly; the GitHub icon link keeps an
+   explicit aria-label (set in maintain-gh-pages.mjs) so it stays accessible. */
+.md-header__source .md-source__repository {
+  display: none;
+}
+
+.md-header__source .md-source {
+  padding: 0 .3rem;
+}
+
+/* Search trigger: icon + visible label, pill-shaped, clearly the primary header action. */
+label.md-header__button[for="__search"] {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  width: auto;
+  padding: 0 .75rem;
+  border-radius: 999px;
+  border: 1px solid var(--docs-border);
+  background: var(--docs-surface);
+}
+
+.docs-search-label {
+  font-size: .78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+@media (max-width: 59.9375em) {
+  .docs-search-label {
+    display: none;
+  }
+  label.md-header__button[for="__search"] {
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+}
+
+/* ========================================================
+   DOCUMENTATION SHELL GRID
+   ======================================================== */
+.md-main__inner.md-grid {
+  max-width: var(--docs-shell-max);
+  margin-inline: auto;
+  gap: var(--docs-gutter);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+
+/* overflow-x:hidden here (rather than on html/body) clips any stray few-px content
+   overflow from inside the article without affecting position:sticky on the left-nav
+   or right-toc siblings — those live outside .md-content in the shell grid, and
+   sticky elements stop sticking if overflow-x/-y is set on one of their ancestors
+   (it forces the paired axis to a scroll container per the CSS Overflow spec's
+   visible/non-visible fixup rule), which is exactly what happened when this was
+   previously applied to html/body. */
+.md-content {
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+.md-content__inner {
+  max-width: none !important;
+  margin: 0 !important;
+  padding-top: var(--docs-space-5) !important;
+}
+
+/* Prose stays ~65-80 characters wide; tables, code blocks, and diagrams are allowed
+   to use the full article column (still narrower than the whole page). Homepage
+   content lives inside <section> wrappers, so these direct-child selectors only
+   ever match on regular article pages. */
+.md-typeset > p,
+.md-typeset > ul,
+.md-typeset > ol,
+.md-typeset > dl,
+.md-typeset > blockquote,
+.md-typeset > h1,
+.md-typeset > h2,
+.md-typeset > h3,
+.md-typeset > h4,
+.md-typeset > h5,
+.md-typeset > h6,
+.md-typeset > hr,
+.md-typeset > .admonition,
+.md-typeset > img,
+.docs-breadcrumbs,
+.content-evidence,
+.study-currency,
+.docs-prevnext {
+  max-width: var(--docs-article-max);
+}
+
+/* Material's own code-block wrappers (.highlight for code fences, .md-typeset__scrollwrap
+   for tables) bleed 16px past the article column on each side by default — a small
+   intentional edge-touch effect when the article has surrounding padding to bleed
+   into. The article is edge-to-edge with no such padding at narrow viewports, so
+   that same bleed pushes 16px past the actual viewport edge and causes real
+   horizontal page overflow — not merely a contained internal scrollbar, which is
+   what overflow-x on these wrappers is otherwise for. Removing the bleed keeps
+   their own horizontal scrolling untouched. */
+.md-typeset .highlight,
+.md-typeset__scrollwrap {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* A long unwrapped code line (white-space: pre) can still poke a few px past its own
+   box when the box's own overflow is the default `visible` — contain it in its own
+   horizontal scrollbar instead of letting it bleed into the page. */
+.md-typeset pre {
+  overflow-x: auto;
+}
+
+/* Standard defensive wrapping for ordinary prose text (not code/pre, which keep
+   their own horizontal scroll above) — without this, an unlucky text measurement
+   at a narrow viewport can leave a plain paragraph or list a few px wider than its
+   container instead of wrapping. */
+.md-typeset p,
+.md-typeset li,
+.md-typeset dd,
+.md-typeset a,
+.md-typeset code {
+  overflow-wrap: anywhere;
+}
+
+/* The desktop TOC is display:none below the three-column breakpoint (see the "RIGHT
+   TOC" section below), so it never participates in the two-column grid at all —
+   readers get the inline in-article TOC instead at those widths. */
+@media (min-width: 56.25em) {
+  .md-main__inner.md-grid {
+    grid-template-columns: var(--docs-left-rail) minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 80em) {
+  .md-main__inner.md-grid:has(.docs-right-toc) {
+    grid-template-columns: var(--docs-left-rail) minmax(0, 1fr) var(--docs-right-rail);
+  }
+}
+
+/* ========================================================
+   LEFT NAVIGATION — persistent sidebar (desktop), drawer (mobile)
+   ======================================================== */
+.docs-left-nav {
+  font-size: .8rem;
+  line-height: 1.3;
+}
+
+.docs-left-nav nav > ul,
+.docs-left-nav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.docs-left-nav ul ul {
+  padding-left: .75rem;
+  margin-left: .3rem;
+  border-left: 1px solid var(--docs-border);
+}
+
+.docs-left-nav li {
+  margin: .05rem 0;
+}
+
+.docs-left-nav a {
+  display: block;
+  padding: .4rem .6rem;
+  border-radius: var(--docs-radius-sm);
+  color: var(--docs-text);
+  text-decoration: none;
+  border-bottom: 0 !important;
+}
+
+.docs-left-nav a:hover,
+.docs-left-nav a:focus-visible {
+  background: var(--docs-surface);
+  color: var(--docs-accent);
+}
+
+.docs-left-nav a[aria-current="page"] {
+  background: color-mix(in srgb, var(--docs-accent) 12%, transparent);
+  color: var(--docs-accent);
+  font-weight: 700;
+}
+
+.docs-left-nav a.docs-nav-ancestor {
+  color: var(--docs-accent);
+  font-weight: 600;
+}
+
+.docs-left-nav summary {
+  cursor: pointer;
+  padding: .4rem .6rem;
+  border-radius: var(--docs-radius-sm);
+  font-weight: 700;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.docs-left-nav summary::-webkit-details-marker {
+  display: none;
+}
+
+.docs-left-nav summary::after {
+  content: "";
+  width: .5rem;
+  height: .5rem;
+  margin-left: .5rem;
+  border-right: 2px solid var(--docs-text-muted);
+  border-bottom: 2px solid var(--docs-text-muted);
+  transform: rotate(-45deg);
+  transition: transform .15s ease;
+  flex: none;
+}
+
+.docs-left-nav details[open] > summary::after {
+  transform: rotate(45deg);
+}
+
+.docs-left-nav summary:hover,
+.docs-left-nav summary:focus-visible {
+  background: var(--docs-surface);
+}
+
+@media (min-width: 56.25em) {
+  .docs-left-nav {
+    position: sticky;
+    top: var(--md-header-height);
+    align-self: start;
+    height: calc(100vh - var(--md-header-height));
+    overflow-y: auto;
+    padding: var(--docs-space-5) var(--docs-space-2) var(--docs-space-6) 0;
+  }
+}
+
+@media (max-width: 56.2375em) {
+  .docs-left-nav {
+    position: fixed;
+    top: var(--md-header-height);
+    left: 0;
+    bottom: 0;
+    width: min(85vw, 320px);
+    z-index: 10;
+    background: var(--docs-bg);
+    border-right: 1px solid var(--docs-border);
+    padding: var(--docs-space-4);
+    overflow-y: auto;
+    transform: translateX(-100%);
+    transition: transform .2s ease;
+  }
+
+  #__drawer:checked ~ .md-container .docs-left-nav {
+    transform: translateX(0);
+  }
+
+  .md-overlay {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+    background: rgba(0, 0, 0, .4);
+  }
+
+  #__drawer:checked ~ .md-overlay {
+    z-index: 9;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-left-nav {
+    transition: none;
+  }
+}
+
+/* ========================================================
+   BREADCRUMBS
+   ======================================================== */
+.docs-breadcrumbs {
+  margin: 0 0 var(--docs-space-3);
+  overflow-x: auto;
+  white-space: nowrap;
+  font-size: .78rem;
+}
+
+.docs-breadcrumbs ol {
+  display: inline-flex !important;
+  align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  gap: .4rem;
+  color: var(--docs-text-muted);
+}
+
+.docs-breadcrumbs li {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+}
+
+.docs-breadcrumbs li:not(:last-child)::after {
+  content: "/";
+  color: var(--docs-border);
+}
+
+.docs-breadcrumbs a {
+  color: var(--docs-text-muted) !important;
+  border-bottom: 0 !important;
+}
+
+.docs-breadcrumbs a:hover {
+  color: var(--docs-accent) !important;
+}
+
+/* Same out-of-specificity problem as the primary button: custom.css's dark-mode
+   `.md-typeset a` color rule otherwise wins over these breadcrumb/prev-next colors. */
+body[data-md-color-scheme="slate"] .docs-breadcrumbs a {
+  color: var(--docs-text-muted) !important;
+}
+
+body[data-md-color-scheme="slate"] .docs-breadcrumbs a:hover {
+  color: var(--docs-accent) !important;
+}
+
+.docs-breadcrumbs li[aria-current="page"] {
+  color: var(--docs-text);
+  font-weight: 600;
+}
+
+/* ========================================================
+   RIGHT TOC — desktop only (>=80em / 1280px), permanently visible, sticky.
+   Plain <aside>, not a <details> — nothing to open/close at this breakpoint, and a
+   native disclosure's content sizing does not survive being force-opened by CSS.
+   Below 80em it is display:none; the inline in-article TOC covers that range instead.
+   ======================================================== */
+.docs-right-toc {
+  display: none;
+}
+
+@media (min-width: 80em) {
+  .docs-right-toc {
+    display: block;
+    grid-column: 3 / 4;
+    position: sticky;
+    top: calc(var(--md-header-height) + var(--docs-space-4));
+    max-height: calc(100vh - var(--md-header-height) - var(--docs-space-6));
+    overflow-y: auto;
+    font-size: .78rem;
+    padding: var(--docs-space-5) 0 var(--docs-space-6);
+  }
+}
+
+.docs-right-toc__title {
+  display: block;
+  margin: 0 0 var(--docs-space-2);
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+/* ========================================================
+   INLINE RESPONSIVE TOC — below 80em / 1280px only. Rendered in the article, right
+   after the evidence summary and before the introduction, so it never depends on
+   scrolling past the whole article to reach it. Native <details>, closed by default.
+   ======================================================== */
+.docs-inline-toc {
+  /* !important: Material's own `.md-typeset details { display: flow-root }` reset
+     is more specific than a plain .docs-inline-toc selector and otherwise wins,
+     regardless of which one is later in source order. */
+  display: block !important;
+  max-width: var(--docs-article-max);
+  margin: 0 0 var(--docs-space-5);
+  font-size: .85rem;
+}
+
+/* Reset Material's own admonition-style <details> treatment (icon padding, blue
+   background tint) and apply this component's own subtle, compact styling instead —
+   combined in one place so the two don't fight over which one "wins" the cascade. */
+.md-typeset .docs-inline-toc {
+  border: 1px solid var(--docs-border) !important;
+  border-radius: var(--docs-radius-md);
+  background: var(--docs-surface-subtle) !important;
+  box-shadow: none !important;
+}
+
+.md-typeset .docs-inline-toc > summary {
+  padding: 0 var(--docs-space-4) !important;
+  background: transparent !important;
+}
+
+.docs-inline-toc > summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 600;
+  list-style: none;
+}
+
+.docs-inline-toc > summary::-webkit-details-marker {
+  display: none;
+}
+
+.docs-inline-toc nav {
+  padding: 0 var(--docs-space-4) var(--docs-space-4);
+}
+
+@media (min-width: 80em) {
+  .docs-inline-toc {
+    display: none !important;
+  }
+}
+
+/* Shared link semantics between the desktop aside and the inline disclosure — same
+   heading data, same visual language, so the two feel like one component. */
+.docs-right-toc nav ol,
+.docs-inline-toc nav ol {
+  list-style: none;
+  margin: var(--docs-space-2) 0 0;
+  padding: 0;
+  border-left: 2px solid var(--docs-border);
+}
+
+.docs-right-toc nav li,
+.docs-inline-toc nav li {
+  margin: 0;
+}
+
+.docs-right-toc nav a,
+.docs-inline-toc nav a {
+  display: block;
+  padding: .3rem .6rem;
+  margin-left: -2px;
+  border-left: 2px solid transparent;
+  color: var(--docs-text-muted) !important;
+  border-bottom: 0 !important;
+  text-decoration: none;
+}
+
+/* More generous tap targets in the inline (touch-first) presentation. */
+.docs-inline-toc nav a {
+  padding: .6rem .6rem;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+}
+
+.docs-right-toc nav a:hover,
+.docs-right-toc nav a:focus-visible,
+.docs-inline-toc nav a:hover,
+.docs-inline-toc nav a:focus-visible {
+  color: var(--docs-accent) !important;
+}
+
+.docs-right-toc nav a[data-docs-toc-active="true"],
+.docs-inline-toc nav a[data-docs-toc-active="true"] {
+  color: var(--docs-accent) !important;
+  border-left-color: var(--docs-accent);
+  font-weight: 600;
+}
+
+/* ========================================================
+   EVIDENCE STATUS — compact row + disclosure
+   ======================================================== */
+.content-evidence {
+  margin: var(--docs-space-5) 0 var(--docs-space-6);
+  padding: var(--docs-space-3) var(--docs-space-4);
+  border: 1px solid var(--docs-border);
+  border-left-width: .3rem;
+  border-radius: var(--docs-radius-md);
+  background: var(--docs-surface-subtle);
+}
+
+.docs-evidence-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .4rem 1rem;
+  font-size: .82rem;
+  color: var(--docs-text-muted);
+}
+
+.docs-evidence-row__status {
+  color: var(--docs-text);
+  font-size: .88rem;
+}
+
+.docs-evidence-detail {
+  margin-top: var(--docs-space-2);
+}
+
+/* Reset Material's own admonition-style <details>/<summary> treatment (background
+   tint, icon padding, border) — this is a plain compact disclosure, not a callout.
+   (.docs-inline-toc gets its own dedicated reset further down, since unlike these
+   two it intentionally keeps a visible border/background of its own.) */
+.md-typeset .docs-evidence-detail,
+.md-typeset .docs-footer__detail {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.md-typeset .docs-evidence-detail summary,
+.md-typeset .docs-footer__detail summary {
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+.docs-evidence-detail summary {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: .35rem;
+  font-weight: 600;
+  color: var(--docs-accent);
+  list-style: none;
+}
+
+.docs-evidence-detail summary::-webkit-details-marker {
+  display: none;
+}
+
+.docs-evidence-detail summary::before {
+  content: "";
+  width: .4rem;
+  height: .4rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-45deg);
+  transition: transform .15s ease;
+  flex: none;
+}
+
+.docs-evidence-detail[open] summary::before {
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .docs-evidence-detail summary::before {
+    transition: none;
+  }
+}
+
+.docs-evidence-detail dl {
+  display: grid;
+  grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
+  gap: .45rem 1rem;
+  margin: var(--docs-space-3) 0 0;
+}
+
+.docs-evidence-detail dt {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.docs-evidence-detail dd {
+  margin: 0;
+}
+
+.docs-evidence-detail dd ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.content-evidence--verified,
+.content-evidence--validated-lab {
+  border-color: #15803d;
+}
+
+.content-evidence--partially-verified,
+.content-evidence--partially-tested {
+  border-color: #b45309;
+}
+
+.content-evidence--conceptual,
+.content-evidence--study-notes {
+  border-color: var(--docs-accent);
+}
+
+.content-evidence--archived {
+  border-color: #b91c1c;
+}
+
+.content-evidence--site-utility {
+  border-color: var(--docs-text-muted);
+}
+
+.study-currency {
+  margin: var(--docs-space-3) 0 var(--docs-space-5);
+  padding: var(--docs-space-3) var(--docs-space-4);
+  border-radius: var(--docs-radius-md);
+  border: 1px solid var(--docs-accent);
+  background: color-mix(in srgb, var(--docs-accent) 8%, var(--docs-bg));
+}
+
+@media (max-width: 44rem) {
+  .docs-evidence-detail dl {
+    grid-template-columns: 1fr;
+  }
+  .docs-evidence-detail dd {
+    margin-bottom: .5rem;
+  }
+}
+
+/* ========================================================
+   HOMEPAGE — compact hero, demoted provenance, Learn-style cards
+   ======================================================== */
+.portfolio-hero {
+  padding: clamp(16px, 2vw, 28px) 0 clamp(14px, 2vw, 24px);
+}
+
+.portfolio-hero__kicker {
+  color: var(--docs-accent);
+  font-size: .74rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.portfolio-hero h1 {
+  max-width: 27ch;
+  margin: .4rem 0 .75rem !important;
+  font-size: clamp(2.5rem, 4vw, 3.4rem) !important;
+  line-height: 1.08;
+  letter-spacing: -.02em;
+}
+
+.portfolio-hero__lede {
+  max-width: 68ch;
+  color: var(--docs-text-muted);
+  font-size: clamp(1rem, 1.4vw, 1.1rem);
+}
+
+.portfolio-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .7rem;
+  margin: 1rem 0 0;
+}
+
+.portfolio-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 42px;
+  padding: 0 1rem;
+  border: 1px solid var(--docs-accent) !important;
+  border-radius: var(--docs-radius-sm);
+  font-weight: 600;
+}
+
+.md-typeset a.portfolio-button--primary,
+.md-typeset a.portfolio-button--primary:hover,
+.md-typeset a.portfolio-button--primary:focus-visible,
+.portfolio-button--primary {
+  color: #fff !important;
+  background: var(--docs-accent);
+  border-color: var(--docs-accent) !important;
+}
+
+.portfolio-button--primary:hover {
+  background: var(--docs-accent-hover);
+}
+
+/* The dark-mode accent (#58a6ff) is tuned for link legibility on a dark background,
+   not for white text on top of it (~2.5:1, fails WCAG AA). Use a fixed darker blue
+   for the filled button in dark mode instead. This also needs to out-specificity
+   custom.css's `body[data-md-color-scheme=slate] .md-typeset a` dark-link-color rule,
+   which the un-prefixed selectors above lose to. */
+body[data-md-color-scheme="slate"] .md-typeset a.portfolio-button--primary,
+body[data-md-color-scheme="slate"] .md-typeset a.portfolio-button--primary:hover,
+body[data-md-color-scheme="slate"] .md-typeset a.portfolio-button--primary:focus-visible,
+body[data-md-color-scheme="slate"] .portfolio-button--primary {
+  color: #fff !important;
+  background: #1d4ed8;
+  border-color: #1d4ed8 !important;
+}
+
+body[data-md-color-scheme="slate"] .portfolio-button--primary:hover {
+  background: #1e40af;
+}
+
+.portfolio-hero .content-evidence {
+  margin: var(--docs-space-3) 0 var(--docs-space-4);
+}
+
+.docs-provenance-line {
+  margin: .9rem 0 0 !important;
+  font-size: .78rem !important;
+  color: var(--docs-text-muted) !important;
+}
+
+/* The muted line color above isn't enough contrast/distinction for the link inside
+   it on its own (axe: link-in-text-block, color-contrast) — give it the normal
+   link color and an underline so it reads as a link independent of color alone. */
+.docs-provenance-line a {
+  color: var(--docs-accent) !important;
+  border-bottom: 1px solid currentColor !important;
+}
+
+/* First section heading sits right under a hero that already carries its own
+   bottom padding — the default 44px H2 top margin would double up the gap. */
+.portfolio-hero + section > h2:first-child {
+  margin-top: var(--docs-space-4) !important;
+}
+
+.docs-card-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin: var(--docs-space-4) 0 var(--docs-space-6);
+}
+
+.md-typeset a.docs-card {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  min-height: 180px;
+  padding: 20px;
+  border: 1px solid var(--docs-border);
+  border-radius: var(--docs-radius-md);
+  background: var(--docs-bg);
+  color: var(--docs-text) !important;
+  text-decoration: none !important;
+  border-bottom-width: 1px !important;
+  transition: border-color .15s ease, transform .15s ease;
+}
+
+.md-typeset a.docs-card:hover,
+.md-typeset a.docs-card:focus-visible {
+  border-color: var(--docs-accent) !important;
+  transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .md-typeset a.docs-card {
+    transition: none;
+  }
+  .md-typeset a.docs-card:hover {
+    transform: none;
+  }
+}
+
+.docs-card__chip {
+  align-self: flex-start;
+  padding: .2rem .55rem;
+  border-radius: 999px;
+  border: 1px solid #b45309;
+  color: #b45309;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .03em;
+}
+
+body[data-md-color-scheme="slate"] .docs-card__chip {
+  border-color: #fbbf24;
+  color: #fbbf24;
+}
+
+.docs-card__title {
+  margin: 0 !important;
+  font-size: 1.05rem !important;
+  /* Explicit rather than inherited from .docs-card: custom.css's dark-mode link
+     color rule (body[data-md-color-scheme=slate] .md-typeset a) otherwise out-
+     specifies the card's own color and the title would render as link-blue. */
+  color: var(--docs-text) !important;
+}
+
+.docs-card__desc {
+  margin: 0 !important;
+  color: var(--docs-text-muted);
+  font-size: .88rem;
+  line-height: 1.5;
+}
+
+.docs-card__cta {
+  margin-top: auto;
+  font-weight: 600;
+  color: var(--docs-accent);
+  font-size: .85rem;
+}
+
+.docs-link-list {
+  margin: var(--docs-space-3) 0 var(--docs-space-6) !important;
+  padding-left: 0 !important;
+  list-style: none !important;
+  display: grid;
+  gap: .35rem;
+}
+
+.docs-link-list li {
+  border: 1px solid var(--docs-border);
+  border-radius: var(--docs-radius-sm);
+}
+
+.docs-link-list a {
+  display: block;
+  padding: .6rem .9rem;
+  border-bottom: 0 !important;
+}
+
+.docs-link-list a:hover {
+  background: var(--docs-surface);
+}
+
+@media (max-width: 74.9375em) {
+  .docs-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 44rem) {
+  .docs-card-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .portfolio-hero h1 {
+    font-size: clamp(2.2rem, 10vw, 2.8rem) !important;
+    max-width: none;
+  }
+}
+
+/* ========================================================
+   PREV / NEXT
+   ======================================================== */
+.docs-prevnext {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--docs-space-4);
+  margin: var(--docs-space-7) 0 var(--docs-space-5);
+  padding-top: var(--docs-space-5);
+  border-top: 1px solid var(--docs-border);
+}
+
+.docs-prevnext__link {
+  display: flex;
+  flex-direction: column;
+  gap: .2rem;
+  padding: var(--docs-space-3) var(--docs-space-4);
+  border: 1px solid var(--docs-border);
+  border-radius: var(--docs-radius-md);
+  border-bottom-width: 1px !important;
+  text-decoration: none !important;
+  color: var(--docs-text) !important;
+}
+
+.docs-prevnext__link:hover {
+  border-color: var(--docs-accent) !important;
+}
+
+/* See the breadcrumbs/primary-button comments above: out-specify custom.css's
+   dark-mode `.md-typeset a` color rule so these keep their intended colors. */
+body[data-md-color-scheme="slate"] .docs-prevnext__link {
+  color: var(--docs-text) !important;
+}
+
+body[data-md-color-scheme="slate"] .docs-prevnext__dir {
+  color: var(--docs-accent) !important;
+}
+
+body[data-md-color-scheme="slate"] .docs-prevnext__cat {
+  color: var(--docs-text-muted) !important;
+}
+
+.docs-prevnext__link--next {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.docs-prevnext__dir {
+  font-size: .72rem;
+  font-weight: 700;
+  color: var(--docs-accent);
+}
+
+.docs-prevnext__cat {
+  font-size: .7rem;
+  color: var(--docs-text-muted);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+
+.docs-prevnext__title {
+  font-weight: 600;
+}
+
+@media (max-width: 44rem) {
+  .docs-prevnext {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .docs-prevnext__link--next {
+    text-align: left;
+    align-items: flex-start;
+  }
+}
+
+/* ========================================================
+   ARCHIVE / EVIDENCE REGISTRY (existing components, token colors)
+   ======================================================== */
+.archive-notice {
+  margin: 1rem 0 1.5rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--docs-radius-md);
+  border: 1px solid #b91c1c;
+  background: color-mix(in srgb, #b91c1c 8%, var(--docs-bg));
+}
+
+.evidence-registry {
+  width: 100%;
+}
+
+.evidence-registry th,
+.evidence-registry td {
+  min-width: 9rem;
+  vertical-align: top;
+}
+
+.evidence-registry th:first-child,
+.evidence-registry td:first-child {
+  min-width: 15rem;
+}
+
+/* ========================================================
+   FOOTER
+   ======================================================== */
+.docs-footer {
+  padding: var(--docs-space-4) max(var(--docs-space-4), calc((100% - 76rem) / 2));
+  border-bottom: 1px solid var(--docs-border);
+  font-size: .8rem;
+}
+
+/* .docs-footer sits inside <footer class="md-footer">, which Material always gives
+   a dark background regardless of the page's own light/dark palette — so this needs
+   the same light-on-dark footer color already established below for md-copyright,
+   not --docs-text-muted (tuned for the light-background content area instead). */
+.docs-footer__copyright {
+  margin: 0 0 .5rem;
+  color: #e2e8f0;
+}
+
+.docs-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.docs-footer__detail {
+  margin-top: .6rem;
+  font-size: .74rem;
+  color: #cbd5e1;
+}
+
+.docs-footer__detail summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.docs-footer__detail summary::-webkit-details-marker {
+  display: none;
+}
+
+.docs-footer__detail ul {
+  margin: .5rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem 1rem;
+}
+
+/* ========================================================
+   ACCESSIBILITY BASELINE
+   ======================================================== */
+a:focus-visible,
+button:focus-visible,
+summary:focus-visible,
+input:focus-visible {
+  outline: 3px solid #f59e0b !important;
+  outline-offset: 3px;
+}
+
 /* WCAG AA contrast overrides for Material defaults that fall below 4.5:1. */
-.md-copyright,.md-copyright__highlight{color:#e2e8f0!important}
-body[data-md-color-scheme=slate] .md-copyright,body[data-md-color-scheme=slate] .md-copyright__highlight{color:#e2e8f0!important}
-.md-footer{--md-footer-fg-color:#e2e8f0;--md-footer-fg-color--light:#e2e8f0;--md-footer-fg-color--lighter:#cbd5e1}
-.md-typeset__scrollwrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
-.md-typeset__scrollwrap:focus,.md-typeset__scrollwrap:focus-visible{outline:3px solid #f59e0b;outline-offset:2px}
-[data-md-color-scheme=default]{--md-code-hl-comment-color:rgba(0,0,0,.62);--md-code-hl-operator-color:rgba(0,0,0,.62);--md-code-hl-punctuation-color:rgba(0,0,0,.62);--md-code-hl-name-color:var(--md-code-fg-color);--md-code-hl-variable-color:rgba(0,0,0,.72)}
-[data-md-color-scheme=slate]{--md-code-hl-comment-color:hsla(var(--md-hue),12%,72%,1);--md-code-hl-operator-color:hsla(var(--md-hue),12%,72%,1);--md-code-hl-punctuation-color:hsla(var(--md-hue),12%,72%,1);--md-code-hl-name-color:var(--md-code-fg-color);--md-code-hl-variable-color:hsla(var(--md-hue),12%,78%,1)}
-@media(max-width:62rem){.portfolio-nav{position:static}.portfolio-nav__inner{align-items:flex-start;flex-direction:column;padding:.7rem 0}.portfolio-nav__items{width:100%;flex-wrap:wrap}.portfolio-nav__menu{left:0;right:auto;min-width:min(90vw,24rem)}}
-@media(max-width:44rem){.content-evidence dl{grid-template-columns:1fr}.content-evidence dd{margin-bottom:.5rem}.article-toc ol{columns:1}.portfolio-hero h1{font-size:clamp(2.2rem,13vw,3.6rem)!important}}
+.md-copyright,
+.md-copyright__highlight {
+  color: #e2e8f0 !important;
+}
+
+body[data-md-color-scheme="slate"] .md-copyright,
+body[data-md-color-scheme="slate"] .md-copyright__highlight {
+  color: #e2e8f0 !important;
+}
+
+.md-footer {
+  --md-footer-fg-color: #e2e8f0;
+  --md-footer-fg-color--light: #e2e8f0;
+  --md-footer-fg-color--lighter: #cbd5e1;
+}
+
+.md-typeset__scrollwrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.md-typeset__scrollwrap:focus,
+.md-typeset__scrollwrap:focus-visible {
+  outline: 3px solid #f59e0b;
+  outline-offset: 2px;
+}
+
+[data-md-color-scheme=default] {
+  --md-code-hl-comment-color: rgba(0, 0, 0, .62);
+  --md-code-hl-operator-color: rgba(0, 0, 0, .62);
+  --md-code-hl-punctuation-color: rgba(0, 0, 0, .62);
+  --md-code-hl-name-color: var(--md-code-fg-color);
+  --md-code-hl-variable-color: rgba(0, 0, 0, .72);
+}
+
+[data-md-color-scheme=slate] {
+  --md-code-hl-comment-color: hsla(var(--md-hue), 12%, 72%, 1);
+  --md-code-hl-operator-color: hsla(var(--md-hue), 12%, 72%, 1);
+  --md-code-hl-punctuation-color: hsla(var(--md-hue), 12%, 72%, 1);
+  --md-code-hl-name-color: var(--md-code-fg-color);
+  --md-code-hl-variable-color: hsla(var(--md-hue), 12%, 78%, 1);
+}

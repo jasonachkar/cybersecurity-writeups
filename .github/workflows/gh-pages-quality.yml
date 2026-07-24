@@ -238,10 +238,13 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - run: npm run verify:a11y
+      - run: npm run verify:ui
       - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: qa-accessibility
-          path: qa/accessibility-report.json
+          path: |
+            qa/accessibility-report.json
+            qa/ui-layout-report.json
           if-no-files-found: error
 
   external-links:
@@ -361,6 +364,7 @@ jobs:
             qa-artifacts/qa-shell-powershell/shell-report.json
             qa-artifacts/qa-shell-powershell/powershell-report.json
             qa-artifacts/qa-accessibility/accessibility-report.json
+            qa-artifacts/qa-accessibility/ui-layout-report.json
             qa-artifacts/qa-external-links/external-link-report.json
             qa-artifacts/qa-gitleaks/gitleaks-report.json
           )

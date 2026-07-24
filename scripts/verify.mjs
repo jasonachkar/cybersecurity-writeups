@@ -739,6 +739,10 @@ async function suiteA11y() {
   run(process.execPath, ["scripts/run-accessibility-audit.mjs"]);
 }
 
+async function suiteUi() {
+  run(process.execPath, ["scripts/run-ui-layout-audit.mjs"]);
+}
+
 async function suiteLinks() {
   run(process.execPath, ["scripts/check-external-links.mjs"]);
   const target = path.join(root, "qa", "external-link-report.json");
@@ -774,6 +778,7 @@ const handlers = {
   powershell: suitePowershell,
   secrets: suiteSecrets,
   a11y: suiteA11y,
+  ui: suiteUi,
   links: suiteLinks
 };
 
@@ -790,6 +795,7 @@ const allOrder = [
   "shell",
   "powershell",
   "a11y",
+  "ui",
   "links",
   "secrets"
 ];

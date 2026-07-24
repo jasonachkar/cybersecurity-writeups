@@ -23,6 +23,7 @@
     "verify:shell": "node scripts/verify.mjs shell",
     "verify:powershell": "node scripts/verify.mjs powershell",
     "verify:a11y": "node scripts/run-accessibility-audit.mjs",
+    "verify:ui": "node scripts/run-ui-layout-audit.mjs",
     "verify:links": "node scripts/verify.mjs links",
     "verify:secrets": "node scripts/verify.mjs secrets",
     "verify:summary": "node scripts/stamp-qa-reports.mjs summary",
