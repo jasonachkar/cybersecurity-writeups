@@ -354,7 +354,7 @@ func TestRiskClasses(t *testing.T) {
 		},
 		{
 			name: "CSR approval subresource",
-			role: k8srbac.RoleLike{Kind: "Role", Name: "r", Namespace: "ns", Rules: []k8srbac.PolicyRule{{
+			role: k8srbac.RoleLike{Kind: "ClusterRole", Name: "r", Rules: []k8srbac.PolicyRule{{
 				APIGroups: []string{"certificates.k8s.io"},
 				Resources: []string{"certificatesigningrequests/approval"},
 				Verbs:     []string{"update"},
@@ -363,7 +363,7 @@ func TestRiskClasses(t *testing.T) {
 		},
 		{
 			name: "CSR create alone is not approval",
-			role: k8srbac.RoleLike{Kind: "Role", Name: "r", Namespace: "ns", Rules: []k8srbac.PolicyRule{{
+			role: k8srbac.RoleLike{Kind: "ClusterRole", Name: "r", Rules: []k8srbac.PolicyRule{{
 				APIGroups: []string{"certificates.k8s.io"},
 				Resources: []string{"certificatesigningrequests"},
 				Verbs:     []string{"create", "update", "patch"},
@@ -500,4 +500,296 @@ func TestRiskClasses(t *testing.T) {
 			}
 		})
 	}
+}
+
+func assertHas(t *testing.T, findings []k8srbac.Finding, code string) {
+	t.Helper()
+	if !k8srbac.HasCode(findings, code) {
+		t.Fatalf("missing %s in %#v", code, findings)
+	}
+}
+
+func assertNotHas(t *testing.T, findings []k8srbac.Finding, codes ...string) {
+	t.Helper()
+	for _, code := range codes {
+		if k8srbac.HasCode(findings, code) {
+			t.Fatalf("unexpected false-positive %s in %#v", code, findings)
+		}
+	}
+}
+
+func TestBindingValidation(t *testing.T) {
+	secretRole := k8srbac.RoleLike{
+		Kind: "ClusterRole", Name: "secret-reader",
+		Rules: []k8srbac.PolicyRule{{APIGroups: []string{""}, Resources: []string{"secrets"}, Verbs: []string{"get"}}},
+	}
+	namespacedRole := k8srbac.RoleLike{
+		Kind: "Role", Name: "secret-reader", Namespace: "app",
+		Rules: []k8srbac.PolicyRule{{APIGroups: []string{""}, Resources: []string{"secrets"}, Verbs: []string{"get"}}},
+	}
+
+	t.Run("RoleBinding Role resolves", func(t *testing.T) {
+		findings := k8srbac.Audit([]k8srbac.RoleLike{namespacedRole}, []k8srbac.BindingLike{
+			bindRole("app", "ok", "secret-reader", "user:a"),
+		})
+		assertHas(t, findings, "secrets-read")
+		assertNotHas(t, findings, "invalid-binding")
+	})
+	t.Run("RoleBinding ClusterRole resolves", func(t *testing.T) {
+		findings := k8srbac.Audit([]k8srbac.RoleLike{secretRole}, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding("app", "ok", "secret-reader", "user:a"),
+		})
+		assertHas(t, findings, "secrets-read")
+		assertNotHas(t, findings, "invalid-binding")
+	})
+	t.Run("ClusterRoleBinding ClusterRole resolves", func(t *testing.T) {
+		findings := k8srbac.Audit([]k8srbac.RoleLike{secretRole}, []k8srbac.BindingLike{
+			bindClusterRole("ok", "secret-reader", "user:a"),
+		})
+		assertHas(t, findings, "secrets-read")
+		assertNotHas(t, findings, "invalid-binding")
+	})
+
+	cases := []struct {
+		name    string
+		roles   []k8srbac.RoleLike
+		binding k8srbac.BindingLike
+		wantMsg string
+	}{
+		{
+			name:  "wrong apiGroup",
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: "ClusterRoleBinding", Name: "bad",
+				RoleRef:  k8srbac.RoleRef{APIGroup: "rbac.authorization.k8s.io.wrong", Kind: "ClusterRole", Name: "secret-reader"},
+				Subjects: []string{"user:a"},
+			},
+			wantMsg: "roleRef.apiGroup must be rbac.authorization.k8s.io",
+		},
+		{
+			name:  "empty apiGroup",
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: "RoleBinding", Name: "bad", Namespace: "app",
+				RoleRef:  k8srbac.RoleRef{APIGroup: "", Kind: "ClusterRole", Name: "secret-reader"},
+				Subjects: []string{"user:a"},
+			},
+			wantMsg: "roleRef.apiGroup must be rbac.authorization.k8s.io",
+		},
+		{
+			name:  "RoleBinding empty kind",
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: "RoleBinding", Name: "bad", Namespace: "app",
+				RoleRef:  k8srbac.RoleRef{APIGroup: "rbac.authorization.k8s.io", Kind: "", Name: "secret-reader"},
+				Subjects: []string{"user:a"},
+			},
+			wantMsg: "RoleBinding roleRef.kind must be Role or ClusterRole",
+		},
+		{
+			name:  "RoleBinding unknown kind",
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: "RoleBinding", Name: "bad", Namespace: "app",
+				RoleRef:  k8srbac.RoleRef{APIGroup: "rbac.authorization.k8s.io", Kind: "ServiceAccount", Name: "secret-reader"},
+				Subjects: []string{"user:a"},
+			},
+			wantMsg: "RoleBinding roleRef.kind must be Role or ClusterRole",
+		},
+		{
+			name:  "ClusterRoleBinding references Role",
+			roles: []k8srbac.RoleLike{namespacedRole},
+			binding: k8srbac.BindingLike{
+				Kind: "ClusterRoleBinding", Name: "bad",
+				RoleRef:  k8srbac.RoleRef{APIGroup: "rbac.authorization.k8s.io", Kind: "Role", Name: "secret-reader"},
+				Subjects: []string{"user:a"},
+			},
+			wantMsg: "ClusterRoleBinding roleRef.kind must be ClusterRole",
+		},
+		{
+			name:  "ClusterRoleBinding empty kind",
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: "ClusterRoleBinding", Name: "bad",
+				RoleRef:  k8srbac.RoleRef{APIGroup: "rbac.authorization.k8s.io", Kind: "", Name: "secret-reader"},
+				Subjects: []string{"user:a"},
+			},
+			wantMsg: "ClusterRoleBinding roleRef.kind must be ClusterRole",
+		},
+		{
+			name:  "ClusterRoleBinding unknown kind",
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: "ClusterRoleBinding", Name: "bad",
+				RoleRef:  k8srbac.RoleRef{APIGroup: "rbac.authorization.k8s.io", Kind: "Pod", Name: "secret-reader"},
+				Subjects: []string{"user:a"},
+			},
+			wantMsg: "ClusterRoleBinding roleRef.kind must be ClusterRole",
+		},
+		{
+			name:  "RoleBinding missing namespace",
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: "RoleBinding", Name: "bad", Namespace: "",
+				RoleRef:  k8srbac.RoleRef{APIGroup: "rbac.authorization.k8s.io", Kind: "ClusterRole", Name: "secret-reader"},
+				Subjects: []string{"user:a"},
+			},
+			wantMsg: "RoleBinding requires a namespace",
+		},
+		{
+			name:  "ClusterRoleBinding with namespace",
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: "ClusterRoleBinding", Name: "bad", Namespace: "app",
+				RoleRef:  k8srbac.RoleRef{APIGroup: "rbac.authorization.k8s.io", Kind: "ClusterRole", Name: "secret-reader"},
+				Subjects: []string{"user:a"},
+			},
+			wantMsg: "ClusterRoleBinding must not declare a namespace",
+		},
+	}
+
+	for _, tt := range cases {
+		t.Run(tt.name, func(t *testing.T) {
+			findings := k8srbac.Audit(tt.roles, []k8srbac.BindingLike{tt.binding})
+			got := findingsWithCode(findings, "invalid-binding")
+			if len(got) != 1 {
+				t.Fatalf("expected invalid-binding, got %#v", findings)
+			}
+			if !strings.Contains(got[0].Description, tt.wantMsg) {
+				t.Fatalf("description = %q, want substring %q", got[0].Description, tt.wantMsg)
+			}
+			assertNotHas(t, findings, "secrets-read")
+		})
+	}
+}
+
+func TestRoleBindingDoesNotActivateClusterScopedRisks(t *testing.T) {
+	tests := []struct {
+		name    string
+		rules   []k8srbac.PolicyRule
+		notWant []string
+		want    []string
+	}{
+		{
+			name:    "nodes/proxy",
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{""}, Resources: []string{"nodes/proxy"}, Verbs: []string{"get", "create"}}},
+			notWant: []string{"nodes-proxy"},
+		},
+		{
+			name:    "tokenreviews",
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{"authentication.k8s.io"}, Resources: []string{"tokenreviews"}, Verbs: []string{"create"}}},
+			notWant: []string{"tokenreview-oracle"},
+		},
+		{
+			name:    "csr approval",
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{"certificates.k8s.io"}, Resources: []string{"certificatesigningrequests/approval"}, Verbs: []string{"update"}}},
+			notWant: []string{"csr-approval"},
+		},
+		{
+			name:    "signers",
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{"certificates.k8s.io"}, Resources: []string{"signers"}, Verbs: []string{"approve"}}},
+			notWant: []string{"csr-signer-approve"},
+		},
+		{
+			name:    "clusterroles bind/escalate",
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{"rbac.authorization.k8s.io"}, Resources: []string{"clusterroles"}, Verbs: []string{"bind", "escalate"}}},
+			notWant: []string{"rbac-bind-escalate"},
+		},
+		{
+			name:    "admission webhooks",
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{"admissionregistration.k8s.io"}, Resources: []string{"validatingwebhookconfigurations"}, Verbs: []string{"update"}}},
+			notWant: []string{"admission-policy-mutate"},
+		},
+		{
+			name:    "secrets still effective",
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{""}, Resources: []string{"secrets"}, Verbs: []string{"get"}}},
+			want:    []string{"secrets-read"},
+			notWant: []string{"nodes-proxy", "tokenreview-oracle"},
+		},
+		{
+			name:  "pods/exec still effective",
+			rules: []k8srbac.PolicyRule{{APIGroups: []string{""}, Resources: []string{"pods/exec"}, Verbs: []string{"create"}}},
+			want:  []string{"pod-interactive"},
+		},
+		{
+			name:  "serviceaccounts/token still effective",
+			rules: []k8srbac.PolicyRule{{APIGroups: []string{""}, Resources: []string{"serviceaccounts/token"}, Verbs: []string{"create"}}},
+			want:  []string{"sa-token-create"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			roles := []k8srbac.RoleLike{{Kind: "ClusterRole", Name: "cr", Rules: tt.rules}}
+			bindings := []k8srbac.BindingLike{
+				bindClusterRoleViaRoleBinding("team", "ns-bind", "cr", "system:serviceaccount:team:sa"),
+			}
+			findings := k8srbac.Audit(roles, bindings)
+			for _, code := range tt.want {
+				assertHas(t, findings, code)
+			}
+			assertNotHas(t, findings, tt.notWant...)
+		})
+	}
+}
+
+func TestClusterRoleBindingActivatesClusterScopedRisks(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind: "ClusterRole",
+		Name: "dangerous",
+		Rules: []k8srbac.PolicyRule{
+			{APIGroups: []string{""}, Resources: []string{"nodes/proxy"}, Verbs: []string{"get"}},
+			{APIGroups: []string{"authentication.k8s.io"}, Resources: []string{"tokenreviews"}, Verbs: []string{"create"}},
+			{APIGroups: []string{"certificates.k8s.io"}, Resources: []string{"certificatesigningrequests/approval"}, Verbs: []string{"update"}},
+			{APIGroups: []string{"certificates.k8s.io"}, Resources: []string{"signers"}, Verbs: []string{"approve"}},
+			{APIGroups: []string{"rbac.authorization.k8s.io"}, Resources: []string{"clusterroles"}, Verbs: []string{"bind"}},
+			{APIGroups: []string{"admissionregistration.k8s.io"}, Resources: []string{"mutatingwebhookconfigurations"}, Verbs: []string{"update"}},
+			{APIGroups: []string{""}, Resources: []string{"secrets"}, Verbs: []string{"get"}},
+		},
+	}}
+	findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+		bindClusterRole("cluster-bind", "dangerous", "user:admin"),
+	})
+	for _, code := range []string{
+		"nodes-proxy", "tokenreview-oracle", "csr-approval", "csr-signer-approve",
+		"rbac-bind-escalate", "admission-policy-mutate", "secrets-read",
+	} {
+		assertHas(t, findings, code)
+	}
+}
+
+func TestNamespacedWildcardOmitsClusterScopedFindings(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind: "ClusterRole",
+		Name: "wildcard",
+		Rules: []k8srbac.PolicyRule{{
+			APIGroups: []string{"*"},
+			Resources: []string{"*"},
+			Verbs:     []string{"*"},
+		}},
+	}}
+	nsFindings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+		bindClusterRoleViaRoleBinding("app", "ns-wild", "wildcard", "system:serviceaccount:app:sa"),
+	})
+	assertHas(t, nsFindings, "all-resources-all-verbs")
+	assertHas(t, nsFindings, "secrets-read")
+	assertHas(t, nsFindings, "pod-interactive")
+	assertHas(t, nsFindings, "sa-token-create")
+	assertHas(t, nsFindings, "pod-create")
+	assertHas(t, nsFindings, "workload-controller-mutate")
+	// namespaced RBAC bind/escalate on roles/rolebindings may still apply
+	assertHas(t, nsFindings, "rbac-bind-escalate")
+	assertNotHas(t, nsFindings,
+		"nodes-proxy", "tokenreview-oracle", "csr-approval", "csr-signer-approve", "admission-policy-mutate",
+	)
+
+	clusterFindings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+		bindClusterRole("cluster-wild", "wildcard", "user:admin"),
+	})
+	assertHas(t, clusterFindings, "all-resources-all-verbs")
+	assertHas(t, clusterFindings, "secrets-read")
+	assertHas(t, clusterFindings, "nodes-proxy")
+	assertHas(t, clusterFindings, "tokenreview-oracle")
+	assertHas(t, clusterFindings, "csr-approval")
+	assertHas(t, clusterFindings, "admission-policy-mutate")
 }

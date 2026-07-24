@@ -19,7 +19,8 @@ import {
   KYVERNO_CLI_VERSION,
   KYVERNO_CLI_ARTIFACTS,
   GITLEAKS_VERSION,
-  BICEP_VERSION
+  BICEP_VERSION,
+  POWERSHELL_VERSION
 } from "./tool-pins.mjs";
 
 const require = createRequire(import.meta.url);
@@ -312,6 +313,12 @@ async function suiteOpa() {
   const opaVersion = toolVersion("opa", ["version"], {
     installHint: `install OPA ${OPA_VERSION} from https://www.openpolicyagent.org/docs/latest/#running-opa`
   });
+  if (!opaVersion.includes(OPA_VERSION)) {
+    fail(
+      `OPA ${OPA_VERSION} required; found: ${opaVersion}\n` +
+        `Install the pinned version and re-run.`
+    );
+  }
   // Each fixture JSON exports overlapping data.* keys, so fixtures must be tested one at a time.
   const cases = [
     ["labs/iac-policy/policy/secure_fixture_test.rego", "labs/iac-policy/fixtures/secure_plan.json"],
@@ -328,7 +335,7 @@ async function suiteOpa() {
   }
   stamp("opa-report.json", {
     command: "npm run verify:opa",
-    toolVersions: {opa: opaVersion},
+    toolVersions: {opa: opaVersion, expected: OPA_VERSION},
     result: "passed",
     extra: {
       policy: "labs/iac-policy/policy/terraform.rego",
@@ -345,8 +352,14 @@ async function suiteBicep() {
 
   const probeBicep = spawnSync("bicep", ["--version"], {cwd: root, encoding: "utf8", shell: isWin});
   if (!probeBicep.error && probeBicep.status === 0) {
-    bicepCmd = {command: isWin ? "bicep.cmd" : "bicep", argsPrefix: []};
+    bicepCmd = {command: isWin ? "bicep.cmd" : "bicep", argsPrefix: [], mode: "standalone"};
     toolVersions.bicep = (probeBicep.stdout || probeBicep.stderr || "").trim().split(/\r?\n/)[0];
+    if (!String(toolVersions.bicep).includes(BICEP_VERSION)) {
+      fail(
+        `Standalone Bicep ${BICEP_VERSION} required; found: ${toolVersions.bicep}\n` +
+          `Install the pinned CLI or unset PATH bicep to use an explicit CI pin.`
+      );
+    }
   } else {
     const azCmd = isWin ? "az.cmd" : "az";
     const azProbe = spawnSync(azCmd, ["bicep", "version"], {
@@ -355,8 +368,13 @@ async function suiteBicep() {
       shell: isWin
     });
     if (!azProbe.error && azProbe.status === 0) {
-      bicepCmd = {command: azCmd, argsPrefix: ["bicep"], shell: isWin};
+      bicepCmd = {command: azCmd, argsPrefix: ["bicep"], shell: isWin, mode: "azure-cli-fallback"};
       toolVersions.azureCliBicep = (azProbe.stdout || azProbe.stderr || "").trim().split(/\r?\n/)[0];
+      toolVersions.bicepSource = "azure-cli-fallback";
+      console.warn(
+        `Warning: using Azure CLI Bicep fallback (${toolVersions.azureCliBicep}); ` +
+          `CI pins standalone Bicep ${BICEP_VERSION}.`
+      );
     }
   }
 
@@ -581,6 +599,37 @@ async function suitePowershell() {
   if (!fs.existsSync(scriptPath)) fail(`Missing ${scriptRel}`);
 
   const pwsh = isWin ? "powershell.exe" : "pwsh";
+  // Prefer pwsh when available so local/CI version reporting is comparable.
+  const pwshProbe = spawnSync("pwsh", ["-NoProfile", "-NonInteractive", "-Command", "$PSVersionTable.PSVersion.ToString()"], {
+    cwd: root,
+    encoding: "utf8",
+    shell: false
+  });
+  const shellBin =
+    !pwshProbe.error && pwshProbe.status === 0 ? "pwsh" : pwsh;
+
+  const versionProbe = runCapture(
+    shellBin,
+    ["-NoProfile", "-NonInteractive", "-Command", "$PSVersionTable.PSVersion.ToString()"],
+    {shell: false}
+  );
+  if (versionProbe.error?.code === "ENOENT") {
+    missingTool(
+      shellBin,
+      isWin
+        ? "Windows PowerShell should be available; install PowerShell 7 if needed"
+        : "install PowerShell 7 (pwsh) from https://aka.ms/powershell"
+    );
+  }
+  const psVersion = (versionProbe.stdout || "").trim().split(/\r?\n/).filter(Boolean).pop();
+  if (process.env.GITHUB_ACTIONS === "true") {
+    if (!String(psVersion).startsWith(POWERSHELL_VERSION)) {
+      fail(
+        `CI requires PowerShell ${POWERSHELL_VERSION}; found: ${psVersion}`
+      );
+    }
+  }
+
   const parseCmd = `
 $ErrorActionPreference = 'Stop'
 $path = '${scriptPath.replace(/'/g, "''")}'
@@ -593,12 +642,12 @@ if ($errors -and $errors.Count -gt 0) {
 }
 Write-Output 'parse-ok'
 `;
-  const result = runCapture(pwsh, ["-NoProfile", "-NonInteractive", "-Command", parseCmd], {
+  const result = runCapture(shellBin, ["-NoProfile", "-NonInteractive", "-Command", parseCmd], {
     shell: false
   });
   if (result.error?.code === "ENOENT") {
     missingTool(
-      pwsh,
+      shellBin,
       isWin
         ? "Windows PowerShell should be available; install PowerShell 7 if needed"
         : "install PowerShell 7 (pwsh) from https://aka.ms/powershell"
@@ -611,7 +660,11 @@ Write-Output 'parse-ok'
 
   stamp("powershell-report.json", {
     command: "npm run verify:powershell",
-    toolVersions: {powershell: pwsh},
+    toolVersions: {
+      powershell: shellBin,
+      powershellVersion: psVersion,
+      expectedInCI: POWERSHELL_VERSION
+    },
     result: "passed",
     extra: {
       script: scriptRel,
