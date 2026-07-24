@@ -153,7 +153,7 @@ func ValidateToken(tokenStr string, pub *rsa.PublicKey, expectedIss, expectedAud
 
 func main() {
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ RSA-256 JWT Token Creator & Validator")
+	fmt.Println("RSA-256 JWT Token Creator & Validator")
 	fmt.Println("==================================================")
 
 	// Step 1: Initialize RSA Cryptographic Keys

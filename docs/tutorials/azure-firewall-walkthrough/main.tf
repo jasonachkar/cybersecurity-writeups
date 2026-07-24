@@ -244,8 +244,8 @@ resource "azurerm_firewall_policy_rule_collection_group" "demo" {
     action   = "Allow"
 
     rule {
-      name             = "Allow-Google"
-      source_addresses = ["10.0.3.0/24"]
+      name              = "Allow-Google"
+      source_addresses  = ["10.0.3.0/24"]
       destination_fqdns = ["www.google.com"]
 
       protocols {

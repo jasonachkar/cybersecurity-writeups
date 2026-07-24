@@ -1,110 +1,182 @@
-// Purpose: Cryptographically demonstrates and verifies the OAuth 2.0 PKCE (Proof Key for Code Exchange) flow (RFC 7636), showing how authorization servers check verifiers against challenges to mitigate token interception attacks.
+// Purpose: demonstrate an S256-only OAuth PKCE verifier with executable positive
+// and negative checks. It deliberately never prints verifiers or challenges.
 package main
 
 import (
 	"crypto/rand"
 	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"math/big"
-	"strings"
+	"os"
+	"regexp"
 )
 
-// GenerateRandomVerifier creates a cryptographically secure random string for PKCE.
-// It must be between 43 and 128 characters long and use unreserved characters: [A-Z], [a-z], [0-9], "-", ".", "_", "~".
+const (
+	minVerifierLength = 43
+	maxVerifierLength = 128
+)
+
+var verifierPattern = regexp.MustCompile(`^[A-Za-z0-9\-._~]+$`)
+
+// IsValidCodeVerifier enforces the RFC 7636 length and unreserved-character rules.
+func IsValidCodeVerifier(verifier string) bool {
+	length := len(verifier)
+	return length >= minVerifierLength &&
+		length <= maxVerifierLength &&
+		verifierPattern.MatchString(verifier)
+}
+
+// GenerateRandomVerifier returns an RFC 7636 verifier generated from crypto/rand.
 func GenerateRandomVerifier(length int) (string, error) {
-	if length < 43 || length > 128 {
-		return "", fmt.Errorf("verifier length must be between 43 and 128 characters")
+	if length < minVerifierLength || length > maxVerifierLength {
+		return "", fmt.Errorf(
+			"verifier length must be between %d and %d characters",
+			minVerifierLength,
+			maxVerifierLength,
+		)
 	}
 
-	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
-	var verifier strings.Builder
-	for i := 0; i < length; i++ {
-		num, err := rand.Int(rand.Reader, big.NewInt(int64(len(charset))))
+	const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~"
+	alphabetLength := big.NewInt(int64(len(alphabet)))
+	verifier := make([]byte, length)
+	for index := range verifier {
+		randomIndex, err := rand.Int(rand.Reader, alphabetLength)
 		if err != nil {
-			return "", err
+			return "", fmt.Errorf("generate verifier entropy: %w", err)
 		}
-		verifier.WriteByte(charset[num.Int64()])
+		verifier[index] = alphabet[randomIndex.Int64()]
 	}
-	return verifier.String(), nil
+	return string(verifier), nil
 }
 
-// ComputeChallengeS256 creates the S256 code challenge.
-// Formula: BASE64URL-ENCODE(SHA256(ASCII(code_verifier)))
-func ComputeChallengeS256(verifier string) string {
-	// Compute SHA256 sum
-	hash := sha256.Sum256([]byte(verifier))
-	// Base64URL encode without padding
-	return base64.RawURLEncoding.EncodeToString(hash[:])
+// ComputeChallengeS256 derives BASE64URL(SHA-256(ASCII(code_verifier))).
+func ComputeChallengeS256(verifier string) (string, error) {
+	if !IsValidCodeVerifier(verifier) {
+		return "", errors.New("code_verifier does not satisfy RFC 7636 syntax")
+	}
+	sum := sha256.Sum256([]byte(verifier))
+	return base64.RawURLEncoding.EncodeToString(sum[:]), nil
 }
 
-// ValidatePKCE checks if the provided code_verifier maps to the stored code_challenge.
-func ValidatePKCE(codeVerifier string, storedChallenge string, method string) bool {
-	if method == "plain" {
-		// Plain method is not recommended as it does not protect against co-located attacks on device.
-		return codeVerifier == storedChallenge
+func isValidS256Challenge(challenge string) bool {
+	decoded, err := base64.RawURLEncoding.Strict().DecodeString(challenge)
+	return err == nil && len(decoded) == sha256.Size
+}
+
+// ValidatePKCES256 validates one token request against its stored authorization
+// transaction. It rejects method downgrade and malformed inputs before performing a
+// constant-time comparison of equal-length S256 challenges.
+func ValidatePKCES256(codeVerifier, storedChallenge, method string) bool {
+	if method != "S256" || !IsValidCodeVerifier(codeVerifier) ||
+		!isValidS256Challenge(storedChallenge) {
+		return false
 	}
 
-	if method == "S256" {
-		computedChallenge := ComputeChallengeS256(codeVerifier)
-		// Perform constant-time comparison to mitigate timing attacks
-		return computedChallenge == storedChallenge
+	computedChallenge, err := ComputeChallengeS256(codeVerifier)
+	if err != nil {
+		return false
 	}
+	return subtle.ConstantTimeCompare(
+		[]byte(computedChallenge),
+		[]byte(storedChallenge),
+	) == 1
+}
 
-	return false
+type check struct {
+	name string
+	run  func() bool
 }
 
 func main() {
-	fmt.Println("==================================================")
-	fmt.Println("🛡️ OAuth 2.0 PKCE (Proof Key for Code Exchange) Flow")
-	fmt.Println("==================================================")
+	// RFC 7636 Appendix B test vector.
+	const vectorVerifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk"
+	const vectorChallenge = "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM"
+	const wrongVerifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXa"
+	const invalidCharacterVerifier = "dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjX!"
 
-	// Step 1: Client generates code_verifier
-	fmt.Println("\n[Client] Step 1: Generating random code_verifier (cryptographically secure)...")
-	codeVerifier, err := GenerateRandomVerifier(64)
-	if err != nil {
-		fmt.Printf("Error: %v\n", err)
-		return
-	}
-	fmt.Printf("   - Code Verifier: %s\n", codeVerifier)
-
-	// Step 2: Client computes code_challenge using S256
-	fmt.Println("\n[Client] Step 2: Calculating code_challenge (S256)...")
-	codeChallenge := ComputeChallengeS256(codeVerifier)
-	fmt.Printf("   - Code Challenge: %s\n", codeChallenge)
-
-	// Step 3: Authorization Request
-	// The client sends the code_challenge and code_challenge_method to the authorization server.
-	fmt.Println("\n[Server] Step 3: Receiving Authorization Request...")
-	fmt.Printf("   - Storing Challenge: '%s' (Method: S256) linked to authorization code 'auth_code_xyz123'\n", codeChallenge)
-	storedChallenge := codeChallenge
-	storedMethod := "S256"
-
-	// Step 4: Token Request (Exchange Auth Code for Access Token)
-	// The client sends authorization code + code_verifier.
-	fmt.Println("\n[Server] Step 4: Processing Token Request...")
-	fmt.Println("   - Client presents code 'auth_code_xyz123' along with code_verifier.")
-
-	// Case 1: Valid Verification
-	fmt.Println("\n--- Scenario A: Valid Token request with matching Verifier ---")
-	fmt.Printf("   - Presented Verifier: %s\n", codeVerifier)
-	valid := ValidatePKCE(codeVerifier, storedChallenge, storedMethod)
-	if valid {
-		fmt.Println("   - [SUCCESS] Verifier matches challenge! Access Token issued successfully. ✅")
-	} else {
-		fmt.Println("   - [FAILURE] Cryptographic mismatch! Token request rejected. ❌")
+	generatedVerifier, generateErr := GenerateRandomVerifier(64)
+	generatedChallenge := ""
+	if generateErr == nil {
+		generatedChallenge, generateErr = ComputeChallengeS256(generatedVerifier)
 	}
 
-	// Case 2: Invalid/Intercepted Auth Code with Bad Verifier
-	fmt.Println("\n--- Scenario B: Mitigating Authorization Code Interception (Attacker attempt) ---")
-	// An attacker intercepted 'auth_code_xyz123' but does NOT possess the client's private memory/verifier.
-	// The attacker attempts to exchange the code using their own verifier or a dummy verifier.
-	attackerVerifier := "attacker_injected_verifier_with_excess_length_characters_0000"
-	fmt.Printf("   - Presented Attacker Verifier: %s\n", attackerVerifier)
-	valid = ValidatePKCE(attackerVerifier, storedChallenge, storedMethod)
-	if valid {
-		fmt.Println("   - [BUG] Token issued! Attacker bypassed PKCE security check. ❌")
-	} else {
-		fmt.Println("   - [BLOCKED] Cryptographic mismatch! Access request blocked. PKCE verification protected the session. ✅")
+	checks := []check{
+		{
+			name: "RFC 7636 S256 vector is accepted",
+			run: func() bool {
+				return ValidatePKCES256(vectorVerifier, vectorChallenge, "S256")
+			},
+		},
+		{
+			name: "intercepted code with the wrong verifier is rejected",
+			run: func() bool {
+				return !ValidatePKCES256(wrongVerifier, vectorChallenge, "S256")
+			},
+		},
+		{
+			name: "plain method downgrade is rejected",
+			run: func() bool {
+				return !ValidatePKCES256(vectorVerifier, vectorVerifier, "plain")
+			},
+		},
+		{
+			name: "method names are not normalized",
+			run: func() bool {
+				return !ValidatePKCES256(vectorVerifier, vectorChallenge, "s256")
+			},
+		},
+		{
+			name: "short verifier is rejected",
+			run: func() bool {
+				return !ValidatePKCES256("too-short", vectorChallenge, "S256")
+			},
+		},
+		{
+			name: "verifier with a non-unreserved character is rejected",
+			run: func() bool {
+				return !ValidatePKCES256(
+					invalidCharacterVerifier,
+					vectorChallenge,
+					"S256",
+				)
+			},
+		},
+		{
+			name: "malformed stored challenge is rejected",
+			run: func() bool {
+				return !ValidatePKCES256(vectorVerifier, "not-base64url!", "S256")
+			},
+		},
+		{
+			name: "generated verifier round trip is accepted",
+			run: func() bool {
+				return generateErr == nil &&
+					IsValidCodeVerifier(generatedVerifier) &&
+					ValidatePKCES256(
+						generatedVerifier,
+						generatedChallenge,
+						"S256",
+					)
+			},
+		},
 	}
+
+	failures := 0
+	for _, item := range checks {
+		if item.run() {
+			fmt.Printf("PASS: %s\n", item.name)
+			continue
+		}
+		failures++
+		fmt.Printf("FAIL: %s\n", item.name)
+	}
+
+	if failures > 0 {
+		fmt.Printf("PKCE validation failed: %d of %d checks failed\n", failures, len(checks))
+		os.Exit(1)
+	}
+	fmt.Printf("PKCE validation passed: %d checks; no verifier values logged\n", len(checks))
 }

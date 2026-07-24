@@ -25,15 +25,15 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Secure CI/CD Pipeline Design: Runner Hardening, Workload Identity, and Pipeline Integrity - Cloud Security Engineering</title>
+        <title>Secure CI/CD Pipeline Architecture and Trust Boundaries - Cloud Security Engineering</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#secure-cicd-pipeline-design-runner-hardening-workload-identity-and-pipeline-integrity" class="md-skip">
+        <a href="#secure-cicd-pipeline-architecture-and-trust-boundaries" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Secure CI/CD Pipeline Design: Runner Hardening, Workload Identity, and Pipeline Integrity
+              Secure CI/CD Pipeline Architecture and Trust Boundaries
             
           </span>
         </div>
@@ -294,6 +294,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="../../about/site-provenance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    <i class='fa-solid fa-circle-info'></i> Build provenance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -303,10 +330,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   
@@ -324,8 +351,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -525,10 +552,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -546,8 +573,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -648,6 +675,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../appsec/ai-agent-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Agent Security Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../appsec/runtime-protection-rasp-waf/" class="md-nav__link">
         
   
@@ -693,10 +748,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -714,8 +769,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -792,10 +847,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#executive-summary" class="md-nav__link">
+  <a href="#executive-decision" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Executive Summary
+        Executive decision
       
     </span>
   </a>
@@ -803,22 +858,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#threat-model-and-attack-surface" class="md-nav__link">
+  <a href="#scope-and-non-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Threat Model and Attack Surface
+        Scope and non-goals
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Threat Model and Attack Surface">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threat-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Threat model">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#threat-vectors-and-kill-chains" class="md-nav__link">
+  <a href="#material-abuse-cases" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Threat Vectors and Kill-Chains
+        Material abuse cases
       
     </span>
   </a>
@@ -831,34 +897,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#deep-technical-body" class="md-nav__link">
+  <a href="#architecture-decision-record" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Deep Technical Body
+        Architecture decision record
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Deep Technical Body">
+    <nav class="md-nav" aria-label="Architecture decision record">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#poisoned-pipeline-execution-ppe-mechanics-and-mitigations" class="md-nav__link">
+  <a href="#selected-pipeline" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Poisoned Pipeline Execution (PPE) Mechanics and Mitigations
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Poisoned Pipeline Execution (PPE) Mechanics and Mitigations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#the-github-actions-pull_request_target-trap" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The GitHub Actions pull_request_target Trap
+        Selected pipeline
       
     </span>
   </a>
@@ -866,82 +920,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#secure-workflow-patterns" class="md-nav__link">
+  <a href="#rejected-shortcuts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Secure Workflow Patterns
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#workload-identity-federation-github-oidc-for-deployments" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Workload Identity Federation (GitHub OIDC) for Deployments
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Workload Identity Federation (GitHub OIDC) for Deployments">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how-it-works" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How it works:
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#secure-github-actions-workflow-oidc-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Secure GitHub Actions Workflow (OIDC Example)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#defensive-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Defensive Architecture
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Defensive Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reference-pipeline-isolation-boundary-topology" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reference Pipeline Isolation Boundary Topology
+        Rejected shortcuts
       
     </span>
   </a>
@@ -954,10 +936,82 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tooling-and-implementation" class="md-nav__link">
+  <a href="#github-actions-boundary-design" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Tooling and Implementation
+        GitHub Actions boundary design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GitHub Actions boundary design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#events-and-checkout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Events and checkout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token-and-checkout-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Token and checkout permissions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expression-and-command-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expression and command injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-and-lifecycle-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency and lifecycle behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runners-and-caches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runners and caches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-devops-boundary-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure DevOps boundary design
       
     </span>
   </a>
@@ -965,10 +1019,98 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cicd-security-audit-checklist" class="md-nav__link">
+  <a href="#security-gates-and-failure-semantics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CI/CD Security Audit Checklist
+        Security gates and failure semantics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workload-identity-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workload identity federation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#artifact-promotion-and-supply-chain-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Artifact promotion and supply-chain verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure modes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-and-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment and rollback
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-and-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Observability and operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#residual-risk-cost-and-usability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Residual risk, cost, and usability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
       
     </span>
   </a>
@@ -1058,6 +1200,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../secureobs-multitenant-security-scanner/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SecureObs Security Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../secrets-management/" class="md-nav__link">
         
   
@@ -1101,10 +1271,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -1122,8 +1292,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1211,10 +1381,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -1232,8 +1402,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1258,10 +1428,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
         
           
-          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
             
   
   
@@ -1279,8 +1449,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1481,10 +1651,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
         
           
-          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
             
   
   
@@ -1502,8 +1672,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1676,10 +1846,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
         
           
-          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="0">
             
   
   
@@ -1697,8 +1867,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1787,10 +1957,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4" >
         
           
-          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_4" id="__nav_7_4_label" tabindex="0">
             
   
   
@@ -1808,8 +1978,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1954,10 +2124,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_5" >
         
           
-          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_5" id="__nav_7_5_label" tabindex="0">
             
   
   
@@ -1975,8 +2145,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_5">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2149,10 +2319,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_6" >
         
           
-          <label class="md-nav__link" for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
             
   
   
@@ -2170,8 +2340,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_6">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2239,10 +2409,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
             
   
   
@@ -2260,8 +2430,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2286,10 +2456,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
         
           
-          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
             
   
   
@@ -2307,8 +2477,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2481,10 +2651,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" >
         
           
-          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
             
   
   
@@ -2502,8 +2672,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2648,10 +2818,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_3" >
         
           
-          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
             
   
   
@@ -2669,8 +2839,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2906,10 +3076,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -2927,8 +3097,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2953,10 +3123,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" >
         
           
-          <label class="md-nav__link" for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
             
   
   
@@ -2974,8 +3144,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_1">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3176,10 +3346,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_2" >
         
           
-          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9_2" id="__nav_9_2_label" tabindex="0">
             
   
   
@@ -3197,8 +3367,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3371,10 +3541,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_4" >
         
           
-          <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9_4" id="__nav_9_4_label" tabindex="0">
             
   
   
@@ -3392,8 +3562,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3494,14 +3664,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/sc-500/domain-3-compute-posture/" class="md-nav__link">
+      <a href="../../docs/certification-notes/sc-500/domain-3-secure-compute/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Domain 3 - Compute & Posture
+    Domain 3 - Secure Compute
   
 
     
@@ -3522,14 +3692,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/sc-500/domain-4-ai-security/" class="md-nav__link">
+      <a href="../../docs/certification-notes/sc-500/domain-4-manage-monitor-posture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Domain 4 - AI Workload Security
+    Domain 4 - Manage & Monitor Security Posture
   
 
     
@@ -3573,10 +3743,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
             
   
   
@@ -3594,8 +3764,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3751,10 +3921,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#executive-summary" class="md-nav__link">
+  <a href="#executive-decision" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Executive Summary
+        Executive decision
       
     </span>
   </a>
@@ -3762,22 +3932,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#threat-model-and-attack-surface" class="md-nav__link">
+  <a href="#scope-and-non-goals" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Threat Model and Attack Surface
+        Scope and non-goals
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Threat Model and Attack Surface">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threat-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat model
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Threat model">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#threat-vectors-and-kill-chains" class="md-nav__link">
+  <a href="#material-abuse-cases" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Threat Vectors and Kill-Chains
+        Material abuse cases
       
     </span>
   </a>
@@ -3790,34 +3971,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#deep-technical-body" class="md-nav__link">
+  <a href="#architecture-decision-record" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Deep Technical Body
+        Architecture decision record
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Deep Technical Body">
+    <nav class="md-nav" aria-label="Architecture decision record">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#poisoned-pipeline-execution-ppe-mechanics-and-mitigations" class="md-nav__link">
+  <a href="#selected-pipeline" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Poisoned Pipeline Execution (PPE) Mechanics and Mitigations
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Poisoned Pipeline Execution (PPE) Mechanics and Mitigations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#the-github-actions-pull_request_target-trap" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The GitHub Actions pull_request_target Trap
+        Selected pipeline
       
     </span>
   </a>
@@ -3825,82 +3994,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#secure-workflow-patterns" class="md-nav__link">
+  <a href="#rejected-shortcuts" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Secure Workflow Patterns
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#workload-identity-federation-github-oidc-for-deployments" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Workload Identity Federation (GitHub OIDC) for Deployments
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Workload Identity Federation (GitHub OIDC) for Deployments">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#how-it-works" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        How it works:
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#secure-github-actions-workflow-oidc-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Secure GitHub Actions Workflow (OIDC Example)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#defensive-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Defensive Architecture
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Defensive Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reference-pipeline-isolation-boundary-topology" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reference Pipeline Isolation Boundary Topology
+        Rejected shortcuts
       
     </span>
   </a>
@@ -3913,10 +4010,82 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#tooling-and-implementation" class="md-nav__link">
+  <a href="#github-actions-boundary-design" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Tooling and Implementation
+        GitHub Actions boundary design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GitHub Actions boundary design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#events-and-checkout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Events and checkout
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#token-and-checkout-permissions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Token and checkout permissions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expression-and-command-injection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expression and command injection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependency-and-lifecycle-behavior" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependency and lifecycle behavior
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#runners-and-caches" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Runners and caches
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-devops-boundary-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure DevOps boundary design
       
     </span>
   </a>
@@ -3924,10 +4093,98 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#cicd-security-audit-checklist" class="md-nav__link">
+  <a href="#security-gates-and-failure-semantics" class="md-nav__link">
     <span class="md-ellipsis">
       
-        CI/CD Security Audit Checklist
+        Security gates and failure semantics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workload-identity-federation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Workload identity federation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#artifact-promotion-and-supply-chain-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Artifact promotion and supply-chain verification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure modes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-and-rollback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment and rollback
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-and-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Observability and operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#residual-risk-cost-and-usability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Residual risk, cost, and usability
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
       
     </span>
   </a>
@@ -3965,185 +4222,336 @@
   
 
 
-<h1 id="secure-cicd-pipeline-design-runner-hardening-workload-identity-and-pipeline-integrity">Secure CI/CD Pipeline Design: Runner Hardening, Workload Identity, and Pipeline Integrity</h1>
-<h2 id="executive-summary">Executive Summary</h2>
-<p>Software delivery pipelines are highly attractive targets for modern adversaries. By compromising a build system, attackers can inject malicious code directly into production binaries, harvest cloud credentials, or hijack infrastructure. Traditional security strategies often focus exclusively on scanning code repositories for vulnerabilities, leaving the pipeline orchestration plane itself unsecured. Build runners frequently execute with administrative cloud privileges and access sensitive production environments, making them prime targets for lateral escalation.</p>
-<p>At scale, the failure to secure pipeline runners and enforce strict branch protection policies creates catastrophic vulnerability chains. The most severe of these is Poisoned Pipeline Execution (PPE), where attackers modify CI configuration files in untrusted pull requests to execute arbitrary code on shared runner infrastructure. This whitepaper explains the design principles, access controls, and hardening patterns needed to secure build execution environments, implement keyless workload identity federation, and prevent pipeline hijacking.</p>
-<hr />
-<h2 id="threat-model-and-attack-surface">Threat Model and Attack Surface</h2>
-<p>The pipeline attack surface spans code contribution events, configuration files, runner execution hosts, and target environment deployment interfaces.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>                  [ Malicious Pull Request Submitted ]
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                                   │
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                  ( Modifies .github/workflows/build.yml )
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                                   │
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                                   ▼
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>                   [ CI Runner Starts Execution ]
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                                   │
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                ( Runs Arbitrary Attacker Script )
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>                                   │
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>                                   ▼
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>                    [ Hijacks Runner Host Environment ]
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                   │
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>               ┌───────────────────┴───────────────────┐
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>               ▼ (Attack Path: Shared Secrets)         ▼ (Protected: OIDC Federation)
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>      [ Steals Hardcoded AWS Keys ]            [ Requests OIDC Token from STS ]
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>               │                                       │
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>               ▼                                       ▼
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>    [ Bypasses network gates ]                 [ Blocked: PR Ref mismatch ]
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>          ( Exfiltration )                             ( Secure )
-</span></code></pre></div>
-<h3 id="threat-vectors-and-kill-chains">Threat Vectors and Kill-Chains</h3>
-<ol>
-<li><strong>Poisoned Pipeline Execution (PPE) via Pull Requests</strong>:</li>
-<li><em>Adversary Goal</em>: Extract secrets or execute malicious code on enterprise runners.</li>
-<li><em>Attack Vector</em>: An open-source project or repository configuration allows pull requests from external forks to trigger build workflows automatically. An attacker submits a PR that modifies the build script or workflow configuration (<code>.github/workflows/ci.yml</code>), inserting commands to print environment variables or download malware. The runner executes the modified workflow in the context of the main repository, exposing secrets to the attacker's logs.</li>
-<li><strong>Runner Host Compromise</strong>:</li>
-<li><em>Adversary Goal</em>: Establish persistent access in the internal network or cloud environment hosting the build runner.</li>
-<li><em>Attack Vector</em>: An organization deploys self-hosted runners on persistent virtual machines inside their private AWS VPC. The runners are not isolated and share a broad IAM instance profile. An attacker exploits a vulnerability in a third-party dependency during a test execution, gains code execution on the runner VM, and queries the local IMDS to steal the VM's administrative IAM credentials.</li>
-<li><strong>Secrets Extraction from Runner Memory</strong>:</li>
-<li><em>Adversary Goal</em>: Steal deployment keys or API tokens.</li>
-<li><em>Attack Vector</em>: Build systems pass sensitive API tokens to shell scripts as plaintext environment variables. An attacker compromises an execution container and dumps the environment variables or memory of parent processes, harvesting active secrets.</li>
-</ol>
-<hr />
-<h2 id="deep-technical-body">Deep Technical Body</h2>
-<h3 id="poisoned-pipeline-execution-ppe-mechanics-and-mitigations">Poisoned Pipeline Execution (PPE) Mechanics and Mitigations</h3>
-<p>Poisoned Pipeline Execution occurs when the build runner compiles or tests code based on configurations defined in untrusted user branches.</p>
-<h4 id="the-github-actions-pull_request_target-trap">The GitHub Actions <code>pull_request_target</code> Trap</h4>
-<p>GitHub Actions provides two primary triggers for pull requests:
-* <code>pull_request</code>: Runs in the context of the merge commit (the code modification submitted in the PR). Workflows triggered by <code>pull_request</code> <strong>do not have access to secrets</strong> (they are stripped by GitHub) and have read-only token permissions, protecting the repository.
-* <code>pull_request_target</code>: Runs in the context of the target base branch (the secure master branch), but has access to the PR code. Workflows triggered by <code>pull_request_target</code> <strong>have full access to repository secrets</strong> and write-access tokens.</p>
-<p>If a developer writes a workflow triggered by <code>pull_request_target</code> that checks out the untrusted code from the incoming PR and runs an execution step (e.g. <code>npm install</code> or <code>make build</code>), the untrusted code executes inside a privileged context, exposing all repository secrets to the attacker.</p>
-<h4 id="secure-workflow-patterns">Secure Workflow Patterns</h4>
-<ol>
-<li><strong>Never checkout untrusted PR code</strong> in a <code>pull_request_target</code> workflow unless strict manual approvals are enforced.</li>
-<li>Use the <code>pull_request</code> trigger for testing. If you must publish PR statuses or coverage reports, write a two-stage workflow:</li>
-<li>Stage 1: The untrusted <code>pull_request</code> workflow runs tests and uploads test artifacts (without secrets).</li>
-<li>Stage 2: A secure <code>workflow_run</code> workflow triggers after the first stage completes, reads the artifacts, and posts the results using secure tokens.</li>
-</ol>
-<h3 id="workload-identity-federation-github-oidc-for-deployments">Workload Identity Federation (GitHub OIDC) for Deployments</h3>
-<p>To eliminate the need for storing long-lived deployment secrets (such as AWS Access Keys) in GitHub, implement OpenID Connect (OIDC) federation.</p>
-<h4 id="how-it-works">How it works:</h4>
-<ol>
-<li>The GitHub Actions runner requests a short-lived OIDC token (JWT) from GitHub's token authority.</li>
-<li>The runner calls <code>sts:AssumeRoleWithWebIdentity</code> on AWS, passing the JWT.</li>
-<li>The AWS IAM service verifies the signature of the token against GitHub's public keys.</li>
-<li>The trust policy validates that the repository and branch name in the JWT claims match the allowed values before returning temporary session credentials.</li>
-</ol>
-<h4 id="secure-github-actions-workflow-oidc-example">Secure GitHub Actions Workflow (OIDC Example)</h4>
-<div class="language-yaml highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Production Secure Deploy</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">on</span><span class="p">:</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">push</span><span class="p">:</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="nt">branches</span><span class="p">:</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">main</span>
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nt">permissions</span><span class="p">:</span>
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span><span class="nt">id-token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">write</span><span class="w"> </span><span class="c1"># Required for requesting the OIDC JWT token</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">  </span><span class="nt">contents</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">read</span><span class="w">  </span><span class="c1"># Required for checkout</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="nt">jobs</span><span class="p">:</span>
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="nt">deploy</span><span class="p">:</span>
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
-</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
-</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Checkout Code</span>
-</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v4</span>
-</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
-</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Configure AWS Credentials via OIDC</span>
-</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">aws-actions/configure-aws-credentials@v4</span>
-</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">        </span><span class="nt">with</span><span class="p">:</span>
-</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">          </span><span class="nt">role-to-assume</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">arn:aws:iam::123456789012:role/GitHubActionsDeploymentRole</span>
-</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">          </span><span class="nt">aws-region</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">us-west-2</span>
-</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>
-</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deploy Application</span>
-</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
-</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">          </span><span class="no">aws s3 sync ./dist s3://my-production-deployment-bucket/</span>
-</span></code></pre></div>
-<hr />
-<h2 id="defensive-architecture">Defensive Architecture</h2>
-<p>A secure pipeline design requires isolating runner hosts, enforcing branch protections, and applying strict validation rules to all code changes.</p>
-<h3 id="reference-pipeline-isolation-boundary-topology">Reference Pipeline Isolation Boundary Topology</h3>
-<pre class="mermaid"><code>flowchart TD
-    DEV["Developer Local"] --&gt;|git push| REPO["GitHub Repository&lt;br/&gt;Branch Protection Enforced"]
-    REPO --&gt;|Webhook Trigger| VPC["Self-Hosted Runner VPC"]
-    VPC --&gt;|Ephemeral K8s Pods| SAND["Sandbox Runner Pod"]
-    VPC --&gt;|Ephemeral K8s Pods| PROD["Production Runner Pod"]
-    SAND --&gt;|Restricted Network| DEVVPC["Isolated Dev VPC"]
-    PROD --&gt;|VPC Peering| INSPECT["Inspection Subnets"]
-
-    style DEV fill:#2563eb,color:#fff,stroke:#1d4ed8
-    style REPO fill:#7c3aed,color:#fff,stroke:#6d28d9
-    style VPC fill:#0891b2,color:#fff,stroke:#0e7490
-    style SAND fill:#059669,color:#fff,stroke:#047857
-    style PROD fill:#dc2626,color:#fff,stroke:#b91c1c
-    style DEVVPC fill:#059669,color:#fff,stroke:#047857
-    style INSPECT fill:#d97706,color:#fff,stroke:#b45309</code></pre>
+<h1 id="secure-cicd-pipeline-architecture-and-trust-boundaries">Secure CI/CD Pipeline Architecture and Trust Boundaries</h1>
+<p>A pipeline is a privileged software supply-chain service. It evaluates attacker-
+controlled text and code, downloads third-party components, executes scanners and
+build tools, moves artifacts between trust zones, exchanges identity tokens, and can
+change production. Security depends on keeping those capabilities separated and
+verifying every promotion input.</p>
+<p>The companion <a href="../../labs/secure-cicd/"><code>labs/secure-cicd</code></a> lab provides safe
+and intentionally unsafe workflow fixtures plus a fail-closed scanner gate. Its
+offline evidence is partially tested; hosted workflow execution, environment
+configuration, and a real cloud identity remain environment-specific verification.</p>
+<h2 id="executive-decision">Executive decision</h2>
+<p>Separate untrusted validation, trusted build, and privileged release into distinct
+jobs/workflows and identities. Grant no deployment credential to pull-request code.
+Build once in a protected context, identify the immutable artifact by digest, attach
+provenance and security evidence, and promote that same digest after policy and human
+approval. Prefer workload federation/OIDC to stored cloud credentials.</p>
+<p>Never assume an event name makes content safe. Review the event, checkout ref, token
+permissions, secrets, environment, runner, expressions, artifacts, caches,
+dependencies, and called workflows together.</p>
+<h2 id="scope-and-non-goals">Scope and non-goals</h2>
+<p>In scope:</p>
 <ul>
-<li><strong>Ephemeral Runners</strong>: Build steps run inside temporary Kubernetes pods (e.g. using Actions Runner Controller). Pods are destroyed immediately after execution completes, preventing cross-build contamination and persistent malware installation.</li>
-<li><strong>Network Isolation</strong>: Runners executing untrusted code (like unit tests or PR checks) run in isolated VPC subnets with no routing paths to internal production environments.</li>
+<li>GitHub Actions and Azure DevOps trust-boundary patterns;</li>
+<li>pull-request validation, trusted build, release promotion, and cloud federation;</li>
+<li>scanner failure semantics, immutable dependencies, artifact integrity, approvals,
+  observability, rollout, and incident response.</li>
 </ul>
-<hr />
-<h2 id="tooling-and-implementation">Tooling and Implementation</h2>
-<p>Implement active scanning and policy controllers to govern pipeline configurations:</p>
-<ol>
-<li><strong>GitHub Actions Runner Controller (ARC)</strong>: Deploy self-hosted runners inside Kubernetes dynamically. ARC orchestrates ephemeral runner pods that scale up and down based on queue demands, maintaining a clean state for every build.</li>
-<li><strong>Kube-score / Checkov</strong>: Run static analysis on workflow configurations and runner deployment charts to identify security risks, such as running containers as root or missing memory limit definitions.</li>
-<li><strong>StepSecurity / Slauth</strong>: Integrate runtime security monitoring into your build workflows. StepSecurity logs and blocks unauthorized outbound network calls initiated during the build process, preventing dependencies from exfiltrating credentials.</li>
-</ol>
-<hr />
-<h2 id="cicd-security-audit-checklist">CI/CD Security Audit Checklist</h2>
+<p>Not provided:</p>
+<ul>
+<li>a universal vulnerability threshold or compliance certification;</li>
+<li>proof that a marketplace action, scanner, compiler, dependency, or hosted runner is
+  benign;</li>
+<li>organization-specific branch protection, Azure service connection, or cloud role;</li>
+<li>permission to deploy the repository's teaching fixtures.</li>
+</ul>
+<h2 id="threat-model">Threat model</h2>
+<pre class="mermaid"><code>flowchart LR
+  U["Untrusted PR, issue text, dependency, fork"] --&gt; V["Validation identity: read-only, no secrets"]
+  V --&gt; E["Untrusted logs, reports, artifacts, caches"]
+  M["Protected branch revision"] --&gt; B["Trusted build identity"]
+  B --&gt; A["Immutable artifact digest"]
+  B --&gt; P["Provenance, SBOM, scan evidence"]
+  A --&gt; G["Policy verification"]
+  P --&gt; G
+  G --&gt; H["Protected environment approval"]
+  H --&gt; O["OIDC token exchange"]
+  O --&gt; R["Narrow release role"]
+  R --&gt; D["Deploy exact verified digest"]
+  E -. never execute or trust directly .-&gt; G</code></pre>
+<h3 id="material-abuse-cases">Material abuse cases</h3>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Item</th>
-<th style="text-align: left;">Focus Area</th>
-<th style="text-align: left;">Verification Step / Command</th>
-<th style="text-align: left;">Target State</th>
+<th>Abuse case</th>
+<th>Control strategy</th>
+<th>Evidence</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">Branch Protection</td>
-<td style="text-align: left;">Inspect branch protection settings for the <code>main</code> branch.</td>
-<td style="text-align: left;">Requiring pull request reviews, status checks, and linear history is enforced.</td>
+<td>Forked PR executes with write token or secrets</td>
+<td>ordinary PR validation; explicit read permission; no deployment environment</td>
+<td>workflow policy checks and fork test</td>
 </tr>
 <tr>
-<td style="text-align: left;">2</td>
-<td style="text-align: left;">Secret Management</td>
-<td style="text-align: left;">Search repository settings for active, long-lived AWS keys or deployment secrets.</td>
-<td style="text-align: left;">All deployment jobs use OIDC federation; no hardcoded keys exist.</td>
+<td><code>pull_request_target</code> checks out attacker head</td>
+<td>never combine privileged base-context event with untrusted checkout/execution</td>
+<td>unsafe fixture detection</td>
 </tr>
 <tr>
-<td style="text-align: left;">3</td>
-<td style="text-align: left;">Trigger Controls</td>
-<td style="text-align: left;">Audit workflows using <code>pull_request_target</code> or <code>workflow_run</code>.</td>
-<td style="text-align: left;">No untrusted code from PR branches is checked out or executed within these privileged scopes.</td>
+<td>PR title/body becomes shell syntax</td>
+<td>pass expressions through environment variables or action inputs; quote as data</td>
+<td>injection fixture and static rule</td>
 </tr>
 <tr>
-<td style="text-align: left;">4</td>
-<td style="text-align: left;">Runner Isolation</td>
-<td style="text-align: left;">Check network configurations of self-hosted runner VMs.</td>
-<td style="text-align: left;">Runners cannot access metadata services or adjacent production subnets.</td>
+<td>Mutable action tag is retargeted</td>
+<td>full 40-character commit SHA plus dependency review/update process</td>
+<td>positive/negative workflow policy tests</td>
 </tr>
 <tr>
-<td style="text-align: left;">5</td>
-<td style="text-align: left;">Token Permissions</td>
-<td style="text-align: left;">Verify default API permissions for GITHUB_TOKEN.</td>
-<td style="text-align: left;">Default permissions are set to read-only; workflows define explicit, minimal permissions.</td>
+<td>Compromised action steals credential</td>
+<td>minimize permissions; no persistent checkout credential; isolate release; constrain OIDC</td>
+<td>workflow review and cloud audit</td>
 </tr>
 <tr>
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">Execution Cleanup</td>
-<td style="text-align: left;">Verify if build artifacts and temporary files are cleared from persistent volumes.</td>
-<td style="text-align: left;">Ephemeral containers run in scratch memory, ensuring no data remains after jobs complete.</td>
+<td>Scanner crashes but job appears green</td>
+<td>validate report schema/status; missing/malformed input blocks</td>
+<td>gate negative tests</td>
+</tr>
+<tr>
+<td>Privileged workflow consumes poisoned artifact/cache</td>
+<td>verify digest/provenance; isolate cache namespaces and never execute untrusted cache content</td>
+<td>artifact and shared-cache fixtures</td>
+</tr>
+<tr>
+<td>Artifact changes between approval and deploy</td>
+<td>promote one digest; do not rebuild</td>
+<td>registry/deployment digest correlation</td>
+</tr>
+<tr>
+<td>OIDC trust accepts another branch/repository</td>
+<td>exact issuer, audience, subject/environment; narrow cloud role</td>
+<td>trust-policy unit/review tests</td>
+</tr>
+<tr>
+<td>Self-hosted runner persists attacker state</td>
+<td>ephemeral isolated runners or no untrusted code; egress and lifecycle controls</td>
+<td>runner inventory and image/rebuild evidence</td>
 </tr>
 </tbody>
 </table>
-<hr />
+<h2 id="architecture-decision-record">Architecture decision record</h2>
+<h3 id="selected-pipeline">Selected pipeline</h3>
+<ol>
+<li><strong>Untrusted validation:</strong> source and metadata from pull requests/forks; read-only
+   repository token; no organization/cloud secrets; no persistent runner trust.</li>
+<li><strong>Trusted build:</strong> protected branch/reviewed revision; deterministic locked inputs;
+   produces artifact, digest, SBOM, provenance, and scan evidence.</li>
+<li><strong>Verification:</strong> checks artifact digest and expected provenance identity, scanner
+   completeness, policy, waiver state, and evidence freshness.</li>
+<li><strong>Release:</strong> protected environment and narrow OIDC-federated role deploy the exact
+   verified digest; no source rebuild.</li>
+</ol>
+<h3 id="rejected-shortcuts">Rejected shortcuts</h3>
+<ul>
+<li>A single job that builds PR code and deploys if branch conditions match. Conditions
+  are not an identity boundary and are easy to change or misunderstand.</li>
+<li>Long-lived cloud secrets in repository/environment variables. Rotation does not
+  remove exfiltration risk from a compromised job.</li>
+<li>Downloading PR artifacts in a privileged <code>workflow_run</code> and executing them. GitHub
+  warns that privileged workflows consuming untrusted code, artifacts, or caches can
+  be compromised.</li>
+<li>Treating a scan file's existence as success. A partial/empty/stale result must block.</li>
+<li>Rebuilding after approval. The approved evidence no longer binds the deployed bytes.</li>
+</ul>
+<h2 id="github-actions-boundary-design">GitHub Actions boundary design</h2>
+<h3 id="events-and-checkout">Events and checkout</h3>
+<p>For untrusted code, use <code>pull_request</code> with explicit minimal permissions. Fork behavior
+depends on repository settings and event context, so verify actual token/secrets
+behavior rather than repeating "PRs never get secrets" as a universal rule.</p>
+<p><code>pull_request_target</code> runs in the base repository context and can have access to
+privileged resources. It is suitable only for carefully designed metadata operations
+that do not execute or trust PR-controlled content. Checking out the PR head and
+running it in that event destroys the boundary.</p>
+<p><code>workflow_run</code> can separate privilege, but artifacts, caches, output, branch names,
+and other data from the upstream workflow remain untrusted. Authenticate the producer,
+bind data to a commit/digest, parse it as data, and avoid executing it.</p>
+<h3 id="token-and-checkout-permissions">Token and checkout permissions</h3>
+<p>Declare top-level <code>permissions: { contents: read }</code> or <code>{}</code> and grant only job-level
+exceptions. Use <code>id-token: write</code> only in the job that exchanges the token or creates
+an attestation; it does not itself grant cloud access, but it enables minting an OIDC
+token that a relying trust policy may accept. Keep <code>persist-credentials: false</code> unless
+a reviewed step must use the GitHub token.</p>
+<p>Pin every third-party action to a full commit SHA. Retain a release comment for
+reviewability and update through a controlled dependency process. A tag or branch is
+mutable. Full SHA pinning limits retargeting risk but does not make the pinned code
+safe; review the action source, transitive behavior, permissions, network use, and
+publisher controls.</p>
+<h3 id="expression-and-command-injection">Expression and command injection</h3>
+<p>Issue titles, PR bodies, branch names, commit messages, paths, matrix values, action
+outputs, and repository content can be attacker-controlled. Do not splice expressions
+directly into <code>run</code> source. Prefer a purpose-built action; otherwise place the value in
+an environment variable and quote it according to the shell. Avoid <code>eval</code> and dynamic
+command construction.</p>
+<h3 id="dependency-and-lifecycle-behavior">Dependency and lifecycle behavior</h3>
+<p>Use a reviewed lockfile and deterministic installer. <code>npm ci --ignore-scripts</code> can
+reduce lifecycle-script exposure for validation jobs, but some builds legitimately
+need scripts; execute them only in an appropriate boundary. Apply equivalent locked
+restore modes to other ecosystems. Package registries and build plugins remain supply-
+chain dependencies.</p>
+<h3 id="runners-and-caches">Runners and caches</h3>
+<p>Hosted runners reduce persistence but do not eliminate action/dependency compromise.
+Self-hosted runners require image provenance, ephemeral lifecycle, network egress,
+host isolation, patching, telemetry, and prevention of untrusted jobs sharing state
+with privileged jobs. Do not place a long-lived production identity on the runner.</p>
+<p>Treat caches created from untrusted code as untrusted artifacts. Namespace caches by
+trust boundary and immutable inputs; do not let a privileged workflow restore a key
+that an untrusted workflow can populate. A privileged step must not execute tools or
+scripts restored from an untrusted cache. The safest release path avoids such caches.</p>
+<h2 id="azure-devops-boundary-design">Azure DevOps boundary design</h2>
+<p>Separate PR validation from protected stages using environments, approvals/checks,
+branch policies, templates, variable groups, service connections, and agent pools.
+Treat pull-request variables, artifacts, caches, logging commands, and repository
+templates as untrusted input.</p>
+<ul>
+<li>PR job: <code>checkout</code> without persistent credentials, no secret variable groups or
+  service connection, and a disposable hosted/isolated agent.</li>
+<li>Trusted build: protected branch plus reviewed template; publish digest-addressed
+  artifacts and evidence.</li>
+<li>Release: environment checks and a workload-identity-federated service connection
+  scoped to the required Azure resource boundary.</li>
+<li>Template governance: keep security-critical templates in a protected repository/ref
+  and review extension points; a template is code.</li>
+</ul>
+<p>Azure DevOps task major versions are not immutable commit pins in the GitHub sense.
+Govern built-in/marketplace task provenance, publisher, automatic updates, extension
+permissions, and agent execution separately.</p>
+<h2 id="security-gates-and-failure-semantics">Security gates and failure semantics</h2>
+<p>A gate is trustworthy only when it distinguishes:</p>
+<ul>
+<li>scanner completed and produced a report for this commit/artifact/configuration;</li>
+<li>valid report below policy;</li>
+<li>valid report above policy;</li>
+<li>scanner/tool failure, timeout, authentication failure, parse failure, or missing
+  evidence;</li>
+<li>approved waiver with owner, scope, rationale, ticket, and expiry.</li>
+</ul>
+<p>Unknown and incomplete states fail closed. The lab's gate returns <code>0</code> only for a
+complete schema-valid report within policy, <code>3</code> for policy violations, and <code>2</code> for
+invalid/incomplete scanner state. Production policy should use exploitability,
+reachability, asset exposure, severity, fix availability, and risk acceptance—not a
+single copied threshold.</p>
+<p>Waivers are signed/authorized data. Bind them to the finding, artifact or source
+range, environment, owner, and expiry. Expired or mismatched waivers block. Do not
+encode a blanket <code>continue-on-error</code> as risk acceptance.</p>
+<h2 id="workload-identity-federation">Workload identity federation</h2>
+<p>For GitHub-to-cloud federation validate:</p>
+<ul>
+<li>expected OIDC issuer;</li>
+<li>audience intended by the cloud provider/trust policy;</li>
+<li>exact repository plus branch, tag, pull request, or protected environment subject;</li>
+<li>reusable-workflow identity if it participates in trust;</li>
+<li>job/environment protections and narrow cloud authorization.</li>
+</ul>
+<p>Use separate roles/service principals for build evidence, staging, and production.
+Cloud authorization remains decisive after federation; OIDC only authenticates the
+workload claims accepted by the trust policy. Alert on unexpected subjects, audiences,
+repositories, environments, source IP patterns, and role actions.</p>
+<h2 id="artifact-promotion-and-supply-chain-verification">Artifact promotion and supply-chain verification</h2>
+<p>Build once. Store in a registry or artifact service that supports immutable/digest
+references and retention. Promotion verifies:</p>
+<ol>
+<li>calculated artifact digest equals the subject digest;</li>
+<li>statement type and predicate type are expected;</li>
+<li>issuer and build identity/workflow are authorized;</li>
+<li>source repository/ref/commit are authorized;</li>
+<li>security reports and SBOM bind to the same digest/configuration;</li>
+<li>waiver/approval is valid for the target environment;</li>
+<li>deployment uses that digest, not a mutable tag.</li>
+</ol>
+<p>See the <a href="../../labs/supply-chain/">supply-chain lab</a> for offline negative tests.</p>
+<h2 id="failure-modes">Failure modes</h2>
+<ul>
+<li><strong>Platform outage:</strong> do not bypass controls by manual credential reuse. Invoke a
+  documented emergency release path with equivalent identity, evidence, approval,
+  logging, and post-incident review.</li>
+<li><strong>Scanner outage:</strong> block or use an explicit time-bounded risk acceptance. Never
+  synthesize an empty success report.</li>
+<li><strong>OIDC/trust failure:</strong> do not fall back automatically to stored secrets.</li>
+<li><strong>Artifact registry failure:</strong> do not rebuild from source after approval; restore
+  service or repeat the entire trusted build and review.</li>
+<li><strong>Runner compromise:</strong> revoke sessions/roles, rotate any exposed non-federated
+  credentials, invalidate artifacts/caches, rebuild on trusted infrastructure, and
+  examine cloud/repository audit trails.</li>
+<li><strong>Bad policy rollout:</strong> canary new rules in report-only mode, compare false-positive
+  rates, then enforce with a versioned rollback—not <code>continue-on-error</code>.</li>
+</ul>
+<h2 id="deployment-and-rollback">Deployment and rollback</h2>
+<p>Roll out boundaries before adding more scanners:</p>
+<ol>
+<li>inventory events, secrets, permissions, runners, environments, actions/tasks,
+   service connections, artifact paths, and bypass mechanisms;</li>
+<li>split untrusted validation from release and set explicit token permissions;</li>
+<li>eliminate persistent checkout/cloud credentials and narrow OIDC trust;</li>
+<li>pin/review dependencies and isolate runners/caches;</li>
+<li>bind artifact digest, provenance, SBOM, scans, and waivers;</li>
+<li>introduce gates in observation mode, then enforce with measured ownership;</li>
+<li>rehearse compromised-runner, scanner-outage, and emergency-release procedures.</li>
+</ol>
+<p>Rollback a pipeline policy version or workflow revision through protected review.
+Never deploy an earlier mutable tag; identify the last known-good workflow commit,
+artifact digest, policy version, and evidence bundle.</p>
+<h2 id="validation-evidence">Validation evidence</h2>
+<p>Run:</p>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">npm</span> <span class="n">ci</span> <span class="p">-</span><span class="n">-ignore-scripts</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">node</span> <span class="n">labs</span><span class="p">/</span><span class="n">secure-cicd</span><span class="p">/</span><span class="n">tests</span><span class="p">/</span><span class="n">policy-tests</span><span class="p">.</span><span class="n">js</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">node</span> <span class="n">labs</span><span class="p">/</span><span class="n">secure-cicd</span><span class="p">/</span><span class="n">tests</span><span class="p">/</span><span class="n">run-tests</span><span class="p">.</span><span class="n">js</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">node</span> <span class="n">scripts</span><span class="p">/</span><span class="n">check-action-pins</span><span class="p">.</span><span class="n">js</span>
+</span></code></pre></div>
+<p>The dependency-free policy suite checks full-SHA action pins, least permissions,
+untrusted PR isolation, digest and provenance verification before privileged use,
+protected-environment binding, OIDC without stored cloud credentials, and cache-
+poisoning resistance. Each boundary has an accepted hardened fixture and an
+intentionally unsafe fixture expected to fail. The gate suite covers a passing report,
+above-policy critical/secret findings, scanner failure, and malformed values.
+Repository CI also parses YAML, checks JavaScript syntax, checks internal links, and
+validates generated/index metadata.</p>
+<p>These tests do not execute hosted workflows, prove a platform environment has required
+reviewers, perform a cloud OIDC exchange, validate the Azure role/trust policy, or
+prove cloud authorization. Add organization-specific policy tests and a
+non-production OIDC exchange before enabling release.</p>
+<h2 id="observability-and-operations">Observability and operations</h2>
+<p>Retain the workflow/pipeline definition commit, triggering event/actor/ref, token
+permission set, runner image/identity, dependency/action digests, artifact digest,
+provenance verification result, scanner configurations/results, waiver decision,
+approver, cloud federation claims, cloud role, and deployment digest.</p>
+<p>Alert on:</p>
+<ul>
+<li>privileged jobs triggered by unexpected events/refs/actors;</li>
+<li>new or broadened permissions, secrets, environments, actions, tasks, or runners;</li>
+<li>unpinned dependencies and unreviewed workflow/template changes;</li>
+<li>scanner failure/absence and rapidly growing waivers;</li>
+<li>OIDC subjects/audiences outside policy;</li>
+<li>deployment digest differing from approval/evidence;</li>
+<li>self-hosted runner reuse, unexpected egress, or persistence.</li>
+</ul>
+<h2 id="residual-risk-cost-and-usability">Residual risk, cost, and usability</h2>
+<p>The design increases pipeline duration, evidence storage, dependency review, runner
+cost, and operator friction. Strict gates need ownership and timely triage or teams
+will seek bypasses. Federation reduces stored secrets but transfers importance to
+workflow protections and trust-policy correctness.</p>
+<p>Residual risk includes malicious reviewed source, compromised maintainers/actions/
+runners/registries/cloud control planes, scanner blind spots, and authorized but
+unsafe releases. Defense requires incident-ready audit evidence and recovery, not
+only prevention.</p>
+<h2 id="limitations">Limitations</h2>
+<p>Repository fixtures validate offline structure and gate behavior. GitHub/Azure DevOps
+settings, cloud identities, organization policies, hosted runner images, and network
+controls are outside this repository and require environment-specific verification.</p>
 <h2 id="references">References</h2>
 <ul>
-<li><em>Security Hardening for GitHub Actions</em>: <a href="https://docs.github.com/en/actions/security-guides/security-hardening-for-github-actions">GitHub Documentation</a></li>
-<li><em>GitHub Actions OpenID Connect (OIDC) Federation</em>: <a href="https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect">GitHub Documentation</a></li>
-<li><em>OWASP Top 10 CI/CD Security Risks</em>: <a href="https://owasp.org/www-project-top-10-ci-cd-security-risks/">OWASP Project</a></li>
+<li><a href="https://docs.github.com/en/actions/reference/security/secure-use">GitHub secure use reference</a></li>
+<li><a href="https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows">GitHub events that trigger workflows</a></li>
+<li><a href="https://docs.github.com/en/actions/concepts/security/script-injections">GitHub script injection guidance</a></li>
+<li><a href="https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws">GitHub OIDC security hardening for AWS</a></li>
+<li><a href="https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure">GitHub OIDC security hardening for Azure</a></li>
+<li><a href="https://docs.github.com/en/actions/concepts/security/artifact-attestations">GitHub artifact attestations</a></li>
+<li><a href="https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching">GitHub dependency caching reference</a></li>
+<li><a href="https://learn.microsoft.com/en-us/azure/developer/github/connect-from-azure-openid-connect">Azure workload identity federation for GitHub</a></li>
+<li><a href="https://slsa.dev/spec/v1.2/">SLSA v1.2</a></li>
 </ul>
 
 
@@ -4182,6 +4590,18 @@
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
   &copy; 2026 Jason Achkardiab. All rights reserved.
+  <div class="md-copyright__highlight site-provenance"
+     data-source-commit="55312d775b5fd520a07b2797eb6163501120aab8"
+     data-build-timestamp="2026-07-24T01:11:33Z">
+  Source
+  <a href="https://github.com/jasonachkar/cybersecurity-writeups/commit/55312d775b5fd520a07b2797eb6163501120aab8"><code>55312d775b5fd520a07b2797eb6163501120aab8</code></a>
+  &middot; Built
+  <a href="../../about/site-provenance/"><time datetime="2026-07-24T01:11:33Z">2026-07-24T01:11:33Z</time></a>
+  &middot;
+  <a href="https://github.com/jasonachkar/cybersecurity-writeups">jasonachkar/cybersecurity-writeups</a>
+  &middot;
+  <a href="../../site-meta.json">site-meta.json</a>
+</div>
 </div>
       
     </div>
@@ -4200,7 +4620,7 @@
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.breadcrumbs", "search.suggest", "search.highlight", "content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

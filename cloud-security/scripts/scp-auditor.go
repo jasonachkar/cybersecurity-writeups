@@ -131,7 +131,7 @@ func EvaluateAction(action string, resource string, leaf *OrgNode) (bool, string
 
 func main() {
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ AWS Organizations SCP Hierarchy Simulator")
+	fmt.Println("AWS Organizations SCP Hierarchy Simulator")
 	fmt.Println("==================================================")
 
 	// Create policies
@@ -166,7 +166,7 @@ func main() {
 	// Build hierarchy
 	// Root -> SecurityOU -> ProdAccount
 	rootNode := &OrgNode{Name: "Root-OU", Type: "ROOT", Policies: []Policy{fullAWSAccess, denyLeavingOrg}}
-	
+
 	securityOU := &OrgNode{
 		Name:     "Security-Core-OU",
 		Type:     "OU",

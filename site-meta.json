@@ -1,0 +1,7 @@
+{
+  "sourceBranch": "codex/production-security-content-verification",
+  "sourceCommit": "55312d775b5fd520a07b2797eb6163501120aab8",
+  "buildTimestamp": "2026-07-24T01:11:33Z",
+  "generator": "mkdocs",
+  "repository": "jasonachkar/cybersecurity-writeups"
+}

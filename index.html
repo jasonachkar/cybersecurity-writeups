@@ -16,14 +16,14 @@
       
       
       
-        <link rel="next" href="cloud-security/multi-account-landing-zones/">
+        <link rel="next" href="about/site-provenance/">
       
       
         
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#cybersecurity-writeups-learning" class="md-skip">
+        <a href="#cloud-security-engineering-research-and-labs" class="md-skip">
           Skip to content
         </a>
       
@@ -326,10 +326,82 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#contents-overview" class="md-nav__link">
+  <a href="#evidence-labels" class="md-nav__link">
     <span class="md-ellipsis">
       
-        📚 Contents Overview
+        Evidence labels
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#featured-engineering-investigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Featured engineering investigations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Featured engineering investigations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secure-cicd-trust-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secure CI/CD trust boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-tenant-saas-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-tenant SaaS isolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secureobs-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SecureObs architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validated-labs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validated labs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-and-threat-model-research" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture and threat-model research
       
     </span>
   </a>
@@ -340,157 +412,7 @@
   <a href="#tutorials" class="md-nav__link">
     <span class="md-ellipsis">
       
-        📘 Tutorials
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="📘 Tutorials">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#building-a-secure-azure-landing-zone" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Building a Secure Azure Landing Zone
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#owasp-api-security-top-10-practical-mitigations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 OWASP API Security Top 10: Practical Mitigations
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#detection-engineering-with-microsoft-sentinel" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Detection Engineering with Microsoft Sentinel
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#implementing-security-gates-in-cicd-pipelines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Implementing Security Gates in CI/CD Pipelines
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#securing-azure-entra-id-zero-trust" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Securing Azure Entra ID (Zero Trust)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#research" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔬 Research
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🔬 Research">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#threat-modeling-a-multi-tenant-saas-application-stride" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Threat Modeling a Multi-Tenant SaaS Application (STRIDE)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#common-oauth-20-misconfigurations-and-exploits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Common OAuth 2.0 Misconfigurations and Exploits
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#advanced-cloud-security-engineering-iam-devsecops-architecture-detection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Advanced Cloud Security Engineering (IAM, DevSecOps, Architecture, Detection)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#certification-notes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🎓 Certification Notes
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🎓 Certification Notes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#comptia-security-study-notes-labs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 CompTIA Security+ Study Notes &amp; Labs
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#repository-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🗂️ Repository Structure
+        Tutorials
       
     </span>
   </a>
@@ -498,10 +420,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#goals-of-this-repository" class="md-nav__link">
+  <a href="#study-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🎯 Goals of This Repository
+        Study notes
       
     </span>
   </a>
@@ -509,10 +431,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-to-use-this-repo" class="md-nav__link">
+  <a href="#repository-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🔍 How to Use This Repo
+        Repository validation
       
     </span>
   </a>
@@ -520,32 +442,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#future-additions" class="md-nav__link">
+  <a href="#scope-and-integrity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🚀 Future Additions
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#disclaimer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        📜 Disclaimer
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#author" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        👤 Author
+        Scope and integrity
       
     </span>
   </a>
@@ -620,10 +520,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#research_1" class="md-nav__link">
+  <a href="#research" class="md-nav__link">
     <span class="md-ellipsis">
       
         🔬 Research
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#certification-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎓 Certification Notes
       
     </span>
   </a>
@@ -649,6 +560,33 @@
   
   
   
+    <li class="md-nav__item">
+      <a href="about/site-provenance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    <i class='fa-solid fa-circle-info'></i> Build provenance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
     
     
     
@@ -658,10 +596,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   
@@ -679,8 +617,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -880,10 +818,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -901,8 +839,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1003,6 +941,34 @@
   
   
     <li class="md-nav__item">
+      <a href="appsec/ai-agent-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Agent Security Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="appsec/runtime-protection-rasp-waf/" class="md-nav__link">
         
   
@@ -1046,10 +1012,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -1067,8 +1033,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1169,6 +1135,34 @@
   
   
     <li class="md-nav__item">
+      <a href="devsecops/secureobs-multitenant-security-scanner/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SecureObs Security Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="devsecops/secrets-management/" class="md-nav__link">
         
   
@@ -1212,10 +1206,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -1233,8 +1227,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1322,10 +1316,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -1343,8 +1337,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1369,10 +1363,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
         
           
-          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
             
   
   
@@ -1390,8 +1384,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1592,10 +1586,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
         
           
-          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
             
   
   
@@ -1613,8 +1607,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1787,10 +1781,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
         
           
-          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="0">
             
   
   
@@ -1808,8 +1802,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1898,10 +1892,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4" >
         
           
-          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_4" id="__nav_7_4_label" tabindex="0">
             
   
   
@@ -1919,8 +1913,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2065,10 +2059,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_5" >
         
           
-          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_5" id="__nav_7_5_label" tabindex="0">
             
   
   
@@ -2086,8 +2080,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_5">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2260,10 +2254,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_6" >
         
           
-          <label class="md-nav__link" for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
             
   
   
@@ -2281,8 +2275,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_6">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2350,10 +2344,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
             
   
   
@@ -2371,8 +2365,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2397,10 +2391,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
         
           
-          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
             
   
   
@@ -2418,8 +2412,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2592,10 +2586,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" >
         
           
-          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
             
   
   
@@ -2613,8 +2607,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2759,10 +2753,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_3" >
         
           
-          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
             
   
   
@@ -2780,8 +2774,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3017,10 +3011,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -3038,8 +3032,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3064,10 +3058,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" >
         
           
-          <label class="md-nav__link" for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
             
   
   
@@ -3085,8 +3079,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_1">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3287,10 +3281,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_2" >
         
           
-          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9_2" id="__nav_9_2_label" tabindex="0">
             
   
   
@@ -3308,8 +3302,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3482,10 +3476,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_4" >
         
           
-          <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9_4" id="__nav_9_4_label" tabindex="0">
             
   
   
@@ -3503,8 +3497,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3605,14 +3599,14 @@
   
   
     <li class="md-nav__item">
-      <a href="docs/certification-notes/sc-500/domain-3-compute-posture/" class="md-nav__link">
+      <a href="docs/certification-notes/sc-500/domain-3-secure-compute/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Domain 3 - Compute & Posture
+    Domain 3 - Secure Compute
   
 
     
@@ -3633,14 +3627,14 @@
   
   
     <li class="md-nav__item">
-      <a href="docs/certification-notes/sc-500/domain-4-ai-security/" class="md-nav__link">
+      <a href="docs/certification-notes/sc-500/domain-4-manage-monitor-posture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Domain 4 - AI Workload Security
+    Domain 4 - Manage & Monitor Security Posture
   
 
     
@@ -3684,10 +3678,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
             
   
   
@@ -3705,8 +3699,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3862,10 +3856,82 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#contents-overview" class="md-nav__link">
+  <a href="#evidence-labels" class="md-nav__link">
     <span class="md-ellipsis">
       
-        📚 Contents Overview
+        Evidence labels
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#featured-engineering-investigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Featured engineering investigations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Featured engineering investigations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#secure-cicd-trust-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Secure CI/CD trust boundaries
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multi-tenant-saas-isolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-tenant SaaS isolation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#secureobs-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SecureObs architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validated-labs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validated labs
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-and-threat-model-research" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture and threat-model research
       
     </span>
   </a>
@@ -3876,157 +3942,7 @@
   <a href="#tutorials" class="md-nav__link">
     <span class="md-ellipsis">
       
-        📘 Tutorials
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="📘 Tutorials">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#building-a-secure-azure-landing-zone" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Building a Secure Azure Landing Zone
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#owasp-api-security-top-10-practical-mitigations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 OWASP API Security Top 10: Practical Mitigations
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#detection-engineering-with-microsoft-sentinel" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Detection Engineering with Microsoft Sentinel
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#implementing-security-gates-in-cicd-pipelines" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Implementing Security Gates in CI/CD Pipelines
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#securing-azure-entra-id-zero-trust" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Securing Azure Entra ID (Zero Trust)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#research" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔬 Research
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🔬 Research">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#threat-modeling-a-multi-tenant-saas-application-stride" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Threat Modeling a Multi-Tenant SaaS Application (STRIDE)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#common-oauth-20-misconfigurations-and-exploits" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Common OAuth 2.0 Misconfigurations and Exploits
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#advanced-cloud-security-engineering-iam-devsecops-architecture-detection" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 Advanced Cloud Security Engineering (IAM, DevSecOps, Architecture, Detection)
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#certification-notes" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🎓 Certification Notes
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🎓 Certification Notes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#comptia-security-study-notes-labs" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🔹 CompTIA Security+ Study Notes &amp; Labs
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#repository-structure" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        🗂️ Repository Structure
+        Tutorials
       
     </span>
   </a>
@@ -4034,10 +3950,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#goals-of-this-repository" class="md-nav__link">
+  <a href="#study-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🎯 Goals of This Repository
+        Study notes
       
     </span>
   </a>
@@ -4045,10 +3961,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#how-to-use-this-repo" class="md-nav__link">
+  <a href="#repository-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🔍 How to Use This Repo
+        Repository validation
       
     </span>
   </a>
@@ -4056,32 +3972,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#future-additions" class="md-nav__link">
+  <a href="#scope-and-integrity" class="md-nav__link">
     <span class="md-ellipsis">
       
-        🚀 Future Additions
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#disclaimer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        📜 Disclaimer
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#author" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        👤 Author
+        Scope and integrity
       
     </span>
   </a>
@@ -4156,10 +4050,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#research_1" class="md-nav__link">
+  <a href="#research" class="md-nav__link">
     <span class="md-ellipsis">
       
         🔬 Research
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#certification-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎓 Certification Notes
       
     </span>
   </a>
@@ -4191,184 +4096,263 @@
   
 
 
-<h1 id="cybersecurity-writeups-learning">🛡️ Cybersecurity Writeups &amp; Learning</h1>
-<p>This repository contains <strong>technical writeups, research notes, tutorials, and certification study materials</strong> documenting my hands-on cybersecurity learning journey.<br />
-The focus is on <strong>practical security engineering</strong>, real-world attack scenarios, and defensible mitigation strategies across <strong>cloud security, application security, identity, and DevSecOps</strong>.</p>
-<p>The content is written to reflect <strong>how security is applied in production environments</strong>, not just theoretical concepts.</p>
-<hr />
-<h2 id="contents-overview">📚 Contents Overview</h2>
+<h1 id="cloud-security-engineering-research-and-labs">Cloud Security Engineering Research and Labs</h1>
+<p>Evidence-driven write-ups, threat models, tested controls, and reproducible labs
+covering cloud identity, secure delivery pipelines, software supply chains,
+multi-tenant systems, Kubernetes, detection engineering, application security, and
+AI agent security.</p>
+<p><a href="https://github.com/jasonachkar/cybersecurity-writeups/actions/workflows/content-quality.yml"><img alt="Content quality" src="https://github.com/jasonachkar/cybersecurity-writeups/actions/workflows/content-quality.yml/badge.svg" /></a>
+<a href="https://github.com/jasonachkar/cybersecurity-writeups/actions/workflows/site-freshness.yml"><img alt="Deployment freshness" src="https://github.com/jasonachkar/cybersecurity-writeups/actions/workflows/site-freshness.yml/badge.svg" /></a></p>
+<p>The repository distinguishes sourced engineering guidance from executable evidence.
+A polished diagram is not treated as proof that a control works, and a passing
+structural test is not described as production experience.</p>
+<h2 id="evidence-labels">Evidence labels</h2>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Validated Lab</strong></td>
+<td>Runnable positive and negative fixtures checked by repository automation</td>
+</tr>
+<tr>
+<td><strong>Engineering Investigation</strong></td>
+<td>Threat model, enforcement design, evidence, limitations, and operational trade-offs</td>
+</tr>
+<tr>
+<td><strong>Conceptual Reference</strong></td>
+<td>Primary-source synthesis or illustrative design without an end-to-end runtime test</td>
+</tr>
+<tr>
+<td><strong>Study Notes</strong></td>
+<td>Certification-oriented material; not equivalent to engineering implementation evidence</td>
+</tr>
+</tbody>
+</table>
+<p>Article front matter records source quality, implementation status, reviewed
+standards or platform documentation, and a technical-review interval. See the
+<a href="docs/METADATA/">metadata contract</a>,
+<a href="docs/AUTHORING_GUIDE/">authoring guide</a>, and
+<a href="docs/CONTRIBUTING_SECURITY_CONTENT/">security-content contribution standard</a>.</p>
+<h2 id="featured-engineering-investigations">Featured engineering investigations</h2>
+<h3 id="secure-cicd-trust-boundaries">Secure CI/CD trust boundaries</h3>
+<p><a href="devsecops/secure-cicd-pipeline-design/">Secure CI/CD Pipeline Architecture and Trust Boundaries</a>
+separates untrusted pull-request execution, trusted builds, and privileged release.
+The companion <a href="labs/secure-cicd/">CI/CD lab</a> includes deliberately unsafe
+<code>pull_request_target</code> handling, protected workflow fixtures, fail-closed security
+gates, and negative tests.</p>
+<p><strong>Evidence status:</strong> tested policy and fixture behavior; no live deployment is
+performed.</p>
+<h3 id="multi-tenant-saas-isolation">Multi-tenant SaaS isolation</h3>
+<p><a href="appsec/saas-multitenancy-isolation/">Engineering Tenant Isolation for a Multi-tenant SaaS Platform</a>
+models authorization across API, database, cache, storage, messaging, and telemetry
+boundaries. The <a href="labs/postgresql-rls/">PostgreSQL RLS lab</a> tests
+transaction-scoped tenant context, cross-tenant reads and writes, tenant-key
+mutation, missing context, role attributes, forced RLS for the table owner, policy
+drift, and connection reuse.</p>
+<p><strong>Evidence status:</strong> PostgreSQL integration lab; application pool and non-database
+boundaries remain explicitly scoped limitations.</p>
+<h3 id="secureobs-architecture">SecureObs architecture</h3>
+<p><a href="devsecops/secureobs-multitenant-security-scanner/">SecureObs: Customer-side CI Security Scanning with a Multi-tenant Findings Platform</a>
+documents a sanitized trust model for customer-side scanning, normalized finding
+ingestion, tenant authorization, artifact trust, build-gate integrity, and abuse
+resistance.</p>
+<p><strong>Evidence status:</strong> owner-confirmed architecture plus repository pattern labs.
+Unverified implementation details are labeled as recommendations, not current
+facts.</p>
+<h2 id="validated-labs">Validated labs</h2>
+<table>
+<thead>
+<tr>
+<th>Lab</th>
+<th>Security property exercised</th>
+<th>Native tooling</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="labs/iam-oidc/">IAM and workload federation</a></td>
+<td>Issuer/audience/subject trust, boundaries, <code>PassRole</code>, external ID</td>
+<td>Dependency-free policy evaluator</td>
+</tr>
+<tr>
+<td><a href="labs/secure-cicd/">Secure CI/CD</a></td>
+<td>Untrusted workflow isolation and fail-closed gates</td>
+<td>Node.js</td>
+</tr>
+<tr>
+<td><a href="labs/supply-chain/">Supply-chain evidence</a></td>
+<td>Digest, provenance identity, builder/source policy, tamper rejection</td>
+<td>Node.js</td>
+</tr>
+<tr>
+<td><a href="labs/postgresql-rls/">PostgreSQL RLS</a></td>
+<td>Transaction tenant context and cross-tenant denial</td>
+<td>PostgreSQL 18.4 container</td>
+</tr>
+<tr>
+<td><a href="labs/iac-policy/">Terraform and Rego</a></td>
+<td>Backend hardening and positive/negative plan policy</td>
+<td>Terraform 1.14.6, OPA 1.17.0</td>
+</tr>
+<tr>
+<td><a href="labs/kubernetes-security/">Kubernetes and Kyverno</a></td>
+<td>Pod baseline, image identity, network policy</td>
+<td>Kyverno CLI 1.18.2</td>
+</tr>
+<tr>
+<td><a href="labs/oauth-oidc/">OAuth and OIDC</a></td>
+<td>Token validation, key rotation, PKCE, exact redirects</td>
+<td>Node.js 24.12.0, Go 1.26.1</td>
+</tr>
+<tr>
+<td><a href="labs/ai-agent-security/">AI tool broker</a></td>
+<td>External authorization, approval binding, replay and kill switch</td>
+<td>Node.js</td>
+</tr>
+<tr>
+<td><a href="labs/azure-landing-zone/">Azure landing zone</a></td>
+<td>Parser-valid Bicep and federated deployment boundary</td>
+<td>Azure CLI/Bicep</td>
+</tr>
+</tbody>
+</table>
+<p>Each lab states what its tests do <strong>not</strong> prove. Native external tools are pinned in
+CI; local validation reports missing-tool limitations instead of inventing results.</p>
+<h2 id="architecture-and-threat-model-research">Architecture and threat-model research</h2>
 <ul>
-<li><strong>Tutorials</strong> – Step-by-step, implementation-focused guides  </li>
-<li><strong>Research</strong> – Deep dives into common security failures and attack patterns  </li>
-<li><strong>Certification Notes</strong> – Structured study notes with hands-on labs  </li>
-<li><strong>Cloud &amp; Identity Security</strong> – Azure, Entra ID, Zero Trust, IAM  </li>
-<li><strong>Application &amp; API Security</strong> – OWASP, OAuth, threat modeling  </li>
-<li><strong>DevSecOps</strong> – CI/CD security gates and supply chain protection  </li>
+<li><a href="cloud-security/iam-at-scale/">AWS IAM federation and delegation</a></li>
+<li><a href="cloud-security/kubernetes-multi-tenancy/">Kubernetes multi-tenancy boundaries</a></li>
+<li><a href="appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OpenID Connect security</a></li>
+<li><a href="devsecops/iac-security-and-policy-as-code/">Infrastructure as Code policy engineering</a></li>
+<li><a href="devsecops/supply-chain-sbom-signing/">Software supply-chain evidence</a></li>
+<li><a href="appsec/ai-agent-security/">AI agent authorization and tool security</a></li>
+<li><a href="threat-intel/cloud-breach-case-studies/">Cloud incident case studies</a></li>
 </ul>
-<p>All writeups are written in Markdown and designed to be:
-- Easy to read on GitHub
-- Reusable for portfolio websites
-- Expandable over time</p>
-<hr />
-<h2 id="tutorials">📘 Tutorials</h2>
-<h3 id="building-a-secure-azure-landing-zone">🔹 Building a Secure Azure Landing Zone</h3>
-<p><strong>Topics:</strong> Azure, Cloud Security, IAM, Network Segmentation, Governance<br />
-A security-first guide to designing and deploying a production-ready Azure Landing Zone with enforced guardrails, identity governance, centralized logging, and policy-based compliance.</p>
-<p>📂 Path:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>docs/tutorials/azure-landing-zone/
-</span></code></pre></div></p>
-<hr />
-<h3 id="owasp-api-security-top-10-practical-mitigations">🔹 OWASP API Security Top 10: Practical Mitigations</h3>
-<p><strong>Topics:</strong> API Security, AppSec, OWASP, Node.js, .NET<br />
-A practical breakdown of the OWASP API Security Top 10, focusing on how vulnerabilities appear in real systems and how to mitigate them using secure backend design patterns.</p>
-<p>📂 Path:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>docs/tutorials/owasp-api-security-top-10/
-</span></code></pre></div></p>
-<hr />
-<h3 id="detection-engineering-with-microsoft-sentinel">🔹 Detection Engineering with Microsoft Sentinel</h3>
-<p><strong>Topics:</strong> SIEM, Detection Engineering, KQL, Cloud Security<br />
-A hands-on guide to building high-signal detections in Microsoft Sentinel, focusing on identity abuse, lateral movement, and privilege escalation.</p>
-<p>📂 Path:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>docs/tutorials/detection-engineering-sentinel/
-</span></code></pre></div></p>
-<hr />
-<h3 id="implementing-security-gates-in-cicd-pipelines">🔹 Implementing Security Gates in CI/CD Pipelines</h3>
-<p><strong>Topics:</strong> DevSecOps, CI/CD, SAST, SCA, Supply Chain Security<br />
-A practical DevSecOps guide to integrating enforceable security gates into GitHub Actions and Azure DevOps pipelines.</p>
-<p>📂 Path:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>docs/tutorials/ci-cd-security-gates/
-</span></code></pre></div></p>
-<hr />
-<h3 id="securing-azure-entra-id-zero-trust">🔹 Securing Azure Entra ID (Zero Trust)</h3>
-<p><strong>Topics:</strong> Azure Entra ID, IAM, Zero Trust, Identity Security<br />
-A real-world guide to hardening Azure Entra ID using Zero Trust principles, Conditional Access, MFA, PIM, and identity monitoring.</p>
-<p>📂 Path:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>docs/tutorials/securing-entra-id/
-</span></code></pre></div></p>
-<hr />
-<h2 id="research">🔬 Research</h2>
-<h3 id="threat-modeling-a-multi-tenant-saas-application-stride">🔹 Threat Modeling a Multi-Tenant SaaS Application (STRIDE)</h3>
-<p><strong>Topics:</strong> Threat Modeling, STRIDE, SaaS, AppSec<br />
-A step-by-step threat modeling walkthrough applied to a multi-tenant SaaS CRM application, focusing on authorization, tenant isolation, and identity threats.</p>
-<p>📂 Path:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>docs/research/threat-modeling-saas/
-</span></code></pre></div></p>
-<hr />
-<h3 id="common-oauth-20-misconfigurations-and-exploits">🔹 Common OAuth 2.0 Misconfigurations and Exploits</h3>
-<p><strong>Topics:</strong> OAuth, Authentication, Web Security<br />
-An analysis of real-world OAuth implementation flaws including redirect URI abuse, missing state validation, token leakage, and insecure flows.</p>
-<p>📂 Path:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>docs/research/oauth-misconfigurations/
-</span></code></pre></div></p>
-<hr />
-<h3 id="advanced-cloud-security-engineering-iam-devsecops-architecture-detection">🔹 Advanced Cloud Security Engineering (IAM, DevSecOps, Architecture, Detection)</h3>
-<p><strong>Topics:</strong> Cloud Security, IAM, DevSecOps, Detection Engineering, Zero Trust, Azure<br />
-A production-grade research report covering workload identity federation &amp; secretless CI/CD, policy-as-code (Rego/Checkov), supply-chain security (SBOM, Cosign/SLSA), micro-segmentation &amp; Private Link, envelope encryption, and detection engineering with KQL.</p>
-<p>📂 Path:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>docs/research/enterprise-cloud-security-engineering/
-</span></code></pre></div></p>
-<hr />
-<h2 id="certification-notes">🎓 Certification Notes</h2>
-<h3 id="comptia-security-study-notes-labs">🔹 CompTIA Security+ Study Notes &amp; Labs</h3>
-<p><strong>Topics:</strong> Network Security, IAM, Cryptography, Incident Response<br />
-Comprehensive Security+ study notes covering all exam domains, reinforced with hands-on lab exercises and real-world context.</p>
-<p>📂 Path:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>docs/certification-notes/security-plus/
-</span></code></pre></div></p>
-<hr />
-<h2 id="repository-structure">🗂️ Repository Structure</h2>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>cybersecurity-writeups/
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>│
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>├── README.md
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>│
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>├── docs/
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>│   ├── tutorials/
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>│   ├── research/
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>│   ├── certification-notes/
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>│   └── assets/
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>│
-</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>└── .gitignore
+<p>The <a href="docs/research-audit/content-inventory/">complete content inventory</a> records the
+review state, evidence links, factual-risk signals, and next action for every
+authored page. The
+<a href="docs/research-audit/strong-claim-review/">strong-claim queue</a> makes absolute or
+security-significant wording observable for human review.</p>
+<h2 id="tutorials">Tutorials</h2>
+<p>Tutorials are implementation-oriented learning material. Their metadata indicates
+whether commands were tested, partially tested, or remain illustrative.</p>
+<ul>
+<li><a href="docs/tutorials/azure-landing-zone/">Azure landing-zone security</a></li>
+<li><a href="docs/tutorials/owasp-api-security-top-10/">OWASP API Security Top 10</a></li>
+<li><a href="docs/tutorials/detection-engineering-sentinel/">Detection engineering with Microsoft Sentinel</a></li>
+<li><a href="docs/tutorials/ci-cd-gates/">CI/CD security gates</a></li>
+<li><a href="docs/tutorials/securing-entra-id/">Securing Microsoft Entra ID</a></li>
+</ul>
+<h2 id="study-notes">Study notes</h2>
+<p>Certification notes are retained as <strong>Study Notes</strong> and are not presented as
+validated production engineering:</p>
+<ul>
+<li><a href="docs/certification-notes/security-plus/">CompTIA Security+</a></li>
+<li><a href="docs/certification-notes/az-900/">Microsoft AZ-900</a></li>
+<li><a href="docs/certification-notes/google-cybersecurity/">Google Cybersecurity Certificate</a></li>
+<li><a href="docs/certification-notes/sc-500/">Microsoft SC-500</a></li>
+</ul>
+<p>Exam objectives change. Verify each outline against the certification owner's
+current official study guide before using these notes for preparation.</p>
+<h2 id="repository-validation">Repository validation</h2>
+<p>Install locked dependencies and run the content, code, policy, and lab gate:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>npm ci --ignore-scripts
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>npm run validate
 </span></code></pre></div>
-<p>Each writeup lives in its own folder with a dedicated <code>README.md</code> to allow for expansion, diagrams, and additional sections over time.</p>
-<hr />
-<h2 id="goals-of-this-repository">🎯 Goals of This Repository</h2>
+<p>The gate covers Markdown, YAML and JSON parsing, metadata, generated indexes,
+repository links, strong-claim reporting, action pinning, JavaScript and Go
+compilation, Terraform formatting and validation, reproducible fixture bytes,
+runnable JavaScript lab tests, and native policy tests. OPA, Kyverno, Go,
+Terraform, and ShellCheck are mandatory in CI; local runs report a limitation when
+an optional tool is unavailable.</p>
+<p>Run the disposable database integration separately:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>npm run rls:test
+</span></code></pre></div>
+<p>The documentation job installs <code>requirements-docs.txt</code>, builds MkDocs with
+<code>--strict --clean</code>, and validates provenance, CNAME, canonical URLs, sitemap
+coverage, stale-file removal, and source footers before publication. With the
+documentation virtual environment installed, the same build-only check is:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>./scripts/deploy-docs.sh
+</span></code></pre></div>
+<p>The publication workflow generates <code>gh-pages</code> only from a validated push to
+<code>main</code>. After that workflow succeeds, the public output exposes its full source SHA
+and UTC build timestamp through <code>site-meta.json</code> and the Build Provenance page. The
+scheduled freshness check fails visibly if the public source SHA differs from
+<code>main</code>.</p>
+<h2 id="scope-and-integrity">Scope and integrity</h2>
 <ul>
-<li>Demonstrate applied cybersecurity knowledge</li>
-<li>Show structured security thinking and documentation skills</li>
-<li>Bridge the gap between theory and production security</li>
-<li>Serve as a reusable reference for future projects</li>
-<li>Support a professional cybersecurity portfolio</li>
+<li>Content is educational and defensive.</li>
+<li>Examples use placeholders and do not deploy paid cloud resources during
+  validation.</li>
+<li>The repository does not claim customer use, employer outcomes, penetration-test
+  findings, or production operation unless evidence is explicitly available.</li>
+<li><code>verified</code> means material claims were reviewed against named evidence; it does not
+  mean a design eliminates every attack path.</li>
+<li>Responsible disclosure and platform terms still apply to any independent
+  testing.</li>
 </ul>
-<hr />
-<h2 id="how-to-use-this-repo">🔍 How to Use This Repo</h2>
-<ul>
-<li>Browse topics directly on GitHub  </li>
-<li>Link individual writeups from a portfolio website  </li>
-<li>Reuse content for blogs or documentation  </li>
-<li>Extend sections with diagrams, labs, or tooling  </li>
-</ul>
-<hr />
-<h2 id="future-additions">🚀 Future Additions</h2>
-<p>Planned or potential future topics include:
-- Cloud detection engineering use cases
-- Advanced identity attack simulations
-- Purple team exercises
-- Incident response playbooks
-- Infrastructure threat modeling</p>
-<hr />
-<h2 id="disclaimer">📜 Disclaimer</h2>
-<p>All content in this repository is for <strong>educational and defensive purposes only</strong>.<br />
-No offensive exploitation techniques are provided beyond what is necessary to understand and mitigate security risks.</p>
-<hr />
-<h2 id="author">👤 Author</h2>
-<p>This repository reflects my ongoing journey in cybersecurity, with a focus on <strong>cloud security, application security, identity, and DevSecOps</strong>.</p>
-<p>Feedback, discussion, and constructive suggestions are always welcome.</p>
+<p>Contributions should follow
+<a href="docs/CONTRIBUTING_SECURITY_CONTENT/">CONTRIBUTING_SECURITY_CONTENT.md</a> and the
+<a href="docs/RESEARCH_POLICY/">research policy</a>.</p>
 <!-- AUTOGENERATED_INDEX_START -->
 <h2 id="index">📚 Index</h2>
 <p><em>This section is autogenerated. Do not edit entries here directly; update each writeup’s front matter instead.</em></p>
 <h3 id="cloud-security">☁️ Cloud Security</h3>
 <ul>
+<li><a href="cloud-security/iam-at-scale/">AWS IAM at Scale: Federation, Delegation, and Guardrails</a> —  · 2026-07-21 · 30 min</li>
+<li><a href="cloud-security/kubernetes-multi-tenancy/">Kubernetes Multi-tenancy: Boundaries, Isolation, and Operations</a> —  · 2026-07-21 · 31 min</li>
+<li><a href="cloud-security/multi-account-landing-zones/">AWS Multi-Account Landing Zones: Guardrails and Control-Plane Isolation</a> —  · 2026-06-01 · 16 min</li>
 <li><a href="cloud-security/cloud-detection-and-response/">Cloud Detection and Response: Designing Resilient SIEM Pipelines, CloudTrail Auditing, and Automated Response</a> — Detection Engineering, CloudTrail, Incident Response, SIEM (+1) · 2026-06 · 18 min</li>
 <li><a href="cloud-security/cloud-network-segmentation/">Cloud Network Segmentation: VPC Architecture, Transit Gateway Routing, and PrivateLink Integration</a> — VPC, Transit Gateway, PrivateLink, Network Security (+1) · 2026-06 · 18 min</li>
-<li><a href="cloud-security/iam-at-scale/">Enterprise IAM at Scale: Workload Identity, Permission Boundaries, and Trust Architecture</a> — AWS IAM, Workload Identity, OIDC, ABAC (+1) · 2026-06 · 20 min</li>
-<li><a href="cloud-security/multi-account-landing-zones/">Enterprise Multi-Account Landing Zone Architecture and Control Plane Isolation</a> — AWS Organizations, SCP, Landing Zones, Governance (+1) · 2026-06 · 18 min</li>
-<li><a href="cloud-security/kubernetes-multi-tenancy/">Kubernetes Multi-Tenancy: Hardening RBAC, NetworkPolicies, and Workload Isolation Boundaries</a> — Kubernetes, Multi-Tenancy, OPA Gatekeeper, NetworkPolicy (+1) · 2026-06 · 22 min</li>
 <li><a href="cloud-security/serverless-security/">Serverless Security: Function-Level IAM, Ephemeral Lifecycles, and Runtime Isolation</a> — Serverless, AWS Lambda, API Gateway, IAM (+1) · 2026-06 · 16 min</li>
 </ul>
 <h3 id="application-security">💻 Application Security</h3>
 <ul>
+<li><a href="appsec/ai-agent-security/">Threat-Driven Security Architecture for AI Agents</a> —  · 2026-07-23 · 38 min</li>
+<li><a href="appsec/saas-multitenancy-isolation/">Engineering Tenant Isolation for a Multi-tenant SaaS Platform</a> —  · 2026-07-21 · 32 min</li>
+<li><a href="appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OpenID Connect Security Engineering</a> —  · 2026-07-21 · 28 min</li>
 <li><a href="appsec/api-microservices-threat-modeling/">API and Microservices Threat Modeling: STRIDE, Trust Boundaries, and Header Propagation Security</a> — API Security, Threat Modeling, STRIDE, Microservices (+1) · 2026-06 · 16 min</li>
-<li><a href="appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC Security Deep Dive: PKCE, Token Validation, and Federation Hardening</a> — OAuth 2.0, OIDC, PKCE, Authentication (+1) · 2026-06 · 20 min</li>
 <li><a href="appsec/runtime-protection-rasp-waf/">Runtime Application Protection: Comparing WAF and RASP Architectures, eBPF Filtering, and Evasion Mitigation</a> — WAF, RASP, eBPF, Runtime Security (+1) · 2026-06 · 16 min</li>
-<li><a href="appsec/saas-multitenancy-isolation/">SaaS Multi-Tenancy Isolation Patterns: Database Segregation, PostgreSQL RLS, and Session Context Security</a> — Multi-Tenancy, Database Security, PostgreSQL RLS, SaaS (+1) · 2026-06 · 20 min</li>
 </ul>
 <h3 id="devsecops">🛡️ DevSecOps</h3>
 <ul>
+<li><a href="devsecops/iac-security-and-policy-as-code/">Infrastructure as Code Security and Policy Engineering</a> —  · 2026-07-21 · 29 min</li>
+<li><a href="devsecops/secure-cicd-pipeline-design/">Secure CI/CD Pipeline Architecture and Trust Boundaries</a> —  · 2026-07-21 · 32 min</li>
+<li><a href="devsecops/secureobs-multitenant-security-scanner/">SecureObs: Customer-side CI Security Scanning with a Multi-tenant Findings Platform</a> —  · 2026-07-21 · 28 min</li>
+<li><a href="devsecops/supply-chain-sbom-signing/">Software Supply-chain Evidence: SBOMs, Provenance, Signing, and Verification</a> —  · 2026-07-21 · 32 min</li>
 <li><a href="devsecops/secrets-management/">Enterprise Secrets Management: HashiCorp Vault, Dynamic Provisioning, and Memory Protection</a> — Secrets Management, HashiCorp Vault, Cloud Security, Encryption (+1) · 2026-06 · 18 min</li>
-<li><a href="devsecops/iac-security-and-policy-as-code/">IaC Security and Policy as Code: Hardening Terraform State, Rego Policy Engine, and Drift Controls</a> — Infrastructure as Code, Policy as Code, Open Policy Agent, Terraform (+1) · 2026-06 · 18 min</li>
-<li><a href="devsecops/secure-cicd-pipeline-design/">Secure CI/CD Pipeline Design: Runner Hardening, Workload Identity, and Pipeline Integrity</a> — CI/CD Security, DevSecOps, GitHub Actions, Pipeline Hardening (+1) · 2026-06 · 18 min</li>
-<li><a href="devsecops/supply-chain-sbom-signing/">Software Supply Chain Security: SBOM Generation, Container Signing, and SLSA Compliance</a> — Supply Chain, SBOM, Cosign, Sigstore (+1) · 2026-06 · 20 min</li>
 </ul>
 <h3 id="threat-intelligence">🕵️ Threat Intelligence</h3>
 <ul>
-<li><a href="threat-intel/attack-path-analysis/">Advanced Cloud Attack Path Analysis: Mapping Multi-Stage Exploits to the MITRE ATT&amp;CK Matrix</a> — Threat Intelligence, Attack Paths, MITRE ATT&amp;CK, Cloud Security (+1) · 2026-06 · 20 min</li>
-<li><a href="threat-intel/cloud-breach-case-studies/">Cloud Breach Case Studies: Technical Autopsy of Capital One, Uber, and CircleCI Compromises</a> — Threat Intelligence, Case Studies, Cloud Breaches, Incident Response (+1) · 2026-06 · 20 min</li>
+<li><a href="threat-intel/cloud-breach-case-studies/">Cloud Incident Case Studies: Evidence, Chronology, and Control Lessons</a> —  · 2026-07-21 · 25 min</li>
+<li><a href="threat-intel/attack-path-analysis/">Cloud and Kubernetes Attack Paths: Preconditions, Enforcement Points, and Broken Links</a> —  · 2026-06-01 · 18 min</li>
 </ul>
 <h3 id="tutorials_1">📘 Tutorials</h3>
 <ul>
+<li><a href="docs/tutorials/azure-landing-zone/">Azure Landing Zone Security Engineering Guide</a> —  · 2026-07-21 · 35 min</li>
+<li><a href="docs/tutorials/azure-firewall-walkthrough/">Configuring Azure Firewall with UDR-Based Traffic Control</a> — Security, Azure · 2026-06 · 8 min</li>
+<li><a href="docs/tutorials/detection-engineering-sentinel/">Detection Engineering with Microsoft Sentinel</a> — Security, Sentinel · 2026-06 · 17 min</li>
+<li><a href="docs/tutorials/owasp-api-security-top-10/">OWASP API Security Top 10 (2023)</a> — Security, OWASP · 2026-06 · 28 min</li>
 <li><a href="docs/tutorials/ci-cd-gates/">Implementing Security Gates in CI/CD Pipelines</a> — DevSecOps, CI/CD, SAST, SCA (+4) · 2024-06 · 25 min</li>
 <li><a href="docs/tutorials/securing-entra-id/">Securing Azure Entra ID: A Zero Trust Approach</a> — Azure, Entra ID, IAM, Zero Trust (+3) · 2024-05 · 25 min</li>
-<li><a href="docs/certification-notes/security-plus/">README</a></li>
-<li><a href="docs/research/oauth-misconfigurations/">README</a></li>
-<li><a href="docs/research/threat-modeling-saas/">README</a></li>
-<li><a href="docs/tutorials/azure-firewall-walkthrough/">README</a></li>
-<li><a href="docs/tutorials/azure-landing-zone/">README</a></li>
-<li><a href="docs/tutorials/detection-engineering-sentinel/">README</a></li>
-<li><a href="docs/tutorials/owasp-api-security-top-10/">README</a></li>
 </ul>
-<h3 id="research_1">🔬 Research</h3>
+<h3 id="research">🔬 Research</h3>
 <ul>
 <li><a href="docs/research/enterprise-cloud-security-engineering/">Advanced Cloud Security Engineering: IAM, DevSecOps, Architecture &amp; Detection</a> — Cloud Security, IAM, DevSecOps, Detection Engineering (+4) · 2026-06 · 55 min</li>
+<li><a href="docs/research/oauth-misconfigurations/">Common OAuth 2.0 Misconfigurations and Exploits</a> — Security, OAuth · 2026-06 · 13 min</li>
+<li><a href="docs/research/threat-modeling-saas/">Threat Modeling for Multi-Tenant SaaS Applications</a> — Security, SaaS · 2026-06 · 22 min</li>
+</ul>
+<h3 id="certification-notes">🎓 Certification Notes</h3>
+<ul>
+<li><a href="docs/certification-notes/security-plus/">CompTIA Security+ SY0-701 Study Guide</a> — Security, CompTIA · 2026-06 · 17 min</li>
+<li><a href="docs/certification-notes/google-cybersecurity/">Google Cybersecurity Certificate Study Guide</a> — Linux, SQL, Python, SIEM (+1) · 2026-06 · 20 min</li>
+<li><a href="docs/certification-notes/az-900/">Microsoft AZ-900: Azure Fundamentals Study Guide</a> — Azure, Cloud Security, Fundamentals · 2026-06 · 15 min</li>
+<li><a href="docs/certification-notes/sc-500/">Microsoft SC-500 Study Notes: End-to-End Security Controls for Cloud and AI Workloads</a> —  · 2026-06-01 · 8 min</li>
 </ul>
 <!-- AUTOGENERATED_INDEX_END -->
 
@@ -4405,6 +4389,18 @@ No offensive exploitation techniques are provided beyond what is necessary to un
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
   &copy; 2026 Jason Achkardiab. All rights reserved.
+  <div class="md-copyright__highlight site-provenance"
+     data-source-commit="55312d775b5fd520a07b2797eb6163501120aab8"
+     data-build-timestamp="2026-07-24T01:11:33Z">
+  Source
+  <a href="https://github.com/jasonachkar/cybersecurity-writeups/commit/55312d775b5fd520a07b2797eb6163501120aab8"><code>55312d775b5fd520a07b2797eb6163501120aab8</code></a>
+  &middot; Built
+  <a href="about/site-provenance/"><time datetime="2026-07-24T01:11:33Z">2026-07-24T01:11:33Z</time></a>
+  &middot;
+  <a href="https://github.com/jasonachkar/cybersecurity-writeups">jasonachkar/cybersecurity-writeups</a>
+  &middot;
+  <a href="site-meta.json">site-meta.json</a>
+</div>
 </div>
       
     </div>
@@ -4423,7 +4419,7 @@ No offensive exploitation techniques are provided beyond what is necessary to un
       <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.tracking", "navigation.top", "navigation.breadcrumbs", "search.suggest", "search.highlight", "content.code.copy", "content.code.select"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

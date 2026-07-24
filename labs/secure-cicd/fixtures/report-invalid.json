@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "scanStatus": "completed",
+  "findings": {
+    "critical": -1,
+    "high": 0,
+    "secret": 0
+  }
+}

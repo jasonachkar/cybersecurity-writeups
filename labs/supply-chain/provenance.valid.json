@@ -1,0 +1,40 @@
+{
+  "_type": "https://in-toto.io/Statement/v1",
+  "subject": [
+    {
+      "name": "release.txt",
+      "digest": {
+        "sha256": "096407aa951a20498aabd46de33f6c41f190fc7987d3e01779438afc5c65b1c9"
+      }
+    }
+  ],
+  "predicateType": "https://slsa.dev/provenance/v1",
+  "predicate": {
+    "buildDefinition": {
+      "buildType": "https://actions.github.io/buildtypes/workflow/v1",
+      "externalParameters": {
+        "workflow": {
+          "repository": "https://github.com/jasonachkar/cybersecurity-writeups",
+          "ref": "refs/heads/main",
+          "path": ".github/workflows/release.yml"
+        }
+      },
+      "resolvedDependencies": [
+        {
+          "uri": "git+https://github.com/jasonachkar/cybersecurity-writeups@refs/heads/main",
+          "digest": {
+            "gitCommit": "38b5bf73cf8fa4a5ce0f9d6950dafa05aba9c584"
+          }
+        }
+      ]
+    },
+    "runDetails": {
+      "builder": {
+        "id": "https://github.com/jasonachkar/cybersecurity-writeups/.github/workflows/release.yml@refs/heads/main"
+      },
+      "metadata": {
+        "invocationId": "https://github.com/jasonachkar/cybersecurity-writeups/actions/runs/fixture"
+      }
+    }
+  }
+}

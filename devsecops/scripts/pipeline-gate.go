@@ -9,7 +9,7 @@ import (
 
 // SecurityMetrics represents aggregate scan findings from different scanners.
 type SecurityMetrics struct {
-	BuildID        string          `json:"build_id"`
+	BuildID        string           `json:"build_id"`
 	SASTScan       VulnerabilitySet `json:"sast_scan"`
 	DependencyScan VulnerabilitySet `json:"dependency_scan"`
 	SecretScan     SecretFindings   `json:"secret_scan"`
@@ -36,10 +36,10 @@ type LicenseFindings struct {
 
 // GatePolicy defines the threshold limits for passing the build.
 type GatePolicy struct {
-	AllowCritical     bool
-	MaxAllowedHighs   int
-	BlockSecrets      bool
-	BlockCopyleft     bool
+	AllowCritical   bool
+	MaxAllowedHighs int
+	BlockSecrets    bool
+	BlockCopyleft   bool
 }
 
 // EvaluateGate checks metrics against the defined policy.
@@ -102,7 +102,7 @@ func main() {
 	}`
 
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ DevSecOps CI/CD Deployment Security Gate Engine")
+	fmt.Println("DevSecOps CI/CD Deployment Security Gate Engine")
 	fmt.Println("==================================================")
 
 	var metrics SecurityMetrics
@@ -123,10 +123,10 @@ func main() {
 	passed, violations := EvaluateGate(metrics, policy)
 
 	if passed {
-		fmt.Println("\n✅ [PASS] All security gates successfully cleared. Continuing deployment pipeline.")
+		fmt.Println("\n[PASS] All security gates successfully cleared. Continuing deployment pipeline.")
 		os.Exit(0)
 	} else {
-		fmt.Println("\n❌ [FAIL] Build blocked by organizational security policy gates!")
+		fmt.Println("\n[FAIL] Build blocked by organizational security policy gates!")
 		fmt.Println("Violations:")
 		for _, violation := range violations {
 			fmt.Printf("   - %s\n", violation)

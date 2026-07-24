@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://docs.jasonachkardiab.com/cloud-security/multi-account-landing-zones/">
       
       
-        <link rel="prev" href="../..">
+        <link rel="prev" href="../../about/site-provenance/">
       
       
         <link rel="next" href="../iam-at-scale/">
@@ -25,15 +25,15 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Enterprise Multi-Account Landing Zone Architecture and Control Plane Isolation - Cloud Security Engineering</title>
+        <title>AWS Multi-Account Landing Zones: Guardrails and Control-Plane Isolation - Cloud Security Engineering</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -84,7 +84,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#enterprise-multi-account-landing-zone-architecture-and-control-plane-isolation" class="md-skip">
+        <a href="#aws-multi-account-landing-zones-guardrails-and-control-plane-isolation" class="md-skip">
           Skip to content
         </a>
       
@@ -120,7 +120,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Enterprise Multi-Account Landing Zone Architecture and Control Plane Isolation
+              AWS Multi-Account Landing Zones: Guardrails and Control-Plane Isolation
             
           </span>
         </div>
@@ -292,6 +292,33 @@
       
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/site-provenance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    <i class='fa-solid fa-circle-info'></i> Build provenance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
     
   
   
@@ -305,10 +332,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   
@@ -326,8 +353,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_2">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -404,10 +431,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#executive-summary" class="md-nav__link">
+  <a href="#assumptions-and-security-objectives" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Executive Summary
+        Assumptions and security objectives
       
     </span>
   </a>
@@ -415,22 +442,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#threat-model-and-attack-surface" class="md-nav__link">
+  <a href="#threat-and-trust-boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Threat Model and Attack Surface
+        Threat and trust boundaries
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Threat Model and Attack Surface">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scp-semantics-that-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SCP semantics that matter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SCP semantics that matter">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#threat-vectors-and-kill-chains" class="md-nav__link">
+  <a href="#enforcement-and-bypass-conditions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Threat Vectors and Kill-Chains
+        Enforcement and bypass conditions
       
     </span>
   </a>
@@ -443,127 +481,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#deep-technical-body" class="md-nav__link">
+  <a href="#reference-account-structure" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Deep Technical Body
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Deep Technical Body">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#service-control-policy-scp-evaluation-order-and-edge-cases" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Service Control Policy (SCP) Evaluation Order and Edge Cases
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Service Control Policy (SCP) Evaluation Order and Edge Cases">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#the-implicit-deny-trap-and-fullawsaccess" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The "Implicit Deny" Trap and FullAWSAccess
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nested-ou-scp-evaluation-mechanics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nested OU SCP Evaluation Mechanics
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#crucial-exceptions-what-scps-cannot-block" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Crucial Exceptions: What SCPs Cannot Block
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#bypassing-scps-via-resource-based-policies" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Bypassing SCPs via Resource-Based Policies
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#defensive-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Defensive Architecture
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Defensive Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reference-ou-directory-tree" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reference OU Directory Tree
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#core-guardrail-policy-harden-account-boundaries" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Guardrail Policy: Harden Account Boundaries
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tooling-and-implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tooling and Implementation
+        Reference account structure
       
     </span>
   </a>
@@ -571,10 +492,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#landing-zone-audit-checklist" class="md-nav__link">
+  <a href="#illustrative-member-account-scp" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Landing Zone Audit Checklist
+        Illustrative member-account SCP
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operational-rollout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operational rollout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-status-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation status and limitations
       
     </span>
   </a>
@@ -763,10 +706,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
             
   
   
@@ -784,8 +727,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -886,6 +829,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../appsec/ai-agent-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI Agent Security Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../appsec/runtime-protection-rasp-waf/" class="md-nav__link">
         
   
@@ -929,10 +900,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
             
   
   
@@ -950,8 +921,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1052,6 +1023,34 @@
   
   
     <li class="md-nav__item">
+      <a href="../../devsecops/secureobs-multitenant-security-scanner/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SecureObs Security Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../devsecops/secrets-management/" class="md-nav__link">
         
   
@@ -1095,10 +1094,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
         
           
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
             
   
   
@@ -1116,8 +1115,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1205,10 +1204,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
             
   
   
@@ -1226,8 +1225,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1252,10 +1251,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
         
           
-          <label class="md-nav__link" for="__nav_6_1" id="__nav_6_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
             
   
   
@@ -1273,8 +1272,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_1">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1475,10 +1474,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
         
           
-          <label class="md-nav__link" for="__nav_6_2" id="__nav_6_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
             
   
   
@@ -1496,8 +1495,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1670,10 +1669,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
         
           
-          <label class="md-nav__link" for="__nav_6_3" id="__nav_6_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="0">
             
   
   
@@ -1691,8 +1690,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1781,10 +1780,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_4" >
         
           
-          <label class="md-nav__link" for="__nav_6_4" id="__nav_6_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_4" id="__nav_7_4_label" tabindex="0">
             
   
   
@@ -1802,8 +1801,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -1948,10 +1947,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_5" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_5" >
         
           
-          <label class="md-nav__link" for="__nav_6_5" id="__nav_6_5_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_5" id="__nav_7_5_label" tabindex="0">
             
   
   
@@ -1969,8 +1968,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_5">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_5">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2143,10 +2142,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6_6" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_6" >
         
           
-          <label class="md-nav__link" for="__nav_6_6" id="__nav_6_6_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_7_6" id="__nav_7_6_label" tabindex="0">
             
   
   
@@ -2164,8 +2163,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_6_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6_6">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7_6">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2233,10 +2232,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
         
           
-          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
             
   
   
@@ -2254,8 +2253,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2280,10 +2279,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
         
           
-          <label class="md-nav__link" for="__nav_7_1" id="__nav_7_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
             
   
   
@@ -2301,8 +2300,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_1">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2475,10 +2474,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" >
         
           
-          <label class="md-nav__link" for="__nav_7_2" id="__nav_7_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
             
   
   
@@ -2496,8 +2495,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2642,10 +2641,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_7_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_3" >
         
           
-          <label class="md-nav__link" for="__nav_7_3" id="__nav_7_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_8_3" id="__nav_8_3_label" tabindex="0">
             
   
   
@@ -2663,8 +2662,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_7_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_7_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_8_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2900,10 +2899,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
         
           
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
             
   
   
@@ -2921,8 +2920,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -2947,10 +2946,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_1" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_1" >
         
           
-          <label class="md-nav__link" for="__nav_8_1" id="__nav_8_1_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9_1" id="__nav_9_1_label" tabindex="0">
             
   
   
@@ -2968,8 +2967,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_1_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_1">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_1">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3170,10 +3169,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_2" >
         
           
-          <label class="md-nav__link" for="__nav_8_2" id="__nav_8_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9_2" id="__nav_9_2_label" tabindex="0">
             
   
   
@@ -3191,8 +3190,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_2">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3365,10 +3364,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8_4" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9_4" >
         
           
-          <label class="md-nav__link" for="__nav_8_4" id="__nav_8_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_9_4" id="__nav_9_4_label" tabindex="0">
             
   
   
@@ -3386,8 +3385,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_8_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8_4">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_9_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3488,14 +3487,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/sc-500/domain-3-compute-posture/" class="md-nav__link">
+      <a href="../../docs/certification-notes/sc-500/domain-3-secure-compute/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Domain 3 - Compute & Posture
+    Domain 3 - Secure Compute
   
 
     
@@ -3516,14 +3515,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../../docs/certification-notes/sc-500/domain-4-ai-security/" class="md-nav__link">
+      <a href="../../docs/certification-notes/sc-500/domain-4-manage-monitor-posture/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Domain 4 - AI Workload Security
+    Domain 4 - Manage & Monitor Security Posture
   
 
     
@@ -3567,10 +3566,10 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
         
           
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
             
   
   
@@ -3588,8 +3587,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -3745,10 +3744,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#executive-summary" class="md-nav__link">
+  <a href="#assumptions-and-security-objectives" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Executive Summary
+        Assumptions and security objectives
       
     </span>
   </a>
@@ -3756,22 +3755,33 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#threat-model-and-attack-surface" class="md-nav__link">
+  <a href="#threat-and-trust-boundaries" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Threat Model and Attack Surface
+        Threat and trust boundaries
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Threat Model and Attack Surface">
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scp-semantics-that-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SCP semantics that matter
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SCP semantics that matter">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#threat-vectors-and-kill-chains" class="md-nav__link">
+  <a href="#enforcement-and-bypass-conditions" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Threat Vectors and Kill-Chains
+        Enforcement and bypass conditions
       
     </span>
   </a>
@@ -3784,127 +3794,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#deep-technical-body" class="md-nav__link">
+  <a href="#reference-account-structure" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Deep Technical Body
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Deep Technical Body">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#service-control-policy-scp-evaluation-order-and-edge-cases" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Service Control Policy (SCP) Evaluation Order and Edge Cases
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Service Control Policy (SCP) Evaluation Order and Edge Cases">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#the-implicit-deny-trap-and-fullawsaccess" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        The "Implicit Deny" Trap and FullAWSAccess
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#nested-ou-scp-evaluation-mechanics" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Nested OU SCP Evaluation Mechanics
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#crucial-exceptions-what-scps-cannot-block" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Crucial Exceptions: What SCPs Cannot Block
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#bypassing-scps-via-resource-based-policies" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Bypassing SCPs via Resource-Based Policies
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#defensive-architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Defensive Architecture
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Defensive Architecture">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#reference-ou-directory-tree" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reference OU Directory Tree
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#core-guardrail-policy-harden-account-boundaries" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Core Guardrail Policy: Harden Account Boundaries
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#tooling-and-implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Tooling and Implementation
+        Reference account structure
       
     </span>
   </a>
@@ -3912,10 +3805,32 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#landing-zone-audit-checklist" class="md-nav__link">
+  <a href="#illustrative-member-account-scp" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Landing Zone Audit Checklist
+        Illustrative member-account SCP
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operational-rollout" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operational rollout
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-status-and-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation status and limitations
       
     </span>
   </a>
@@ -3953,253 +3868,263 @@
   
 
 
-<h1 id="enterprise-multi-account-landing-zone-architecture-and-control-plane-isolation">Enterprise Multi-Account Landing Zone Architecture and Control Plane Isolation</h1>
-<h2 id="executive-summary">Executive Summary</h2>
-<p>Designing a resilient multi-account landing zone is one of the most critical security undertakings for modern cloud platforms. Yet, many organizations default to monolithic cloud architectures or poorly segmented account configurations. Often, teams treat AWS Organizations or Azure Management Groups as simple billing aggregates rather than strict control-plane and security boundaries. The misconception that a single "production" VPC can isolate multi-tier workloads or that IAM users can be securely managed within a single administrative account leads directly to catastrophic platform-wide compromises.</p>
-<p>At scale, the failure to decouple identity, data, and compute planes results in lateral movement opportunities that bypass traditional network controls. When an attacker gains access to one developer workstation or a compromised service container, they shouldn't immediately inherit the keys to the entire enterprise kingdom. This whitepaper details how to engineer a security-first multi-account landing zone using AWS Organizations, AWS Control Tower, and delegated administration. It explains the subtle edge cases of nested Service Control Policies (SCPs) and lays out concrete blueprints for preventing control-plane sprawl and resource containment breaches.</p>
-<hr />
-<h2 id="threat-model-and-attack-surface">Threat Model and Attack Surface</h2>
-<p>An enterprise landing zone threat model assumes the adversary is seeking full administrative control of the cloud organization, horizontal movement across business units, or silent data exfiltration.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>       [ Compromised Workload / IAM Session ]
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                         │
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                         ▼
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>        [ Attempts Cross-Account Lateral ]
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>                         │
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>        ┌────────────────┴────────────────┐
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>        ▼                                 ▼
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>[ Network Path (VPC Peering/TGW) ]   [ Identity Path (Cross-Account Role) ]
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>        │                                 │
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>        ▼                                 ▼
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>[ blocked by nacls/fws ]             [ checks role trust relationships ]
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>                                          │
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                                          ▼
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>                               [ CONFUSED DEPUTY BYPASS ]
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>                                          │
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>                                          ▼
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>                             [ Full Account Compromise ]
-</span></code></pre></div>
-<h3 id="threat-vectors-and-kill-chains">Threat Vectors and Kill-Chains</h3>
-<ol>
-<li><strong>Compromised WORKLOAD to Cross-Account Pivot</strong>:</li>
-<li><em>Adversary Goal</em>: Extract data from a high-security account using credentials stolen from a low-security dev container.</li>
-<li><em>Attack Vector</em>: The adversary compromises a container in a developer sandbox, extracts dynamic IAM credentials, and queries the local metadata service. They scan for cross-account roles trusting the sandbox account. If the trust policy lacks structural constraints (like <code>ExternalId</code> or IP restrictions), the adversary calls <code>sts:AssumeRole</code> to hop directly into core production resources.</li>
-<li><strong>Confused Deputy via Cross-Account Service Integrations</strong>:</li>
-<li><em>Adversary Goal</em>: Leverage a third-party SaaS tool integrated into the landing zone to assume roles in sister accounts.</li>
-<li><em>Attack Vector</em>: An attacker registers for the same SaaS service and attempts to point the SaaS platform's integration toward the target organization's account ID. If the assumed IAM role's trust policy lacks a unique cryptographically secure <code>sts:ExternalId</code>, the SaaS platform's backend acts as a confused deputy, assuming the victim's role on behalf of the attacker.</li>
-<li><strong>Malicious Organization Modification</strong>:</li>
-<li><em>Adversary Goal</em>: Evade detection and logging by detaching security guardrails.</li>
-<li><em>Attack Vector</em>: An attacker gains administrative access in a child account and tries to invoke <code>organizations:LeaveOrganization</code>. If successful, the account leaves the guardrail boundaries of the Organization, disabling central audit trails, SCPs, and GuardDuty security monitoring.</li>
-</ol>
-<hr />
-<h2 id="deep-technical-body">Deep Technical Body</h2>
-<h3 id="service-control-policy-scp-evaluation-order-and-edge-cases">Service Control Policy (SCP) Evaluation Order and Edge Cases</h3>
-<p>Service Control Policies (SCPs) are the primary mechanism for setting guardrails in AWS Organizations. However, the logic governing SCPs is often misunderstood. SCPs operate as a filter on permissions; they do <strong>not</strong> grant any permissions. For an action to succeed, there must be a valid IAM policy allowing it, and it must pass through the SCP filter at every level of the Organization hierarchy (Root -&gt; Parent OUs -&gt; Account).</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>         [ API Request ]
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>                │
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>                ▼
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>        [ SCP: Explicit Deny? ] ── YES ──&gt; [ ACCESS DENIED ]
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>                │ NO
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>                ▼
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>        [ SCP: Explicit Allow? ] ── NO ──&gt; [ ACCESS DENIED ]
-</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>                │ YES
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>                ▼
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>      [ IAM Policy: Explicit Allow? ] ── NO ──&gt; [ ACCESS DENIED ]
-</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>                │ YES
-</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>                ▼
-</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>        [ ACCESS GRANTED ]
-</span></code></pre></div>
-<h4 id="the-implicit-deny-trap-and-fullawsaccess">The "Implicit Deny" Trap and FullAWSAccess</h4>
-<p>By default, every OU and account is attached to the AWS-managed <code>FullAWSAccess</code> SCP. This SCP allows <code>*</code> on <code>*</code>. If this policy is removed without replacing it with an equivalent allow rule, all actions in the child accounts are instantly blocked because of the <strong>implicit deny</strong> mechanism. To maintain operational control while applying fine-grained restrictions, engineers must preserve the default allow block at the root and apply <strong>explicit Deny</strong> rules downward.</p>
-<h4 id="nested-ou-scp-evaluation-mechanics">Nested OU SCP Evaluation Mechanics</h4>
-<p>When evaluating nested OUs, an explicit deny at any level (Root, Parent OU, Child OU, or Account) takes precedence over any allow. Consider this configuration:
-* <strong>Root OU</strong>: Attached to <code>FullAWSAccess</code>.
-* <strong>Infrastructure OU</strong>: Attached to <code>DenyAllS3</code> SCP.
-* <strong>Database Account</strong> (under Infrastructure OU): Attached to a custom SCP allowing all S3 actions.</p>
-<p>Even though the database account specifically permits S3 actions via an SCP, the request <code>s3:CreateBucket</code> will fail with an authorization error. This is because the <code>DenyAllS3</code> policy at the parent OU level acts as a hard filter that cannot be overridden by lower levels.</p>
-<h4 id="crucial-exceptions-what-scps-cannot-block">Crucial Exceptions: What SCPs Cannot Block</h4>
-<p>Engineers must recognize that SCPs are not a magic bullet. AWS exempts certain critical actions from SCP evaluation to ensure the platform remains manageable. An SCP <strong>cannot</strong> block:
-1. <strong>Actions performed by the AWS Account Root User</strong> (in some legacy scopes, though modern SCPs apply to the root user of <em>member</em> accounts, they NEVER apply to the root user of the <em>management/payer</em> account).
-2. <strong>Operations on Service-Linked Roles</strong>: AWS services use these roles to run tasks on your behalf (e.g. Auto Scaling creating EC2 instances). SCPs cannot block these operations.
-3. <strong>Registering/Deregistering enterprise contact details</strong> or viewing billing information in member accounts.
-4. <strong>AWS Support Operations</strong>: Any actions taken via AWS Support API or Trusted Advisor support interfaces.</p>
-<h3 id="bypassing-scps-via-resource-based-policies">Bypassing SCPs via Resource-Based Policies</h3>
-<p>A common architectural vulnerability occurs when an organization assumes SCPs cover all data access. S3 buckets, KMS keys, and SQS queues support <strong>Resource-Based Policies</strong>.
-If an external account is granted access via an S3 Bucket Policy:
-<div class="language-json highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="p">{</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">  </span><span class="nt">&quot;Version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="p">{</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Allow&quot;</span><span class="p">,</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">      </span><span class="nt">&quot;Principal&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">        </span><span class="nt">&quot;AWS&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;arn:aws:iam::222222222222:role/external-role&quot;</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">      </span><span class="p">},</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;s3:GetObject&quot;</span><span class="p">,</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">      </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;arn:aws:s3:::internal-secure-bucket/*&quot;</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">  </span><span class="p">]</span>
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="p">}</span>
-</span></code></pre></div>
-If the external role calls <code>s3:GetObject</code> on the internal bucket, the SCPs of the <strong>target account</strong> (where the S3 bucket lives) are <strong>not</strong> evaluated against the caller. Only the SCPs of the <strong>caller's account</strong> (Account <code>222222222222</code>) are evaluated. If the caller's account lacks an SCP restricting S3 access, the data can be exfiltrated, bypassing all internal landing zone guardrails.</p>
-<hr />
-<h2 id="defensive-architecture">Defensive Architecture</h2>
-<p>A secure landing zone requires a structured OU hierarchy that isolates administrative domains and enforces least privilege through automated guardrails.</p>
-<h3 id="reference-ou-directory-tree">Reference OU Directory Tree</h3>
-<pre class="mermaid"><code>flowchart TD
-    ROOT["Management Payer Account&lt;br/&gt;Root"] --&gt; SEC["Security OU&lt;br/&gt;Highly Restricted"]
-    ROOT --&gt; CORE["Core Infrastructure OU"]
-    ROOT --&gt; WORK["Workloads OU"]
-
-    SEC --&gt; LOG["Log-Archive Account&lt;br/&gt;Centralized Read-Only Storage"]
-    SEC --&gt; SECTOOL["Security-Tooling Account&lt;br/&gt;GuardDuty, SecurityHub, IAM Analyzer"]
-
-    CORE --&gt; NET["Network Account&lt;br/&gt;Transit Gateway, Direct Connect, WAF"]
-    CORE --&gt; SHARED["Shared Services Account&lt;br/&gt;AD, DNS Resolvers, Golden Images"]
-
-    WORK --&gt; PROD["Production OU"]
-    WORK --&gt; NONPROD["Non-Production OU"]
-
-    PROD --&gt; APPA["App-A-Prod Account"]
-    PROD --&gt; APPB["App-B-Prod Account"]
-
-    NONPROD --&gt; APPANP["App-A-NonProd Account"]
-    NONPROD --&gt; SANDBOX["Developer Sandbox OU&lt;br/&gt;Strict SCPs, No Inter-VPC Routes"]
-
-    style ROOT fill:#0f172a,color:#fff,stroke:#020617
-    style SEC fill:#dc2626,color:#fff,stroke:#b91c1c
-    style CORE fill:#2563eb,color:#fff,stroke:#1d4ed8
-    style WORK fill:#059669,color:#fff,stroke:#047857
-    style LOG fill:#7c3aed,color:#fff,stroke:#6d28d9
-    style SECTOOL fill:#7c3aed,color:#fff,stroke:#6d28d9
-    style NET fill:#0891b2,color:#fff,stroke:#0e7490
-    style SHARED fill:#0891b2,color:#fff,stroke:#0e7490
-    style PROD fill:#059669,color:#fff,stroke:#047857
-    style NONPROD fill:#d97706,color:#fff,stroke:#b45309</code></pre>
-<h3 id="core-guardrail-policy-harden-account-boundaries">Core Guardrail Policy: Harden Account Boundaries</h3>
-<p>Below is a production-ready SCP designed to prevent administrative escape, restrict region sprawl to compliant regions, and enforce IMDSv2 usage.</p>
-<div class="language-json highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="p">{</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span><span class="nt">&quot;Version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">  </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="p">{</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">      </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DenyLeaveOrganization&quot;</span><span class="p">,</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deny&quot;</span><span class="p">,</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">        </span><span class="s2">&quot;organizations:LeaveOrganization&quot;</span>
-</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">      </span><span class="p">],</span>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">      </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
-</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="p">},</span>
-</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="p">{</span>
-</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="w">      </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DenyDisablingSecurityServices&quot;</span><span class="p">,</span>
-</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deny&quot;</span><span class="p">,</span>
-</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a><span class="w">        </span><span class="s2">&quot;guardduty:DeleteDetector&quot;</span><span class="p">,</span>
-</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="w">        </span><span class="s2">&quot;guardduty:DisassociateFromMasterAccount&quot;</span><span class="p">,</span>
-</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="w">        </span><span class="s2">&quot;guardduty:UpdateDetector&quot;</span><span class="p">,</span>
-</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="w">        </span><span class="s2">&quot;securityhub:DeleteDetector&quot;</span><span class="p">,</span>
-</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="w">        </span><span class="s2">&quot;securityhub:DisassociateFromMasterAccount&quot;</span><span class="p">,</span>
-</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="w">        </span><span class="s2">&quot;cloudtrail:StopLogging&quot;</span><span class="p">,</span>
-</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="w">        </span><span class="s2">&quot;cloudtrail:DeleteTrail&quot;</span><span class="p">,</span>
-</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="w">        </span><span class="s2">&quot;cloudtrail:UpdateTrail&quot;</span><span class="p">,</span>
-</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a><span class="w">        </span><span class="s2">&quot;config:DeleteDeliveryChannel&quot;</span><span class="p">,</span>
-</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="w">        </span><span class="s2">&quot;config:StopConfigurationRecorder&quot;</span>
-</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a><span class="w">      </span><span class="p">],</span>
-</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a><span class="w">      </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
-</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="w">    </span><span class="p">},</span>
-</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a><span class="w">    </span><span class="p">{</span>
-</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a><span class="w">      </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RestrictAWSRegions&quot;</span><span class="p">,</span>
-</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deny&quot;</span><span class="p">,</span>
-</span><span id="__span-3-32"><a id="__codelineno-3-32" name="__codelineno-3-32" href="#__codelineno-3-32"></a><span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-</span><span id="__span-3-33"><a id="__codelineno-3-33" name="__codelineno-3-33" href="#__codelineno-3-33"></a><span class="w">      </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
-</span><span id="__span-3-34"><a id="__codelineno-3-34" name="__codelineno-3-34" href="#__codelineno-3-34"></a><span class="w">      </span><span class="nt">&quot;Condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-35"><a id="__codelineno-3-35" name="__codelineno-3-35" href="#__codelineno-3-35"></a><span class="w">        </span><span class="nt">&quot;StringNotEquals&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-36"><a id="__codelineno-3-36" name="__codelineno-3-36" href="#__codelineno-3-36"></a><span class="w">          </span><span class="nt">&quot;aws:RequestedRegion&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
-</span><span id="__span-3-37"><a id="__codelineno-3-37" name="__codelineno-3-37" href="#__codelineno-3-37"></a><span class="w">            </span><span class="s2">&quot;us-east-1&quot;</span><span class="p">,</span>
-</span><span id="__span-3-38"><a id="__codelineno-3-38" name="__codelineno-3-38" href="#__codelineno-3-38"></a><span class="w">            </span><span class="s2">&quot;us-west-2&quot;</span><span class="p">,</span>
-</span><span id="__span-3-39"><a id="__codelineno-3-39" name="__codelineno-3-39" href="#__codelineno-3-39"></a><span class="w">            </span><span class="s2">&quot;eu-west-1&quot;</span>
-</span><span id="__span-3-40"><a id="__codelineno-3-40" name="__codelineno-3-40" href="#__codelineno-3-40"></a><span class="w">          </span><span class="p">]</span>
-</span><span id="__span-3-41"><a id="__codelineno-3-41" name="__codelineno-3-41" href="#__codelineno-3-41"></a><span class="w">        </span><span class="p">},</span>
-</span><span id="__span-3-42"><a id="__codelineno-3-42" name="__codelineno-3-42" href="#__codelineno-3-42"></a><span class="w">        </span><span class="nt">&quot;Null&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-43"><a id="__codelineno-3-43" name="__codelineno-3-43" href="#__codelineno-3-43"></a><span class="w">          </span><span class="nt">&quot;aws:RequestedRegion&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;false&quot;</span>
-</span><span id="__span-3-44"><a id="__codelineno-3-44" name="__codelineno-3-44" href="#__codelineno-3-44"></a><span class="w">        </span><span class="p">}</span>
-</span><span id="__span-3-45"><a id="__codelineno-3-45" name="__codelineno-3-45" href="#__codelineno-3-45"></a><span class="w">      </span><span class="p">}</span>
-</span><span id="__span-3-46"><a id="__codelineno-3-46" name="__codelineno-3-46" href="#__codelineno-3-46"></a><span class="w">    </span><span class="p">},</span>
-</span><span id="__span-3-47"><a id="__codelineno-3-47" name="__codelineno-3-47" href="#__codelineno-3-47"></a><span class="w">    </span><span class="p">{</span>
-</span><span id="__span-3-48"><a id="__codelineno-3-48" name="__codelineno-3-48" href="#__codelineno-3-48"></a><span class="w">      </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;EnforceIMDSv2&quot;</span><span class="p">,</span>
-</span><span id="__span-3-49"><a id="__codelineno-3-49" name="__codelineno-3-49" href="#__codelineno-3-49"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deny&quot;</span><span class="p">,</span>
-</span><span id="__span-3-50"><a id="__codelineno-3-50" name="__codelineno-3-50" href="#__codelineno-3-50"></a><span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ec2:RunInstances&quot;</span><span class="p">,</span>
-</span><span id="__span-3-51"><a id="__codelineno-3-51" name="__codelineno-3-51" href="#__codelineno-3-51"></a><span class="w">      </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;arn:aws:ec2:*:*:instance/*&quot;</span><span class="p">,</span>
-</span><span id="__span-3-52"><a id="__codelineno-3-52" name="__codelineno-3-52" href="#__codelineno-3-52"></a><span class="w">      </span><span class="nt">&quot;Condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-53"><a id="__codelineno-3-53" name="__codelineno-3-53" href="#__codelineno-3-53"></a><span class="w">        </span><span class="nt">&quot;StringNotEquals&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-54"><a id="__codelineno-3-54" name="__codelineno-3-54" href="#__codelineno-3-54"></a><span class="w">          </span><span class="nt">&quot;ec2:MetadataHttpTokens&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;required&quot;</span>
-</span><span id="__span-3-55"><a id="__codelineno-3-55" name="__codelineno-3-55" href="#__codelineno-3-55"></a><span class="w">        </span><span class="p">}</span>
-</span><span id="__span-3-56"><a id="__codelineno-3-56" name="__codelineno-3-56" href="#__codelineno-3-56"></a><span class="w">      </span><span class="p">}</span>
-</span><span id="__span-3-57"><a id="__codelineno-3-57" name="__codelineno-3-57" href="#__codelineno-3-57"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-3-58"><a id="__codelineno-3-58" name="__codelineno-3-58" href="#__codelineno-3-58"></a><span class="w">  </span><span class="p">]</span>
-</span><span id="__span-3-59"><a id="__codelineno-3-59" name="__codelineno-3-59" href="#__codelineno-3-59"></a><span class="p">}</span>
-</span></code></pre></div>
-<hr />
-<h2 id="tooling-and-implementation">Tooling and Implementation</h2>
-<p>Implementing a multi-account landing zone requires combining native CSP tools with Infrastructure-as-Code (IaC) governance engines.</p>
-<ol>
-<li><strong>AWS Control Tower &amp; Customizations (CfCT)</strong>: Use Control Tower to orchestrate account provisioning. Use the Customizations for AWS Control Tower (CfCT) framework to apply SCPs and deploy baseline cloud resources (e.g., IAM roles, Config Rules) automatically using CloudFormation or Terraform templates.</li>
-<li><strong>Delegated Administration</strong>: Never use the Organization Payer/Management account for security operations. Configure Delegated Administration for services like <strong>GuardDuty</strong>, <strong>Security Hub</strong>, <strong>AWS Config</strong>, and <strong>IAM Access Analyzer</strong> to run inside the dedicated <code>Security-Tooling</code> account. This ensures that a compromise of a security tool's configuration does not expose organization-level administration APIs.</li>
-<li><strong>AWS IAM Access Analyzer</strong>: Deploy at the Organization level to continuously scan for resources that are accessible from outside the zone boundary, highlighting cross-account trust violations.</li>
-</ol>
-<hr />
-<h2 id="landing-zone-audit-checklist">Landing Zone Audit Checklist</h2>
+<h1 id="aws-multi-account-landing-zones-guardrails-and-control-plane-isolation">AWS Multi-Account Landing Zones: Guardrails and Control-Plane Isolation</h1>
+<p>A landing zone is an operating model for accounts, identity, logging, network
+connectivity, and preventive controls. An AWS account is a useful blast-radius and
+administrative boundary, but the boundary holds only when the organization control
+plane, cross-account trust, and resource policies are governed together.</p>
+<p>This article describes a reference design. It is <strong>not a deploy-ready configuration</strong>:
+the SCP is illustrative, has not been evaluated in a live organization, and must be
+tested against each workload's APIs, global services, automation roles, and recovery
+procedures.</p>
+<h2 id="assumptions-and-security-objectives">Assumptions and security objectives</h2>
+<p>The design assumes:</p>
+<ul>
+<li>AWS Organizations has all features enabled and member accounts are provisioned
+  through a controlled account-vending process.</li>
+<li>Workforce access is federated, workload access uses temporary credentials, and
+  management-account credentials are reserved for organization administration.</li>
+<li>Organization-wide CloudTrail, AWS Config, GuardDuty, Security Hub CSPM, and IAM
+  Access Analyzer are configured where supported, with logs stored in a separate
+  log-archive account.</li>
+<li>Break-glass access is tested, monitored, and unable to silently weaken logging or
+  account governance.</li>
+</ul>
+<p>The objectives are to limit lateral movement between workloads, keep security evidence
+outside workload-administrator control, and make organization-level changes both rare
+and observable.</p>
+<h2 id="threat-and-trust-boundaries">Threat and trust boundaries</h2>
 <table>
 <thead>
 <tr>
-<th style="text-align: left;">Item</th>
-<th style="text-align: left;">Focus Area</th>
-<th style="text-align: left;">Verification Step / Command</th>
-<th style="text-align: left;">Target State</th>
+<th>Boundary</th>
+<th>Representative failure</th>
+<th>Required control</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: left;">1</td>
-<td style="text-align: left;">Payer Account Security</td>
-<td style="text-align: left;">Verify no compute or database resources are running in the Management Payer account.</td>
-<td style="text-align: left;">No EC2, RDS, or VPC resources exist.</td>
+<td>Workload to account</td>
+<td>A compromised workload reaches unrelated data or administration APIs.</td>
+<td>Narrow workload roles, permissions boundaries where appropriate, resource policies, network segmentation, and service-specific controls.</td>
 </tr>
 <tr>
-<td style="text-align: left;">2</td>
-<td style="text-align: left;">Logging Integrity</td>
-<td style="text-align: left;">Inspect S3 bucket policy for the centralized log bucket in the <code>Log-Archive</code> account.</td>
-<td style="text-align: left;">Restrict delete permissions (<code>s3:DeleteObject*</code>) to prevent log tampering.</td>
+<td>Account to account</td>
+<td>A broad role trust lets a lower-trust account assume a production role.</td>
+<td>Explicit principals, narrow OIDC/SAML claims, session controls, and <code>sts:ExternalId</code> for third-party confused-deputy scenarios.</td>
 </tr>
 <tr>
-<td style="text-align: left;">3</td>
-<td style="text-align: left;">SCP Coverage</td>
-<td style="text-align: left;">Check that the <code>DenyLeaveOrganization</code> and <code>DenyDisablingSecurityServices</code> SCPs are attached to the root of the Organization tree.</td>
-<td style="text-align: left;">Protection is active globally across all member accounts.</td>
+<td>Member account to organization</td>
+<td>An administrator leaves the organization or disables delegated security integration.</td>
+<td>SCP guardrails, Control Tower controls, restricted organization administration, and alerting.</td>
 </tr>
 <tr>
-<td style="text-align: left;">4</td>
-<td style="text-align: left;">Region Lockout</td>
-<td style="text-align: left;">Validate if unauthorized regions (e.g. outside US/EU) can spin up resources.</td>
-<td style="text-align: left;">Commands like <code>aws ec2 run-instances --region ap-southeast-1 ...</code> fail with authorization errors.</td>
+<td>Resource policy to external principal</td>
+<td>A bucket, queue, key, or role trust authorizes a principal outside the intended organization.</td>
+<td><code>aws:PrincipalOrgID</code> where supported, IAM Access Analyzer, resource control policies where applicable, and service-specific public-access controls.</td>
 </tr>
 <tr>
-<td style="text-align: left;">5</td>
-<td style="text-align: left;">Workload Isolation</td>
-<td style="text-align: left;">Audit transit gateway route tables in the <code>Network</code> account.</td>
-<td style="text-align: left;">Non-Prod account VPCs must be physically blocked from routing traffic to Production VPCs.</td>
-</tr>
-<tr>
-<td style="text-align: left;">6</td>
-<td style="text-align: left;">Root User Protection</td>
-<td style="text-align: left;">Ensure root accounts of all member accounts have MFA configured and no active access keys.</td>
-<td style="text-align: left;"><code>aws credential-report</code> shows zero active API keys for root accounts.</td>
+<td>Management account</td>
+<td>Its principal can change organization policy and is not constrained by SCPs.</td>
+<td>No workloads, tightly controlled federation, hardware-backed emergency access, approval, and independent monitoring.</td>
 </tr>
 </tbody>
 </table>
-<hr />
+<p>SCPs do not protect the identity provider, CI/CD system, SaaS administrator, DNS
+registrar, or an external principal's account. Those are separate trust boundaries.</p>
+<h2 id="scp-semantics-that-matter">SCP semantics that matter</h2>
+<p>An SCP defines the maximum permissions available to principals in affected <strong>member
+accounts</strong>. It does not grant permission. A request still needs an applicable allow
+from an identity- or resource-based policy, and an explicit deny in any applicable
+policy wins.</p>
+<p>For an allow-list SCP model, an action needs an allow at every level in the path from
+the organization root through each OU to the account. For a deny-list model, the
+AWS-managed <code>FullAWSAccess</code> SCP commonly remains attached while targeted explicit
+denies are added. Removing <code>FullAWSAccess</code> without supplying the required allows can
+cause broad implicit denial.</p>
+<p>An SCP attached to a parent cannot be overridden by a child SCP. Moving an account,
+changing an attachment, disabling the SCP policy type, or changing a condition can,
+however, change the effective boundary. Treat these as privileged control-plane
+operations and alert on them.</p>
+<h3 id="enforcement-and-bypass-conditions">Enforcement and bypass conditions</h3>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>What the SCP does</th>
+<th>What it does not do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Member-account IAM user, role, role session, or member root user</td>
+<td>Limits the principal's maximum permissions.</td>
+<td>Grant the principal an action.</td>
+</tr>
+<tr>
+<td>Delegated administrator account</td>
+<td>Still applies because it remains a member account.</td>
+<td>Prevent the management account from replacing the delegation.</td>
+</tr>
+<tr>
+<td>Management-account user or role</td>
+<td>Nothing; SCPs do not apply.</td>
+<td>Protect organization administration.</td>
+</tr>
+<tr>
+<td>Service-linked role</td>
+<td>Nothing; SCPs do not restrict service-linked-role permissions.</td>
+<td>Prevent a service from performing its documented linked-role operations.</td>
+</tr>
+<tr>
+<td>Direct external principal authorized by a member resource policy</td>
+<td>The external principal is not constrained by the resource account's SCP; controls attached to the principal's own account may apply.</td>
+<td>Repair an overbroad bucket, key, queue, or role resource policy.</td>
+</tr>
+<tr>
+<td>Explicit deny at any applicable organization level</td>
+<td>Denies the matching request.</td>
+<td>Cover APIs, resources, principals, Regions, or condition values that the statement does not match.</td>
+</tr>
+</tbody>
+</table>
+<p>Cross-account requests require both the trusted-principal side and trusting-resource
+side to allow the request. Because SCPs apply to principals of the accounts to which
+they are attached, use resource policies and, where supported, resource control
+policies to establish the resource-side organization perimeter. If an external caller
+assumes a role in a member account, subsequent requests using that role session are
+made by a member-account principal and are constrained by that account's applicable
+SCPs.</p>
+<h2 id="reference-account-structure">Reference account structure</h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Organization root
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>├── Security OU
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>│   ├── Log archive
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>│   └── Security tooling / delegated administration
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>├── Infrastructure OU
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>│   ├── Network
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>│   └── Shared services
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>├── Workloads OU
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>│   ├── Production
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>│   └── Non-production
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>├── Sandbox OU
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>└── Suspended / quarantine OU
+</span></code></pre></div>
+<p>Keep workloads out of the management account. Delegate supported security services to
+the security-tooling account, but remember that delegated administration does not
+transfer all Organizations privileges and does not make that account immune to SCPs.
+Use a distinct log-archive account with tightly limited write and delete paths.</p>
+<h2 id="illustrative-member-account-scp">Illustrative member-account SCP</h2>
+<p>The following deny-list fragment demonstrates two guardrails. It is intentionally
+incomplete and must not be copied into production without service-impact analysis.</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">{</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">  </span><span class="nt">&quot;Version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2012-10-17&quot;</span><span class="p">,</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="nt">&quot;Statement&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">      </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DenyLeavingOrganization&quot;</span><span class="p">,</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deny&quot;</span><span class="p">,</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w">      </span><span class="nt">&quot;Action&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;organizations:LeaveOrganization&quot;</span><span class="p">,</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">      </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="p">},</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">      </span><span class="nt">&quot;Sid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;DenyUnsupportedRegionsWithGlobalServiceExceptions&quot;</span><span class="p">,</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">      </span><span class="nt">&quot;Effect&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Deny&quot;</span><span class="p">,</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">      </span><span class="nt">&quot;NotAction&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">        </span><span class="s2">&quot;account:*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">        </span><span class="s2">&quot;aws-portal:*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">        </span><span class="s2">&quot;budgets:*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">        </span><span class="s2">&quot;cloudfront:*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">        </span><span class="s2">&quot;globalaccelerator:*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">        </span><span class="s2">&quot;iam:*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">        </span><span class="s2">&quot;networkmanager:*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">        </span><span class="s2">&quot;organizations:*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">        </span><span class="s2">&quot;route53:*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">        </span><span class="s2">&quot;route53domains:*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">        </span><span class="s2">&quot;support:*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">        </span><span class="s2">&quot;waf:*&quot;</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">      </span><span class="p">],</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">      </span><span class="nt">&quot;Resource&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;*&quot;</span><span class="p">,</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">      </span><span class="nt">&quot;Condition&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">        </span><span class="nt">&quot;StringNotEquals&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">          </span><span class="nt">&quot;aws:RequestedRegion&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">            </span><span class="s2">&quot;ca-central-1&quot;</span><span class="p">,</span>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">            </span><span class="s2">&quot;us-east-1&quot;</span>
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">          </span><span class="p">]</span>
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">        </span><span class="p">}</span>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="w">      </span><span class="p">}</span>
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="w">  </span><span class="p">]</span>
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>This example has important limitations:</p>
+<ul>
+<li>Apply it only to intended member-account OUs/accounts. It cannot constrain the
+  management account.</li>
+<li>AWS global services use control planes that are hosted in particular Regions, often
+  <code>us-east-1</code>. The <code>NotAction</code> list is workload- and service-dependent; compare it
+  with AWS's current example before every rollout.</li>
+<li><code>aws:RequestedRegion</code> identifies the endpoint handling the request. It does not
+  necessarily constrain every Region affected by an operation. For example, some
+  cross-Region service operations need service-specific condition keys or resource
+  controls.</li>
+<li>Exempting an entire global service from the Region statement means this statement
+  does not restrict that service. Add separate, service-specific guardrails where
+  required.</li>
+<li>A deny can break account vending, incident response, Control Tower remediation, and
+  service integrations. Roll out to a canary OU and inspect authorization failures
+  before broader attachment.</li>
+</ul>
+<p>Do not add an exemption simply because an automation fails. Determine the exact
+principal, action, resource, and request context, then make the narrowest justified
+change.</p>
+<h2 id="operational-rollout">Operational rollout</h2>
+<ol>
+<li>Inventory current service use and organization policy attachments.</li>
+<li>Model the intended OU path and identify who can move accounts or alter policies.</li>
+<li>Test policies in a non-production canary OU with representative provisioning,
+   backup, security, billing, support, and recovery workflows.</li>
+<li>Use IAM service-last-accessed data and CloudTrail authorization failures to refine
+   scope; neither proves that an unused permission is safe to remove by itself.</li>
+<li>Promote by OU in small batches with a documented rollback and an out-of-band
+   recovery path.</li>
+<li>Continuously alert on policy changes, account moves, organization departure
+   attempts, external resource access, and security-service configuration changes.</li>
+</ol>
+<h2 id="validation-status-and-limitations">Validation status and limitations</h2>
+<table>
+<thead>
+<tr>
+<th>Artifact or claim</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SCP and Organizations semantics</td>
+<td>Reviewed against the AWS primary sources below on 2026-07-23.</td>
+</tr>
+<tr>
+<td>JSON example</td>
+<td>Checked by the repository fenced-code validator; no live AWS evaluation.</td>
+</tr>
+<tr>
+<td>Service compatibility</td>
+<td>Not tested; the global-service exception list is illustrative and will change with adopted services.</td>
+</tr>
+<tr>
+<td>Control effectiveness</td>
+<td>Not measured in a production organization. Validate with canary accounts and documented negative tests.</td>
+</tr>
+</tbody>
+</table>
 <h2 id="references">References</h2>
 <ul>
-<li><em>AWS Organizations User Guide - Service Control Policies</em>: <a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html">AWS Documentation</a></li>
-<li><em>NIST Special Publication 800-162 (Attribute-Based Access Control)</em>: <a href="https://nvlpubs.nist.gov/nistpubs/specialpublications/nist.sp.800-162.pdf">NIST SP 800-162</a></li>
-<li><em>Mitigating Confused Deputy Problems in Cross-Account Integrations</em>: <a href="https://aws.amazon.com/blogs/security/how-to-use-an-external-id-when-granting-access-to-your-aws-resources-to-a-third-party/">AWS Security Blog</a></li>
+<li><a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html">AWS Organizations: Service control policies</a></li>
+<li><a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_evaluation.html">AWS Organizations: SCP evaluation</a></li>
+<li><a href="https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps_examples.html">AWS Organizations: SCP examples and Region restriction</a></li>
+<li><a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_condition-keys.html#condition-keys-requestedregion">AWS IAM: <code>aws:RequestedRegion</code> global condition key</a></li>
+<li><a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_evaluation-logic-cross-account.html">AWS IAM: Cross-account policy evaluation</a></li>
+<li><a href="https://docs.aws.amazon.com/IAM/latest/UserGuide/access-analyzer-findings.html">AWS IAM Access Analyzer: External access findings</a></li>
+<li><a href="https://docs.aws.amazon.com/controltower/latest/userguide/organizations.html">AWS Control Tower: Guidance for organization and account structure</a></li>
 </ul>
 
 
@@ -4238,6 +4163,18 @@ If the external role calls <code>s3:GetObject</code> on the internal bucket, the
     <div class="md-footer-meta__inner md-grid">
       <div class="md-copyright">
   &copy; 2026 Jason Achkardiab. All rights reserved.
+  <div class="md-copyright__highlight site-provenance"
+     data-source-commit="55312d775b5fd520a07b2797eb6163501120aab8"
+     data-build-timestamp="2026-07-24T01:11:33Z">
+  Source
+  <a href="https://github.com/jasonachkar/cybersecurity-writeups/commit/55312d775b5fd520a07b2797eb6163501120aab8"><code>55312d775b5fd520a07b2797eb6163501120aab8</code></a>
+  &middot; Built
+  <a href="../../about/site-provenance/"><time datetime="2026-07-24T01:11:33Z">2026-07-24T01:11:33Z</time></a>
+  &middot;
+  <a href="https://github.com/jasonachkar/cybersecurity-writeups">jasonachkar/cybersecurity-writeups</a>
+  &middot;
+  <a href="../../site-meta.json">site-meta.json</a>
+</div>
 </div>
       
     </div>
@@ -4256,7 +4193,7 @@ If the external role calls <code>s3:GetObject</code> on the internal bucket, the
       <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.breadcrumbs", "search.suggest", "search.highlight", "content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
       
     
   </body>

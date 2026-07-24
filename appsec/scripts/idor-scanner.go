@@ -14,7 +14,7 @@ type APIResponse struct {
 
 // UserSession holds identity headers and access levels.
 type UserSession struct {
-	Username string
+	Username  string
 	AuthToken string
 	IsAdmin   bool
 }
@@ -95,7 +95,7 @@ func AuthenticateToken(token string) (UserSession, bool) {
 
 func main() {
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ API Security IDOR Vulnerability Scanner Simulator")
+	fmt.Println("API Security IDOR Vulnerability Scanner Simulator")
 	fmt.Println("==================================================")
 
 	// In an audit, we test access using two distinct tenant sessions (Alice and Bob)
@@ -120,7 +120,7 @@ func auditEndpoint(endpointFunc func(string, string) APIResponse, userA, userB U
 	for _, id := range ids {
 		// Fetch with User A (may or may not own it)
 		respA := endpointFunc(id, userA.AuthToken)
-		
+
 		// Fetch with User B (may or may not own it)
 		respB := endpointFunc(id, userB.AuthToken)
 

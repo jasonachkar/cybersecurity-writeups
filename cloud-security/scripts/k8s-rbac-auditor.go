@@ -147,7 +147,7 @@ func AuditRole(role Role) []string {
 
 func main() {
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ Kubernetes RBAC Security Audit Utility")
+	fmt.Println("Kubernetes RBAC Security Audit Utility")
 	fmt.Println("==================================================")
 
 	// Simulated Kubernetes Roles
@@ -188,9 +188,9 @@ func main() {
 	// Simulated Bindings
 	bindings := []RoleBinding{
 		{
-			Name:      "admin-binding",
-			RoleRef:   "cluster-admin-role",
-			Subjects:  []Subject{{Kind: "Group", Name: "system:masters"}},
+			Name:     "admin-binding",
+			RoleRef:  "cluster-admin-role",
+			Subjects: []Subject{{Kind: "Group", Name: "system:masters"}},
 		},
 		{
 			Name:      "app-deploy-binding",
@@ -227,7 +227,7 @@ func main() {
 	for _, binding := range bindings {
 		alerts, exists := findingsMap[binding.RoleRef]
 		if exists {
-			fmt.Printf("\n⚠️  High-Risk Role '%s' is bound by '%s' to subjects:\n", binding.RoleRef, binding.Name)
+			fmt.Printf("\n[WARNING] High-Risk Role '%s' is bound by '%s' to subjects:\n", binding.RoleRef, binding.Name)
 			for _, sub := range binding.Subjects {
 				nsStr := ""
 				if sub.Namespace != "" {

@@ -126,7 +126,7 @@ func main() {
 	]`
 
 	fmt.Println("==================================================")
-	fmt.Println("🛡️ CloudTrail Threat Hunting & Anomaly Audit Engine")
+	fmt.Println("CloudTrail Threat Hunting & Anomaly Audit Engine")
 	fmt.Println("==================================================")
 
 	var events []CloudTrailEvent

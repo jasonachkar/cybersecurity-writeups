@@ -1,0 +1,19 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "PassOnlyPaymentsEcsTaskRole",
+      "Effect": "Allow",
+      "Action": "iam:PassRole",
+      "Resource": "arn:aws:iam::111122223333:role/service/ecs/payments-task",
+      "Condition": {
+        "StringEquals": {
+          "iam:PassedToService": "ecs-tasks.amazonaws.com"
+        },
+        "ArnLike": {
+          "iam:AssociatedResourceArn": "arn:aws:ecs:ca-central-1:111122223333:task-definition/payments-*"
+        }
+      }
+    }
+  ]
+}
