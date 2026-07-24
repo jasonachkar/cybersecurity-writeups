@@ -50,12 +50,28 @@ const identity = imagePolicy.spec.attestors[0].cosign.keyless.identities[0];
 assert.equal(identity.issuer, expected.issuer);
 assert.equal(identity.subject, expected.subject);
 assert.equal(imagePolicy.spec.attestations[0].intoto.type, expected.predicateType);
-assert.equal(imagePolicy.spec.matchImageReferences[0].glob, `${expected.repository}:*`);
+assert.deepEqual(
+  imagePolicy.spec.matchImageReferences.map((reference) => reference.glob),
+  [`${expected.repository}:*`, `${expected.repository}@sha256:*`],
+);
+
+function matchesImageReference(reference) {
+  return imagePolicy.spec.matchImageReferences.some(({ glob }) => {
+    assert.match(glob, /\*$/, "the offline matcher supports reviewed trailing-star globs only");
+    return reference.startsWith(glob.slice(0, -1));
+  });
+}
+
+assert.equal(matchesImageReference(`${expected.repository}:release-2026-07-23`), true);
+assert.equal(matchesImageReference(`${expected.repository}@${expected.digest}`), true);
+assert.equal(matchesImageReference(`ghcr.io/attacker/secureobs@${expected.digest}`), false);
+assert.equal(matchesImageReference(`ghcr.io/jasonachkar/secureobs-evil@${expected.digest}`), false);
 
 function evaluate(candidate) {
   const imageDigest = candidate.image.includes("@") ? candidate.image.split("@")[1] : null;
   const repository = candidate.image.split(/[@:]/)[0];
   return (
+    candidate.verifierSucceeded !== false &&
     candidate.signed === true &&
     candidate.issuer === expected.issuer &&
     candidate.subject === expected.subject &&
@@ -67,11 +83,20 @@ function evaluate(candidate) {
   );
 }
 
-for (const candidate of imageCases.cases) {
+const evaluatedImageCases = imageCases.cases.filter((candidate) => candidate.accepted !== null);
+for (const candidate of evaluatedImageCases) {
   assert.equal(evaluate(candidate), candidate.accepted, candidate.name);
 }
+
+const tagOnlyCase = imageCases.cases.find(
+  (candidate) => candidate.name === "tag-only-reference-match",
+);
+assert.equal(matchesImageReference(tagOnlyCase.image), true);
+assert.equal(tagOnlyCase.accepted, null);
+assert.match(tagOnlyCase.matchOnlyReason, /not executed/i);
+
 assert.deepEqual(
-  imageCases.cases.filter((candidate) => !candidate.accepted).map((candidate) => candidate.name),
+  evaluatedImageCases.filter((candidate) => !candidate.accepted).map((candidate) => candidate.name),
   [
     "unsigned",
     "wrong-repository",
@@ -80,7 +105,8 @@ assert.deepEqual(
     "wrong-issuer",
     "missing-attestation",
     "malformed-provenance",
-    "mutable-tag-without-digest",
+    "wrong-predicate",
+    "verifier-or-transparency-failure",
     "tag-substitution-digest-mismatch",
   ],
 );

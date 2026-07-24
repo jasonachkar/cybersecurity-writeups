@@ -31,6 +31,7 @@ spec:
           - pods
   matchImageReferences:
     - glob: "ghcr.io/jasonachkar/secureobs:*"
+    - glob: "ghcr.io/jasonachkar/secureobs@sha256:*"
   attestors:
     - name: releaseIdentity
       cosign:

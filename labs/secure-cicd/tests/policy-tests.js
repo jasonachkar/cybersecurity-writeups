@@ -130,6 +130,16 @@ assert.match(trustedRelease, /if-no-files-found:\s*error/);
 assert.match(trustedRelease, /environment:\s*\n\s+name:\s*production/);
 assert.match(trustedRelease, /id-token:\s*write/);
 assert.match(trustedRelease, /uses:\s*azure\/login@[0-9a-f]{40}/);
+assert.match(
+  trustedRelease,
+  /--signer-workflow "\$GITHUB_REPOSITORY\/\.github\/workflows\/trusted-build-release\.yml"/,
+);
+assert.match(trustedRelease, /--source-ref "refs\/heads\/main"/);
+assert.match(trustedRelease, /--source-digest "\$GITHUB_SHA"/);
+assert.ok(
+  trustedRelease.indexOf("--signer-workflow") < trustedRelease.indexOf("uses: azure/login@"),
+  "trusted release fixture must constrain signer workflow before cloud authentication",
+);
 assert.doesNotMatch(trustedRelease, /secrets\./);
 assert.doesNotMatch(trustedRelease, /uses:\s*actions\/cache@/);
 for (const finding of [

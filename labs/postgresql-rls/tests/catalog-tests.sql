@@ -22,11 +22,24 @@ BEGIN
 
   SELECT count(*) INTO problem_count
   FROM pg_roles
-  WHERE rolname IN ('tenant_runtime', 'tenant_migrator')
+  WHERE rolname IN ('tenant_runtime', 'tenant_migrator', 'tenant_app')
     AND (rolsuper OR rolbypassrls);
   IF problem_count <> 0 THEN
-    RAISE EXCEPTION 'runtime or migration role can bypass row security';
+    RAISE EXCEPTION 'application, runtime, or migration role can bypass row security';
   END IF;
+
+  SELECT count(*) INTO problem_count
+  FROM pg_roles
+  WHERE (rolname = 'tenant_app' AND NOT rolcanlogin)
+     OR (rolname IN ('tenant_runtime', 'tenant_migrator') AND rolcanlogin);
+  IF problem_count <> 0 THEN
+    RAISE EXCEPTION 'only tenant_app may be a login role in the application role chain';
+  END IF;
+
+  IF NOT pg_has_role('tenant_app', 'tenant_runtime', 'MEMBER') THEN
+    RAISE EXCEPTION 'tenant_app must be able to SET ROLE tenant_runtime';
+  END IF;
+
 
   SELECT count(*) INTO problem_count
   FROM pg_policies

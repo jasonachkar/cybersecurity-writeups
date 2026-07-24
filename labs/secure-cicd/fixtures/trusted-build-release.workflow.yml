@@ -82,6 +82,9 @@ jobs:
         run: >-
           gh attestation verify dist/release.txt
           --repo "$GITHUB_REPOSITORY"
+          --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/trusted-build-release.yml"
+          --source-ref "refs/heads/main"
+          --source-digest "$GITHUB_SHA"
 
       - name: Exchange GitHub OIDC identity for a narrow Azure session
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0

@@ -96,8 +96,32 @@
       "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
     },
     {
-      "name": "mutable-tag-without-digest",
+      "name": "wrong-predicate",
       "accepted": false,
+      "signed": true,
+      "issuer": "https://token.actions.githubusercontent.com",
+      "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main",
+      "image": "ghcr.io/jasonachkar/secureobs@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "predicateType": "https://cyclonedx.org/bom",
+      "provenanceValid": true,
+      "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "verifier-or-transparency-failure",
+      "accepted": false,
+      "signed": true,
+      "verifierSucceeded": false,
+      "issuer": "https://token.actions.githubusercontent.com",
+      "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main",
+      "image": "ghcr.io/jasonachkar/secureobs@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "provenanceValid": true,
+      "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "tag-only-reference-match",
+      "accepted": null,
+      "matchOnlyReason": "Native registry resolution, signature, transparency, mutation, and admission were not executed.",
       "signed": true,
       "issuer": "https://token.actions.githubusercontent.com",
       "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main",
