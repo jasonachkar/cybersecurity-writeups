@@ -362,7 +362,7 @@ function generateIndexMarkdown(items) {
     if (!normalized) return 0;
     // Convert to comparable number: YYYYMMDD-ish
     const parts = normalized.split("-");
-    
+
     // Pad parts
     const y = Number(parts[0] || 0);
 

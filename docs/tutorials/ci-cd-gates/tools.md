@@ -109,19 +109,19 @@ severity:
 # Vulnerability options
 vulnerability:
   ignore-unfixed: true
-  
+
 # Secret scanning
 secret:
   config: trivy-secret.yaml
 
-# Misconfiguration scanning  
+# Misconfiguration scanning
 misconfiguration:
   trace: false
-  
+
 # Cache settings
 cache:
   dir: .trivy-cache
-  
+
 # Output
 format: table
 output: trivy-report.txt
@@ -160,7 +160,7 @@ rules:
     title: Custom API Key
     severity: HIGH
     regex: 'MYAPP_API_KEY_[A-Za-z0-9]{32}'
-    
+
 allow-rules:
   - id: allow-example-keys
     description: Allow example/test keys
@@ -453,11 +453,11 @@ ignore:
     - '*':
         reason: No fix available, low risk
         expires: 2025-06-01
-        
+
   SNYK-PYTHON-REQUESTS-1234567:
     - requirements.txt > requests:
         reason: Used only in development
-        
+
 # Patch vulnerabilities
 patch:
   SNYK-JS-LODASH-567746:
@@ -509,13 +509,13 @@ Create `dependency-check-suppression.xml`:
       <notes>False positive - not applicable to our usage</notes>
       <cve>CVE-2023-12345</cve>
    </suppress>
-   
+
    <suppress>
       <notes>Accepted risk - no fix available</notes>
       <packageUrl regex="true">^pkg:npm/lodash@.*$</packageUrl>
       <cve>CVE-2023-67890</cve>
    </suppress>
-   
+
    <suppress until="2025-06-01">
       <notes>Temporary suppression pending upgrade</notes>
       <gav regex="true">^com\.example:.*:.*$</gav>

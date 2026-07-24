@@ -294,16 +294,16 @@ npm-audit:
   runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@v4
-    
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
         cache: 'npm'
-    
+
     - name: Install dependencies
       run: npm ci
-    
+
     - name: Run npm audit
       run: npm audit --audit-level=high
       continue-on-error: false
@@ -317,18 +317,18 @@ dotnet-scan:
   runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@v4
-    
+
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.x'
-    
+
     - name: Restore dependencies
       run: dotnet restore
-    
+
     - name: Run dotnet list package vulnerable
       run: dotnet list package --vulnerable --include-transitive 2>&1 | tee vulnerabilities.txt
-    
+
     - name: Check for vulnerabilities
       run: |
         if grep -q "has the following vulnerable packages" vulnerabilities.txt; then
@@ -397,7 +397,7 @@ trufflehog-scan:
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
-    
+
     - name: TruffleHog OSS
       uses: trufflesecurity/trufflehog@main
       with:
@@ -419,10 +419,10 @@ container-security:
   runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@v4
-    
+
     - name: Build image
       run: docker build -t myapp:${{ github.sha }} .
-    
+
     - name: Run Trivy vulnerability scanner
       uses: aquasecurity/trivy-action@master
       with:
@@ -432,7 +432,7 @@ container-security:
         ignore-unfixed: true
         vuln-type: 'os,library'
         severity: 'CRITICAL,HIGH'
-    
+
     - name: Run Trivy for SARIF
       uses: aquasecurity/trivy-action@master
       if: always()
@@ -440,7 +440,7 @@ container-security:
         image-ref: 'myapp:${{ github.sha }}'
         format: 'sarif'
         output: 'trivy-results.sarif'
-    
+
     - name: Upload to Security tab
       uses: github/codeql-action/upload-sarif@v3
       if: always()
@@ -456,16 +456,16 @@ docker-scout:
   runs-on: ubuntu-latest
   steps:
     - uses: actions/checkout@v4
-    
+
     - name: Login to Docker Hub
       uses: docker/login-action@v3
       with:
         username: ${{ secrets.DOCKERHUB_USERNAME }}
         password: ${{ secrets.DOCKERHUB_TOKEN }}
-    
+
     - name: Build image
       run: docker build -t myapp:${{ github.sha }} .
-    
+
     - name: Docker Scout scan
       uses: docker/scout-action@v1
       with:
@@ -473,7 +473,7 @@ docker-scout:
         image: myapp:${{ github.sha }}
         sarif-file: scout-results.sarif
         exit-code: true
-    
+
     - name: Upload Scout results
       uses: github/codeql-action/upload-sarif@v3
       if: always()
@@ -497,23 +497,23 @@ sbom:
     attestations: write
   steps:
     - uses: actions/checkout@v4
-    
+
     - name: Build image
       run: docker build -t myapp:${{ github.sha }} .
-    
+
     - name: Generate SBOM with Trivy
       uses: aquasecurity/trivy-action@master
       with:
         image-ref: 'myapp:${{ github.sha }}'
         format: 'cyclonedx'
         output: 'sbom.json'
-    
+
     - name: Upload SBOM
       uses: actions/upload-artifact@v4
       with:
         name: sbom
         path: sbom.json
-    
+
     - name: Attest SBOM
       uses: actions/attest-sbom@v1
       with:
@@ -562,7 +562,7 @@ dependency-review:
   if: github.event_name == 'pull_request'
   steps:
     - uses: actions/checkout@v4
-    
+
     - name: Dependency Review
       uses: actions/dependency-review-action@v4
       with:
@@ -608,7 +608,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       # Run comprehensive scans
       - name: Full Trivy scan
         uses: aquasecurity/trivy-action@master
@@ -617,7 +617,7 @@ jobs:
           format: 'json'
           output: 'full-scan-results.json'
           severity: 'CRITICAL,HIGH,MEDIUM'
-      
+
       - name: Upload results
         uses: actions/upload-artifact@v4
         with:
@@ -653,7 +653,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Run Trivy
         uses: aquasecurity/trivy-action@master
         with:
