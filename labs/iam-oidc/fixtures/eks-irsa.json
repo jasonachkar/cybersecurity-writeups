@@ -1,0 +1,74 @@
+{
+  "kind": "aws-web-identity",
+  "trustPolicy": "eks-irsa-trust.json",
+  "base": {
+    "token": {
+      "signatureVerified": true,
+      "issuer": "https://oidc.eks.ca-central-1.amazonaws.com/id/EXAMPLECLUSTERID",
+      "audience": "sts.amazonaws.com",
+      "subject": "system:serviceaccount:payments:reconciler",
+      "notBefore": 1899999900,
+      "expiresAt": 1900000300
+    },
+    "claimRequirements": {
+      "expectedIssuer": "https://oidc.eks.ca-central-1.amazonaws.com/id/EXAMPLECLUSTERID",
+      "expectedAudience": "sts.amazonaws.com",
+      "conditionPrefix": "oidc.eks.ca-central-1.amazonaws.com/id/EXAMPLECLUSTERID",
+      "now": 1900000000
+    },
+    "providerArn": "arn:aws:iam::111122223333:oidc-provider/oidc.eks.ca-central-1.amazonaws.com/id/EXAMPLECLUSTERID",
+    "permissionSet": {
+      "identityPolicies": [
+        "irsa-role-permissions.json"
+      ],
+      "boundary": null,
+      "request": {
+        "action": "dynamodb:GetItem",
+        "resource": "arn:aws:dynamodb:ca-central-1:111122223333:table/payments-ledger",
+        "context": {}
+      }
+    }
+  },
+  "cases": [
+    {
+      "name": "exact cluster issuer namespace service account and audience are authorized",
+      "mutations": {},
+      "expectedStage": "AUTHORIZED"
+    },
+    {
+      "name": "another Kubernetes namespace fails role trust",
+      "mutations": {
+        "token.subject": "system:serviceaccount:default:reconciler"
+      },
+      "expectedStage": "TRUST_POLICY_REJECTED"
+    },
+    {
+      "name": "another service account fails role trust",
+      "mutations": {
+        "token.subject": "system:serviceaccount:payments:default"
+      },
+      "expectedStage": "TRUST_POLICY_REJECTED"
+    },
+    {
+      "name": "another EKS issuer fails claim validation",
+      "mutations": {
+        "token.issuer": "https://oidc.eks.ca-central-1.amazonaws.com/id/OTHERCLUSTERID"
+      },
+      "expectedStage": "CLAIMS_REJECTED"
+    },
+    {
+      "name": "wrong token audience fails claim validation",
+      "mutations": {
+        "token.audience": "kubernetes.default.svc"
+      },
+      "expectedStage": "CLAIMS_REJECTED"
+    },
+    {
+      "name": "IRSA session exists but role permissions deny table deletion",
+      "mutations": {
+        "permissionSet.request.action": "dynamodb:DeleteTable"
+      },
+      "expectedStage": "PERMISSIONS_DENIED"
+    }
+  ]
+}

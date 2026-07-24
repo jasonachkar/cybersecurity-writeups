@@ -17,12 +17,12 @@ type CycloneDXSBOM struct {
 
 // Component represents a software dependency in the SBOM.
 type Component struct {
-	Type       string          `json:"type"`
-	Group      string          `json:"group,omitempty"`
-	Name       string          `json:"name"`
-	Version    string          `json:"version"`
-	PURL       string          `json:"purl,omitempty"`
-	Licenses   []LicenseChoice `json:"licenses,omitempty"`
+	Type     string          `json:"type"`
+	Group    string          `json:"group,omitempty"`
+	Name     string          `json:"name"`
+	Version  string          `json:"version"`
+	PURL     string          `json:"purl,omitempty"`
+	Licenses []LicenseChoice `json:"licenses,omitempty"`
 }
 
 // LicenseChoice represents license definition wrappers in CycloneDX.

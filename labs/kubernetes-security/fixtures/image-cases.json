@@ -1,0 +1,121 @@
+{
+  "expected": {
+    "issuer": "https://token.actions.githubusercontent.com",
+    "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main",
+    "repository": "ghcr.io/jasonachkar/secureobs",
+    "predicateType": "https://slsa.dev/provenance/v1",
+    "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "cases": [
+    {
+      "name": "authorized-release",
+      "accepted": true,
+      "signed": true,
+      "issuer": "https://token.actions.githubusercontent.com",
+      "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main",
+      "image": "ghcr.io/jasonachkar/secureobs@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "provenanceValid": true,
+      "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "unsigned",
+      "accepted": false,
+      "signed": false,
+      "issuer": "https://token.actions.githubusercontent.com",
+      "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main",
+      "image": "ghcr.io/jasonachkar/secureobs@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "provenanceValid": true,
+      "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "wrong-repository",
+      "accepted": false,
+      "signed": true,
+      "issuer": "https://token.actions.githubusercontent.com",
+      "subject": "https://github.com/attacker/repo/.github/workflows/release.yml@refs/heads/main",
+      "image": "ghcr.io/attacker/secureobs@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "provenanceValid": true,
+      "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "wrong-workflow",
+      "accepted": false,
+      "signed": true,
+      "issuer": "https://token.actions.githubusercontent.com",
+      "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/pr.yml@refs/heads/main",
+      "image": "ghcr.io/jasonachkar/secureobs@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "provenanceValid": true,
+      "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "wrong-branch",
+      "accepted": false,
+      "signed": true,
+      "issuer": "https://token.actions.githubusercontent.com",
+      "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/feature",
+      "image": "ghcr.io/jasonachkar/secureobs@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "provenanceValid": true,
+      "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "wrong-issuer",
+      "accepted": false,
+      "signed": true,
+      "issuer": "https://issuer.example.invalid",
+      "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main",
+      "image": "ghcr.io/jasonachkar/secureobs@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "provenanceValid": true,
+      "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "missing-attestation",
+      "accepted": false,
+      "signed": true,
+      "issuer": "https://token.actions.githubusercontent.com",
+      "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main",
+      "image": "ghcr.io/jasonachkar/secureobs@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "predicateType": null,
+      "provenanceValid": false,
+      "subjectDigest": null
+    },
+    {
+      "name": "malformed-provenance",
+      "accepted": false,
+      "signed": true,
+      "issuer": "https://token.actions.githubusercontent.com",
+      "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main",
+      "image": "ghcr.io/jasonachkar/secureobs@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "provenanceValid": false,
+      "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "mutable-tag-without-digest",
+      "accepted": false,
+      "signed": true,
+      "issuer": "https://token.actions.githubusercontent.com",
+      "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main",
+      "image": "ghcr.io/jasonachkar/secureobs:latest",
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "provenanceValid": true,
+      "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "name": "tag-substitution-digest-mismatch",
+      "accepted": false,
+      "signed": true,
+      "issuer": "https://token.actions.githubusercontent.com",
+      "subject": "https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main",
+      "image": "ghcr.io/jasonachkar/secureobs@sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "predicateType": "https://slsa.dev/provenance/v1",
+      "provenanceValid": true,
+      "subjectDigest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ]
+}

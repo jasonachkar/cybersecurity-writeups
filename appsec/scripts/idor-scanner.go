@@ -14,7 +14,7 @@ type APIResponse struct {
 
 // UserSession holds identity headers and access levels.
 type UserSession struct {
-	Username string
+	Username  string
 	AuthToken string
 	IsAdmin   bool
 }
@@ -120,7 +120,7 @@ func auditEndpoint(endpointFunc func(string, string) APIResponse, userA, userB U
 	for _, id := range ids {
 		// Fetch with User A (may or may not own it)
 		respA := endpointFunc(id, userA.AuthToken)
-		
+
 		// Fetch with User B (may or may not own it)
 		respB := endpointFunc(id, userB.AuthToken)
 
