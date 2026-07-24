@@ -18,7 +18,17 @@ export function requireCleanProvenance({command, toolVersions = {}, result = "pa
     gitCommit = git(["rev-parse", "HEAD"]);
     gitTree = git(["rev-parse", "HEAD^{tree}"]);
     branch = git(["branch", "--show-current"]) || process.env.GITHUB_REF_NAME || "detached";
-    dirty = git(["status", "--porcelain"]);
+    dirty = git(["status", "--porcelain"])
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .filter((line) => {
+        // Report generators write under qa/ after checks begin; that must not
+        // invalidate provenance for the source tree under test.
+        const pathPart = line.replace(/^[A-Z?]{1,2}\s+/, "").replace(/^"/, "").replace(/"$/, "");
+        return !pathPart.startsWith("qa/");
+      })
+      .join("\n");
   } catch (error) {
     throw new Error(`Git provenance unavailable: ${error.message}`);
   }

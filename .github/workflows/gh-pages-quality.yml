@@ -33,8 +33,6 @@ jobs:
           cache: npm
       - name: Install
         run: npm ci
-      - name: Maintain public metadata
-        run: npm run maintain
       - name: Static validation
         run: npm run verify:static
       - name: Upload static reports
@@ -56,6 +54,9 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      - name: Install supply-chain lab dependencies
+        working-directory: labs/supply-chain
+        run: npm install
       - run: npm run verify:labs
 
   go-utilities:
@@ -141,7 +142,6 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: npm run maintain
       - run: npm run verify:a11y
       - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
@@ -161,7 +161,6 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
-      - run: npm run maintain
       - run: npm run verify:links
       - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
