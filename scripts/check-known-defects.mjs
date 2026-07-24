@@ -4,7 +4,7 @@ import {fileURLToPath} from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 
-const SKIP_DIR_NAMES = new Set([".git", "node_modules", "qa"]);
+const SKIP_DIR_NAMES = new Set([".git", "node_modules", "qa", ".tools", ".venv", ".idea", "mkdocs-project"]);
 const PUBLIC_CONTENT = /\.(?:html|json|css|ya?ml)$/i;
 const EXECUTABLE = /\.(?:go|js|mjs|ts|tf|rego|sql|bicep|ps1|sh|md)$/i;
 const EXECUTABLE_ROOTS = [

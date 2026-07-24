@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {gunzipSync} from "node:zlib";
 import {fileURLToPath} from "node:url";
-import {REVIEW_TIMESTAMP, SITE_ORIGIN, entries} from "./site-config.mjs";
+import {NAV_INDEX, NAV_LEFTNAV_HREFS, NAV_ORDER, REVIEW_TIMESTAMP, SITE_ORIGIN, entries} from "./site-config.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
@@ -24,7 +24,7 @@ const fail = (file, message) => errors.push(`${file}: ${message}`);
 function listFiles(directory = root) {
   const result = [];
   for (const item of fs.readdirSync(directory, {withFileTypes: true})) {
-    if ([".git", "node_modules"].includes(item.name)) continue;
+    if ([".git", "node_modules", ".tools", ".venv", ".idea", "mkdocs-project"].includes(item.name)) continue;
     const full = path.join(directory, item.name);
     if (item.isDirectory()) result.push(...listFiles(full));
     else if (item.isFile()) result.push(posix(path.relative(root, full)));
@@ -105,12 +105,38 @@ for (const file of htmlFiles) {
   } else if (evidenceCount !== 1) {
     fail(file, `expected one server-rendered evidence block; found ${evidenceCount}`);
   }
-  if ((html.match(/<!-- portfolio-nav:start -->/g) || []).length !== 1) fail(file, "missing or duplicate curated navigation");
-  if ((html.match(/<!-- portfolio-footer:start -->/g) || []).length !== 1) fail(file, "missing or duplicate provenance footer");
-  if (/md-sidebar--primary/.test(html)) fail(file, "legacy primary navigation snapshot remains");
+  if ((html.match(/<!-- docs-left-nav:start -->/g) || []).length !== 1) fail(file, "missing or duplicate left navigation");
+  if ((html.match(/<!-- docs-footer:start -->/g) || []).length !== 1) fail(file, "missing or duplicate provenance footer");
+  if (/portfolio-nav|md-sidebar--primary/.test(html)) fail(file, "legacy duplicate navigation chrome remains");
   if (!/class=["']md-skip["']/.test(html)) fail(file, "skip link is missing");
   if (!/name=["']author["'][^>]*content=["']Jason Achkar Diab["']/.test(html)) fail(file, "correct author metadata is missing");
   if (!/css\/portfolio\.css/.test(html)) fail(file, "portfolio stylesheet is missing");
+
+  // Documentation-shell invariants: one left nav (every page), breadcrumbs/prev-next
+  // only for pages the central NAV_TREE actually knows about, and no orphaned aria-current.
+  const ariaCurrentMatches = [...html.matchAll(/<a\b[^>]*\baria-current=["']page["'][^>]*href=["']([^"']+)["']/gi)]
+    .concat([...html.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*\baria-current=["']page["']/gi)]);
+  if (isUtility || isArchived) {
+    if (ariaCurrentMatches.length) fail(file, "site-utility/archived page must not mark a left-nav item as current");
+  } else if (NAV_LEFTNAV_HREFS.has(url)) {
+    if (ariaCurrentMatches.length !== 1) fail(file, `expected exactly one aria-current="page" left-nav link; found ${ariaCurrentMatches.length}`);
+    else if (ariaCurrentMatches[0][1] !== url) fail(file, `aria-current left-nav link ${ariaCurrentMatches[0][1]} does not match page URL ${url}`);
+  } else if (ariaCurrentMatches.length) {
+    fail(file, "aria-current left-nav link present for a page with no left-nav leaf");
+  }
+  const breadcrumbCount = (html.match(/<!-- docs-breadcrumbs:start -->/g) || []).length;
+  if (NAV_INDEX.has(url)) {
+    if (breadcrumbCount !== 1) fail(file, `expected one breadcrumb trail; found ${breadcrumbCount}`);
+  } else if (breadcrumbCount !== 0) {
+    fail(file, "unexpected breadcrumb trail on a page outside the navigation tree");
+  }
+  for (const match of html.matchAll(/<!-- docs-prevnext:start -->[\s\S]*?<!-- docs-prevnext:end -->/g)) {
+    for (const link of match[0].matchAll(/class="docs-prevnext__link[^"]*"\s+href=["']([^"']+)["']/g)) {
+      const target = link[1];
+      const targetStatus = manifest[target]?.status;
+      if (!NAV_INDEX.has(target) || targetStatus === "archived") fail(file, `prev/next points at a non-navigable page: ${target}`);
+    }
+  }
 
   const canonical = canonicalTags[0] ? attributes(canonicalTags[0][0]).href : "";
   if (!canonical.startsWith(`${SITE_ORIGIN}/`) && canonical !== `${SITE_ORIGIN}/`) fail(file, `invalid canonical ${canonical}`);
