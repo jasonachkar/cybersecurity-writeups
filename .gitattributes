@@ -11,3 +11,8 @@
 *.css text eol=lf
 *.mjs text eol=lf
 *.js text eol=lf
+
+# gofmt is byte-strict about line endings; without this, a Windows checkout of the
+# pre-existing Go modules under appsec/scripts, cloud-security/scripts, and
+# threat-intel/scripts fails `npm run verify:go` purely from checkout state.
+*.go text eol=lf
