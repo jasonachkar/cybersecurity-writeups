@@ -1,47 +1,30 @@
 # Validated gh-pages remediation — PR #5
 
 ## Scope
-Only `codex/validated-gh-pages-deployment` → `gh-pages`. No deployment occurred during validation. PR remains draft until all required workflow jobs are green on the latest head.
+Only `codex/validated-gh-pages-deployment` → `gh-pages`. **No deployment occurred during validation.**
 
-## Exact head
-- **gitCommit:** `000245e681fcbf1cd6dfc359df880038f9844362`
-- **gitTree:** `d557a95eadaf6fdf3b494c9e9573427284b04924`
-- Local QA regeneration used `QA_ALLOW_DIRTY=1` after intermediate report writes; **CI regenerates reports on a clean checkout** and is authoritative.
+## Exact head (green CI)
+- **gitCommit:** `7d53aa7d81a0709d766211fe78c8891d01d52b5a`
+- **gitTree:** `5ed660a5e0f7f93a52dae25d8f72cb44a7e96263`
+- **Workflow:** https://github.com/jasonachkar/cybersecurity-writeups/actions/runs/30097733952 (`conclusion: success`, `2026-07-24T13:41:18Z`)
 
-## Senior-level content / evidence corrections (this remediation pass)
-- AI broker: atomic `ApprovalStore.consumeIfUnused`; concurrent replay test (exactly one executor invocation).
-- Docs bound replay to local in-memory CAS (not distributed durability).
-- CloudTrail analyzer rewritten with accurate fields/tests; K8s RBAC heuristic corrected; OAuth PKCE moved to `go test`.
-- Unsafe duplicate Go demos and open-RDP Azure Firewall `main.tf` retired.
-- Dual-palette × dual-viewport axe audit: **0 critical/serious, 0 moderate** locally after footer/button/scroll-region fixes.
-- `npm run verify:all` entry point + `.github/workflows/gh-pages-quality.yml`.
+## Required checks (all SUCCESS)
+static-site · javascript-labs · go-utilities · policy-and-iac · postgresql-rls · accessibility · external-links · secret-scan · verify-evidence-reports · summary
 
-## Executable validation (local, pre-CI)
-| Suite | Result |
-|-------|--------|
-| AI broker | 12/12 including concurrent replay |
-| OAuth/OIDC Node | **14**/14 |
-| OAuth PKCE Go | `go test` pass |
-| CloudTrail Go | `go test` / `go vet` pass |
-| K8s RBAC Go | `go test` / `go vet` pass |
-| Other JS labs | pass (secure-cicd, k8s model, supply-chain, iam-oidc, iac-policy) |
-| Static site | pass |
-| html-validate | 0 errors |
-| Defect patterns | 21 patterns / 215 artifacts |
-| axe (default+slate × desktop+mobile) | 0 critical/serious, 0 moderate |
-| External links | 164 reachable, 1 limited (Uber newsroom 406) |
-| Gitleaks 8.30.0 | no leaks |
+## Remediation highlights
+- **AI broker:** atomic `ApprovalStore.consumeIfUnused`; concurrent replay → one executor invocation; docs bound to in-memory teaching CAS.
+- **Legacy utilities:** CloudTrail + K8s RBAC rewritten with tests; OAuth PKCE → `go test`; JWT/IDOR/IAM/SCP/pipeline/SBOM/secret demos and open-RDP Azure Firewall `main.tf` **retired**.
+- **A11y:** default+slate × desktop+mobile; local audit 0 critical/serious and 0 moderate after footer/button/scroll-region fixes.
+- **QA:** commit/tree-stamped reports; `npm run verify:all`; CI regenerates authoritative artifacts.
+- **OAuth Node lab:** **14**/14 cases (not 9).
 
-## Known limitations
-- Kyverno image policy: schema/offline only.
-- Tetragon: schema only.
-- Supply-chain: offline adapter only.
-- AI ApprovalStore: teaching in-memory CAS.
-- No cloud deployment during validation.
-- Committed `qa/*.json` may lag HEAD after the report commit; CI artifacts are the bindable evidence.
-
-## Workflow
-See Actions run for `gh-pages quality` on this head. Required jobs: static-site, javascript-labs, go-utilities, policy-and-iac, postgresql-rls, accessibility, external-links, secret-scan, verify-evidence-reports, summary.
+## Known limitations (intentional)
+- Kyverno image policy: schema/offline only (not live signature admission).
+- Tetragon: schema only (no live cluster enforcement).
+- Supply-chain: offline adapter contract only.
+- AI ApprovalStore: not distributed durable storage.
+- Uber newsroom link may remain bot-blocked (limited, not broken).
+- No cloud resources deployed.
 
 ## Review state
-**Draft** until the complete latest-head workflow is green.
+PR remains **draft**. Latest-head workflow is green and ready for **independent final review** (not merge from this agent).
