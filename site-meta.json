@@ -1,7 +1,10 @@
 {
-  "sourceBranch": "codex/production-security-content-verification",
-  "sourceCommit": "55312d775b5fd520a07b2797eb6163501120aab8",
-  "buildTimestamp": "2026-07-24T01:11:33Z",
-  "generator": "mkdocs",
-  "repository": "jasonachkar/cybersecurity-writeups"
+  "site": "https://docs.jasonachkardiab.com",
+  "repository": "jasonachkar/cybersecurity-writeups",
+  "publicationTarget": "gh-pages",
+  "reviewBranch": "codex/validated-gh-pages-deployment",
+  "pullRequest": 5,
+  "artifactType": "static GitHub Pages site",
+  "contentReviewTimestamp": "2026-07-24T11:48:39Z",
+  "evidenceModel": "page-level status and validation disclosures"
 }
