@@ -1,0 +1,386 @@
+{
+  "timestamp": "2026-07-24T11:48:39Z",
+  "engine": "axe-core 4.12.1 via Playwright Chromium",
+  "pages": 42,
+  "criticalOrSerious": 0,
+  "moderateOrMinor": 23,
+  "consoleErrors": [],
+  "failedLoads": [],
+  "results": [
+    {
+      "url": "/about/quality-methodology/",
+      "violations": []
+    },
+    {
+      "url": "/about/site-provenance/",
+      "violations": []
+    },
+    {
+      "url": "/appsec/ai-agent-security/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/appsec/api-microservices-threat-modeling/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/appsec/oauth2-oidc-deep-dive/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/appsec/runtime-protection-rasp-waf/",
+      "violations": []
+    },
+    {
+      "url": "/appsec/saas-multitenancy-isolation/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/cloud-security/cloud-detection-and-response/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/cloud-security/cloud-network-segmentation/",
+      "violations": []
+    },
+    {
+      "url": "/cloud-security/iam-at-scale/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/cloud-security/kubernetes-multi-tenancy/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/cloud-security/multi-account-landing-zones/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/cloud-security/serverless-security/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/devsecops/iac-security-and-policy-as-code/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/devsecops/secrets-management/",
+      "violations": []
+    },
+    {
+      "url": "/devsecops/secure-cicd-pipeline-design/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/devsecops/secureobs-multitenant-security-scanner/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/devsecops/supply-chain-sbom-signing/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/docs/certification-notes/az-900/domain-1-concepts/",
+      "violations": []
+    },
+    {
+      "url": "/docs/certification-notes/az-900/domain-2-architecture-services/",
+      "violations": []
+    },
+    {
+      "url": "/docs/certification-notes/az-900/domain-3-management-governance/",
+      "violations": []
+    },
+    {
+      "url": "/docs/certification-notes/az-900/",
+      "violations": []
+    },
+    {
+      "url": "/docs/certification-notes/google-cybersecurity/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/docs/certification-notes/sc-500/domain-1-identity/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/docs/certification-notes/sc-500/domain-2-storage-networking/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/docs/certification-notes/sc-500/domain-3-secure-compute/",
+      "violations": []
+    },
+    {
+      "url": "/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/",
+      "violations": []
+    },
+    {
+      "url": "/docs/certification-notes/sc-500/",
+      "violations": []
+    },
+    {
+      "url": "/docs/certification-notes/security-plus/",
+      "violations": []
+    },
+    {
+      "url": "/docs/research-audit/content-inventory/",
+      "violations": []
+    },
+    {
+      "url": "/",
+      "violations": []
+    },
+    {
+      "url": "/labs/ai-agent-security/",
+      "violations": []
+    },
+    {
+      "url": "/labs/azure-landing-zone/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/labs/iac-policy/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/labs/iam-oidc/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/labs/kubernetes-security/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/labs/oauth-oidc/",
+      "violations": []
+    },
+    {
+      "url": "/labs/postgresql-rls/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/labs/secure-cicd/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/labs/supply-chain/",
+      "violations": [
+        {
+          "id": "landmark-unique",
+          "impact": "moderate",
+          "help": "Landmarks should have a unique role or role/label/title (i.e. accessible name) combination",
+          "nodes": [
+            "#__code_0 > .md-code__nav :: Fix any of the following: The landmark must have a unique aria-label, aria-labelledby, or title to make landmarks distinguishable"
+          ]
+        }
+      ]
+    },
+    {
+      "url": "/threat-intel/attack-path-analysis/",
+      "violations": []
+    },
+    {
+      "url": "/threat-intel/cloud-breach-case-studies/",
+      "violations": []
+    }
+  ]
+}

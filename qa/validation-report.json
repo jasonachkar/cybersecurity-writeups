@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-07-24T11:48:39Z",
+  "status": "passed",
+  "metrics": {
+    "htmlPages": 110,
+    "indexablePages": 42,
+    "archivedPages": 68,
+    "internalLinks": 2456,
+    "fragmentLinks": 653,
+    "assetLinks": 667,
+    "jsonFiles": 59,
+    "tables": 44,
+    "images": 7
+  },
+  "errors": []
+}
