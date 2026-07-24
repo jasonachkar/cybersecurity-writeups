@@ -295,7 +295,7 @@ object, tenant, and business authorization after token validation.</p>
 <h2 id="run">Run</h2>
 <p>From the repository root:</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1">node labs/oauth-oidc/tests/oauth-security.test.js
-</span><span id="__span-0-2">go run appsec/scripts/oauth-pkce-verifier.go
+</span><span id="__span-0-2">go test ./appsec/scripts/oauth-pkce
 </span></code></pre></div>
 <p>Expected results are 14 passing Node.js checks and 8 passing Go checks. The Go
 program covers the RFC 7636 Appendix B vector, generated-verifier round trip, wrong
@@ -321,7 +321,7 @@ It never prints verifier or challenge values.</p>
 <h2 id="related-guidance">Related guidance</h2>
 <ul>
 <li><a href="../../appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OpenID Connect Security Engineering</a></li>
-<li><a href="../../appsec/scripts/oauth-pkce-verifier.go">S256-only PKCE verifier</a></li>
+<li><a href="../../appsec/scripts/oauth-pkce/">S256-only PKCE verifier</a></li>
 <li><a href="https://www.rfc-editor.org/rfc/rfc9700.html">RFC 9700: OAuth 2.0 Security Best Current Practice</a></li>
 <li><a href="https://www.rfc-editor.org/rfc/rfc7636.html">RFC 7636: Proof Key for Code Exchange</a></li>
 <li><a href="https://openid.net/specs/openid-connect-core-1_0.html">OpenID Connect Core 1.0</a></li>
