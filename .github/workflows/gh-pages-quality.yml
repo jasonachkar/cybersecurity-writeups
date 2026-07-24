@@ -54,9 +54,11 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
-      - name: Install supply-chain lab dependencies
-        working-directory: labs/supply-chain
-        run: npm install
+      - name: Install lab dependencies
+        run: |
+          set -euo pipefail
+          npm install --prefix labs/secure-cicd
+          npm install --prefix labs/supply-chain
       - run: npm run verify:labs
 
   go-utilities:
@@ -179,9 +181,9 @@ jobs:
       - name: Install gitleaks
         run: |
           set -euo pipefail
-          curl -sSL -o gitleaks.tgz https://github.com/gitleaks/gitleaks/releases/download/v8.30.0/gitleaks_8.30.0_linux_x64.tar.gz
-          tar -xzf gitleaks.tgz gitleaks
-          sudo mv gitleaks /usr/local/bin/
+          curl -sSL -o /tmp/gitleaks.tgz https://github.com/gitleaks/gitleaks/releases/download/v8.30.0/gitleaks_8.30.0_linux_x64.tar.gz
+          tar -xzf /tmp/gitleaks.tgz -C /tmp gitleaks
+          sudo mv /tmp/gitleaks /usr/local/bin/
           gitleaks version
       - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
