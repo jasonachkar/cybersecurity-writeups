@@ -58,6 +58,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --prefix labs/secure-cicd
+          npm install --prefix labs/kubernetes-security
           npm install --prefix labs/supply-chain
       - run: npm run verify:labs
 

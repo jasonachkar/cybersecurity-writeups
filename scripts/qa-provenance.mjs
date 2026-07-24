@@ -23,10 +23,10 @@ export function requireCleanProvenance({command, toolVersions = {}, result = "pa
       .map((line) => line.trim())
       .filter(Boolean)
       .filter((line) => {
-        // Report generators write under qa/ after checks begin; that must not
-        // invalidate provenance for the source tree under test.
+        // Report generators and CI artifact assembly write under qa/ and
+        // qa-artifacts/; that must not invalidate provenance for source.
         const pathPart = line.replace(/^[A-Z?]{1,2}\s+/, "").replace(/^"/, "").replace(/"$/, "");
-        return !pathPart.startsWith("qa/");
+        return !pathPart.startsWith("qa/") && !pathPart.startsWith("qa-artifacts/");
       })
       .join("\n");
   } catch (error) {
