@@ -145,7 +145,7 @@
         <label class="md-header__button md-icon" for="__search" aria-label="Search documentation">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        <span class="docs-search-label" aria-hidden="true">Search documentation</span></label>
+        </label>
         <div class="md-search" data-md-component="search" role="dialog" aria-label="Site search">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
@@ -235,25 +235,6 @@
 
 <!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li>Engineering</li><li>Application Security</li><li aria-current="page">Multi-tenant SaaS isolation</li></ol></nav><!-- docs-breadcrumbs:end -->
 <h1 id="engineering-tenant-isolation-for-a-multi-tenant-saas-platform">Engineering Tenant Isolation for a Multi-tenant SaaS Platform</h1>
-<!-- docs-evidence:start -->
-<aside class="content-evidence content-evidence--partially-verified" aria-label="Content evidence status">
-  <div class="docs-evidence-row">
-    <strong class="docs-evidence-row__status">Partially tested engineering investigation</strong>
-    <span class="docs-evidence-row__item">Last reviewed: July 24, 2026</span>
-    <span class="docs-evidence-row__item">1 validated check</span>
-    <span class="docs-evidence-row__item">1 limitation</span>
-    <span class="docs-evidence-row__item">Next review: October 22, 2026</span>
-  </div>
-  <details class="docs-evidence-detail">
-    <summary>View evidence and limitations</summary>
-    <dl>
-      <dt>Validated evidence</dt><dd><ul><li>PostgreSQL RLS boundary cases, role attributes, and pooled-client session lifecycle are exercised in a disposable database lab.</li></ul></dd>
-      <dt>Not established</dt><dd><ul><li>API authorization, queues, caches, object storage, and telemetry boundaries are not exercised by the database lab.</li></ul></dd>
-      <dt>Review cadence</dt><dd>Every 90 days; next review due 2026-10-22.</dd>
-    </dl>
-  </details>
-</aside>
-<!-- docs-evidence:end -->
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
   <summary>On this page</summary>
@@ -558,17 +539,17 @@ framework transaction wrapper, a managed PostgreSQL service, API authorization,
 identity-provider integration, or a production dataset. Re-run on supported production
 versions and record provider-specific administrator/bypass behavior.</p>
 <h2 id="operational-checklist">Operational checklist</h2>
-<ul>
-<li>[ ] Tenant authority is server-side and action-specific.</li>
-<li>[ ] Every transaction sets context locally; no default tenant exists.</li>
-<li>[ ] Every tenant table has a non-null tenant key, <code>ENABLE</code> and <code>FORCE</code> RLS, and
-      complete read/write policy expressions.</li>
-<li>[ ] Runtime identities are non-owner, non-superuser, and <code>NOBYPASSRLS</code>.</li>
-<li>[ ] Non-row stores and asynchronous jobs have equivalent isolation tests.</li>
-<li>[ ] Negative tests run after migrations and before releases.</li>
-<li>[ ] Break-glass is just-in-time, approved, logged, and reviewed.</li>
-<li>[ ] Catalog drift and missing context are alertable.</li>
-<li>[ ] Residual risk and any tenant-specific isolation tier are documented.</li>
+<ul class="docs-checklist">
+<li class="docs-checklist-item"><label><input type="checkbox" disabled> Tenant authority is server-side and action-specific.</label></li>
+<li class="docs-checklist-item"><label><input type="checkbox" disabled> Every transaction sets context locally; no default tenant exists.</label></li>
+<li class="docs-checklist-item"><label><input type="checkbox" disabled> Every tenant table has a non-null tenant key, <code>ENABLE</code> and <code>FORCE</code> RLS, and
+      complete read/write policy expressions.</label></li>
+<li class="docs-checklist-item"><label><input type="checkbox" disabled> Runtime identities are non-owner, non-superuser, and <code>NOBYPASSRLS</code>.</label></li>
+<li class="docs-checklist-item"><label><input type="checkbox" disabled> Non-row stores and asynchronous jobs have equivalent isolation tests.</label></li>
+<li class="docs-checklist-item"><label><input type="checkbox" disabled> Negative tests run after migrations and before releases.</label></li>
+<li class="docs-checklist-item"><label><input type="checkbox" disabled> Break-glass is just-in-time, approved, logged, and reviewed.</label></li>
+<li class="docs-checklist-item"><label><input type="checkbox" disabled> Catalog drift and missing context are alertable.</label></li>
+<li class="docs-checklist-item"><label><input type="checkbox" disabled> Residual risk and any tenant-specific isolation tier are documented.</label></li>
 </ul>
 <h2 id="references">References</h2>
 <ul>

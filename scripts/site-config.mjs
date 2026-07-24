@@ -8,7 +8,7 @@ export const STATUS_LABELS = {
   "validated-lab": "Validated lab",
   "partially-tested": "Partially tested lab",
   conceptual: "Conceptual reference",
-  "study-notes": "Study Notes — not implementation evidence",
+  "study-notes": "Study Notes - not implementation evidence",
   archived: "Archived / requires technical review",
   "site-utility": "Site utility page"
 };
@@ -180,7 +180,7 @@ const engineering = {
     evidence: ["Chronologies distinguish incident-owner disclosure from inference and control lessons."],
     limitations: ["Public reporting cannot establish undisclosed facts or complete root cause."],
     sources: ["Incident-owner disclosures", "Regulator or court records where cited"],
-    runnableEvidence: "None — documented incident analysis",
+    runnableEvidence: "None - documented incident analysis",
     proves: "What cited public evidence supports and where uncertainty remains.",
     notProves: "Unpublished incident detail or control effectiveness in another environment."
   },
@@ -204,7 +204,7 @@ const engineering = {
     notProves: "That shell denial prevents all RCE or that runtime controls replace authorization and patching."
   },
   "cloud-security/cloud-detection-and-response/index.html": {
-    label: "Partially verified — schema reviewed; no live Sentinel execution",
+    label: "Partially verified - schema reviewed; no live Sentinel execution",
     evidence: ["Sentinel KQL columns are mapped to the documented AWSCloudTrail schema and response controls are bounded."],
     limitations: ["No live Sentinel workspace executed the query; data delivery and connector health remain environment-specific."],
     sources: ["Microsoft AWSCloudTrail table schema", "AWS CloudTrail", "Amazon S3 Object Lock"],
@@ -375,7 +375,7 @@ function addStudy(paths, data) {
       evidence: [data.currency],
       limitations: ["Study notes summarize an owner-published outline and are not implementation evidence."],
       sources: [data.source],
-      runnableEvidence: "None — study material",
+      runnableEvidence: "None - study material",
       proves: "The maintained study outline and its review date.",
       notProves: "Hands-on implementation, exam coverage beyond the official outline, or a passing score.",
       tags: ["study notes", data.name]
