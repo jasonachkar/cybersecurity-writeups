@@ -6,7 +6,18 @@ import {REVIEW_TIMESTAMP, SITE_ORIGIN, entries} from "./site-config.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
-const metrics = {htmlPages: 0, indexablePages: 0, archivedPages: 0, internalLinks: 0, fragmentLinks: 0, assetLinks: 0, jsonFiles: 0, tables: 0, images: 0};
+const metrics = {
+  htmlPages: 0,
+  indexablePages: 0,
+  archivedPages: 0,
+  utilityPages: 0,
+  internalLinks: 0,
+  fragmentLinks: 0,
+  assetLinks: 0,
+  jsonFiles: 0,
+  tables: 0,
+  images: 0
+};
 const posix = value => value.split(path.sep).join("/");
 const fail = (file, message) => errors.push(`${file}: ${message}`);
 
@@ -60,11 +71,20 @@ for (const file of htmlFiles) {
   const url = publicUrl(file);
   const status = manifest[url];
   if (!status) { fail(file, `missing content-status entry for ${url}`); continue; }
-  const indexable = status.status !== "archived";
-  if (indexable) metrics.indexablePages += 1; else metrics.archivedPages += 1;
-  if (!Array.isArray(status.evidence) || status.evidence.length === 0) fail(file, "status evidence is empty");
+  const isUtility = status.status === "site-utility";
+  const isArchived = status.status === "archived";
+  const indexable = status.indexable === true || (!isArchived && !isUtility && status.indexable !== false);
+  if (indexable) metrics.indexablePages += 1;
+  else if (isArchived) metrics.archivedPages += 1;
+  else metrics.utilityPages = (metrics.utilityPages || 0) + 1;
+
   if (!Array.isArray(status.limitations) || status.limitations.length === 0) fail(file, "status limitations are empty");
   if (!Number.isInteger(status.reviewIntervalDays) || status.reviewIntervalDays < 1) fail(file, "invalid review interval");
+  if (!isUtility) {
+    if (!Array.isArray(status.evidence) || status.evidence.length === 0) fail(file, "status evidence is empty");
+  } else if (!Array.isArray(status.evidence)) {
+    fail(file, "status evidence must be an array for site-utility pages");
+  }
 
   const titleCount = (html.match(/<title\b/gi) || []).length;
   const h1Count = (html.match(/<h1\b/gi) || []).length;
@@ -73,7 +93,18 @@ for (const file of htmlFiles) {
   if (titleCount !== 1) fail(file, `expected one title; found ${titleCount}`);
   if (h1Count !== 1) fail(file, `expected one H1; found ${h1Count}`);
   if (canonicalTags.length !== 1) fail(file, `expected one canonical; found ${canonicalTags.length}`);
-  if (evidenceCount !== 1) fail(file, `expected one server-rendered evidence block; found ${evidenceCount}`);
+  if (isUtility) {
+    if (evidenceCount !== 0) fail(file, `site-utility page must not have evidence blocks; found ${evidenceCount}`);
+    if (/archive-notice/i.test(html)) fail(file, "site-utility page must not use archive notice");
+    if (/Archived reference/i.test(html)) fail(file, "site-utility page must not claim archived reference content");
+    if (file === "404.html") {
+      if (!/<h1\b[^>]*>\s*Page not found\s*<\/h1>/i.test(html)) fail(file, "404 H1 must be exactly 'Page not found'");
+      if (!/Go to the homepage/i.test(html)) fail(file, "404 page missing homepage action");
+      if (!/evidence registry/i.test(html)) fail(file, "404 page missing evidence registry action");
+    }
+  } else if (evidenceCount !== 1) {
+    fail(file, `expected one server-rendered evidence block; found ${evidenceCount}`);
+  }
   if ((html.match(/<!-- portfolio-nav:start -->/g) || []).length !== 1) fail(file, "missing or duplicate curated navigation");
   if ((html.match(/<!-- portfolio-footer:start -->/g) || []).length !== 1) fail(file, "missing or duplicate provenance footer");
   if (/md-sidebar--primary/.test(html)) fail(file, "legacy primary navigation snapshot remains");
@@ -86,8 +117,10 @@ for (const file of htmlFiles) {
   const robotsTag = html.match(/<meta\b[^>]*name=["']robots["'][^>]*>/i)?.[0] || "";
   const robots = attributes(robotsTag).content || "";
   if (indexable && /noindex/i.test(robots)) fail(file, "indexable page has noindex");
-  if (!indexable && !/noindex/i.test(robots)) fail(file, "archived page lacks noindex");
+  if (!indexable && !/noindex/i.test(robots)) fail(file, "non-indexable page lacks noindex");
   if (indexable && /requires-review/i.test(html.match(/<article\b[^>]*>[\s\S]*?<\/article>/i)?.[0] || "")) fail(file, "indexable article exposes requires-review content");
+  if (/Draft deployment review/i.test(html)) fail(file, "stale 'Draft deployment review' wording remains");
+  if (/awaiting the merge of PR #5/i.test(html)) fail(file, "stale awaiting-merge wording remains");
 
   const ids = [...html.matchAll(/\sid=["']([^"']+)["']/gi)].map(match => match[1]);
   idsByFile.set(file, new Set(ids));
@@ -154,7 +187,15 @@ const htmlUrls = new Set(htmlFiles.map(publicUrl));
 for (const url of htmlUrls) if (!manifestUrls.has(url)) errors.push(`content-status.json: missing ${url}`);
 for (const url of manifestUrls) if (!htmlUrls.has(url)) errors.push(`content-status.json: non-existent page ${url}`);
 
-const indexableUrls = new Set([...manifestUrls].filter(url => manifest[url].status !== "archived"));
+const indexableUrls = new Set(
+  [...manifestUrls].filter((url) => {
+    const item = manifest[url];
+    if (!item) return false;
+    if (item.indexable === false) return false;
+    if (item.status === "archived" || item.status === "site-utility") return false;
+    return item.indexable === true || item.status !== "archived";
+  })
+);
 const sitemapText = fs.readFileSync(path.join(root, "sitemap.xml"), "utf8");
 const sitemapUrls = new Set([...sitemapText.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1].replace(SITE_ORIGIN, "")));
 for (const url of indexableUrls) if (!sitemapUrls.has(url)) errors.push(`sitemap.xml: missing ${url}`);

@@ -45,7 +45,7 @@
 
     
     
-                  <link rel="canonical" href="https://docs.jasonachkardiab.com/labs/kubernetes-security/">
+                    <link rel="canonical" href="https://docs.jasonachkardiab.com/labs/kubernetes-security/">
   <meta name="robots" content="index, follow">
 </head>
   
@@ -261,8 +261,8 @@
   <strong>Partially tested lab</strong>
   <dl>
     <dt>Last reviewed</dt><dd>2026-07-24</dd>
-    <dt>Validated evidence</dt><dd><ul><li>Local pod, network, and image-decision cases include accepted and denied inputs.</li><li>The ImageValidatingPolicy manifest was validated against the pinned Kyverno v1.18.0 CRD structural schema in this review.</li></ul></dd>
-    <dt>Not established</dt><dd><ul><li>Signature, certificate, registry, transparency, digest resolution, and live admission are not executed end to end.</li></ul></dd>
+    <dt>Validated evidence</dt><dd><ul><li>Local pod, network, and image-decision cases include accepted and denied inputs.</li><li>Native Kyverno CLI 1.18.2 tests exercise the hardened-pod policy.</li><li>The ImageValidatingPolicy manifest was validated against the pinned Kyverno v1.18.2 CRD structural schema in this review.</li></ul></dd>
+    <dt>Not established</dt><dd><ul><li>Image-signature policy remains schema/offline only; signature, certificate, registry, transparency, digest resolution, and live admission are not executed end to end.</li></ul></dd>
     <dt>Review cadence</dt><dd>Every 90 days; next review due 2026-10-22.</dd>
   </dl>
 </aside>
@@ -378,9 +378,9 @@ or cluster. Keep a reviewed break-glass path outside tenant administrator contro
 <section class="portfolio-footer-proof" aria-label="Publication provenance">
   <ul>
     <li><strong>Publication target:</strong> gh-pages</li>
-    <li><strong>Review branch:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment">codex/validated-gh-pages-deployment</a></li>
-    <li><strong>Draft deployment review:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></li>
-    <li><strong>Last content review:</strong> 2026-07-24</li>
+    <li><strong>Publication review:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></li>
+    <li><strong>Reviewed branch:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment">codex/validated-gh-pages-deployment</a></li>
+    <li><strong>Content review date:</strong> 2026-07-24</li>
   </ul>
 </section>
 <!-- portfolio-footer:end -->

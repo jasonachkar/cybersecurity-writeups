@@ -177,9 +177,9 @@ const footerProof = `<!-- portfolio-footer:start -->
 <section class="portfolio-footer-proof" aria-label="Publication provenance">
   <ul>
     <li><strong>Publication target:</strong> gh-pages</li>
-    <li><strong>Review branch:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment">codex/validated-gh-pages-deployment</a></li>
-    <li><strong>Draft deployment review:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></li>
-    <li><strong>Last content review:</strong> ${REVIEW_DATE}</li>
+    <li><strong>Publication review:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></li>
+    <li><strong>Reviewed branch:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment">codex/validated-gh-pages-deployment</a></li>
+    <li><strong>Content review date:</strong> ${REVIEW_DATE}</li>
   </ul>
 </section>
 <!-- portfolio-footer:end -->`;
@@ -203,18 +203,43 @@ function homeBody() {
   <p class="portfolio-hero__lede">Threat models, enforcement points, negative tests and residual risk across cloud identity, application security, delivery pipelines, Kubernetes, detection and software supply chains—without turning a local test into a production claim.</p>
   <div class="portfolio-actions"><a class="portfolio-button portfolio-button--primary" href="#featured-engineering">Review engineering work</a><a class="portfolio-button" href="/docs/research-audit/content-inventory/">Inspect the evidence registry</a></div>
 </section>
-<section class="portfolio-facts" aria-label="Review facts"><div class="portfolio-fact"><strong>gh-pages</strong><span>Publication target</span></div><div class="portfolio-fact"><strong>PR #5</strong><span>Draft deployment review</span></div><div class="portfolio-fact"><strong>${REVIEW_DATE}</strong><span>Content review date</span></div><div class="portfolio-fact"><strong>Page-level</strong><span>Evidence and limitation disclosure</span></div></section>
+<section class="portfolio-facts" aria-label="Review facts"><div class="portfolio-fact"><strong>gh-pages</strong><span>Publication target</span></div><div class="portfolio-fact"><strong>PR #5</strong><span>Publication review</span></div><div class="portfolio-fact"><strong>${REVIEW_DATE}</strong><span>Content review date</span></div><div class="portfolio-fact"><strong>Page-level</strong><span>Evidence and limitation disclosure</span></div></section>
 <section aria-labelledby="featured-engineering"><h2 id="featured-engineering">Featured engineering investigations</h2><p>Each page leads with what was checked, what was executed, what remains untested, and when it must be reviewed again.</p><div class="portfolio-grid">${cards.map(([title, href, copy, status]) => `<div class="portfolio-card"><span class="portfolio-card__status">${status}</span><h3>${title}</h3><p>${copy}</p><a class="portfolio-card__link" href="${href}">Open investigation →</a></div>`).join("")}</div></section>
 <section aria-labelledby="validated-labs"><h2 id="validated-labs">Runnable evidence</h2><p>Repository labs exercise bounded decisions; their status blocks distinguish local models and structural checks from native platform or cryptographic integration.</p><ul><li><a href="/labs/secure-cicd/">Secure CI/CD gate and workflow fixtures</a></li><li><a href="/labs/iam-oidc/">IAM and workload-identity decision cases</a></li><li><a href="/labs/oauth-oidc/">OAuth/OIDC token-boundary cases</a></li><li><a href="/labs/ai-agent-security/">AI external tool-broker cases</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL row-level security</a></li><li><a href="/labs/kubernetes-security/">Kubernetes policy and image-decision fixtures</a></li><li><a href="/labs/supply-chain/">Offline provenance and SBOM policy</a></li><li><a href="/labs/iac-policy/">Terraform plan and Rego fixtures</a></li><li><a href="/labs/azure-landing-zone/">Azure landing-zone Bicep boundary</a></li></ul></section>
 <section aria-labelledby="study-notes"><h2 id="study-notes">Study notes</h2><p>Certification collections are visibly separated from implementation evidence and tied to their official owner material.</p><ul><li><a href="/docs/certification-notes/az-900/">Microsoft AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">Microsoft SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">CompTIA Security+ SY0-701</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity Certificate</a></li></ul></section>`;
 }
 
 function provenanceBody() {
-  return `<h1 id="site-provenance">Site provenance</h1><p>This page describes the static artifact reviewed in draft PR #5. It does not claim that an unmerged commit is already deployed.</p><table><thead><tr><th scope="col">Field</th><th scope="col">Value</th></tr></thead><tbody><tr><th scope="row">Canonical site</th><td><a href="${SITE_ORIGIN}">${SITE_ORIGIN}</a></td></tr><tr><th scope="row">Repository</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups">jasonachkar/cybersecurity-writeups</a></td></tr><tr><th scope="row">Artifact</th><td>Static GitHub Pages site</td></tr><tr><th scope="row">Publication target</th><td><code>gh-pages</code></td></tr><tr><th scope="row">Review branch</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment"><code>codex/validated-gh-pages-deployment</code></a></td></tr><tr><th scope="row">Draft review</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></td></tr><tr><th scope="row">Content review timestamp</th><td><time datetime="${REVIEW_TIMESTAMP}">${REVIEW_TIMESTAMP}</time></td></tr></tbody></table><h2 id="integrity-boundary">Integrity boundary</h2><p><code>CNAME</code> and <code>.nojekyll</code> remain part of the publication artifact. A manually embedded source SHA would become stale as soon as it was committed, so this branch does not pretend a static file can identify its own final deployment commit. The machine-readable review context is <a href="/site-meta.json"><code>site-meta.json</code></a>.</p><h2 id="what-build-evidence-means">What this evidence means</h2><p>Static validation establishes the checked properties recorded in the validation report. It does not establish cloud deployment, customer use, production availability, or complete security. Each maintained page states its narrower evidence and residual limitations.</p>`;
+  return `<h1 id="site-provenance">Site provenance</h1>
+<p>This static site is published from the <code>gh-pages</code> branch. Content in this review was examined through <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a> on branch <code>codex/validated-gh-pages-deployment</code>. Runtime validation evidence is available through the associated GitHub Actions workflow runs and uploaded artifacts. Static files do not claim to identify their own final containing commit. GitHub Pages deployment status is tracked separately through GitHub deployment records.</p>
+<table><thead><tr><th scope="col">Field</th><th scope="col">Value</th></tr></thead><tbody>
+<tr><th scope="row">Canonical site</th><td><a href="${SITE_ORIGIN}">${SITE_ORIGIN}</a></td></tr>
+<tr><th scope="row">Repository</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups">jasonachkar/cybersecurity-writeups</a></td></tr>
+<tr><th scope="row">Artifact</th><td>Static GitHub Pages site</td></tr>
+<tr><th scope="row">Publication target</th><td><code>gh-pages</code></td></tr>
+<tr><th scope="row">Publication review</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></td></tr>
+<tr><th scope="row">Reviewed branch</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment"><code>codex/validated-gh-pages-deployment</code></a></td></tr>
+<tr><th scope="row">Content review date</th><td><time datetime="${REVIEW_TIMESTAMP}">July 24, 2026</time></td></tr>
+</tbody></table>
+<h2 id="integrity-boundary">Integrity boundary</h2>
+<p><code>CNAME</code> and <code>.nojekyll</code> remain part of the publication artifact. Generated runtime QA JSON reports are not committed into the deployable tree; Actions artifacts identify the checked-out revision with fields such as <code>sourceCommit</code>, <code>sourceTree</code>, workflow run identifiers, and tool versions. The machine-readable review context is <a href="/site-meta.json"><code>site-meta.json</code></a>.</p>
+<h2 id="what-build-evidence-means">What this evidence means</h2>
+<p>Repository validation establishes the checked properties recorded by <code>npm run verify:all</code> and the quality workflow. It does not establish cloud deployment, customer use, production availability, or complete security. Each maintained page states its narrower evidence and residual limitations.</p>`;
+}
+
+function notFoundBody() {
+  return `<h1 id="page-not-found">Page not found</h1>
+<p>The address may have changed, the page may have been archived, or the URL may contain a typo.</p>
+<ul class="portfolio-actions-list">
+  <li><a class="portfolio-button portfolio-button--primary" href="/">Go to the homepage</a></li>
+  <li><a class="portfolio-button" href="/#validated-labs">Browse engineering investigations and labs</a></li>
+  <li><a class="portfolio-button" href="/docs/research-audit/content-inventory/">Inspect the evidence registry</a></li>
+</ul>
+<p>Use the site search control in the header to look for a topic by keyword.</p>`;
 }
 
 function qualityBody() {
-  return `<h1 id="evidence-and-quality-methodology">Evidence and quality methodology</h1><p>The portfolio treats security guidance as an engineering artifact. Status is visible on the page, represented in <a href="/content-status.json"><code>content-status.json</code></a>, and used to drive navigation, search and sitemap inclusion.</p><h2 id="evidence-statuses">Evidence statuses</h2><dl><dt>Verified engineering investigation</dt><dd>Material current-state claims were checked against named primary sources. Examples can still be only partly tested.</dd><dt>Partially verified engineering investigation</dt><dd>Primary-source review covers a bounded area while one or more platform or implementation boundaries remain untested.</dd><dt>Validated lab</dt><dd>The documented positive and negative behavior executed in the stated environment.</dd><dt>Partially tested lab</dt><dd>Only structural, offline, schema or pedagogical-model behavior executed.</dd><dt>Conceptual reference</dt><dd>Architecture or method without end-to-end runtime validation.</dd><dt>Study notes</dt><dd>Owner-aligned learning material, never implementation evidence.</dd><dt>Archived</dt><dd>URL retained for continuity but excluded from normal discovery and unsafe as current guidance.</dd></dl><h2 id="source-hierarchy">Source hierarchy</h2><ol><li>Standards bodies and final specifications.</li><li>Platform-owner documentation and source repositories.</li><li>Incident-owner disclosures, court or regulator records.</li><li>Secondary analysis only when primary material cannot answer the question, labelled accordingly.</li></ol><h2 id="validation-approach">Validation approach</h2><p>The branch validator checks canonical URLs, robots state, one title and H1, evidence blocks, duplicate IDs, internal files and fragments, local assets, external-link safety attributes, JSON, sitemap/search set equality, provenance and known misleading strings. Runnable labs are executed separately with their available native tools. Missing external tools remain limitations.</p><h2 id="review-intervals">Review intervals</h2><p>Most engineering investigations use a 90-day interval. Rapidly evolving agent/MCP work and publication metadata use 30 days. Certification notes are rechecked against the owner material; a displayed review date is not proof of correctness.</p><h2 id="limitations">Limitations</h2><p>Automated accessibility and structural checks find important classes of defects but do not replace keyboard, assistive-technology, threat-model, platform or human editorial review. A passing finite suite proves only its declared cases.</p>`;
+  return `<h1 id="evidence-and-quality-methodology">Evidence and quality methodology</h1><p>The portfolio treats security guidance as an engineering artifact. Status is visible on the page, represented in <a href="/content-status.json"><code>content-status.json</code></a>, and used to drive navigation, search and sitemap inclusion.</p><h2 id="evidence-statuses">Evidence statuses</h2><dl><dt>Verified engineering investigation</dt><dd>Material current-state claims were checked against named primary sources. Examples can still be only partly tested.</dd><dt>Partially verified engineering investigation</dt><dd>Primary-source review covers a bounded area while one or more platform or implementation boundaries remain untested.</dd><dt>Validated lab</dt><dd>The documented positive and negative behavior executed in the stated environment.</dd><dt>Partially tested lab</dt><dd>Only structural, offline, schema or pedagogical-model behavior executed.</dd><dt>Conceptual reference</dt><dd>Architecture or method without end-to-end runtime validation.</dd><dt>Study notes</dt><dd>Owner-aligned learning material, never implementation evidence.</dd><dt>Site utility</dt><dd>Navigational or error pages such as the 404 response; not security guidance and excluded from search and sitemap.</dd><dt>Archived</dt><dd>URL retained for continuity but excluded from normal discovery and unsafe as current guidance.</dd></dl><h2 id="source-hierarchy">Source hierarchy</h2><ol><li>Standards bodies and final specifications.</li><li>Platform-owner documentation and source repositories.</li><li>Incident-owner disclosures, court or regulator records.</li><li>Secondary analysis only when primary material cannot answer the question, labelled accordingly.</li></ol><h2 id="validation-approach">Validation approach</h2><p>The authoritative local command is <code>npm run verify:all</code>. It covers static site checks, JavaScript labs, Go modules, Terraform, OPA, Bicep, policy schemas, PostgreSQL RLS, ShellCheck, PowerShell parse, accessibility, external links, and secret scanning. CI splits the same suites across jobs and uploads provenance-stamped reports as Actions artifacts. Missing external tools fail closed rather than being silently skipped.</p><h2 id="review-intervals">Review intervals</h2><p>Most engineering investigations use a 90-day interval. Rapidly evolving agent/MCP work and publication metadata use 30 days. Certification notes are rechecked against the owner material; a displayed review date is not proof of correctness. Site-utility pages are excluded from normal content-review cadence pressure.</p><h2 id="limitations">Limitations</h2><p>Automated accessibility and structural checks find important classes of defects but do not replace keyboard, assistive-technology, threat-model, platform or human editorial review. A passing finite suite proves only its declared cases.</p>`;
 }
 
 function securityPlusBody() {
@@ -239,7 +264,7 @@ function registryBody(records) {
 }
 
 function articleToc(html, entry) {
-  if (entry.status === "archived") return "";
+  if (entry.status === "archived" || entry.status === "site-utility") return "";
   const article = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "";
   const headings = [];
   for (const match of article.matchAll(/<h2\b[^>]*id=["']([^"']+)["'][^>]*>([\s\S]*?)<\/h2>/gi)) {
@@ -313,17 +338,19 @@ function normalizePage(file, html, entry) {
     '<div class="md-copyright">&copy; 2026 Jason Achkar Diab. Security guidance is scoped by page-level evidence.</div>');
   html = html.replace(/<footer\b([^>]*)>/i, `<footer$1>\n${footerProof}`);
 
-  const evidence = evidenceBlock(entry);
-  html = html.replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, match => `${match}\n${evidence}`);
+  if (entry.status !== "site-utility") {
+    const evidence = evidenceBlock(entry);
+    html = html.replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, match => `${match}\n${evidence}`);
 
-  const currency = CERTIFICATION_CURRENCY.find(([prefix]) => file.startsWith(prefix));
-  if (currency && entry.status === "study-notes") {
-    const banner = `<aside class="study-currency" aria-label="Official guide currency"><strong>Official-owner check</strong><p>${currency[1]}</p></aside>`;
-    html = html.replace("<!-- portfolio-evidence:end -->", `<!-- portfolio-evidence:end -->\n${banner}`);
+    const currency = CERTIFICATION_CURRENCY.find(([prefix]) => file.startsWith(prefix));
+    if (currency && entry.status === "study-notes") {
+      const banner = `<aside class="study-currency" aria-label="Official guide currency"><strong>Official-owner check</strong><p>${currency[1]}</p></aside>`;
+      html = html.replace("<!-- portfolio-evidence:end -->", `<!-- portfolio-evidence:end -->\n${banner}`);
+    }
+
+    const toc = articleToc(html, entry);
+    if (toc) html = html.replace("<!-- portfolio-evidence:end -->", `<!-- portfolio-evidence:end -->\n${toc}`);
   }
-
-  const toc = articleToc(html, entry);
-  if (toc) html = html.replace("<!-- portfolio-evidence:end -->", `<!-- portfolio-evidence:end -->\n${toc}`);
 
   const h1Id = html.match(/<h1\b[^>]*id=["']([^"']+)["']/i)?.[1];
   if (h1Id) html = html.replace(/href=["']#[^"']*["'](?=\s+class=["']md-skip["'])/i, `href="#${h1Id}"`);
@@ -361,11 +388,14 @@ const records = new Map(files.map(file => {
 for (const record of records.values()) {
   let html = read(record.file);
   if (record.file === "index.html") html = replaceArticle(html, homeBody());
+  else if (record.file === "404.html") html = replaceArticle(html, notFoundBody());
   else if (record.file === "about/site-provenance/index.html") html = replaceArticle(html, provenanceBody());
   else if (record.file === qualityPath) html = replaceArticle(html, qualityBody());
   else if (record.file === "docs/research-audit/content-inventory/index.html") html = replaceArticle(html, registryBody(records));
   else if (record.file === "docs/certification-notes/security-plus/index.html") html = replaceArticle(html, securityPlusBody());
-  else if (!record.entry.indexable) html = replaceArticle(html, archiveBody(record.entry));
+  else if (record.entry.status === "archived" || (!record.entry.indexable && record.entry.status !== "site-utility")) {
+    html = replaceArticle(html, archiveBody(record.entry));
+  }
   html = normalizePage(record.file, html, record.entry);
   write(record.file, html);
   record.title = h1Title(html);
@@ -376,6 +406,7 @@ for (const [file, record] of records) {
   manifest[pageUrl(file)] = {
     title: record.title,
     status: record.entry.status,
+    indexable: Boolean(record.entry.indexable),
     lastReviewed: REVIEW_DATE,
     evidence: record.entry.evidence,
     limitations: record.entry.limitations,
@@ -425,11 +456,15 @@ const siteMeta = {
   site: SITE_ORIGIN,
   repository: "jasonachkar/cybersecurity-writeups",
   publicationTarget: "gh-pages",
+  publicationReview: "PR #5",
   reviewBranch: "codex/validated-gh-pages-deployment",
   pullRequest: 5,
   artifactType: "static GitHub Pages site",
   contentReviewTimestamp: REVIEW_TIMESTAMP,
-  evidenceModel: "page-level status and validation disclosures"
+  contentReviewDate: "July 24, 2026",
+  evidenceModel: "page-level status and validation disclosures",
+  runtimeEvidence: "GitHub Actions artifacts for the checked-out revision",
+  note: "Static files do not claim to identify their own final containing commit."
 };
 write("site-meta.json", `${JSON.stringify(siteMeta, null, 2)}\n`);
 

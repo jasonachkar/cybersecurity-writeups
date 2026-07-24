@@ -54,14 +54,32 @@ function hasOwn(object, key) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
+const {createHash} = require("node:crypto");
+
+/**
+ * Canonical action binding for approval consumption.
+ * Key order is fixed. The hash is SHA-256 of JSON.stringify of that object —
+ * not a delimiter-joined string (which would be ambiguous for attacker-controlled
+ * identifier characters).
+ */
+function canonicalActionBinding(binding) {
+  return {
+    principalId: binding.principalId,
+    tenantId: binding.tenantId,
+    tool: binding.tool,
+    amountCents: binding.amountCents,
+    destinationRef: binding.destinationRef
+  };
+}
+
+function hashActionBinding(binding) {
+  const canonical = JSON.stringify(canonicalActionBinding(binding));
+  return createHash("sha256").update(canonical, "utf8").digest("hex");
+}
+
+/** @deprecated Use hashActionBinding; retained name for ApprovalStore callers. */
 function digestAction(binding) {
-  return [
-    binding.principalId,
-    binding.tenantId,
-    binding.tool,
-    String(binding.amountCents),
-    binding.destinationRef,
-  ].join("\u0000");
+  return hashActionBinding(binding);
 }
 
 function safeAuditMetadata(authenticatedContext, proposedCall) {
@@ -494,5 +512,7 @@ module.exports = {
   ApprovalStore,
   BrokerDenied,
   ToolBroker,
+  canonicalActionBinding,
   digestAction,
+  hashActionBinding,
 };

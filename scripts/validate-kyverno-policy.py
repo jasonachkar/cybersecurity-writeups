@@ -1,4 +1,4 @@
-"""Validate the lab image policy against the pinned Kyverno v1.18.0 CRD structural schema.
+"""Validate the lab image policy against the pinned Kyverno v1.18.2 CRD structural schema.
 
 Usage: python scripts/validate-kyverno-policy.py <crd.yaml> <policy.yaml>
 
@@ -31,6 +31,6 @@ jsonschema.validate(instance=policy, schema=schema)
 
 print(
     f"PASS: {policy_path} conforms to {names['kind']} ({policy['apiVersion']}) "
-    f"structural schema from the pinned Kyverno v1.18.0 CRD."
+    f"structural schema from the pinned Kyverno v1.18.2 CRD."
 )
 print("NOTE: schema validation only; no signature, registry, transparency, or admission test was run.")

@@ -45,7 +45,7 @@
 
     
     
-                  <link rel="canonical" href="https://docs.jasonachkardiab.com/about/site-provenance/">
+                    <link rel="canonical" href="https://docs.jasonachkardiab.com/about/site-provenance/">
   <meta name="robots" content="index, follow">
 </head>
   
@@ -253,12 +253,26 @@
   <strong>Conceptual reference</strong>
   <dl>
     <dt>Last reviewed</dt><dd>2026-07-24</dd>
-    <dt>Validated evidence</dt><dd><ul><li>Publication target, review branch, draft PR, domain, and review timestamp are stated without a self-referential commit claim.</li></ul></dd>
-    <dt>Not established</dt><dd><ul><li>GitHub Pages deployment remains contingent on merging PR #5 to gh-pages.</li></ul></dd>
+    <dt>Validated evidence</dt><dd><ul><li>Publication target gh-pages, publication review PR #5, reviewed branch, domain, and content review date are stated without a self-referential commit claim.</li><li>Runtime QA evidence is produced as GitHub Actions artifacts for the checked-out revision, not committed JSON reports.</li></ul></dd>
+    <dt>Not established</dt><dd><ul><li>Static validation does not establish cloud deployment, production availability, or customer use.</li><li>GitHub Pages deployment status is tracked separately through GitHub deployment records.</li></ul></dd>
     <dt>Review cadence</dt><dd>Every 30 days; next review due 2026-08-23.</dd>
   </dl>
 </aside>
-<!-- portfolio-evidence:end --><p>This page describes the static artifact reviewed in draft PR #5. It does not claim that an unmerged commit is already deployed.</p><table><thead><tr><th scope="col">Field</th><th scope="col">Value</th></tr></thead><tbody><tr><th scope="row">Canonical site</th><td><a href="https://docs.jasonachkardiab.com">https://docs.jasonachkardiab.com</a></td></tr><tr><th scope="row">Repository</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups">jasonachkar/cybersecurity-writeups</a></td></tr><tr><th scope="row">Artifact</th><td>Static GitHub Pages site</td></tr><tr><th scope="row">Publication target</th><td><code>gh-pages</code></td></tr><tr><th scope="row">Review branch</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment"><code>codex/validated-gh-pages-deployment</code></a></td></tr><tr><th scope="row">Draft review</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></td></tr><tr><th scope="row">Content review timestamp</th><td><time datetime="2026-07-24T11:48:39Z">2026-07-24T11:48:39Z</time></td></tr></tbody></table><h2 id="integrity-boundary">Integrity boundary</h2><p><code>CNAME</code> and <code>.nojekyll</code> remain part of the publication artifact. A manually embedded source SHA would become stale as soon as it was committed, so this branch does not pretend a static file can identify its own final deployment commit. The machine-readable review context is <a href="/site-meta.json"><code>site-meta.json</code></a>.</p><h2 id="what-build-evidence-means">What this evidence means</h2><p>Static validation establishes the checked properties recorded in the validation report. It does not establish cloud deployment, customer use, production availability, or complete security. Each maintained page states its narrower evidence and residual limitations.</p>
+<!-- portfolio-evidence:end -->
+<p>This static site is published from the <code>gh-pages</code> branch. Content in this review was examined through <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a> on branch <code>codex/validated-gh-pages-deployment</code>. Runtime validation evidence is available through the associated GitHub Actions workflow runs and uploaded artifacts. Static files do not claim to identify their own final containing commit. GitHub Pages deployment status is tracked separately through GitHub deployment records.</p>
+<table><thead><tr><th scope="col">Field</th><th scope="col">Value</th></tr></thead><tbody>
+<tr><th scope="row">Canonical site</th><td><a href="https://docs.jasonachkardiab.com">https://docs.jasonachkardiab.com</a></td></tr>
+<tr><th scope="row">Repository</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups">jasonachkar/cybersecurity-writeups</a></td></tr>
+<tr><th scope="row">Artifact</th><td>Static GitHub Pages site</td></tr>
+<tr><th scope="row">Publication target</th><td><code>gh-pages</code></td></tr>
+<tr><th scope="row">Publication review</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></td></tr>
+<tr><th scope="row">Reviewed branch</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment"><code>codex/validated-gh-pages-deployment</code></a></td></tr>
+<tr><th scope="row">Content review date</th><td><time datetime="2026-07-24T11:48:39Z">July 24, 2026</time></td></tr>
+</tbody></table>
+<h2 id="integrity-boundary">Integrity boundary</h2>
+<p><code>CNAME</code> and <code>.nojekyll</code> remain part of the publication artifact. Generated runtime QA JSON reports are not committed into the deployable tree; Actions artifacts identify the checked-out revision with fields such as <code>sourceCommit</code>, <code>sourceTree</code>, workflow run identifiers, and tool versions. The machine-readable review context is <a href="/site-meta.json"><code>site-meta.json</code></a>.</p>
+<h2 id="what-build-evidence-means">What this evidence means</h2>
+<p>Repository validation establishes the checked properties recorded by <code>npm run verify:all</code> and the quality workflow. It does not establish cloud deployment, customer use, production availability, or complete security. Each maintained page states its narrower evidence and residual limitations.</p>
 </article>
             </div>
           
@@ -279,9 +293,9 @@
 <section class="portfolio-footer-proof" aria-label="Publication provenance">
   <ul>
     <li><strong>Publication target:</strong> gh-pages</li>
-    <li><strong>Review branch:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment">codex/validated-gh-pages-deployment</a></li>
-    <li><strong>Draft deployment review:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></li>
-    <li><strong>Last content review:</strong> 2026-07-24</li>
+    <li><strong>Publication review:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></li>
+    <li><strong>Reviewed branch:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment">codex/validated-gh-pages-deployment</a></li>
+    <li><strong>Content review date:</strong> 2026-07-24</li>
   </ul>
 </section>
 <!-- portfolio-footer:end -->

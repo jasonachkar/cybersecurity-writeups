@@ -9,7 +9,8 @@ export const STATUS_LABELS = {
   "partially-tested": "Partially tested lab",
   conceptual: "Conceptual reference",
   "study-notes": "Study Notes — not implementation evidence",
-  archived: "Archived / requires technical review"
+  archived: "Archived / requires technical review",
+  "site-utility": "Site utility page"
 };
 
 const entries = new Map();
@@ -40,15 +41,34 @@ add("index.html", {
   tags: ["security engineering", "portfolio", "evidence"]
 });
 
+add("404.html", {
+  status: "site-utility",
+  indexable: false,
+  reviewIntervalDays: 365,
+  evidence: [],
+  limitations: ["Utility missing-page response; not security guidance."],
+  sources: [],
+  runnableEvidence: "None",
+  proves: "Visitors receive a navigable missing-page response.",
+  notProves: "Nothing about prior content existence.",
+  tags: ["site utility"]
+});
+
 add("about/site-provenance/index.html", {
   status: "conceptual",
   reviewIntervalDays: 30,
-  evidence: ["Publication target, review branch, draft PR, domain, and review timestamp are stated without a self-referential commit claim."],
-  limitations: ["GitHub Pages deployment remains contingent on merging PR #5 to gh-pages."],
-  sources: ["Repository branch and PR metadata"],
-  runnableEvidence: "scripts/validate-gh-pages.mjs",
+  evidence: [
+    "Publication target gh-pages, publication review PR #5, reviewed branch, domain, and content review date are stated without a self-referential commit claim.",
+    "Runtime QA evidence is produced as GitHub Actions artifacts for the checked-out revision, not committed JSON reports."
+  ],
+  limitations: [
+    "Static validation does not establish cloud deployment, production availability, or customer use.",
+    "GitHub Pages deployment status is tracked separately through GitHub deployment records."
+  ],
+  sources: ["Repository branch and PR metadata", "GitHub Actions workflow runs"],
+  runnableEvidence: "npm run verify:all / .github/workflows/gh-pages-quality.yml",
   proves: "The artifact's review and publication context.",
-  notProves: "That the draft branch is already the public deployment."
+  notProves: "That static files identify their own final containing commit, or that cloud deployment succeeded."
 });
 
 add("about/quality-methodology/index.html", {
@@ -56,7 +76,7 @@ add("about/quality-methodology/index.html", {
   evidence: ["Defines source hierarchy, validation semantics, review intervals, and archive behavior."],
   limitations: ["Automated checks support but do not replace expert review."],
   sources: ["Repository evidence policy", "Primary-source references on maintained pages"],
-  runnableEvidence: "npm run validate",
+  runnableEvidence: "npm run verify:all",
   proves: "How portfolio claims are classified and rechecked.",
   notProves: "That a finite validation suite establishes complete security."
 });
@@ -67,7 +87,7 @@ add("docs/research-audit/content-inventory/index.html", {
   evidence: ["Curated explicit metadata; no keyword-derived topic inference."],
   limitations: ["The registry summarizes page disclosures and must be read with the linked investigation."],
   sources: ["content-status.json", "Linked primary-source reference sections"],
-  runnableEvidence: "npm run validate",
+  runnableEvidence: "npm run verify:all",
   proves: "Discovery, evidence status, runnable artifacts, and next review date.",
   notProves: "Unlisted implementation, production operation, or control completeness.",
   tags: ["evidence registry", "content status"]
@@ -284,24 +304,30 @@ const labs = {
   },
   "labs/iac-policy/index.html": {
     status: "partially-tested",
-    evidence: ["Plan-decision fixtures cover secure, insecure, unknown, and deleted-control cases."],
-    limitations: ["Native Terraform/OPA validation depends on installed pinned tools; no cloud plan is applied."],
+    evidence: [
+      "Plan-decision fixtures cover secure, insecure, unknown, and deleted-control cases.",
+      "CI runs Terraform 1.14.6 fmt/init/validate and OPA 1.17.0 native Rego tests against the published fixtures."
+    ],
+    limitations: ["No cloud plan is applied; provider-side behavior is not exercised."],
     sources: ["Terraform plan JSON", "OPA"],
-    runnableEvidence: "node labs/iac-policy/tests/run-tests.js plus optional native tools",
-    proves: "The local harness covers its declared fixtures.",
+    runnableEvidence: "npm run verify:terraform; npm run verify:opa; node labs/iac-policy/tests/run-tests.js",
+    proves: "The local harness and pinned native tools cover their declared fixtures.",
     notProves: "Provider runtime behavior or complete policy coverage."
   },
   "labs/kubernetes-security/index.html": {
     status: "partially-tested",
     evidence: [
       "Local pod, network, and image-decision cases include accepted and denied inputs.",
-      "The ImageValidatingPolicy manifest was validated against the pinned Kyverno v1.18.0 CRD structural schema in this review."
+      "Native Kyverno CLI 1.18.2 tests exercise the hardened-pod policy.",
+      "The ImageValidatingPolicy manifest was validated against the pinned Kyverno v1.18.2 CRD structural schema in this review."
     ],
-    limitations: ["Signature, certificate, registry, transparency, digest resolution, and live admission are not executed end to end."],
-    sources: ["Kubernetes", "Kyverno 1.18"],
-    runnableEvidence: "node labs/kubernetes-security/tests/run-tests.js plus scripts/validate-kyverno-policy.py",
-    proves: "The pedagogical decision model handles its finite fixture set.",
-    notProves: "Native admission or cryptographic image verification."
+    limitations: [
+      "Image-signature policy remains schema/offline only; signature, certificate, registry, transparency, digest resolution, and live admission are not executed end to end."
+    ],
+    sources: ["Kubernetes", "Kyverno 1.18.2"],
+    runnableEvidence: "kyverno test labs/kubernetes-security; node labs/kubernetes-security/tests/run-tests.js; scripts/validate-kyverno-policy.py",
+    proves: "The pedagogical decision model and native hardened-pod policy tests handle their finite fixture sets.",
+    notProves: "Live admission or cryptographic image verification."
   },
   "labs/supply-chain/index.html": {
     status: "partially-tested",
@@ -326,11 +352,14 @@ const labs = {
   },
   "labs/azure-landing-zone/index.html": {
     status: "partially-tested",
-    evidence: ["Bicep and policy artifacts model hierarchy, guardrails, and a federated deployment boundary."],
-    limitations: ["No Azure deployment occurs; parser/build checks require the installed Azure CLI/Bicep tool."],
+    evidence: [
+      "Bicep and policy artifacts model hierarchy, guardrails, and a federated deployment boundary.",
+      "CI compiles labs/azure-landing-zone/main.bicep with Azure CLI Bicep and discards the generated JSON."
+    ],
+    limitations: ["No Azure authentication or resource deployment occurs."],
     sources: ["Azure landing zone", "Azure Policy", "Bicep"],
-    runnableEvidence: "az bicep build where available",
-    proves: "Only parser and structural behavior recorded by the validation report.",
+    runnableEvidence: "npm run verify:bicep",
+    proves: "Only parser and structural compilation behavior recorded by the validation report.",
     notProves: "Effective Azure policy or runtime deployment behavior."
   }
 };
@@ -430,7 +459,6 @@ REPLACEMENT_PREFIXES.unshift(
 );
 
 export const EXPLICIT_ARCHIVED_PATHS = new Set([
-  "404.html",
   "docs/AUTHORING_GUIDE/index.html",
   "docs/CONTRIBUTING_SECURITY_CONTENT/index.html",
   "docs/METADATA/index.html",

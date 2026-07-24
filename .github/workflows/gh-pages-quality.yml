@@ -16,10 +16,17 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  NODE_VERSION: "22"
+  GO_VERSION: "1.22.12"
+  TERRAFORM_VERSION: "1.14.6"
+  GITHUB_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+  GITHUB_PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+
 jobs:
   static-site:
     name: static-site
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - name: Checkout
@@ -29,7 +36,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - name: Install
         run: npm ci
@@ -39,11 +46,15 @@ jobs:
         uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
         with:
           name: qa-static
-          path: qa/*.json
+          path: |
+            qa/validation-report.json
+            qa/html-validation-report.json
+            qa/defect-check-report.json
+          if-no-files-found: error
 
   javascript-labs:
     name: javascript-labs
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -51,72 +62,106 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
       - name: Install lab dependencies
         run: |
           set -euo pipefail
-          npm install --prefix labs/secure-cicd
-          npm install --prefix labs/kubernetes-security
-          npm install --prefix labs/supply-chain
-      - run: npm run verify:labs
+          npm ci --prefix labs/secure-cicd
+          npm ci --prefix labs/kubernetes-security
+          npm ci --prefix labs/supply-chain
+      - run: npm run verify:node
+      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: qa-labs
+          path: qa/labs-report.json
+          if-no-files-found: error
 
   go-utilities:
     name: go-utilities
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
+      - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
       - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5.3.0
         with:
-          go-version: "1.22.x"
-      - run: |
-          set -euo pipefail
-          for mod in appsec/scripts/oauth-pkce threat-intel/scripts/cloudtrail cloud-security/scripts/k8s-rbac; do
-            (cd "$mod" && gofmt -w . && go test ./... && go vet ./...)
-          done
+          go-version: ${{ env.GO_VERSION }}
+      - run: npm ci
+      - run: npm run verify:go
+      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: qa-go
+          path: qa/go-report.json
+          if-no-files-found: error
 
   policy-and-iac:
     name: policy-and-iac
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
       - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3.1.2
         with:
-          terraform_version: "1.10.5"
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
       - run: npm ci
-      - name: Terraform validate
-        run: npm run verify:terraform
-      - name: Kyverno / Tetragon schema checks
+      - name: Install OPA 1.17.0 and Bicep 0.36.1 (checksum verified)
         run: |
           set -euo pipefail
-          python3 -m pip install --user pyyaml jsonschema
-          mkdir -p qa/runtime
-          curl -sL -o qa/runtime/tetragon-tracingpoliciesnamespaced-v1.7.0.yaml \
-            https://raw.githubusercontent.com/cilium/tetragon/v1.7.0/pkg/k8s/apis/cilium.io/client/crds/v1alpha1/cilium.io_tracingpoliciesnamespaced.yaml
-          curl -sL -o qa/runtime/kyverno-imagevalidatingpolicies-v1.18.0.yaml \
-            https://raw.githubusercontent.com/kyverno/kyverno/v1.18.0/config/crds/policies.kyverno.io/policies.kyverno.io_imagevalidatingpolicies.yaml
-          python3 scripts/validate-tetragon-policy.py \
-            qa/runtime/tetragon-tracingpoliciesnamespaced-v1.7.0.yaml \
-            appsec/runtime-protection-rasp-waf/tetragon-v1.7.0-shell-policy.yaml
-          python3 scripts/validate-kyverno-policy.py \
-            qa/runtime/kyverno-imagevalidatingpolicies-v1.18.0.yaml \
-            labs/kubernetes-security/policies/verify-release-images.yaml
+          mkdir -p qa-artifacts/tools
+          node --input-type=module <<'EOF'
+          import {fetchPinnedTool} from './scripts/fetch-pinned-tool.mjs';
+          import {OPA_ARTIFACTS, OPA_VERSION, BICEP_ARTIFACTS, BICEP_VERSION} from './scripts/tool-pins.mjs';
+          import fs from 'node:fs';
+          const opa = OPA_ARTIFACTS['linux-amd64'];
+          const opaDest = `qa-artifacts/tools/opa`;
+          await fetchPinnedTool({url: opa.url, sha256: opa.sha256, destPath: opaDest});
+          fs.chmodSync(opaDest, 0o755);
+          const bicep = BICEP_ARTIFACTS['linux-amd64'];
+          const bicepDest = `qa-artifacts/tools/bicep`;
+          await fetchPinnedTool({url: bicep.url, sha256: bicep.sha256, destPath: bicepDest});
+          fs.chmodSync(bicepDest, 0o755);
+          console.log(`Pinned OPA ${OPA_VERSION} and Bicep ${BICEP_VERSION}`);
+          EOF
+          sudo mv qa-artifacts/tools/opa /usr/local/bin/opa
+          sudo mv qa-artifacts/tools/bicep /usr/local/bin/bicep
+          opa version
+          bicep --version
+      - name: Terraform / OPA / Bicep / schemas / Kyverno
+        run: |
+          set -euo pipefail
+          npm run verify:terraform
+          npm run verify:opa
+          npm run verify:bicep
+          npm run verify:policy-schemas
+          npm run verify:kyverno
+      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: qa-policy-iac
+          path: |
+            qa/terraform-report.json
+            qa/opa-report.json
+            qa/bicep-report.json
+            qa/policy-schemas-report.json
+            qa/kyverno-report.json
+          if-no-files-found: error
 
   postgresql-rls:
     name: postgresql-rls
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -124,24 +169,71 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
-      - name: Run disposable PostgreSQL RLS lab
-        working-directory: labs/postgresql-rls
-        run: bash ./run-tests.sh
+      - run: npm run verify:postgresql
+      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: qa-postgres
+          path: qa/postgres-report.json
+          if-no-files-found: error
 
-  accessibility:
-    name: accessibility
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+  shell-powershell:
+    name: shell-powershell
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
       - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install ShellCheck 0.10.0 and PowerShell 7.4.6 (checksum verified)
+        run: |
+          set -euo pipefail
+          mkdir -p qa-artifacts/tools/powershell
+          node --input-type=module <<'EOF'
+          import {fetchPinnedTool} from './scripts/fetch-pinned-tool.mjs';
+          import {SHELLCHECK_ARTIFACTS, SHELLCHECK_VERSION, POWERSHELL_ARTIFACTS, POWERSHELL_VERSION} from './scripts/tool-pins.mjs';
+          const sc = SHELLCHECK_ARTIFACTS['linux-amd64'];
+          await fetchPinnedTool({url: sc.url, sha256: sc.sha256, destPath: 'qa-artifacts/tools/shellcheck.tar.xz'});
+          const ps = POWERSHELL_ARTIFACTS['linux-amd64'];
+          await fetchPinnedTool({url: ps.url, sha256: ps.sha256, destPath: 'qa-artifacts/tools/powershell.tar.gz'});
+          console.log(`Fetched ShellCheck ${SHELLCHECK_VERSION} and PowerShell ${POWERSHELL_VERSION}`);
+          EOF
+          tar -xJf qa-artifacts/tools/shellcheck.tar.xz -C qa-artifacts/tools
+          tar -xzf qa-artifacts/tools/powershell.tar.gz -C qa-artifacts/tools/powershell
+          sudo mv qa-artifacts/tools/shellcheck-v0.10.0/shellcheck /usr/local/bin/shellcheck
+          sudo ln -sfn "$(pwd)/qa-artifacts/tools/powershell/pwsh" /usr/local/bin/pwsh
+          chmod +x /usr/local/bin/shellcheck
+          chmod +x qa-artifacts/tools/powershell/pwsh
+          shellcheck --version
+          pwsh -NoProfile -Command '$PSVersionTable.PSVersion.ToString()'
+      - run: npm ci
+      - run: npm run verify:shell
+      - run: npm run verify:powershell
+      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: qa-shell-powershell
+          path: |
+            qa/shell-report.json
+            qa/powershell-report.json
+          if-no-files-found: error
+
+  accessibility:
+    name: accessibility
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
       - run: npx playwright install --with-deps chromium
@@ -150,10 +242,11 @@ jobs:
         with:
           name: qa-accessibility
           path: qa/accessibility-report.json
+          if-no-files-found: error
 
   external-links:
     name: external-links
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -161,7 +254,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
       - run: npm run verify:links
@@ -169,26 +262,30 @@ jobs:
         with:
           name: qa-external-links
           path: qa/external-link-report.json
+          if-no-files-found: error
 
   secret-scan:
     name: secret-scan
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           persist-credentials: false
           fetch-depth: 0
-      - name: Install gitleaks
+      - name: Install Gitleaks 8.30.0 (checksum verified)
         run: |
           set -euo pipefail
-          curl -sSL -o /tmp/gitleaks.tgz https://github.com/gitleaks/gitleaks/releases/download/v8.30.0/gitleaks_8.30.0_linux_x64.tar.gz
+          curl --fail --silent --show-error --location \
+            -o /tmp/gitleaks.tgz \
+            https://github.com/gitleaks/gitleaks/releases/download/v8.30.0/gitleaks_8.30.0_linux_x64.tar.gz
+          echo "79a3ab579b53f71efd634f3aaf7e04a0fa0cf206b7ed434638d1547a2470a66e  /tmp/gitleaks.tgz" | sha256sum -c -
           tar -xzf /tmp/gitleaks.tgz -C /tmp gitleaks
-          sudo mv /tmp/gitleaks /usr/local/bin/
+          sudo mv /tmp/gitleaks /usr/local/bin/gitleaks
           gitleaks version
       - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
       - run: npm run verify:secrets
@@ -196,12 +293,18 @@ jobs:
         with:
           name: qa-gitleaks
           path: qa/gitleaks-report.json
+          if-no-files-found: error
 
   verify-evidence-reports:
     name: verify-evidence-reports
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     needs:
       - static-site
+      - javascript-labs
+      - go-utilities
+      - policy-and-iac
+      - postgresql-rls
+      - shell-powershell
       - accessibility
       - external-links
       - secret-scan
@@ -212,7 +315,7 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@1d0ff469b7ec7b3cb9d8673fde0c81c44821de2a # v4.2.0
         with:
-          node-version: "22"
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
       - run: npm ci
       - uses: actions/download-artifact@cc203385981b70ca67e1cc392babf9cc229d5806 # v4.1.9
@@ -222,13 +325,63 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p qa
-          find qa-artifacts -name '*.json' -exec cp {} qa/ \;
+          # Fail on unexpected duplicate basenames across artifact directories.
+          python3 - <<'PY'
+          import os, sys
+          root = "qa-artifacts"
+          seen = {}
+          dups = []
+          for dirpath, _, files in os.walk(root):
+              for name in files:
+                  if not name.endswith(".json"):
+                      continue
+                  path = os.path.join(dirpath, name)
+                  if name in seen:
+                      dups.append((name, seen[name], path))
+                  else:
+                      seen[name] = path
+          if dups:
+              for name, a, b in dups:
+                  print(f"duplicate evidence basename {name}: {a} and {b}", file=sys.stderr)
+              sys.exit(1)
+          print(f"unique evidence files: {len(seen)}")
+          PY
+          required=(
+            qa-artifacts/qa-static/validation-report.json
+            qa-artifacts/qa-static/html-validation-report.json
+            qa-artifacts/qa-static/defect-check-report.json
+            qa-artifacts/qa-labs/labs-report.json
+            qa-artifacts/qa-go/go-report.json
+            qa-artifacts/qa-policy-iac/terraform-report.json
+            qa-artifacts/qa-policy-iac/opa-report.json
+            qa-artifacts/qa-policy-iac/bicep-report.json
+            qa-artifacts/qa-policy-iac/policy-schemas-report.json
+            qa-artifacts/qa-policy-iac/kyverno-report.json
+            qa-artifacts/qa-postgres/postgres-report.json
+            qa-artifacts/qa-shell-powershell/shell-report.json
+            qa-artifacts/qa-shell-powershell/powershell-report.json
+            qa-artifacts/qa-accessibility/accessibility-report.json
+            qa-artifacts/qa-external-links/external-link-report.json
+            qa-artifacts/qa-gitleaks/gitleaks-report.json
+          )
+          for src in "${required[@]}"; do
+            if [[ ! -f "$src" ]]; then
+              echo "missing required evidence file: $src" >&2
+              exit 1
+            fi
+            cp "$src" qa/
+          done
           npm run verify:summary
           npm run verify:provenance
+      - uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        with:
+          name: qa-authoritative-summary
+          path: qa/verification-summary.json
+          if-no-files-found: error
 
   summary:
     name: summary
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: always()
     needs:
       - static-site
@@ -236,6 +389,7 @@ jobs:
       - go-utilities
       - policy-and-iac
       - postgresql-rls
+      - shell-powershell
       - accessibility
       - external-links
       - secret-scan
@@ -250,6 +404,7 @@ jobs:
             "${{ needs.go-utilities.result }}" \
             "${{ needs.policy-and-iac.result }}" \
             "${{ needs.postgresql-rls.result }}" \
+            "${{ needs.shell-powershell.result }}" \
             "${{ needs.accessibility.result }}" \
             "${{ needs.external-links.result }}" \
             "${{ needs.secret-scan.result }}" \

@@ -7,6 +7,7 @@ const {
   ApprovalStore,
   BrokerDenied,
   ToolBroker,
+  hashActionBinding,
 } = require("../broker");
 
 const NOW_MS = Date.parse("2026-07-23T12:00:00Z");
@@ -403,4 +404,55 @@ test("rejects a tenant that the authenticated principal does not own", async () 
     "UNAUTHORIZED_TENANT",
   );
   assert.equal(harness.invocations.length, 0);
+});
+
+test("hashActionBinding is SHA-256 hex and changes when any bound field changes", () => {
+  const base = {
+    principalId: "agent-workload-alpha",
+    tenantId: "tenant-alpha",
+    tool: "payments.create",
+    amountCents: 30_000,
+    destinationRef: "approved-destination",
+  };
+  const digest = hashActionBinding(base);
+  assert.match(digest, /^[a-f0-9]{64}$/);
+
+  for (const [key, value] of Object.entries({
+    principalId: "agent-workload-beta",
+    tenantId: "tenant-beta",
+    tool: "payments.refund",
+    amountCents: 30_001,
+    destinationRef: "other-destination",
+  })) {
+    const mutated = {...base, [key]: value};
+    assert.notEqual(
+      hashActionBinding(mutated),
+      digest,
+      `expected hash to change when ${key} changes`,
+    );
+  }
+});
+
+test("delimiter-containing identifiers do not collide under hashActionBinding", () => {
+  // Under a NUL-joined serialization, ("a\0b", "c") and ("a", "b\0c") collide.
+  // JSON canonicalization must keep them distinct for every bound string field.
+  const left = hashActionBinding({
+    principalId: "a\u0000b",
+    tenantId: "c",
+    tool: "payments.create",
+    amountCents: 1,
+    destinationRef: "dest",
+  });
+  const right = hashActionBinding({
+    principalId: "a",
+    tenantId: "b\u0000c",
+    tool: "payments.create",
+    amountCents: 1,
+    destinationRef: "dest",
+  });
+  assert.notEqual(left, right);
+
+  const joinLeft = ["a\u0000b", "c", "payments.create", "1", "dest"].join("\u0000");
+  const joinRight = ["a", "b\u0000c", "payments.create", "1", "dest"].join("\u0000");
+  assert.equal(joinLeft, joinRight);
 });

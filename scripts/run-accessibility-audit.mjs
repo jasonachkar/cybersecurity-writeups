@@ -1,10 +1,9 @@
 import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
-import {fileURLToPath} from "node:url";
 import {createRequire} from "node:module";
 import {chromium} from "playwright";
-import {requireCleanProvenance, writeQaReport, root} from "./qa-provenance.mjs";
+import {buildProvenance, writeQaReport, root} from "./qa-provenance.mjs";
 
 const require = createRequire(import.meta.url);
 const axePkg = JSON.parse(fs.readFileSync(require.resolve("axe-core/package.json"), "utf8"));
@@ -15,6 +14,11 @@ const manifest = JSON.parse(fs.readFileSync(path.join(root, "content-status.json
 const urls = Object.entries(manifest)
   .filter(([, item]) => item.status !== "archived")
   .map(([url]) => url);
+
+// Always cover the 404 utility page even if classified separately.
+if (fs.existsSync(path.join(root, "404.html")) && !urls.includes("/404.html")) {
+  urls.push("/404.html");
+}
 
 const palettes = ["default", "slate"];
 const viewports = [
@@ -47,6 +51,57 @@ const {port} = server.address();
 const browser = await chromium.launch();
 const results = [];
 const consoleErrors = [];
+const helperFailures = [];
+
+async function assertShippedHelper(page, url, palette, viewportName) {
+  const check = await page.evaluate(async () => {
+    // Wait briefly for deferred portfolio-a11y.js (MutationObserver + rAF).
+    const deadline = Date.now() + 2000;
+    while (Date.now() < deadline) {
+      const navs = [...document.querySelectorAll(".md-code__nav")];
+      const wraps = [...document.querySelectorAll(".md-typeset__scrollwrap")];
+      const navOk = navs.every(
+        (nav) => nav.getAttribute("aria-label") || nav.getAttribute("aria-labelledby")
+      );
+      const wrapOk = wraps.every(
+        (wrap) =>
+          wrap.getAttribute("tabindex") === "0" &&
+          wrap.getAttribute("role") === "region" &&
+          (wrap.getAttribute("aria-label") || wrap.getAttribute("aria-labelledby"))
+      );
+      if (navOk && wrapOk) {
+        return {ok: true, navCount: navs.length, wrapCount: wraps.length};
+      }
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+    const navs = [...document.querySelectorAll(".md-code__nav")];
+    const wraps = [...document.querySelectorAll(".md-typeset__scrollwrap")];
+    return {
+      ok: false,
+      navCount: navs.length,
+      wrapCount: wraps.length,
+      missingNav: navs
+        .filter((nav) => !nav.getAttribute("aria-label") && !nav.getAttribute("aria-labelledby"))
+        .length,
+      missingWrap: wraps.filter(
+        (wrap) =>
+          wrap.getAttribute("tabindex") !== "0" ||
+          wrap.getAttribute("role") !== "region" ||
+          !(wrap.getAttribute("aria-label") || wrap.getAttribute("aria-labelledby"))
+      ).length
+    };
+  });
+
+  if (!check.ok) {
+    helperFailures.push({
+      url,
+      palette,
+      viewport: viewportName,
+      ...check
+    });
+  }
+  return check.ok;
+}
 
 async function auditCombination(palette, viewport) {
   const context = await browser.newContext({
@@ -79,20 +134,26 @@ async function auditCombination(palette, viewport) {
       continue;
     }
 
+    // Apply palette attributes only (no accessibility attribute mutation).
     await page.evaluate((scheme) => {
       document.body?.setAttribute("data-md-color-scheme", scheme);
-      document.body?.setAttribute("data-md-color-media", scheme === "slate" ? "(prefers-color-scheme: dark)" : "");
-      document.querySelectorAll(".md-code__nav").forEach((nav, index) => {
-        if (!nav.getAttribute("aria-label") && !nav.getAttribute("aria-labelledby")) {
-          nav.setAttribute("aria-label", `Code block actions ${index + 1}`);
-        }
-      });
-      document.querySelectorAll(".md-typeset__scrollwrap").forEach((wrap, index) => {
-        if (!wrap.hasAttribute("tabindex")) wrap.setAttribute("tabindex", "0");
-        if (!wrap.getAttribute("role")) wrap.setAttribute("role", "region");
-        wrap.setAttribute("aria-label", `Scrollable content ${index + 1}`);
-      });
+      document.body?.setAttribute(
+        "data-md-color-media",
+        scheme === "slate" ? "(prefers-color-scheme: dark)" : ""
+      );
     }, palette);
+
+    const helperOk = await assertShippedHelper(page, url, palette, viewport.name);
+    if (!helperOk) {
+      results.push({
+        url,
+        palette,
+        viewport: viewport.name,
+        error: "shipped portfolio-a11y.js attributes missing",
+        violations: []
+      });
+      continue;
+    }
 
     await page.evaluate(axeSource);
     const audit = await page.evaluate(async () => await window.axe.run(document, {
@@ -120,22 +181,23 @@ for (const palette of palettes) {
 await browser.close();
 server.close();
 
-const severe = results.flatMap(result => (result.violations || [])
-  .filter(violation => ["critical", "serious"].includes(violation.impact))
-  .map(violation => ({url: result.url, palette: result.palette, viewport: result.viewport, ...violation})));
-const moderate = results.flatMap(result => (result.violations || [])
-  .filter(violation => !["critical", "serious"].includes(violation.impact))
+const allViolations = results.flatMap(result => (result.violations || [])
   .map(violation => ({url: result.url, palette: result.palette, viewport: result.viewport, ...violation})));
 const failedLoads = results.filter(result => result.error);
+const failed =
+  allViolations.length > 0 ||
+  failedLoads.length > 0 ||
+  consoleErrors.length > 0 ||
+  helperFailures.length > 0;
 
-const provenance = requireCleanProvenance({
-  command: "npm run audit:a11y",
+const provenance = buildProvenance({
+  command: "npm run verify:a11y",
   toolVersions: {
     axeCore: axePkg.version,
     playwright: playwrightPkg.version,
     node: process.version
   },
-  result: severe.length || failedLoads.length ? "failed" : "passed"
+  result: failed ? "failed" : "passed"
 });
 
 const report = {
@@ -143,17 +205,20 @@ const report = {
   engine: `axe-core ${axePkg.version} via Playwright Chromium ${playwrightPkg.version}`,
   pages: urls.length,
   combinations: palettes.length * viewports.length,
-  criticalOrSerious: severe.length,
-  moderateOrMinor: moderate.length,
+  violationCount: allViolations.length,
+  criticalOrSerious: allViolations.filter(v => ["critical", "serious"].includes(v.impact)).length,
+  moderateOrMinor: allViolations.filter(v => !["critical", "serious"].includes(v.impact)).length,
   consoleErrors,
+  helperFailures,
   failedLoads,
-  results
+  results,
+  note: "Audit tests the shipped DOM after portfolio-a11y.js; the audit itself does not repair accessibility attributes."
 };
 writeQaReport("accessibility-report.json", report);
 
 console.log(`Accessibility audit: ${urls.length} pages × ${report.combinations} palette/viewport combinations.`);
-console.log(`Critical/serious: ${severe.length}; moderate/minor: ${moderate.length}; console errors: ${consoleErrors.length}; failed loads: ${failedLoads.length}.`);
-for (const item of severe.slice(0, 40)) {
+console.log(`Violations: ${allViolations.length}; console errors: ${consoleErrors.length}; helper failures: ${helperFailures.length}; failed loads: ${failedLoads.length}.`);
+for (const item of allViolations.slice(0, 40)) {
   console.log(`- ${item.impact} ${item.id} ${item.url} [${item.palette}/${item.viewport}] (${item.nodes?.[0] || ""})`);
 }
-if (severe.length || failedLoads.length) process.exit(1);
+if (failed) process.exit(1);

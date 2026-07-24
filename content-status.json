@@ -1,19 +1,19 @@
 {
   "/404.html": {
-    "title": "Archived reference: 404 - Not found",
-    "status": "archived",
+    "title": "Page not found",
+    "status": "site-utility",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
-    "evidence": [
-      "The public URL is retained to avoid a broken historical link."
-    ],
+    "evidence": [],
     "limitations": [
-      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+      "Utility missing-page response; not security guidance."
     ],
     "reviewIntervalDays": 365
   },
   "/about/quality-methodology/": {
     "title": "Evidence and quality methodology",
     "status": "conceptual",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Defines source hierarchy, validation semantics, review intervals, and archive behavior."
@@ -26,18 +26,22 @@
   "/about/site-provenance/": {
     "title": "Site provenance",
     "status": "conceptual",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
-      "Publication target, review branch, draft PR, domain, and review timestamp are stated without a self-referential commit claim."
+      "Publication target gh-pages, publication review PR #5, reviewed branch, domain, and content review date are stated without a self-referential commit claim.",
+      "Runtime QA evidence is produced as GitHub Actions artifacts for the checked-out revision, not committed JSON reports."
     ],
     "limitations": [
-      "GitHub Pages deployment remains contingent on merging PR #5 to gh-pages."
+      "Static validation does not establish cloud deployment, production availability, or customer use.",
+      "GitHub Pages deployment status is tracked separately through GitHub deployment records."
     ],
     "reviewIntervalDays": 30
   },
   "/appsec/ai-agent-security/": {
     "title": "Threat-Driven Security Architecture for AI Agents",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Local broker fixtures cover authorized low-impact calls, missing/expired/mismatched approvals, sequential and concurrent replay, kill-switch, and unknown-argument denial.",
@@ -53,6 +57,7 @@
   "/appsec/api-microservices-threat-modeling/": {
     "title": "API and Microservice Trust Boundaries: Workload Identity, User Context and Downstream Authorization",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Workload identity, end-user context, token audience, direct-service bypass, and authorization failure cases are explicitly modeled."
@@ -65,6 +70,7 @@
   "/appsec/oauth2-oidc-deep-dive/": {
     "title": "OAuth 2.0 and OpenID Connect Security Engineering",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Issuer, audience, time, nonce, state, PKCE, redirect, and key-rotation cases have local fixtures."
@@ -77,6 +83,7 @@
   "/appsec/runtime-protection-rasp-waf/": {
     "title": "Layered Runtime Application Protection: WAF, In-Process Controls and eBPF Enforcement",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "WAF, in-process, and eBPF controls are compared by enforcement point, context, bypass, and failure behavior.",
@@ -90,6 +97,7 @@
   "/appsec/saas-multitenancy-isolation/": {
     "title": "Engineering Tenant Isolation for a Multi-tenant SaaS Platform",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "PostgreSQL RLS boundary cases, role attributes, and pooled-client session lifecycle are exercised in a disposable database lab."
@@ -102,6 +110,7 @@
   "/cloud-security/cloud-detection-and-response/": {
     "title": "Cloud Detection Engineering: Durable Telemetry, High-Signal Analytics and Safe Response",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Sentinel KQL columns are mapped to the documented AWSCloudTrail schema and response controls are bounded."
@@ -114,6 +123,7 @@
   "/cloud-security/cloud-network-segmentation/": {
     "title": "Cloud Network Segmentation and Egress Control: Routing, Private Endpoints and Failure Domains",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Routing, endpoint-policy, centralized/distributed egress, IPv6, DNS, and inspection failure modes are explicitly separated."
@@ -126,6 +136,7 @@
   "/cloud-security/iam-at-scale/": {
     "title": "AWS IAM at Scale: Federation, Delegation, and Guardrails",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Federation, delegation, PassRole, external-ID, and boundary decisions have runnable local policy cases."
@@ -138,6 +149,7 @@
   "/cloud-security/kubernetes-multi-tenancy/": {
     "title": "Kubernetes Multi-tenancy: Boundaries, Isolation, and Operations",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Pod, network-policy, and image-decision fixtures exercise positive and negative cases."
@@ -150,6 +162,7 @@
   "/cloud-security/multi-account-landing-zones/": {
     "title": "AWS Multi-Account Landing Zones: Guardrails and Control-Plane Isolation",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Organization, account-vending, guardrail, identity, logging, and recovery boundaries are primary-source reviewed."
@@ -162,6 +175,7 @@
   "/cloud-security/serverless-security/": {
     "title": "Serverless Security Engineering: Event Trust, Function Identity and Runtime Reuse",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Event identity, authorizers, Lambda integration, execution reuse, IAM roles, secrets, networking, and WAF decisions are separated."
@@ -174,6 +188,7 @@
   "/devsecops/iac-security-and-policy-as-code/": {
     "title": "Infrastructure as Code Security and Policy Engineering",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Terraform plan fixtures cover secure, insecure, unknown, and deleted-control states."
@@ -186,6 +201,7 @@
   "/devsecops/secrets-management/": {
     "title": "Secrets Management Engineering: Identity, Delivery, Rotation and Runtime Exposure",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Identity, delivery, rotation, runtime exposure, revocation, and failure semantics are threat-modelled separately."
@@ -198,6 +214,7 @@
   "/devsecops/secure-cicd-pipeline-design/": {
     "title": "Secure CI/CD Pipeline Architecture and Trust Boundaries",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Trust boundaries and fail-closed gate fixtures are documented and locally exercised."
@@ -210,6 +227,7 @@
   "/devsecops/secureobs-multitenant-security-scanner/": {
     "title": "SecureObs: Customer-side CI Security Scanning with a Multi-tenant Findings Platform",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Owner-confirmed architecture is separated from repository-reproduced patterns and recommendations."
@@ -222,6 +240,7 @@
   "/devsecops/supply-chain-sbom-signing/": {
     "title": "Software Supply-chain Evidence: SBOMs, Provenance, Signing, and Verification",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Artifact digest, SBOM linkage, provenance fields, and verifier-adapter contract have offline tests."
@@ -234,6 +253,7 @@
   "/docs/AUTHORING_GUIDE/": {
     "title": "Archived reference: Security write-up authoring guide",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -246,6 +266,7 @@
   "/docs/CONTRIBUTING_SECURITY_CONTENT/": {
     "title": "Archived reference: Contributing security content",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -258,6 +279,7 @@
   "/docs/METADATA/": {
     "title": "Archived reference: Content metadata contract",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -270,6 +292,7 @@
   "/docs/METADATA_MIGRATION/": {
     "title": "Archived reference: Legacy metadata migration registry",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -282,6 +305,7 @@
   "/docs/RESEARCH_POLICY/": {
     "title": "Archived reference: Research and source policy",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -294,6 +318,7 @@
   "/docs/certification-notes/az-900/domain-1-concepts/": {
     "title": "AZ-900 Domain 1: Describe Cloud Concepts",
     "status": "study-notes",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Microsoft study guide last updated 2026-06-22; skills measured from 2026-07-20."
@@ -306,6 +331,7 @@
   "/docs/certification-notes/az-900/domain-2-architecture-services/": {
     "title": "AZ-900 Domain 2: Describe Azure Architecture & Services",
     "status": "study-notes",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Microsoft study guide last updated 2026-06-22; skills measured from 2026-07-20."
@@ -318,6 +344,7 @@
   "/docs/certification-notes/az-900/domain-3-management-governance/": {
     "title": "AZ-900 Domain 3: Describe Azure Management & Governance",
     "status": "study-notes",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Microsoft study guide last updated 2026-06-22; skills measured from 2026-07-20."
@@ -330,6 +357,7 @@
   "/docs/certification-notes/az-900/": {
     "title": "Microsoft AZ-900: Azure Fundamentals Overview",
     "status": "study-notes",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Microsoft study guide last updated 2026-06-22; skills measured from 2026-07-20."
@@ -342,6 +370,7 @@
   "/docs/certification-notes/google-cybersecurity/": {
     "title": "Google Cybersecurity Professional Certificate",
     "status": "study-notes",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Google's official curriculum was checked 2026-07-23; Google does not publish a dated exam study guide for this course certificate."
@@ -354,6 +383,7 @@
   "/docs/certification-notes/sc-500/domain-1-identity/": {
     "title": "SC-500 Domain 1: Manage Identity, Access, and Governance",
     "status": "study-notes",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
@@ -366,6 +396,7 @@
   "/docs/certification-notes/sc-500/domain-2-storage-networking/": {
     "title": "SC-500 Domain 2: Secure Storage, Databases, and Networking",
     "status": "study-notes",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
@@ -378,6 +409,7 @@
   "/docs/certification-notes/sc-500/domain-3-compute-posture/": {
     "title": "Archived reference: Superseded study-note path",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -390,6 +422,7 @@
   "/docs/certification-notes/sc-500/domain-3-secure-compute/": {
     "title": "Study Notes: Secure compute",
     "status": "study-notes",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
@@ -402,6 +435,7 @@
   "/docs/certification-notes/sc-500/domain-4-ai-security/": {
     "title": "Archived reference: Superseded study-note path",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -414,6 +448,7 @@
   "/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/": {
     "title": "Study Notes: Manage and monitor security posture",
     "status": "study-notes",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
@@ -426,6 +461,7 @@
   "/docs/certification-notes/sc-500/": {
     "title": "Microsoft SC-500 study notes",
     "status": "study-notes",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
@@ -438,6 +474,7 @@
   "/docs/certification-notes/security-plus/domain-1-threats/": {
     "title": "Archived reference: Domain 2: Threats, Vulnerabilities, and Mitigations (SY0-701)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -450,6 +487,7 @@
   "/docs/certification-notes/security-plus/domain-2-architecture/": {
     "title": "Archived reference: Domain 3: Security Architecture (SY0-701)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -462,6 +500,7 @@
   "/docs/certification-notes/security-plus/domain-3-operations/": {
     "title": "Archived reference: Domain 4: Security Operations (SY0-701)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -474,6 +513,7 @@
   "/docs/certification-notes/security-plus/": {
     "title": "CompTIA Security+ SY0-701 study notes",
     "status": "study-notes",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "CompTIA's official Security+ page and SY0-701 objectives were checked 2026-07-23; no page-level update date is invented."
@@ -486,6 +526,7 @@
   "/docs/certification-notes/security-plus/labs/lab-iam/": {
     "title": "Archived reference: Security+ Lab: Identity & Access Management (IAM) — Enterprise-Style (Local Lab)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -498,6 +539,7 @@
   "/docs/certification-notes/security-plus/labs/lab-network-security/": {
     "title": "Archived reference: Security+ Lab: Network Security & Segmentation — Firewall + Packet Capture + Mini-IDS (Local Lab)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -510,6 +552,7 @@
   "/docs/certification-notes/security-plus/practice-questions/": {
     "title": "Archived reference: Security+ SY0-701 Practice Questions",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -522,6 +565,7 @@
   "/docs/certification-notes/security-plus/quick-reference/": {
     "title": "Archived reference: Security+ SY0-701 Quick Reference",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -534,6 +578,7 @@
   "/docs/research-audit/content-inventory/": {
     "title": "Evidence Registry",
     "status": "conceptual",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Curated explicit metadata; no keyword-derived topic inference."
@@ -546,6 +591,7 @@
   "/docs/research-audit/modernization-completion-report/": {
     "title": "Archived reference: Security Content Modernization Report",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -558,6 +604,7 @@
   "/docs/research-audit/security-content-audit/": {
     "title": "Archived reference: Security Content Audit",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -570,6 +617,7 @@
   "/docs/research-audit/strong-claim-review/": {
     "title": "Archived reference: Strong security claim review queue",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -582,6 +630,7 @@
   "/docs/research/appsec/api-microservices-oauth-saas-multitenancy/": {
     "title": "Archived reference: API and Microservices Threat Modeling",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -594,6 +643,7 @@
   "/docs/research/devsecops/iac-security-and-policy-as-code/": {
     "title": "Archived reference: IaC Security and Policy-as-Code",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -606,6 +656,7 @@
   "/docs/research/devsecops/secure-cicd-pipelines-and-environments/": {
     "title": "Archived reference: Secure CI/CD Pipelines and Environments",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -618,6 +669,7 @@
   "/docs/research/enterprise-cloud-security-engineering/cloud-security-architecture/": {
     "title": "Archived reference: 3. Cloud Security Architecture & Enterprise Infrastructure",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -630,6 +682,7 @@
   "/docs/research/enterprise-cloud-security-engineering/detection-engineering/": {
     "title": "Archived reference: 4. Detection Engineering & Threat Hunting",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -642,6 +695,7 @@
   "/docs/research/enterprise-cloud-security-engineering/devsecops-pipeline-hardening/": {
     "title": "Archived reference: DevSecOps pipeline hardening",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -654,6 +708,7 @@
   "/docs/research/enterprise-cloud-security-engineering/iam-workload-identity/": {
     "title": "Archived reference: 1. Identity & Access Management (IAM)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -666,6 +721,7 @@
   "/docs/research/enterprise-cloud-security-engineering/": {
     "title": "Archived reference: Advanced Cloud Security Engineering",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -678,6 +734,7 @@
   "/docs/research/enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security/": {
     "title": "Archived reference: Kubernetes Multi-Tenancy and Platform Security",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -690,6 +747,7 @@
   "/docs/research/enterprise-cloud-security-engineering/multi-account-landing-zones-and-iam/": {
     "title": "Archived reference: Multi-Account Landing Zones and IAM at Scale",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -702,6 +760,7 @@
   "/docs/research/oauth-misconfigurations/attack-scenarios/": {
     "title": "Archived reference: OAuth & OpenID Connect Misconfigurations: Real-World Attack Scenarios",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -714,6 +773,7 @@
   "/docs/research/oauth-misconfigurations/code-examples/": {
     "title": "Archived reference: OAuth 2.0 security code examples (superseded)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -726,6 +786,7 @@
   "/docs/research/oauth-misconfigurations/": {
     "title": "Archived reference: Common OAuth 2.0 Misconfigurations and Exploits",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -738,6 +799,7 @@
   "/docs/research/oauth-misconfigurations/mitigations/": {
     "title": "Archived reference: OAuth/OIDC Misconfiguration Mitigations",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -750,6 +812,7 @@
   "/docs/research/threat-modeling-saas/data-flow-diagrams/": {
     "title": "Archived reference: Data Flow Diagrams (DFDs) for SaaS Applications",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -762,6 +825,7 @@
   "/docs/research/threat-modeling-saas/": {
     "title": "Archived reference: Threat Modeling for Multi-Tenant SaaS Applications",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -774,6 +838,7 @@
   "/docs/research/threat-modeling-saas/mitigations/": {
     "title": "Archived reference: Threat Modeling Mitigations for SaaS",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -786,6 +851,7 @@
   "/docs/research/threat-modeling-saas/stride-analysis/": {
     "title": "Archived reference: STRIDE Analysis for SaaS Multi-Tenancy",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -798,6 +864,7 @@
   "/docs/research/threat-modeling-saas/templates/": {
     "title": "Archived reference: Threat Modeling Templates & Worksheets",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -810,6 +877,7 @@
   "/docs/scripts/app-security/": {
     "title": "Archived reference: Application Security Automation Scripts",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -822,6 +890,7 @@
   "/docs/scripts/cloud-security/": {
     "title": "Archived reference: Cloud Security Automation Scripts",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -834,6 +903,7 @@
   "/docs/scripts/devsecops/": {
     "title": "Archived reference: DevSecOps Automation Scripts",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -846,6 +916,7 @@
   "/docs/scripts/threat-intel/": {
     "title": "Archived reference: Threat Intelligence Analysis Scripts",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -858,6 +929,7 @@
   "/docs/standards/security-standards-review/": {
     "title": "Archived reference: Security standards and platform currency review",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -870,6 +942,7 @@
   "/docs/templates/security-writeup-template/": {
     "title": "Archived reference: Replace with a precise, decision-oriented title",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -882,6 +955,7 @@
   "/docs/tutorials/azure-firewall-walkthrough/": {
     "title": "Archived reference: Configuring Azure Firewall with UDR-Based Traffic Control",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -894,6 +968,7 @@
   "/docs/tutorials/azure-landing-zone/architecture/": {
     "title": "Archived reference: Azure Landing Zone: Architecture Overview",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -906,6 +981,7 @@
   "/docs/tutorials/azure-landing-zone/iam/": {
     "title": "Archived reference: Azure Landing Zone: Identity and Access Management (IAM)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -918,6 +994,7 @@
   "/docs/tutorials/azure-landing-zone/implementation-templates/": {
     "title": "Archived reference: Azure Landing Zone - Implementation Templates",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -930,6 +1007,7 @@
   "/docs/tutorials/azure-landing-zone/": {
     "title": "Archived reference: Azure Landing Zone Security Engineering Guide",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -942,6 +1020,7 @@
   "/docs/tutorials/azure-landing-zone/networking/": {
     "title": "Archived reference: Azure Landing Zone: Networking and Connectivity",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -954,6 +1033,7 @@
   "/docs/tutorials/azure-landing-zone/policy-governance/": {
     "title": "Archived reference: Azure Landing Zone: Policy and Governance",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -966,6 +1046,7 @@
   "/docs/tutorials/ci-cd-gates/azure-devops/": {
     "title": "Archived reference: Azure DevOps Security Scanning Configuration",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -978,6 +1059,7 @@
   "/docs/tutorials/ci-cd-gates/github-actions/": {
     "title": "Archived reference: GitHub Actions Security Scanning Configuration",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -990,6 +1072,7 @@
   "/docs/tutorials/ci-cd-gates/": {
     "title": "Archived reference: Implementing Security Gates in CI/CD Pipelines",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1002,6 +1085,7 @@
   "/docs/tutorials/ci-cd-gates/tools/": {
     "title": "Archived reference: Security Tools Reference",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1014,6 +1098,7 @@
   "/docs/tutorials/detection-engineering-sentinel/detection-templates/": {
     "title": "Archived reference: KQL Detection Templates & Playbook Examples",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1026,6 +1111,7 @@
   "/docs/tutorials/detection-engineering-sentinel/": {
     "title": "Archived reference: Detection Engineering with Microsoft Sentinel",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1038,6 +1124,7 @@
   "/docs/tutorials/owasp-api-security-top-10/code-examples/": {
     "title": "Archived reference: OWASP API Security - Code Examples & Mitigations",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1050,6 +1137,7 @@
   "/docs/tutorials/owasp-api-security-top-10/examples/insecure-example/": {
     "title": "Archived reference: Insecure API Example (Python / Flask)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1062,6 +1150,7 @@
   "/docs/tutorials/owasp-api-security-top-10/examples/secure-example/": {
     "title": "Archived reference: API authorization example: bounded design checklist",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1074,6 +1163,7 @@
   "/docs/tutorials/owasp-api-security-top-10/": {
     "title": "Archived reference: OWASP API Security Top 10 (2023)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1086,6 +1176,7 @@
   "/docs/tutorials/owasp-api-security-top-10/mitigation-node/": {
     "title": "Archived reference: Mitigating API Vulnerabilities in Node.js (Express)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1098,6 +1189,7 @@
   "/docs/tutorials/owasp-api-security-top-10/mitigations-dotnet/": {
     "title": "Archived reference: Mitigating API Vulnerabilities in .NET (C#)",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1110,6 +1202,7 @@
   "/docs/tutorials/owasp-api-security-top-10/vulnerabilities/": {
     "title": "Archived reference: OWASP API Security Top 10 (2023) - Core Vulnerabilities",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1122,6 +1215,7 @@
   "/docs/tutorials/securing-entra-id/conditional-access-policies/": {
     "title": "Archived reference: Conditional Access Policy Reference",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1134,6 +1228,7 @@
   "/docs/tutorials/securing-entra-id/identity-protection/": {
     "title": "Archived reference: Identity Protection Configuration Guide",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1146,6 +1241,7 @@
   "/docs/tutorials/securing-entra-id/": {
     "title": "Archived reference: Securing Azure Entra ID (formerly Azure AD): A Zero Trust Approach",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1158,6 +1254,7 @@
   "/docs/tutorials/securing-entra-id/monitoring-alerts/": {
     "title": "Archived reference: Monitoring and Alerting Guide",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1170,6 +1267,7 @@
   "/docs/tutorials/securing-entra-id/pim-configuration/": {
     "title": "Archived reference: Privileged Identity Management Configuration Guide",
     "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "The public URL is retained to avoid a broken historical link."
@@ -1182,6 +1280,7 @@
   "/": {
     "title": "Security engineering decisions you can audit.",
     "status": "conceptual",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Curated entry points map to page-level evidence disclosures."
@@ -1194,6 +1293,7 @@
   "/labs/ai-agent-security/": {
     "title": "AI Agent External Tool-Broker Lab",
     "status": "validated-lab",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Broker fixtures include concurrent replay: exactly one executor invocation and APPROVAL_REPLAYED for the loser.",
@@ -1208,30 +1308,35 @@
   "/labs/azure-landing-zone/": {
     "title": "Azure landing-zone hierarchy and policy lab",
     "status": "partially-tested",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
-      "Bicep and policy artifacts model hierarchy, guardrails, and a federated deployment boundary."
+      "Bicep and policy artifacts model hierarchy, guardrails, and a federated deployment boundary.",
+      "CI compiles labs/azure-landing-zone/main.bicep with Azure CLI Bicep and discards the generated JSON."
     ],
     "limitations": [
-      "No Azure deployment occurs; parser/build checks require the installed Azure CLI/Bicep tool."
+      "No Azure authentication or resource deployment occurs."
     ],
     "reviewIntervalDays": 90
   },
   "/labs/iac-policy/": {
     "title": "Terraform plan and Rego policy lab",
     "status": "partially-tested",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
-      "Plan-decision fixtures cover secure, insecure, unknown, and deleted-control cases."
+      "Plan-decision fixtures cover secure, insecure, unknown, and deleted-control cases.",
+      "CI runs Terraform 1.14.6 fmt/init/validate and OPA 1.17.0 native Rego tests against the published fixtures."
     ],
     "limitations": [
-      "Native Terraform/OPA validation depends on installed pinned tools; no cloud plan is applied."
+      "No cloud plan is applied; provider-side behavior is not exercised."
     ],
     "reviewIntervalDays": 90
   },
   "/labs/iam-oidc/": {
     "title": "IAM and workload-identity decision lab",
     "status": "validated-lab",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Issuer, audience, subject, environment, external-ID, permission-boundary, and PassRole cases execute locally."
@@ -1244,19 +1349,22 @@
   "/labs/kubernetes-security/": {
     "title": "Kubernetes admission, network, and image-policy lab",
     "status": "partially-tested",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Local pod, network, and image-decision cases include accepted and denied inputs.",
-      "The ImageValidatingPolicy manifest was validated against the pinned Kyverno v1.18.0 CRD structural schema in this review."
+      "Native Kyverno CLI 1.18.2 tests exercise the hardened-pod policy.",
+      "The ImageValidatingPolicy manifest was validated against the pinned Kyverno v1.18.2 CRD structural schema in this review."
     ],
     "limitations": [
-      "Signature, certificate, registry, transparency, digest resolution, and live admission are not executed end to end."
+      "Image-signature policy remains schema/offline only; signature, certificate, registry, transparency, digest resolution, and live admission are not executed end to end."
     ],
     "reviewIntervalDays": 90
   },
   "/labs/oauth-oidc/": {
     "title": "OAuth/OIDC token-boundary lab",
     "status": "validated-lab",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Token, redirect, PKCE, state, nonce, time, audience, issuer, and key-rotation tests execute locally."
@@ -1269,6 +1377,7 @@
   "/labs/postgresql-rls/": {
     "title": "PostgreSQL row-level security isolation lab",
     "status": "validated-lab",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "RLS runtime, boundary, and catalog SQL suites executed against a disposable postgres:18.4-alpine3.24 container in this review.",
@@ -1282,6 +1391,7 @@
   "/labs/secure-cicd/": {
     "title": "Secure CI/CD boundary and fail-closed gate lab",
     "status": "validated-lab",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Positive, negative, malformed, scanner-failure, and secret-result fixtures run through the fail-closed gate."
@@ -1294,6 +1404,7 @@
   "/labs/supply-chain/": {
     "title": "Artifact provenance and SBOM verification lab",
     "status": "partially-tested",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Offline digest, builder, source, build-type, and SBOM linkage decisions execute locally."
@@ -1306,6 +1417,7 @@
   "/threat-intel/attack-path-analysis/": {
     "title": "Attack Path Analysis: Preconditions, Reachability and Evidence-Backed Control Breaks",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Three scenarios enumerate foothold, preconditions, edges, evidence, break points, negative tests, and residual risk."
@@ -1318,6 +1430,7 @@
   "/threat-intel/cloud-breach-case-studies/": {
     "title": "Cloud Incident Case Studies: Evidence, Chronology, and Control Lessons",
     "status": "partially-verified",
+    "indexable": true,
     "lastReviewed": "2026-07-24",
     "evidence": [
       "Chronologies distinguish incident-owner disclosure from inference and control lessons."
