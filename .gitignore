@@ -1,6 +1,10 @@
 .venv/
+.idea/
+.tools/
 site/
 mkdocs-project/site/
+mkdocs-project/generated-docs/
+mkdocs-project/overrides/partials/deployment-meta.generated.html
 node_modules/
 __pycache__/
 .DS_Store
