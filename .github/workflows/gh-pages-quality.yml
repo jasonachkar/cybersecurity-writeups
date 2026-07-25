@@ -40,6 +40,8 @@ jobs:
           cache: npm
       - name: Install
         run: npm ci
+      - name: Generator idempotency check
+        run: npm run verify:generated
       - name: Static validation
         run: npm run verify:static
       - name: Upload static reports

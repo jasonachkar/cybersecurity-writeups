@@ -3,5 +3,5 @@
   "statusAuthority": "/content-status.json",
   "keyType": "public URL",
   "reason": "This gh-pages artifact no longer uses Markdown-source-path review flags as a public status authority.",
-  "migratedAt": "2026-07-24T11:48:39Z"
+  "migratedAt": "2026-07-25T09:00:00Z"
 }

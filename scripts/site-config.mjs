@@ -1,16 +1,20 @@
+import {SCRIPTS, SCRIPT_CATEGORIES} from "./catalog.mjs";
+
 export const SITE_ORIGIN = "https://docs.jasonachkardiab.com";
-export const REVIEW_DATE = "2026-07-24";
-export const REVIEW_TIMESTAMP = "2026-07-24T11:48:39Z";
+export const REVIEW_DATE = "2026-07-25";
+export const REVIEW_TIMESTAMP = "2026-07-25T09:00:00Z";
 
 export const STATUS_LABELS = {
-  verified: "Verified engineering investigation",
-  "partially-verified": "Partially verified engineering investigation",
-  "validated-lab": "Validated lab",
-  "partially-tested": "Partially tested lab",
-  conceptual: "Conceptual reference",
-  "study-notes": "Study Notes - not implementation evidence",
-  archived: "Archived / requires technical review",
-  "site-utility": "Site utility page"
+  verified: "Checked against sources",
+  "partially-verified": "Partly checked against sources",
+  "validated-lab": "Lab I ran myself",
+  "partially-tested": "Lab, partly run",
+  conceptual: "Design, not yet built",
+  "study-notes": "Study notes",
+  archived: "Old / kept for the link",
+  "site-utility": "Site page",
+  tool: "Script or tool reference",
+  reference: "Reference page"
 };
 
 const entries = new Map();
@@ -54,43 +58,16 @@ add("404.html", {
   tags: ["site utility"]
 });
 
-add("about/site-provenance/index.html", {
-  status: "conceptual",
-  reviewIntervalDays: 30,
-  evidence: [
-    "Publication target gh-pages, publication review PR #5, reviewed branch, domain, and content review date are stated without a self-referential commit claim.",
-    "Runtime QA evidence is produced as GitHub Actions artifacts for the checked-out revision, not committed JSON reports."
-  ],
-  limitations: [
-    "Static validation does not establish cloud deployment, production availability, or customer use.",
-    "GitHub Pages deployment status is tracked separately through GitHub deployment records."
-  ],
-  sources: ["Repository branch and PR metadata", "GitHub Actions workflow runs"],
-  runnableEvidence: "npm run verify:all / .github/workflows/gh-pages-quality.yml",
-  proves: "The artifact's review and publication context.",
-  notProves: "That static files identify their own final containing commit, or that cloud deployment succeeded."
-});
-
-add("about/quality-methodology/index.html", {
-  status: "conceptual",
-  evidence: ["Defines source hierarchy, validation semantics, review intervals, and archive behavior."],
-  limitations: ["Automated checks support but do not replace expert review."],
-  sources: ["Repository evidence policy", "Primary-source references on maintained pages"],
-  runnableEvidence: "npm run verify:all",
-  proves: "How portfolio claims are classified and rechecked.",
-  notProves: "That a finite validation suite establishes complete security."
-});
-
-add("docs/research-audit/content-inventory/index.html", {
-  status: "conceptual",
-  reviewIntervalDays: 30,
-  evidence: ["Curated explicit metadata; no keyword-derived topic inference."],
-  limitations: ["The registry summarizes page disclosures and must be read with the linked investigation."],
-  sources: ["content-status.json", "Linked primary-source reference sections"],
-  runnableEvidence: "npm run verify:all",
-  proves: "Discovery, evidence status, runnable artifacts, and next review date.",
-  notProves: "Unlisted implementation, production operation, or control completeness.",
-  tags: ["evidence registry", "content status"]
+add("about/index.html", {
+  status: "reference",
+  reviewIntervalDays: 180,
+  evidence: ["Describes how the site is organized and how it's kept current; both are checkable against the repository itself."],
+  limitations: ["A simple about page; not a claim that every linked page has been through the same review."],
+  sources: [],
+  runnableEvidence: "None",
+  proves: "Who I am and how this site is organized.",
+  notProves: "Nothing about any individual write-up, lab, or script.",
+  tags: ["about"]
 });
 
 const engineering = {
@@ -368,6 +345,46 @@ for (const [path, data] of Object.entries(labs)) {
   add(path, {tags: ["security lab"], ...data});
 }
 
+add("scripts/index.html", {
+  status: "reference",
+  reviewIntervalDays: 90,
+  evidence: ["Lists exactly the scripts catalogued in scripts/catalog.mjs; nothing here is inferred from a directory listing."],
+  limitations: ["A script not listed in the catalogue is not yet documented, even if it exists in the repository."],
+  sources: [],
+  runnableEvidence: "None",
+  proves: "Which scripts exist and where their pages live.",
+  notProves: "Nothing about an individual script's behavior; see its own page.",
+  tags: ["scripts"]
+});
+
+for (const category of SCRIPT_CATEGORIES) {
+  add(`scripts/${category.slug}/index.html`, {
+    status: "tool",
+    reviewIntervalDays: 90,
+    evidence: [`Lists exactly the ${category.title} scripts catalogued in scripts/catalog.mjs.`],
+    limitations: ["Lists only the scripts catalogued under this category."],
+    sources: [],
+    runnableEvidence: "None",
+    proves: `Which ${category.title} scripts exist.`,
+    notProves: "Nothing about an individual script's behavior; see its own page.",
+    tags: ["scripts", category.title]
+  });
+}
+
+for (const script of SCRIPTS) {
+  add(`scripts/${script.category}/${script.slug}/index.html`, {
+    status: "tool",
+    reviewIntervalDays: 90,
+    evidence: [script.tested],
+    limitations: script.limitations,
+    sources: [script.path],
+    runnableEvidence: script.usage,
+    proves: script.purpose,
+    notProves: "That this script has been run against a live, unsanitized environment beyond what its own tests cover.",
+    tags: ["scripts", script.language]
+  });
+}
+
 function addStudy(paths, data) {
   for (const path of paths) {
     add(path, {
@@ -423,7 +440,7 @@ addStudy(["docs/certification-notes/security-plus/index.html"], {
 export const NAV_TREE = [
   {title: "Home", href: "/"},
   {
-    title: "Engineering",
+    title: "Research",
     children: [
       {
         title: "Cloud Security",
@@ -480,12 +497,15 @@ export const NAV_TREE = [
     ]
   },
   {
-    title: "Evidence",
-    children: [
-      {title: "Evidence registry", href: "/docs/research-audit/content-inventory/"},
-      {title: "Quality methodology", href: "/about/quality-methodology/"},
-      {title: "Site provenance", href: "/about/site-provenance/"}
-    ]
+    title: "Scripts",
+    children: SCRIPT_CATEGORIES.map(category => ({
+      title: category.title,
+      href: `/scripts/${category.slug}/`,
+      children: SCRIPTS.filter(script => script.category === category.slug).map(script => ({
+        title: script.name,
+        href: `/scripts/${script.category}/${script.slug}/`
+      }))
+    }))
   },
   {
     title: "Study notes",
@@ -512,7 +532,8 @@ export const NAV_TREE = [
       {title: "Security+", href: "/docs/certification-notes/security-plus/"},
       {title: "Google Cybersecurity", href: "/docs/certification-notes/google-cybersecurity/"}
     ]
-  }
+  },
+  {title: "About", href: "/about/"}
 ];
 
 // A node may be both a page (has `href`) and a group (has `children`) — AZ-900 and
@@ -573,14 +594,21 @@ export const REPLACEMENT_PREFIXES = [
   ["docs/certification-notes/sc-500/domain-3-compute-posture/", "/docs/certification-notes/sc-500/domain-3-secure-compute/"],
   ["docs/certification-notes/sc-500/domain-4-ai-security/", "/docs/certification-notes/sc-500/domain-3-secure-compute/"],
   ["docs/certification-notes/security-plus/", "/docs/certification-notes/security-plus/"],
-  ["docs/research-audit/strong-claim-review/", "/about/quality-methodology/"],
-  ["docs/research-audit/security-content-audit/", "/about/quality-methodology/"],
-  ["docs/research-audit/modernization-completion-report/", "/about/quality-methodology/"],
-  ["docs/templates/security-writeup-template/", "/about/quality-methodology/"],
-  ["docs/AUTHORING_GUIDE/", "/about/quality-methodology/"],
-  ["docs/CONTRIBUTING_SECURITY_CONTENT/", "/about/quality-methodology/"],
-  ["docs/METADATA/", "/about/quality-methodology/"],
-  ["docs/METADATA_MIGRATION/", "/about/quality-methodology/"]
+  ["docs/research-audit/strong-claim-review/", "/about/"],
+  ["docs/research-audit/security-content-audit/", "/about/"],
+  ["docs/research-audit/modernization-completion-report/", "/about/"],
+  ["docs/templates/security-writeup-template/", "/about/"],
+  ["docs/AUTHORING_GUIDE/", "/about/"],
+  ["docs/CONTRIBUTING_SECURITY_CONTENT/", "/about/"],
+  ["docs/METADATA/", "/about/"],
+  ["docs/METADATA_MIGRATION/", "/about/"],
+  ["about/quality-methodology/", "/about/"],
+  ["about/site-provenance/", "/about/"],
+  ["docs/research-audit/content-inventory/", "/"],
+  ["docs/scripts/app-security/", "/scripts/application-security/"],
+  ["docs/scripts/cloud-security/", "/scripts/cloud-security/"],
+  ["docs/scripts/devsecops/", "/scripts/devsecops/"],
+  ["docs/scripts/threat-intel/", "/scripts/threat-intelligence/"]
 ];
 
 REPLACEMENT_PREFIXES.unshift(
@@ -590,11 +618,14 @@ REPLACEMENT_PREFIXES.unshift(
   ["docs/tutorials/detection-engineering-sentinel/", "/cloud-security/cloud-detection-and-response/"],
   ["docs/tutorials/azure-landing-zone/", "/labs/azure-landing-zone/"],
   ["docs/tutorials/owasp-api-security-top-10/", "/appsec/api-microservices-threat-modeling/"],
-  ["docs/standards/security-standards-review/", "/about/quality-methodology/"],
-  ["docs/RESEARCH_POLICY/", "/about/quality-methodology/"]
+  ["docs/standards/security-standards-review/", "/about/"],
+  ["docs/RESEARCH_POLICY/", "/about/"]
 );
 
 export const EXPLICIT_ARCHIVED_PATHS = new Set([
+  "about/quality-methodology/index.html",
+  "about/site-provenance/index.html",
+  "docs/research-audit/content-inventory/index.html",
   "docs/AUTHORING_GUIDE/index.html",
   "docs/CONTRIBUTING_SECURITY_CONTENT/index.html",
   "docs/METADATA/index.html",

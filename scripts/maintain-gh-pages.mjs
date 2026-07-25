@@ -12,9 +12,9 @@ import {
   REVIEW_DATE,
   REVIEW_TIMESTAMP,
   SITE_ORIGIN,
-  STATUS_LABELS,
   entries
 } from "./site-config.mjs";
+import {SCRIPTS, SCRIPT_CATEGORIES} from "./catalog.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const toPosix = value => value.split(path.sep).join("/");
@@ -86,14 +86,8 @@ function archivedEntry(file, title) {
     proves: "Only that the previous URL has an explicit lifecycle state.",
     notProves: "Technical currency, implementation, or security effectiveness.",
     replacement,
-    originalTitle: title.replace(/^(?:Archived reference:\s*)+/i, "")
+    originalTitle: title.replace(/^(?:Archived reference:\s*|Old page:\s*)+/i, "")
   };
-}
-
-function addDays(dateText, days) {
-  const date = new Date(`${dateText}T00:00:00Z`);
-  date.setUTCDate(date.getUTCDate() + days);
-  return date.toISOString().slice(0, 10);
 }
 
 function formatLongDate(dateText) {
@@ -168,10 +162,6 @@ function insertBeforeArticleClose(html, inner) {
   // its own now-blank line.
   const before = html.slice(0, idx).replace(/[ \t]+$/, "");
   return `${before}\n${inner}\n${html.slice(idx)}`;
-}
-
-function listHtmlItems(items) {
-  return `<ul>${items.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
 }
 
 // ---------------------------------------------------------------------------
@@ -371,19 +361,13 @@ function docsFooter() {
 <div class="docs-footer">
   <p class="docs-footer__copyright">&copy; 2026 Jason Achkar Diab</p>
   <ul class="docs-footer__links">
-    <li><a href="/about/quality-methodology/">Evidence methodology</a></li>
-    <li><a href="/about/site-provenance/">Site provenance</a></li>
+    <li><a href="/#featured-research">Research</a></li>
+    <li><a href="/#validated-labs">Labs</a></li>
+    <li><a href="/scripts/">Scripts</a></li>
+    <li><a href="/#study-notes">Study notes</a></li>
+    <li><a href="/about/">About</a></li>
     <li><a href="https://github.com/jasonachkar/cybersecurity-writeups">GitHub</a></li>
   </ul>
-  <details class="docs-footer__detail">
-    <summary>Publication details</summary>
-    <ul>
-      <li><strong>Publication target:</strong> gh-pages</li>
-      <li><strong>Publication review:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></li>
-      <li><strong>Reviewed branch:</strong> <a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment">codex/validated-gh-pages-deployment</a></li>
-      <li><strong>Content review date:</strong> ${REVIEW_DATE}</li>
-    </ul>
-  </details>
 </div>
 <!-- docs-footer:end -->`;
 }
@@ -398,54 +382,57 @@ function homeBody() {
     ["Kubernetes isolation", "/cloud-security/kubernetes-multi-tenancy/", "Namespace, workload identity, network, admission, image and operational failure boundaries."],
     ["IaC policy engineering", "/devsecops/iac-security-and-policy-as-code/", "Unknown values, deleted controls, plan semantics, policy failure and rollout design."],
     ["Supply-chain evidence", "/devsecops/supply-chain-sbom-signing/", "Artifact bytes, SBOM, provenance, signer, builder, source and policy kept distinct."],
-    ["SecureObs architecture", "/devsecops/secureobs-multitenant-security-scanner/", "Owner-confirmed architecture separated from reproduced patterns and future controls."],
-    ["Incident case studies", "/threat-intel/cloud-breach-case-studies/", "Owner disclosures, chronology, inference limits, control lessons and residual uncertainty."]
+    ["SecureObs architecture", "/devsecops/secureobs-multitenant-security-scanner/", "The parts I actually built and confirmed myself, kept separate from patterns I'm still prototyping."],
+    ["Incident case studies", "/threat-intel/cloud-breach-case-studies/", "Public breach disclosures, timelines, what I could and couldn't verify, and what I took from each one."]
   ];
-  const cardHtml = cards.map(([title, href, copy]) => `<a class="docs-card" href="${href}"><h3 class="docs-card__title">${escapeHtml(title)}</h3><p class="docs-card__desc">${escapeHtml(copy)}</p><span class="docs-card__cta">Open investigation <span aria-hidden="true">&rarr;</span></span></a>`).join("");
+  const cardHtml = cards.map(([title, href, copy]) => `<a class="docs-card" href="${href}"><h3 class="docs-card__title">${escapeHtml(title)}</h3><p class="docs-card__desc">${escapeHtml(copy)}</p><span class="docs-card__cta">Read the write-up <span aria-hidden="true">&rarr;</span></span></a>`).join("");
+  const scriptCardHtml = SCRIPT_CATEGORIES.map(category => {
+    const scripts = SCRIPTS.filter(script => script.category === category.slug);
+    if (!scripts.length) return "";
+    return `<a class="docs-card" href="/scripts/${category.slug}/"><h3 class="docs-card__title">${escapeHtml(category.title)}</h3><p class="docs-card__desc">${scripts.length} script${scripts.length === 1 ? "" : "s"}: ${escapeHtml(scripts.map(s => s.name).join("; "))}</p><span class="docs-card__cta">Browse scripts <span aria-hidden="true">&rarr;</span></span></a>`;
+  }).join("");
   return `<section class="portfolio-hero">
-  <p class="portfolio-hero__kicker">Evidence-first security engineering</p>
-  <h1 id="security-engineering-decisions-you-can-audit">Security engineering decisions you can audit.</h1>
-  <p class="portfolio-hero__lede">Threat models, enforcement points, negative tests and residual risk across cloud identity, application security, delivery pipelines, Kubernetes, detection and software supply chains, without turning a local test into a production claim.</p>
-  <div class="portfolio-actions"><a class="portfolio-button portfolio-button--primary" href="#featured-engineering">Review engineering work</a><a class="portfolio-button" href="/docs/research-audit/content-inventory/">Inspect the evidence registry</a></div>
-  <p class="docs-provenance-line">Reviewed <time datetime="${REVIEW_TIMESTAMP}">${formatLongDate(REVIEW_DATE)}</time> · <a href="/about/site-provenance/">Site provenance</a></p>
+  <p class="portfolio-hero__kicker">Cybersecurity research by Jason Achkar Diab</p>
+  <h1 id="cybersecurity-research-labs-and-scripts">Cybersecurity research, labs, and scripts.</h1>
+  <p class="portfolio-hero__lede">This site contains my research notes, technical write-ups, labs, and scripts across cloud security, application security, DevSecOps, and threat intelligence. I document what I studied, what I built, what I tested, and what remains untested.</p>
+  <div class="portfolio-actions"><a class="portfolio-button portfolio-button--primary" href="#featured-research">Browse the research</a><a class="portfolio-button" href="#validated-labs">Explore the labs</a><a class="portfolio-button" href="/scripts/">View the scripts</a></div>
+  <p class="docs-provenance-line">Last updated <time datetime="${REVIEW_TIMESTAMP}">${formatLongDate(REVIEW_DATE)}</time> · <a href="/about/">About this site</a></p>
 </section>
-<section aria-labelledby="featured-engineering"><h2 id="featured-engineering">Featured engineering</h2><p>Each page leads with what was checked, what was executed, what remains untested, and when it must be reviewed again.</p><div class="docs-card-grid">${cardHtml}</div></section>
-<section aria-labelledby="validated-labs"><h2 id="validated-labs">Runnable labs</h2><p>Repository labs exercise bounded decisions; their status blocks distinguish local models and structural checks from native platform or cryptographic integration.</p><ul class="docs-link-list"><li><a href="/labs/secure-cicd/">Secure CI/CD gate and workflow fixtures</a></li><li><a href="/labs/iam-oidc/">IAM and workload-identity decision cases</a></li><li><a href="/labs/oauth-oidc/">OAuth/OIDC token-boundary cases</a></li><li><a href="/labs/ai-agent-security/">AI external tool-broker cases</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL row-level security</a></li><li><a href="/labs/kubernetes-security/">Kubernetes policy and image-decision fixtures</a></li><li><a href="/labs/supply-chain/">Offline provenance and SBOM policy</a></li><li><a href="/labs/iac-policy/">Terraform plan and Rego fixtures</a></li><li><a href="/labs/azure-landing-zone/">Azure landing-zone Bicep boundary</a></li></ul></section>
-<section aria-labelledby="evidence-methodology"><h2 id="evidence-methodology">Evidence and methodology</h2><p>How claims are classified, checked, and rechecked across the site.</p><ul class="docs-link-list"><li><a href="/docs/research-audit/content-inventory/">Evidence registry</a></li><li><a href="/about/quality-methodology/">Quality methodology</a></li><li><a href="/about/site-provenance/">Site provenance</a></li></ul></section>
-<section aria-labelledby="study-notes"><h2 id="study-notes">Study paths</h2><p>Certification collections are visibly separated from implementation evidence and tied to their official owner material.</p><ul class="docs-link-list"><li><a href="/docs/certification-notes/az-900/">Microsoft AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">Microsoft SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">CompTIA Security+ SY0-701</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity Certificate</a></li></ul></section>`;
+<section aria-labelledby="featured-research"><h2 id="featured-research">Featured research</h2><p>Each write-up says what I tested myself, what's still just a design, and what I'd want to dig into further.</p><div class="docs-card-grid">${cardHtml}</div></section>
+<section aria-labelledby="validated-labs"><h2 id="validated-labs">Labs</h2><p>Small, dependency-free labs I wrote to test a specific decision in isolation. They run locally against fakes and fixtures, so they prove the logic holds — not that I've plugged them into a real cloud account or crypto backend yet.</p><ul class="docs-link-list"><li><a href="/labs/secure-cicd/">Secure CI/CD gate and workflow fixtures</a></li><li><a href="/labs/iam-oidc/">IAM and workload-identity decision cases</a></li><li><a href="/labs/oauth-oidc/">OAuth/OIDC token-boundary cases</a></li><li><a href="/labs/ai-agent-security/">AI external tool-broker cases</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL row-level security</a></li><li><a href="/labs/kubernetes-security/">Kubernetes policy and image-decision fixtures</a></li><li><a href="/labs/supply-chain/">Offline provenance and SBOM policy</a></li><li><a href="/labs/iac-policy/">Terraform plan and Rego fixtures</a></li><li><a href="/labs/azure-landing-zone/">Azure landing-zone Bicep boundary</a></li></ul></section>
+<section aria-labelledby="featured-scripts"><h2 id="featured-scripts">Scripts</h2><p>Small command-line tools and packages I've written while working on the research above — what they do, what they need, and how I tested them.</p><div class="docs-card-grid">${scriptCardHtml}</div></section>
+<section aria-labelledby="study-notes"><h2 id="study-notes">Study notes</h2><p>Certification notes I keep separate from the research above, checked against the official course material.</p><ul class="docs-link-list"><li><a href="/docs/certification-notes/az-900/">Microsoft AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">Microsoft SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">CompTIA Security+ SY0-701</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity Certificate</a></li></ul></section>`;
 }
 
-function provenanceBody() {
-  return `<h1 id="site-provenance">Site provenance</h1>
-<p>This static site is published from the <code>gh-pages</code> branch. Content in this review was examined through <a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a> on branch <code>codex/validated-gh-pages-deployment</code>. Runtime validation evidence is available through the associated GitHub Actions workflow runs and uploaded artifacts. Static files do not claim to identify their own final containing commit. GitHub Pages deployment status is tracked separately through GitHub deployment records.</p>
-<table><thead><tr><th scope="col">Field</th><th scope="col">Value</th></tr></thead><tbody>
-<tr><th scope="row">Canonical site</th><td><a href="${SITE_ORIGIN}">${SITE_ORIGIN}</a></td></tr>
-<tr><th scope="row">Repository</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups">jasonachkar/cybersecurity-writeups</a></td></tr>
-<tr><th scope="row">Artifact</th><td>Static GitHub Pages site</td></tr>
-<tr><th scope="row">Publication target</th><td><code>gh-pages</code></td></tr>
-<tr><th scope="row">Publication review</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups/pull/5">PR #5</a></td></tr>
-<tr><th scope="row">Reviewed branch</th><td><a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/codex/validated-gh-pages-deployment"><code>codex/validated-gh-pages-deployment</code></a></td></tr>
-<tr><th scope="row">Content review date</th><td><time datetime="${REVIEW_TIMESTAMP}">July 24, 2026</time></td></tr>
-</tbody></table>
-<h2 id="integrity-boundary">Integrity boundary</h2>
-<p><code>CNAME</code> and <code>.nojekyll</code> remain part of the publication artifact. Generated runtime QA JSON reports are not committed into the deployable tree; Actions artifacts identify the checked-out revision with fields such as <code>sourceCommit</code>, <code>sourceTree</code>, workflow run identifiers, and tool versions. The machine-readable review context is <a href="/site-meta.json"><code>site-meta.json</code></a>.</p>
-<h2 id="what-build-evidence-means">What this evidence means</h2>
-<p>Repository validation establishes the checked properties recorded by <code>npm run verify:all</code> and the quality workflow. It does not establish cloud deployment, customer use, production availability, or complete security. Each maintained page states its narrower evidence and residual limitations.</p>`;
+function aboutBody() {
+  return `<h1 id="about-this-site">About this site</h1>
+<p>I'm Jason Achkar Diab. This is where I document the cybersecurity research, labs, and scripts I work on outside my day-to-day job: cloud security, application security, DevSecOps, and threat intelligence. I use it to study security architecture, test specific controls in isolation, record what I actually found versus what's still a design, and keep reusable tooling in one place.</p>
+<h2 id="how-its-organized">How it's organized</h2>
+<dl>
+<dt>Research</dt>
+<dd>Write-ups on a specific security decision or architecture question. Each one says what I tested myself versus what's still conceptual.</dd>
+<dt>Labs</dt>
+<dd>Small, dependency-free labs that exercise one decision in isolation, with fixtures for both cases that should pass and cases that should fail.</dd>
+<dt>Scripts</dt>
+<dd>Standalone command-line tools and packages I've written alongside the research, documented separately from the labs.</dd>
+<dt>Study notes</dt>
+<dd>My own notes from working through a certification's official material — not a claim that I've implemented everything they describe.</dd>
+</dl>
+<h2 id="how-i-keep-it-current">How I keep it current</h2>
+<p>Before I publish anything, I run a local check (<code>npm run verify:all</code>) that covers the static site, the JavaScript labs, Go modules, Terraform, OPA, Bicep, PostgreSQL RLS, shell/PowerShell scripts, accessibility, and a secrets scan, and GitHub Actions runs the same checks on every change. Passing those checks means the site builds cleanly and the labs run the way I documented — it isn't a claim that everything here has been run against a live deployed environment. I try to revisit most write-ups every 90 days, sooner for fast-moving agent/MCP work.</p>
+<h2 id="source">Source</h2>
+<p>The source for every page here, including this one, is public: <a href="https://github.com/jasonachkar/cybersecurity-writeups">github.com/jasonachkar/cybersecurity-writeups</a>.</p>`;
 }
 
 function notFoundBody() {
   return `<h1 id="page-not-found">Page not found</h1>
-<p>The address may have changed, the page may have been archived, or the URL may contain a typo.</p>
+<p>The address may have changed, the page may have moved, or the URL may contain a typo.</p>
 <ul class="portfolio-actions-list">
   <li><a class="portfolio-button portfolio-button--primary" href="/">Go to the homepage</a></li>
-  <li><a class="portfolio-button" href="/#validated-labs">Browse engineering investigations and labs</a></li>
-  <li><a class="portfolio-button" href="/docs/research-audit/content-inventory/">Inspect the evidence registry</a></li>
+  <li><a class="portfolio-button" href="/#featured-research">Browse the research</a></li>
+  <li><a class="portfolio-button" href="/scripts/">Browse the scripts</a></li>
 </ul>
 <p>Use the site search control in the header to look for a topic by keyword.</p>`;
-}
-
-function qualityBody() {
-  return `<h1 id="evidence-and-quality-methodology">Evidence and quality methodology</h1><p>The portfolio treats security guidance as an engineering artifact. Status is visible on the page, represented in <a href="/content-status.json"><code>content-status.json</code></a>, and used to drive navigation, search and sitemap inclusion.</p><h2 id="evidence-statuses">Evidence statuses</h2><dl><dt>Verified engineering investigation</dt><dd>Material current-state claims were checked against named primary sources. Examples can still be only partly tested.</dd><dt>Partially verified engineering investigation</dt><dd>Primary-source review covers a bounded area while one or more platform or implementation boundaries remain untested.</dd><dt>Validated lab</dt><dd>The documented positive and negative behavior executed in the stated environment.</dd><dt>Partially tested lab</dt><dd>Only structural, offline, schema or pedagogical-model behavior executed.</dd><dt>Conceptual reference</dt><dd>Architecture or method without end-to-end runtime validation.</dd><dt>Study notes</dt><dd>Owner-aligned learning material, never implementation evidence.</dd><dt>Site utility</dt><dd>Navigational or error pages such as the 404 response; not security guidance and excluded from search and sitemap.</dd><dt>Archived</dt><dd>URL retained for continuity but excluded from normal discovery and unsafe as current guidance.</dd></dl><h2 id="source-hierarchy">Source hierarchy</h2><ol><li>Standards bodies and final specifications.</li><li>Platform-owner documentation and source repositories.</li><li>Incident-owner disclosures, court or regulator records.</li><li>Secondary analysis only when primary material cannot answer the question, labelled accordingly.</li></ol><h2 id="validation-approach">Validation approach</h2><p>The authoritative local command is <code>npm run verify:all</code>. It covers static site checks, JavaScript labs, Go modules, Terraform, OPA, Bicep, policy schemas, PostgreSQL RLS, ShellCheck, PowerShell parse, accessibility, external links, and secret scanning. CI splits the same suites across jobs and uploads provenance-stamped reports as Actions artifacts. Missing external tools fail closed rather than being silently skipped.</p><h2 id="review-intervals">Review intervals</h2><p>Most engineering investigations use a 90-day interval. Rapidly evolving agent/MCP work and publication metadata use 30 days. Certification notes are rechecked against the owner material; a displayed review date is not proof of correctness. Site-utility pages are excluded from normal content-review cadence pressure.</p><h2 id="limitations">Limitations</h2><p>Automated accessibility and structural checks find important classes of defects but do not replace keyboard, assistive-technology, threat-model, platform or human editorial review. A passing finite suite proves only its declared cases.</p>`;
 }
 
 function securityPlusBody() {
@@ -459,14 +446,45 @@ function slug(value) {
 function archiveBody(entry) {
   const title = entry.originalTitle || "Previous content";
   const link = entry.replacement
-    ? `<p><a class="portfolio-button portfolio-button--primary" href="${entry.replacement}">Open the maintained replacement</a></p>`
-    : `<p><a class="portfolio-button" href="/docs/research-audit/content-inventory/">Review maintained evidence</a></p>`;
-  return `<h1 id="archived-reference-${slug(title)}">Archived reference: ${escapeHtml(title)}</h1><section class="archive-notice" aria-label="Archive notice"><strong>This page is not current security guidance.</strong><p>The URL is preserved for continuity, but the previous material was removed from navigation, search and sitemap because its claims were duplicated, superseded or not reviewed to the portfolio's current evidence standard.</p>${link}</section><h2 id="archive-behavior">Archive behavior</h2><ul><li>Search engines receive an explicit <code>noindex</code> directive.</li><li>The page cannot appear in portfolio search or normal navigation.</li><li>No implementation, test result or technical currency is implied.</li></ul>`;
+    ? `<p><a class="portfolio-button portfolio-button--primary" href="${entry.replacement}">Go to where this moved</a></p>`
+    : `<p><a class="portfolio-button" href="/">Go to the homepage</a></p>`;
+  return `<h1 id="archived-reference-${slug(title)}">Old page: ${escapeHtml(title)}</h1><section class="archive-notice" aria-label="Archive notice"><strong>This is an old page, kept online so the link doesn't break.</strong><p>I replaced this content a while back &mdash; it was outdated or overlapped with something I've since written up properly. The URL stays live so nothing pointing here 404s, but treat it as retired.</p>${link}</section><h2 id="archive-behavior">What that means</h2><ul><li>Search engines are told not to index it (<code>noindex</code>).</li><li>It won't turn up in site search or navigation.</li><li>Nothing on it should be read as current.</li></ul>`;
 }
 
-function registryBody(records) {
-  const rows = [...entries.entries()].filter(([, entry]) => ["verified", "partially-verified", "validated-lab", "partially-tested"].includes(entry.status));
-  return `<h1 id="evidence-registry">Evidence Registry</h1><p>This registry is generated from explicit public-URL metadata. It does not infer topics from keywords or interpret arbitrary numbers as versions. Read each linked page for the full trust assumptions, enforcement points, failure behavior and residual risk.</p><div class="md-typeset__scrollwrap"><div class="md-typeset__table"><table class="evidence-registry"><thead><tr><th scope="col">Investigation</th><th scope="col">Public URL</th><th scope="col">Evidence status</th><th scope="col">Last reviewed</th><th scope="col">Primary sources</th><th scope="col">Runnable evidence</th><th scope="col">What the evidence proves</th><th scope="col">What it does not prove</th><th scope="col">Next review date</th></tr></thead><tbody>${rows.map(([file, entry]) => { const record = records.get(file); const url = pageUrl(file); return `<tr><th scope="row"><a href="${url}">${escapeHtml(record.title)}</a></th><td><code>${url}</code></td><td>${escapeHtml(entry.label || STATUS_LABELS[entry.status])}</td><td>${REVIEW_DATE}</td><td>${entry.sources.length ? listHtmlItems(entry.sources) : "Page reference section"}</td><td>${escapeHtml(entry.runnableEvidence)}</td><td>${escapeHtml(entry.proves)}</td><td>${escapeHtml(entry.notProves)}</td><td>${addDays(REVIEW_DATE, entry.reviewIntervalDays)}</td></tr>`; }).join("")}</tbody></table></div></div><h2 id="interpretation">Interpretation</h2><p>A passing finite test establishes only the declared cases. Schema validation is not a native admission test, an offline verifier adapter is not cryptographic verification, and an architecture investigation is not a production deployment.</p>`;
+function scriptsIndexBody() {
+  const cards = SCRIPT_CATEGORIES.map(category => {
+    const scripts = SCRIPTS.filter(script => script.category === category.slug);
+    const items = scripts.map(script => `<li><a href="/scripts/${script.category}/${script.slug}/">${escapeHtml(script.name)}</a> <span class="docs-script-meta">${escapeHtml(script.language)} &middot; ${script.modifiesState ? "Modifies state" : "Read-only"}</span></li>`).join("");
+    return `<section aria-labelledby="scripts-${category.slug}"><h2 id="scripts-${category.slug}">${escapeHtml(category.title)}</h2><p><a href="/scripts/${category.slug}/">Browse the ${escapeHtml(category.title)} category</a></p><ul class="docs-link-list">${items}</ul></section>`;
+  }).join("");
+  return `<h1 id="security-scripts-and-utilities">Security scripts and utilities</h1><p>This section contains the security scripts and small command-line tools I have written while researching cloud security, application security, DevSecOps, and threat intelligence. Each page explains what the script does, what access it requires, how I tested it, and where its limitations are.</p>${cards}`;
+}
+
+function scriptsCategoryBody(category) {
+  const scripts = SCRIPTS.filter(script => script.category === category.slug);
+  const cards = scripts.map(script => `<a class="docs-card" href="/scripts/${script.category}/${script.slug}/"><h3 class="docs-card__title">${escapeHtml(script.name)}</h3><p class="docs-card__desc">${escapeHtml(script.purpose.split(". ")[0])}.</p><span class="docs-card__cta">${escapeHtml(script.language)} &middot; ${script.modifiesState ? "Modifies state" : "Read-only"}</span></a>`).join("");
+  return `<h1 id="${slug(category.title)}-scripts">${escapeHtml(category.title)} scripts</h1><p>The ${escapeHtml(category.title.toLowerCase())} scripts I've written and catalogued here.</p><h2 id="scripts-in-this-category">Scripts</h2><div class="docs-card-grid">${cards}</div>`;
+}
+
+function scriptBody(script) {
+  const related = [];
+  if (script.relatedResearch) related.push(`<li>Related research: <a href="${script.relatedResearch.href}">${escapeHtml(script.relatedResearch.title)}</a></li>`);
+  if (script.relatedLab) related.push(`<li>Related lab: <a href="${script.relatedLab.href}">${escapeHtml(script.relatedLab.title)}</a></li>`);
+  const relatedHtml = related.length ? `<h2 id="related">Related research</h2><ul>${related.join("")}</ul>` : "";
+  return `<h1 id="${slug(script.name)}">${escapeHtml(script.name)}</h1>
+<p class="docs-script-badges"><span class="docs-badge">${escapeHtml(script.language)}</span><span class="docs-badge">${script.modifiesState ? "Modifies state" : "Read-only"}</span><span class="docs-badge">${escapeHtml(script.testStatus)}</span></p>
+<h2 id="what-it-does">What it does</h2><p>${escapeHtml(script.purpose)}</p>
+<h2 id="why-i-wrote-it">Why I wrote it</h2><p>${escapeHtml(script.why)}</p>
+<h2 id="how-it-works">How it works</h2><p>${escapeHtml(script.how)}</p>
+<h2 id="requirements">Requirements</h2><ul>${script.requirements.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+<h2 id="permissions-and-safety">Permissions and safety</h2><p>${escapeHtml(script.permissions)}</p>
+<h2 id="usage">Usage</h2><pre><code>${escapeHtml(script.usage)}</code></pre>
+<h2 id="inputs">Inputs</h2><p>${escapeHtml(script.inputs)}</p>
+<h2 id="outputs">Outputs</h2><p>${escapeHtml(script.outputs)}</p>
+<h2 id="what-i-tested">What I tested</h2><p>${escapeHtml(script.tested)}</p>
+<h2 id="limitations">Limitations</h2><ul>${script.limitations.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+${relatedHtml}
+<h2 id="source-code">Source code</h2><p><a href="https://github.com/jasonachkar/cybersecurity-writeups/blob/gh-pages/${script.path}"><code>${escapeHtml(script.path)}</code></a></p>`;
 }
 
 function normalizePage(file, html, entry) {
@@ -607,13 +625,6 @@ function normalizePage(file, html, entry) {
   return html;
 }
 
-const qualityPath = "about/quality-methodology/index.html";
-if (!fs.existsSync(path.join(root, qualityPath))) {
-  const source = path.join(root, "about/site-provenance/index.html");
-  fs.mkdirSync(path.dirname(path.join(root, qualityPath)), {recursive: true});
-  fs.copyFileSync(source, path.join(root, qualityPath));
-}
-
 const files = listHtml();
 const classifiedPaths = new Set([...entries.keys(), ...EXPLICIT_ARCHIVED_PATHS]);
 for (const file of files) if (!classifiedPaths.has(file)) throw new Error(`Unclassified HTML page: ${file}`);
@@ -638,10 +649,11 @@ const records = new Map(files.map(file => {
 const GENERATOR_OWNED_PATHS = new Set([
   "index.html",
   "404.html",
-  "about/site-provenance/index.html",
-  qualityPath,
-  "docs/research-audit/content-inventory/index.html",
-  "docs/certification-notes/security-plus/index.html"
+  "about/index.html",
+  "docs/certification-notes/security-plus/index.html",
+  "scripts/index.html",
+  ...SCRIPT_CATEGORIES.map(category => `scripts/${category.slug}/index.html`),
+  ...SCRIPTS.map(script => `scripts/${script.category}/${script.slug}/index.html`)
 ]);
 
 function articleProse(html) {
@@ -654,13 +666,17 @@ for (const record of records.values()) {
   const isGeneratorOwned = GENERATOR_OWNED_PATHS.has(record.file) || isArchived;
   const beforeProse = isGeneratorOwned ? null : articleProse(originalHtml);
 
+  const scriptEntry = SCRIPTS.find(script => record.file === `scripts/${script.category}/${script.slug}/index.html`);
+  const categoryEntry = SCRIPT_CATEGORIES.find(category => record.file === `scripts/${category.slug}/index.html`);
+
   let html = originalHtml;
   if (record.file === "index.html") html = replaceArticle(html, homeBody());
   else if (record.file === "404.html") html = replaceArticle(html, notFoundBody());
-  else if (record.file === "about/site-provenance/index.html") html = replaceArticle(html, provenanceBody());
-  else if (record.file === qualityPath) html = replaceArticle(html, qualityBody());
-  else if (record.file === "docs/research-audit/content-inventory/index.html") html = replaceArticle(html, registryBody(records));
+  else if (record.file === "about/index.html") html = replaceArticle(html, aboutBody());
   else if (record.file === "docs/certification-notes/security-plus/index.html") html = replaceArticle(html, securityPlusBody());
+  else if (record.file === "scripts/index.html") html = replaceArticle(html, scriptsIndexBody());
+  else if (categoryEntry) html = replaceArticle(html, scriptsCategoryBody(categoryEntry));
+  else if (scriptEntry) html = replaceArticle(html, scriptBody(scriptEntry));
   else if (isArchived) html = replaceArticle(html, archiveBody(record.entry));
 
   html = normalizePage(record.file, html, record.entry);
@@ -746,15 +762,9 @@ const siteMeta = {
   site: SITE_ORIGIN,
   repository: "jasonachkar/cybersecurity-writeups",
   publicationTarget: "gh-pages",
-  publicationReview: "PR #5",
-  reviewBranch: "codex/validated-gh-pages-deployment",
-  pullRequest: 5,
   artifactType: "static GitHub Pages site",
-  contentReviewTimestamp: REVIEW_TIMESTAMP,
-  contentReviewDate: "July 24, 2026",
-  evidenceModel: "page-level status and validation disclosures",
-  runtimeEvidence: "GitHub Actions artifacts for the checked-out revision",
-  note: "Static files do not claim to identify their own final containing commit."
+  lastUpdated: REVIEW_TIMESTAMP,
+  note: "Static files do not claim to identify their own final containing commit; see the repository history for that."
 };
 write("site-meta.json", `${JSON.stringify(siteMeta, null, 2)}\n`);
 
