@@ -218,7 +218,14 @@ function breadcrumbs(currentUrl) {
   const record = NAV_INDEX.get(currentUrl);
   if (!record) return "";
   const items = [`<li><a href="/">Home</a></li>`];
-  for (const ancestor of record.trail) items.push(`<li>${escapeHtml(ancestor.title)}</li>`);
+  // Pure navigation groups ("Engineering", "Application Security", and most other
+  // groups) have no page of their own to link to; a plain-text, non-clickable
+  // crumb for them reads as broken rather than as hierarchy, so they are left out
+  // entirely. Ancestors that are also a real page (AZ-900, SC-500) keep a real link.
+  for (const ancestor of record.trail) {
+    if (!ancestor.href) continue;
+    items.push(`<li><a href="${ancestor.href}">${escapeHtml(ancestor.title)}</a></li>`);
+  }
   items.push(`<li aria-current="page">${escapeHtml(record.title)}</li>`);
   return `<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol>${items.join("")}</ol></nav><!-- docs-breadcrumbs:end -->`;
 }
