@@ -47,6 +47,14 @@
   }
 }
 
+/* Material's own hover background for this pill is a near-transparent light-gray
+   tint, meant for a colored/dark header. Against this site's white light-mode
+   header it reads as barely-there, so hovering makes the whole search box look
+   like it disappeared. Use a solid, theme-adapted color instead. */
+.md-search__form:hover {
+  background-color: var(--docs-surface);
+}
+
 /* Material renders each result's title as a real .md-typeset <h1>, so without
    scoping here it inherits this site's full article heading sizing above and a
    search dropdown ends up rendering every match like a full article page. The
