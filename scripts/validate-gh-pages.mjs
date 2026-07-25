@@ -103,7 +103,7 @@ for (const file of htmlFiles) {
     if (file === "404.html") {
       if (!/<h1\b[^>]*>\s*Page not found\s*<\/h1>/i.test(html)) fail(file, "404 H1 must be exactly 'Page not found'");
       if (!/Go to the homepage/i.test(html)) fail(file, "404 page missing homepage action");
-      if (!/evidence registry/i.test(html)) fail(file, "404 page missing evidence registry action");
+      if (!/Browse the scripts/i.test(html)) fail(file, "404 page missing scripts action");
     }
   }
   if ((html.match(/<!-- docs-left-nav:start -->/g) || []).length !== 1) fail(file, "missing or duplicate left navigation");
@@ -269,8 +269,8 @@ for (const file of allFiles.filter(file => file.endsWith(".json"))) {
 
 try {
   const meta = JSON.parse(fs.readFileSync(path.join(root, "site-meta.json"), "utf8"));
-  if (meta.site !== SITE_ORIGIN || meta.publicationTarget !== "gh-pages" || meta.reviewBranch !== "codex/validated-gh-pages-deployment" || meta.pullRequest !== 5) errors.push("site-meta.json: incorrect deployment review provenance");
-  if ("sourceCommit" in meta || "sourceBranch" in meta) errors.push("site-meta.json: misleading self-referential source field remains");
+  if (meta.site !== SITE_ORIGIN || meta.publicationTarget !== "gh-pages") errors.push("site-meta.json: incorrect site metadata");
+  if ("sourceCommit" in meta || "sourceBranch" in meta || "pullRequest" in meta || "reviewBranch" in meta) errors.push("site-meta.json: misleading self-referential source field remains");
 } catch (error) { errors.push(`site-meta.json: ${error.message}`); }
 if (fs.readFileSync(path.join(root, "CNAME"), "utf8").trim() !== "docs.jasonachkardiab.com") errors.push("CNAME: canonical domain changed");
 if (!fs.existsSync(path.join(root, ".nojekyll"))) errors.push(".nojekyll: missing");
