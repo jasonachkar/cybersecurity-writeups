@@ -18,7 +18,10 @@ export const SCRIPTS = [
     category: "cloud-security",
     name: "Kubernetes RBAC privilege-escalation auditor",
     language: "Go",
-    path: "cloud-security/scripts/k8s-rbac/auditor.go",
+    sourceFiles: [
+      {path: "cloud-security/scripts/k8s-rbac/auditor.go", label: "Implementation", language: "go", primary: true},
+      {path: "cloud-security/scripts/k8s-rbac/auditor_test.go", label: "Tests", language: "go", primary: false}
+    ],
     relatedResearch: {title: "Kubernetes isolation", href: "/cloud-security/kubernetes-multi-tenancy/"},
     relatedLab: {title: "Kubernetes security lab", href: "/labs/kubernetes-security/"},
     modifiesState: false,
@@ -43,7 +46,10 @@ export const SCRIPTS = [
     category: "application-security",
     name: "OAuth PKCE (S256) verifier and generator",
     language: "Go",
-    path: "appsec/scripts/oauth-pkce/pkce.go",
+    sourceFiles: [
+      {path: "appsec/scripts/oauth-pkce/pkce.go", label: "Implementation", language: "go", primary: true},
+      {path: "appsec/scripts/oauth-pkce/pkce_test.go", label: "Tests", language: "go", primary: false}
+    ],
     relatedResearch: {title: "OAuth 2.0 and OIDC", href: "/appsec/oauth2-oidc-deep-dive/"},
     relatedLab: {title: "OAuth/OIDC lab", href: "/labs/oauth-oidc/"},
     modifiesState: false,
@@ -67,7 +73,10 @@ export const SCRIPTS = [
     category: "threat-intelligence",
     name: "CloudTrail suspicious-activity analyzer",
     language: "Go",
-    path: "threat-intel/scripts/cloudtrail/analyze.go",
+    sourceFiles: [
+      {path: "threat-intel/scripts/cloudtrail/analyze.go", label: "Implementation", language: "go", primary: true},
+      {path: "threat-intel/scripts/cloudtrail/analyze_test.go", label: "Tests", language: "go", primary: false}
+    ],
     relatedResearch: {title: "Incident case studies", href: "/threat-intel/cloud-breach-case-studies/"},
     relatedLab: null,
     modifiesState: false,
@@ -92,7 +101,9 @@ export const SCRIPTS = [
     category: "devsecops",
     name: "Kyverno policy schema validator",
     language: "Python",
-    path: "scripts/validate-kyverno-policy.py",
+    sourceFiles: [
+      {path: "scripts/validate-kyverno-policy.py", label: "Implementation", language: "python", primary: true}
+    ],
     relatedResearch: {title: "Kubernetes isolation", href: "/cloud-security/kubernetes-multi-tenancy/"},
     relatedLab: {title: "Kubernetes security lab", href: "/labs/kubernetes-security/"},
     modifiesState: false,
@@ -116,7 +127,9 @@ export const SCRIPTS = [
     category: "devsecops",
     name: "Tetragon policy schema validator",
     language: "Python",
-    path: "scripts/validate-tetragon-policy.py",
+    sourceFiles: [
+      {path: "scripts/validate-tetragon-policy.py", label: "Implementation", language: "python", primary: true}
+    ],
     relatedResearch: {title: "Runtime protection (WAF/RASP/eBPF)", href: "/appsec/runtime-protection-rasp-waf/"},
     relatedLab: null,
     modifiesState: false,

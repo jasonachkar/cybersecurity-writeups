@@ -78,6 +78,19 @@
     ],
     "reviewIntervalDays": 90
   },
+  "/appsec/": {
+    "title": "Application Security",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on application security is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
   "/appsec/oauth2-oidc-deep-dive/": {
     "title": "OAuth 2.0 and OpenID Connect Security Engineering",
     "status": "partially-verified",
@@ -157,6 +170,19 @@
     ],
     "reviewIntervalDays": 90
   },
+  "/cloud-security/": {
+    "title": "Cloud Security",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on cloud security is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
   "/cloud-security/kubernetes-multi-tenancy/": {
     "title": "Kubernetes Multi-tenancy: Boundaries, Isolation, and Operations",
     "status": "partially-verified",
@@ -206,6 +232,19 @@
     ],
     "limitations": [
       "No cloud deployment is authorized; provider-side behavior is not exercised."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/devsecops/": {
+    "title": "DevSecOps",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on devsecops is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
     ],
     "reviewIntervalDays": 90
   },
@@ -1357,6 +1396,19 @@
     ],
     "reviewIntervalDays": 90
   },
+  "/labs/": {
+    "title": "Labs",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on labs is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
   "/labs/kubernetes-security/": {
     "title": "Kubernetes admission, network, and image-policy lab",
     "status": "partially-tested",
@@ -1425,6 +1477,19 @@
     ],
     "reviewIntervalDays": 90
   },
+  "/research/": {
+    "title": "Research",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on research is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
   "/scripts/application-security/": {
     "title": "Application Security scripts",
     "status": "tool",
@@ -1439,18 +1504,17 @@
     "reviewIntervalDays": 90
   },
   "/scripts/application-security/oauth-pkce-verifier/": {
-    "title": "OAuth PKCE (S256) verifier and generator",
-    "status": "tool",
-    "indexable": true,
+    "title": "Old page: OAuth PKCE (S256) verifier and generator",
+    "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-25",
     "evidence": [
-      "pkce_test.go exercises the correct round trip plus the negative cases: a wrong verifier, a plain-method downgrade attempt, wrong verifier length, invalid characters, and a malformed stored challenge."
+      "The public URL is retained to avoid a broken historical link."
     ],
     "limitations": [
-      "This checks the PKCE mechanics only — it says nothing about redirect-URI matching, state/nonce handling, or token validation, which live in the OAuth/OIDC lab instead.",
-      "No CLI entry point; it is meant to be imported or exercised via its tests."
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
     ],
-    "reviewIntervalDays": 90
+    "reviewIntervalDays": 365
   },
   "/scripts/cloud-security/": {
     "title": "Cloud Security scripts",
@@ -1466,19 +1530,17 @@
     "reviewIntervalDays": 90
   },
   "/scripts/cloud-security/k8s-rbac-auditor/": {
-    "title": "Kubernetes RBAC privilege-escalation auditor",
-    "status": "tool",
-    "indexable": true,
+    "title": "Old page: Kubernetes RBAC privilege-escalation auditor",
+    "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-25",
     "evidence": [
-      "The 48 test cases in auditor_test.go cover both roles that should be flagged and roles that should come back clean, across ordinary resources, the special verbs, and unresolved/unknown bindings."
+      "The public URL is retained to avoid a broken historical link."
     ],
     "limitations": [
-      "This is a static heuristic over role/binding objects you hand it, not a full effective-permissions engine.",
-      "It does not evaluate SubjectAccessReview, SelfSubjectRulesReview, aggregated ClusterRoles, admission policy, or live API discovery.",
-      "It has no CLI or YAML-loading entry point yet — wiring in a real `kubectl get -o yaml` export is on my list, not something this does today."
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
     ],
-    "reviewIntervalDays": 90
+    "reviewIntervalDays": 365
   },
   "/scripts/devsecops/": {
     "title": "DevSecOps scripts",
@@ -1494,35 +1556,33 @@
     "reviewIntervalDays": 90
   },
   "/scripts/devsecops/kyverno-policy-schema-check/": {
-    "title": "Kyverno policy schema validator",
-    "status": "tool",
-    "indexable": true,
+    "title": "Old page: Kyverno policy schema validator",
+    "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-25",
     "evidence": [
-      "Runs in CI against the fixtures in labs/kubernetes-security on every change."
+      "The public URL is retained to avoid a broken historical link."
     ],
     "limitations": [
-      "This is schema validation only — it says nothing about signature verification, registry access, transparency-log inclusion, or how the policy behaves under live admission.",
-      "It validates structure against one pinned CRD version; a different Kyverno version may accept or reject different fields."
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
     ],
-    "reviewIntervalDays": 90
+    "reviewIntervalDays": 365
   },
   "/scripts/devsecops/tetragon-policy-schema-check/": {
-    "title": "Tetragon policy schema validator",
-    "status": "tool",
-    "indexable": true,
+    "title": "Old page: Tetragon policy schema validator",
+    "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-25",
     "evidence": [
-      "Runs in CI against the published policy in appsec/runtime-protection-rasp-waf on every change."
+      "The public URL is retained to avoid a broken historical link."
     ],
     "limitations": [
-      "Schema validation only — not a live admission or enforcement test, and it says nothing about whether the eBPF program actually behaves as the policy describes at runtime.",
-      "Tied to one pinned CRD version."
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
     ],
-    "reviewIntervalDays": 90
+    "reviewIntervalDays": 365
   },
   "/scripts/": {
-    "title": "Security scripts and utilities",
+    "title": "Security scripts, packages, and small utilities",
     "status": "reference",
     "indexable": true,
     "lastReviewed": "2026-07-25",
@@ -1535,19 +1595,17 @@
     "reviewIntervalDays": 90
   },
   "/scripts/threat-intelligence/cloudtrail-analyzer/": {
-    "title": "CloudTrail suspicious-activity analyzer",
-    "status": "tool",
-    "indexable": true,
+    "title": "Old page: CloudTrail suspicious-activity analyzer",
+    "status": "archived",
+    "indexable": false,
     "lastReviewed": "2026-07-25",
     "evidence": [
-      "analyze_test.go covers each of the four analyses with both events that should fire a finding and quiet events that should not."
+      "The public URL is retained to avoid a broken historical link."
     ],
     "limitations": [
-      "This flags patterns worth checking, not confirmed compromise — every finding needs a human to correlate it against what was actually authorized.",
-      "It only understands the CloudTrail event shape it was built against; it has not been run against a live account's trail.",
-      "No CLI entry point yet; exercised via Analyze()/ParseEvents() and its test suite."
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
     ],
-    "reviewIntervalDays": 90
+    "reviewIntervalDays": 365
   },
   "/scripts/threat-intelligence/": {
     "title": "Threat Intelligence scripts",
@@ -1559,6 +1617,19 @@
     ],
     "limitations": [
       "Lists only the scripts catalogued under this category."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/study-notes/": {
+    "title": "Study notes",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on study notes is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
     ],
     "reviewIntervalDays": 90
   },
@@ -1585,6 +1656,19 @@
     ],
     "limitations": [
       "Public reporting cannot establish undisclosed facts or complete root cause."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/threat-intel/": {
+    "title": "Threat Intelligence",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on threat intelligence is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
     ],
     "reviewIntervalDays": 90
   }

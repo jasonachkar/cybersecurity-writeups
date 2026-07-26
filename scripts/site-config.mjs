@@ -58,6 +58,28 @@ add("404.html", {
   tags: ["site utility"]
 });
 
+function addOverview(file, id) {
+  add(file, {
+    status: "reference",
+    reviewIntervalDays: 90,
+    evidence: [`Links come straight from NAV_TREE; nothing on ${id} is inferred separately.`],
+    limitations: ["A short overview and link list; it makes no claim about the pages it links to."],
+    sources: [],
+    runnableEvidence: "None",
+    proves: `Which ${id} pages exist and where they live.`,
+    notProves: "Nothing about an individual linked page; see its own page.",
+    tags: ["overview", id]
+  });
+}
+
+addOverview("research/index.html", "research");
+addOverview("cloud-security/index.html", "cloud security");
+addOverview("appsec/index.html", "application security");
+addOverview("devsecops/index.html", "devsecops");
+addOverview("threat-intel/index.html", "threat intelligence");
+addOverview("labs/index.html", "labs");
+addOverview("study-notes/index.html", "study notes");
+
 add("about/index.html", {
   status: "reference",
   reviewIntervalDays: 180,
@@ -371,19 +393,11 @@ for (const category of SCRIPT_CATEGORIES) {
   });
 }
 
-for (const script of SCRIPTS) {
-  add(`scripts/${script.category}/${script.slug}/index.html`, {
-    status: "tool",
-    reviewIntervalDays: 90,
-    evidence: [script.tested],
-    limitations: script.limitations,
-    sources: [script.path],
-    runnableEvidence: script.usage,
-    proves: script.purpose,
-    notProves: "That this script has been run against a live, unsanitized environment beyond what its own tests cover.",
-    tags: ["scripts", script.language]
-  });
-}
+// Individual script pages are no longer canonical: each script's full source
+// and explanation now render directly on its category page
+// (scripts/<category>/#<slug>). These paths are intentionally left out of
+// `entries` so they fall through to the standard archived/moved-page
+// treatment below, pointing at their new anchor.
 
 function addStudy(paths, data) {
   for (const path of paths) {
@@ -441,9 +455,11 @@ export const NAV_TREE = [
   {title: "Home", href: "/"},
   {
     title: "Research",
+    href: "/research/",
     children: [
       {
         title: "Cloud Security",
+        href: "/cloud-security/",
         children: [
           {title: "IAM and workload federation", href: "/cloud-security/iam-at-scale/"},
           {title: "Network segmentation", href: "/cloud-security/cloud-network-segmentation/"},
@@ -455,6 +471,7 @@ export const NAV_TREE = [
       },
       {
         title: "Application Security",
+        href: "/appsec/",
         children: [
           {title: "AI-agent authorization", href: "/appsec/ai-agent-security/"},
           {title: "Multi-tenant SaaS isolation", href: "/appsec/saas-multitenancy-isolation/"},
@@ -465,6 +482,7 @@ export const NAV_TREE = [
       },
       {
         title: "DevSecOps",
+        href: "/devsecops/",
         children: [
           {title: "Secure CI/CD", href: "/devsecops/secure-cicd-pipeline-design/"},
           {title: "IaC policy engineering", href: "/devsecops/iac-security-and-policy-as-code/"},
@@ -475,6 +493,7 @@ export const NAV_TREE = [
       },
       {
         title: "Threat Intelligence",
+        href: "/threat-intel/",
         children: [
           {title: "Attack-path analysis", href: "/threat-intel/attack-path-analysis/"},
           {title: "Incident case studies", href: "/threat-intel/cloud-breach-case-studies/"}
@@ -484,6 +503,7 @@ export const NAV_TREE = [
   },
   {
     title: "Labs",
+    href: "/labs/",
     children: [
       {title: "Secure CI/CD", href: "/labs/secure-cicd/"},
       {title: "IAM and OIDC", href: "/labs/iam-oidc/"},
@@ -498,17 +518,19 @@ export const NAV_TREE = [
   },
   {
     title: "Scripts",
+    href: "/scripts/",
     children: SCRIPT_CATEGORIES.map(category => ({
       title: category.title,
       href: `/scripts/${category.slug}/`,
       children: SCRIPTS.filter(script => script.category === category.slug).map(script => ({
         title: script.name,
-        href: `/scripts/${script.category}/${script.slug}/`
+        href: `/scripts/${script.category}/#${script.slug}`
       }))
     }))
   },
   {
     title: "Study notes",
+    href: "/study-notes/",
     children: [
       {
         title: "AZ-900",
@@ -536,15 +558,18 @@ export const NAV_TREE = [
   {title: "About", href: "/about/"}
 ];
 
-// A node may be both a page (has `href`) and a group (has `children`) — AZ-900 and
-// SC-500 are the only such nodes, so they get their own breadcrumb/left-nav entry
-// while still expanding into their domain pages.
+// A node may be both a page (has `href`) and a group (has `children`) — e.g.
+// Research, Cloud Security, AZ-900 and Labs are all both a real overview page
+// and a group of descendants. Every such href gets its own breadcrumb trail
+// and a slot in the prev/next reading order. Hrefs containing "#" are anchors
+// into another page's content (the Scripts category sections), not distinct
+// pages, so they are deliberately excluded from both.
 function buildNavIndex(tree) {
   const index = new Map();
   const order = [];
   function visit(nodes, trail) {
     for (const node of nodes) {
-      if (node.href) {
+      if (node.href && !node.href.includes("#")) {
         index.set(node.href, {title: node.title, trail});
         order.push(node.href);
       }
@@ -559,14 +584,17 @@ const navIndexed = buildNavIndex(NAV_TREE);
 export const NAV_INDEX = navIndexed.index;
 export const NAV_ORDER = navIndexed.order;
 
-// Hrefs that actually render as their own left-nav <a> leaf (stops descending at the
-// first href, mirroring the left-nav renderer). AZ-900/SC-500 are in this set; their
-// domain pages are not — they only exist in NAV_INDEX for breadcrumbs/prev-next.
+// Every href in the tree renders as its own left-nav <a> (group nodes get an
+// "Overview" link plus their expanded children — see renderNavNode), so this
+// keeps descending into children even after recording a node's own href.
+// Anchor hrefs ("#slug") are excluded: they scroll to a section of another
+// page rather than linking to a distinct page, so they don't get an
+// aria-current check of their own.
 function buildLeftNavHrefs(tree) {
   const hrefs = new Set();
   function visit(nodes) {
     for (const node of nodes) {
-      if (node.href) { hrefs.add(node.href); continue; }
+      if (node.href && !node.href.includes("#")) hrefs.add(node.href);
       if (node.children) visit(node.children);
     }
   }
@@ -619,13 +647,15 @@ REPLACEMENT_PREFIXES.unshift(
   ["docs/tutorials/azure-landing-zone/", "/labs/azure-landing-zone/"],
   ["docs/tutorials/owasp-api-security-top-10/", "/appsec/api-microservices-threat-modeling/"],
   ["docs/standards/security-standards-review/", "/about/"],
-  ["docs/RESEARCH_POLICY/", "/about/"]
+  ["docs/RESEARCH_POLICY/", "/about/"],
+  ...SCRIPTS.map(script => [`scripts/${script.category}/${script.slug}/`, `/scripts/${script.category}/#${script.slug}`])
 );
 
 export const EXPLICIT_ARCHIVED_PATHS = new Set([
   "about/quality-methodology/index.html",
   "about/site-provenance/index.html",
   "docs/research-audit/content-inventory/index.html",
+  ...SCRIPTS.map(script => `scripts/${script.category}/${script.slug}/index.html`),
   "docs/AUTHORING_GUIDE/index.html",
   "docs/CONTRIBUTING_SECURITY_CONTENT/index.html",
   "docs/METADATA/index.html",

@@ -183,6 +183,7 @@ async function suiteStatic() {
   run(process.execPath, ["scripts/run-html-validation.mjs"]);
   run(process.execPath, ["scripts/check-known-defects.mjs"]);
   run(process.execPath, ["scripts/check-editorial-style.mjs"]);
+  run(process.execPath, ["scripts/validate-catalogs.mjs"]);
 
   const htmlValidate = JSON.parse(fs.readFileSync(require.resolve("html-validate/package.json"), "utf8"));
   const toolVersions = {node: process.version, htmlValidate: htmlValidate.version};

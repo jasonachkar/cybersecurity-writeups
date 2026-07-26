@@ -88,7 +88,7 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -142,7 +142,7 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
@@ -220,7 +220,7 @@
           
             <!-- docs-left-nav:start -->
 <aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/" aria-current="page">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/cloud-security/">Cloud Security</a></li><li><a href="/scripts/application-security/">Application Security</a></li><li><a href="/scripts/devsecops/">DevSecOps</a></li><li><a href="/scripts/threat-intelligence/">Threat Intelligence</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/docs/certification-notes/az-900/">AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
+  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/" aria-current="page">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
 </aside>
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
@@ -233,7 +233,7 @@
   
 
 
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">OAuth and OIDC</li></ol></nav><!-- docs-breadcrumbs:end -->
+<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">OAuth and OIDC</li></ol></nav><!-- docs-breadcrumbs:end -->
 <h1 id="oauthoidc-token-boundary-lab">OAuth/OIDC token-boundary lab</h1>
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
@@ -242,9 +242,464 @@
     <ol><li><a href="#what-the-lab-proves">What the lab proves</a></li><li><a href="#run">Run</a></li><li><a href="#security-boundaries-and-limitations">Security boundaries and limitations</a></li><li><a href="#related-guidance">Related guidance</a></li></ol>
   </nav>
 </details>
-<!-- docs-inline-toc:end -->
-<p><strong>Implementation status:</strong> Tested locally on 2026-07-23 with Node.js 24.12.0
+<!-- docs-inline-toc:end --><p><strong>Implementation status:</strong> Tested locally on 2026-07-23 with Node.js 24.12.0
 and Go 1.26.1. The JavaScript suite supports Node.js 22 or newer.</p>
+<!-- docs-lab-source:start -->
+<h2 id="implementation">Implementation</h2>
+<section class="docs-source-viewer" data-source-viewer id="source-oauth-oidc" aria-label="Source code: oauth-security.js">
+  <header class="docs-source-viewer__toolbar">
+    <span class="docs-source-viewer__toolbar-title">oauth-security.js</span>
+    <div class="docs-source-viewer__actions">
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    </div>
+  </header>
+  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-oauth-oidc-tab-0" aria-controls="source-oauth-oidc-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Boundary adapter</button><button type="button" role="tab" id="source-oauth-oidc-tab-1" aria-controls="source-oauth-oidc-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Tests</button></div>
+  <div role="tabpanel" id="source-oauth-oidc-panel-0" tabindex="0" aria-labelledby="source-oauth-oidc-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">oauth-security.js</span><code class="docs-source-viewer__path">labs/oauth-oidc/oauth-security.js</code><span class="docs-source-viewer__lines">205 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="oauth-security.js source code" class="language-javascript">&quot;use strict&quot;;
+
+const {
+  createSign,
+  createVerify,
+} = require(&quot;node:crypto&quot;);
+
+const BASE64URL_PATTERN = /^[A-Za-z0-9_-]+$/u;
+
+class TokenValidationError extends Error {
+  constructor(code, message) {
+    super(message);
+    this.name = &quot;TokenValidationError&quot;;
+    this.code = code;
+  }
+}
+
+function encodeJson(value) {
+  return Buffer.from(JSON.stringify(value), &quot;utf8&quot;).toString(&quot;base64url&quot;);
+}
+
+function decodeJsonSegment(segment, label) {
+  if (!segment || !BASE64URL_PATTERN.test(segment)) {
+    throw new TokenValidationError(&quot;MALFORMED_TOKEN&quot;, `${label} is not base64url`);
+  }
+
+  try {
+    const decoded = JSON.parse(Buffer.from(segment, &quot;base64url&quot;).toString(&quot;utf8&quot;));
+    if (!decoded || typeof decoded !== &quot;object&quot; || Array.isArray(decoded)) {
+      throw new Error(&quot;decoded value is not an object&quot;);
+    }
+    return decoded;
+  } catch {
+    throw new TokenValidationError(&quot;MALFORMED_TOKEN&quot;, `${label} is not a JSON object`);
+  }
+}
+
+function signJwt(claims, { privateKey, kid }) {
+  if (!privateKey || typeof kid !== &quot;string&quot; || kid.length === 0) {
+    throw new TypeError(&quot;privateKey and a nonempty kid are required&quot;);
+  }
+
+  const header = encodeJson({ alg: &quot;RS256&quot;, kid, typ: &quot;JWT&quot; });
+  const payload = encodeJson(claims);
+  const signingInput = `${header}.${payload}`;
+  const signer = createSign(&quot;RSA-SHA256&quot;);
+  signer.update(signingInput, &quot;ascii&quot;);
+  signer.end();
+  return `${signingInput}.${signer.sign(privateKey).toString(&quot;base64url&quot;)}`;
+}
+
+function parseScopeClaim(claims) {
+  const value = claims.scope ?? claims.scp;
+  if (typeof value !== &quot;string&quot;) {
+    throw new TokenValidationError(&quot;INVALID_SCOPE&quot;, &quot;scope/scp must be a string&quot;);
+  }
+  return new Set(value.split(&quot; &quot;).filter(Boolean));
+}
+
+function audienceContains(audience, expectedAudience) {
+  if (typeof audience === &quot;string&quot;) return audience === expectedAudience;
+  if (Array.isArray(audience)) {
+    return audience.length &gt; 0 &amp;&amp;
+      audience.every((entry) =&gt; typeof entry === &quot;string&quot;) &amp;&amp;
+      audience.includes(expectedAudience);
+  }
+  return false;
+}
+
+function validateAccessToken(token, config) {
+  const {
+    issuer,
+    audience,
+    tenant,
+    requiredScopes = [],
+    trustedKeys,
+    now = Math.floor(Date.now() / 1000),
+    clockSkewSeconds = 0,
+  } = config;
+
+  if (!(trustedKeys instanceof Map) || trustedKeys.size === 0) {
+    throw new TypeError(&quot;trustedKeys must be a nonempty Map&quot;);
+  }
+  if (!Number.isInteger(now) || !Number.isInteger(clockSkewSeconds) ||
+      clockSkewSeconds &lt; 0) {
+    throw new TypeError(&quot;time settings must be integer seconds&quot;);
+  }
+
+  const parts = typeof token === &quot;string&quot; ? token.split(&quot;.&quot;) : [];
+  if (parts.length !== 3 || !parts[2] || !BASE64URL_PATTERN.test(parts[2])) {
+    throw new TokenValidationError(&quot;MALFORMED_TOKEN&quot;, &quot;JWT must have three segments&quot;);
+  }
+
+  const header = decodeJsonSegment(parts[0], &quot;header&quot;);
+  const claims = decodeJsonSegment(parts[1], &quot;payload&quot;);
+  if (header.alg !== &quot;RS256&quot; || header.typ !== &quot;JWT&quot; ||
+      typeof header.kid !== &quot;string&quot; || header.kid.length === 0) {
+    throw new TokenValidationError(
+      &quot;UNSUPPORTED_HEADER&quot;,
+      &quot;alg=RS256, typ=JWT, and a trusted kid are required&quot;,
+    );
+  }
+  if (header.jku !== undefined || header.x5u !== undefined ||
+      header.crit !== undefined) {
+    throw new TokenValidationError(
+      &quot;UNSUPPORTED_HEADER&quot;,
+      &quot;remote key URLs and unconfigured critical headers are rejected&quot;,
+    );
+  }
+
+  const key = trustedKeys.get(header.kid);
+  if (!key) {
+    throw new TokenValidationError(&quot;UNKNOWN_KEY&quot;, &quot;kid is not in the trusted key set&quot;);
+  }
+
+  const verifier = createVerify(&quot;RSA-SHA256&quot;);
+  verifier.update(`${parts[0]}.${parts[1]}`, &quot;ascii&quot;);
+  verifier.end();
+  if (!verifier.verify(key, Buffer.from(parts[2], &quot;base64url&quot;))) {
+    throw new TokenValidationError(&quot;INVALID_SIGNATURE&quot;, &quot;signature verification failed&quot;);
+  }
+
+  if (claims.iss !== issuer) {
+    throw new TokenValidationError(&quot;INVALID_ISSUER&quot;, &quot;issuer does not match&quot;);
+  }
+  if (!audienceContains(claims.aud, audience)) {
+    throw new TokenValidationError(&quot;INVALID_AUDIENCE&quot;, &quot;audience does not match&quot;);
+  }
+  if (typeof claims.sub !== &quot;string&quot; || claims.sub.length === 0) {
+    throw new TokenValidationError(&quot;INVALID_SUBJECT&quot;, &quot;nonempty sub is required&quot;);
+  }
+  if (!Number.isInteger(claims.exp) || now &gt;= claims.exp + clockSkewSeconds) {
+    throw new TokenValidationError(&quot;TOKEN_EXPIRED&quot;, &quot;token is expired&quot;);
+  }
+  if (claims.nbf !== undefined &amp;&amp;
+      (!Number.isInteger(claims.nbf) || now + clockSkewSeconds &lt; claims.nbf)) {
+    throw new TokenValidationError(&quot;TOKEN_NOT_ACTIVE&quot;, &quot;token is not active&quot;);
+  }
+  if (claims.tid !== tenant) {
+    throw new TokenValidationError(&quot;INVALID_TENANT&quot;, &quot;tenant does not match&quot;);
+  }
+
+  const grantedScopes = parseScopeClaim(claims);
+  for (const requiredScope of requiredScopes) {
+    if (!grantedScopes.has(requiredScope)) {
+      throw new TokenValidationError(
+        &quot;INSUFFICIENT_SCOPE&quot;,
+        `required scope is absent: ${requiredScope}`,
+      );
+    }
+  }
+
+  return Object.freeze({
+    issuer: claims.iss,
+    subject: claims.sub,
+    tenant: claims.tid,
+    scopes: Object.freeze([...grantedScopes]),
+  });
+}
+
+function validateRegisteredRedirect(uri) {
+  if (typeof uri !== &quot;string&quot; || uri.length === 0) {
+    throw new TypeError(&quot;registered redirect URI must be a nonempty string&quot;);
+  }
+
+  let parsed;
+  try {
+    parsed = new URL(uri);
+  } catch {
+    throw new TypeError(&quot;registered redirect URI must be an absolute URI&quot;);
+  }
+  if (parsed.protocol !== &quot;https:&quot; || parsed.username || parsed.password ||
+      parsed.hash) {
+    throw new TypeError(
+      &quot;this web-client lab requires HTTPS without userinfo or a fragment&quot;,
+    );
+  }
+
+  // URL serialization can normalize meaningful syntax. Registration is accepted
+  // only when it is already in canonical serialized form; authorization requests
+  // are still compared to the original string, without normalization.
+  if (parsed.href !== uri) {
+    throw new TypeError(&quot;registered redirect URI must use canonical URL syntax&quot;);
+  }
+}
+
+function createExactRedirectMatcher(registeredUris) {
+  if (!Array.isArray(registeredUris) || registeredUris.length === 0) {
+    throw new TypeError(&quot;registeredUris must be a nonempty array&quot;);
+  }
+  for (const uri of registeredUris) validateRegisteredRedirect(uri);
+  const exactValues = new Set(registeredUris);
+  if (exactValues.size !== registeredUris.length) {
+    throw new TypeError(&quot;registered redirect URIs must be unique&quot;);
+  }
+  return (requestedUri) =&gt;
+    typeof requestedUri === &quot;string&quot; &amp;&amp; exactValues.has(requestedUri);
+}
+
+module.exports = {
+  TokenValidationError,
+  createExactRedirectMatcher,
+  signJwt,
+  validateAccessToken,
+};</code></pre>
+    </div><div role="tabpanel" id="source-oauth-oidc-panel-1" tabindex="0" aria-labelledby="source-oauth-oidc-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">oauth-security.test.js</span><code class="docs-source-viewer__path">labs/oauth-oidc/tests/oauth-security.test.js</code><span class="docs-source-viewer__lines">230 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="oauth-security.test.js source code" class="language-javascript">&quot;use strict&quot;;
+
+const assert = require(&quot;node:assert/strict&quot;);
+const { generateKeyPairSync } = require(&quot;node:crypto&quot;);
+const {
+  TokenValidationError,
+  createExactRedirectMatcher,
+  signJwt,
+  validateAccessToken,
+} = require(&quot;../oauth-security&quot;);
+
+const NOW = 2_000_000_000;
+const ISSUER = &quot;https://issuer.example.test&quot;;
+const AUDIENCE = &quot;api://payments&quot;;
+const TENANT = &quot;tenant-blue&quot;;
+const KID_OLD = &quot;issuer-key-2026-01&quot;;
+const KID_NEW = &quot;issuer-key-2026-07&quot;;
+
+const oldKeys = generateKeyPairSync(&quot;rsa&quot;, { modulusLength: 2048 });
+const newKeys = generateKeyPairSync(&quot;rsa&quot;, { modulusLength: 2048 });
+const attackerKeys = generateKeyPairSync(&quot;rsa&quot;, { modulusLength: 2048 });
+
+const baselineClaims = Object.freeze({
+  aud: AUDIENCE,
+  exp: NOW + 300,
+  iss: ISSUER,
+  nbf: NOW - 30,
+  scope: &quot;payments.read payments.refund&quot;,
+  sub: &quot;user-42&quot;,
+  tid: TENANT,
+});
+
+function token(overrides = {}, signing = {}) {
+  return signJwt(
+    { ...baselineClaims, ...overrides },
+    {
+      privateKey: signing.privateKey ?? oldKeys.privateKey,
+      kid: signing.kid ?? KID_OLD,
+    },
+  );
+}
+
+function config(overrides = {}) {
+  return {
+    audience: AUDIENCE,
+    clockSkewSeconds: 0,
+    issuer: ISSUER,
+    now: NOW,
+    requiredScopes: [&quot;payments.read&quot;],
+    tenant: TENANT,
+    trustedKeys: new Map([[KID_OLD, oldKeys.publicKey]]),
+    ...overrides,
+  };
+}
+
+function expectCode(expectedCode, operation) {
+  assert.throws(
+    operation,
+    (error) =&gt;
+      error instanceof TokenValidationError &amp;&amp; error.code === expectedCode,
+    `expected ${expectedCode}`,
+  );
+}
+
+const tests = [];
+function test(name, operation) {
+  tests.push({ name, operation });
+}
+
+test(&quot;accepts a correctly signed token with the configured security context&quot;, () =&gt; {
+  const principal = validateAccessToken(token(), config());
+  assert.deepEqual(
+    principal,
+    {
+      issuer: ISSUER,
+      scopes: [&quot;payments.read&quot;, &quot;payments.refund&quot;],
+      subject: &quot;user-42&quot;,
+      tenant: TENANT,
+    },
+  );
+});
+
+test(&quot;rejects a token signed by an attacker under a trusted kid&quot;, () =&gt; {
+  const forged = token({}, { privateKey: attackerKeys.privateKey, kid: KID_OLD });
+  expectCode(&quot;INVALID_SIGNATURE&quot;, () =&gt; validateAccessToken(forged, config()));
+});
+
+test(&quot;rejects the wrong issuer even when the signature is trusted&quot;, () =&gt; {
+  expectCode(
+    &quot;INVALID_ISSUER&quot;,
+    () =&gt; validateAccessToken(token({ iss: &quot;https://other.example.test&quot; }), config()),
+  );
+});
+
+test(&quot;rejects the wrong audience&quot;, () =&gt; {
+  expectCode(
+    &quot;INVALID_AUDIENCE&quot;,
+    () =&gt; validateAccessToken(token({ aud: &quot;api://inventory&quot; }), config()),
+  );
+});
+
+test(&quot;accepts the configured audience in an audience array&quot;, () =&gt; {
+  const principal = validateAccessToken(
+    token({ aud: [&quot;api://reports&quot;, AUDIENCE] }),
+    config(),
+  );
+  assert.equal(principal.subject, &quot;user-42&quot;);
+});
+
+test(&quot;rejects an expired token at the exp boundary&quot;, () =&gt; {
+  expectCode(
+    &quot;TOKEN_EXPIRED&quot;,
+    () =&gt; validateAccessToken(token({ exp: NOW }), config()),
+  );
+});
+
+test(&quot;rejects a token whose not-before time is in the future&quot;, () =&gt; {
+  expectCode(
+    &quot;TOKEN_NOT_ACTIVE&quot;,
+    () =&gt; validateAccessToken(token({ nbf: NOW + 1 }), config()),
+  );
+});
+
+test(&quot;rejects a token from the wrong tenant&quot;, () =&gt; {
+  expectCode(
+    &quot;INVALID_TENANT&quot;,
+    () =&gt; validateAccessToken(token({ tid: &quot;tenant-red&quot; }), config()),
+  );
+});
+
+test(&quot;rejects a token missing a required scope&quot;, () =&gt; {
+  expectCode(
+    &quot;INSUFFICIENT_SCOPE&quot;,
+    () =&gt; validateAccessToken(token({ scope: &quot;payments.write&quot; }), config()),
+  );
+});
+
+test(&quot;accepts old and new keys during a bounded rotation overlap&quot;, () =&gt; {
+  const overlap = config({
+    trustedKeys: new Map([
+      [KID_OLD, oldKeys.publicKey],
+      [KID_NEW, newKeys.publicKey],
+    ]),
+  });
+  assert.equal(validateAccessToken(token(), overlap).subject, &quot;user-42&quot;);
+  assert.equal(
+    validateAccessToken(
+      token({}, { privateKey: newKeys.privateKey, kid: KID_NEW }),
+      overlap,
+    ).subject,
+    &quot;user-42&quot;,
+  );
+});
+
+test(&quot;rejects the retired key after the overlap window&quot;, () =&gt; {
+  const afterRotation = config({
+    trustedKeys: new Map([[KID_NEW, newKeys.publicKey]]),
+  });
+  expectCode(
+    &quot;UNKNOWN_KEY&quot;,
+    () =&gt; validateAccessToken(token(), afterRotation),
+  );
+  assert.equal(
+    validateAccessToken(
+      token({}, { privateKey: newKeys.privateKey, kid: KID_NEW }),
+      afterRotation,
+    ).subject,
+    &quot;user-42&quot;,
+  );
+});
+
+test(&quot;does not fetch or accept an unknown kid&quot;, () =&gt; {
+  const unknownKey = token(
+    {},
+    { privateKey: attackerKeys.privateKey, kid: &quot;https://attacker.test/key&quot; },
+  );
+  expectCode(&quot;UNKNOWN_KEY&quot;, () =&gt; validateAccessToken(unknownKey, config()));
+});
+
+test(&quot;accepts only the exact registered redirect string&quot;, () =&gt; {
+  const isAllowed = createExactRedirectMatcher([
+    &quot;https://app.example.test/oauth/callback?channel=web&quot;,
+  ]);
+  assert.equal(
+    isAllowed(&quot;https://app.example.test/oauth/callback?channel=web&quot;),
+    true,
+  );
+
+  const nearMatches = [
+    &quot;https://APP.example.test/oauth/callback?channel=web&quot;,
+    &quot;https://app.example.test:443/oauth/callback?channel=web&quot;,
+    &quot;https://app.example.test/oauth/callback/?channel=web&quot;,
+    &quot;https://app.example.test/oauth/callback?CHANNEL=web&quot;,
+    &quot;https://app.example.test/oauth/callback?channel=web#fragment&quot;,
+    &quot;https://app.example.test@attacker.test/oauth/callback?channel=web&quot;,
+    &quot;https://evil.app.example.test/oauth/callback?channel=web&quot;,
+  ];
+  for (const nearMatch of nearMatches) {
+    assert.equal(isAllowed(nearMatch), false, nearMatch);
+  }
+});
+
+test(&quot;rejects unsafe values at redirect registration time&quot;, () =&gt; {
+  assert.throws(
+    () =&gt; createExactRedirectMatcher([&quot;http://app.example.test/callback&quot;]),
+    /HTTPS/u,
+  );
+  assert.throws(
+    () =&gt; createExactRedirectMatcher([&quot;https://user@app.example.test/callback&quot;]),
+    /userinfo/u,
+  );
+});
+
+let failures = 0;
+for (const item of tests) {
+  try {
+    item.operation();
+    console.log(`PASS: ${item.name}`);
+  } catch (error) {
+    failures += 1;
+    console.error(`FAIL: ${item.name}`);
+    console.error(error.stack || error.message);
+  }
+}
+
+if (failures &gt; 0) {
+  console.error(`OAuth/OIDC lab failed: ${failures} of ${tests.length} checks failed.`);
+  process.exit(1);
+}
+console.log(`OAuth/OIDC lab passed: ${tests.length} positive and negative checks.`);</code></pre>
+    </div>
+</section>
+<h3 id="run-it">Run it</h3>
+<ul class="docs-run-commands"><li><code>node --test labs/oauth-oidc/tests/oauth-security.test.js</code></li></ul>
+<ul class="docs-safety-notes"><li>No browser authorization flow or real identity provider is involved; every case is a local fixture.</li></ul>
+<!-- docs-lab-source:end -->
 <p>This dependency-free lab turns the most important OAuth/OIDC resource-server
 boundaries into executable acceptance and rejection checks. It is deliberately a
 small verifier model, not a replacement for a maintained JOSE/OIDC library.</p>
@@ -369,6 +824,7 @@ It never prints verifier or challenge values.</p>
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
 <script src="../../assets/javascripts/docs-ui.js" defer></script>
 <script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
       
