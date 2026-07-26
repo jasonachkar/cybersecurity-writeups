@@ -186,11 +186,39 @@
   margin-right: 0;
 }
 
+/* Below the article's own narrow prose width, a data table has more columns
+   than comfortably fit and would otherwise just shrink-to-fit (a table has no
+   intrinsic min-width of its own), cramming every cell's text onto 2-3 wrapped
+   lines instead of scrolling. Give it a floor so .md-typeset__scrollwrap's
+   existing overflow-x: auto (above) actually has something to scroll. */
+@media (max-width: 44rem) {
+  .md-typeset__scrollwrap table:not([class]) {
+    min-width: 32rem;
+  }
+}
+
 /* A long unwrapped code line (white-space: pre) can still poke a few px past its own
    box when the box's own overflow is the default `visible` — contain it in its own
    horizontal scrollbar instead of letting it bleed into the page. */
 .md-typeset pre {
   overflow-x: auto;
+}
+
+/* Material's own `.md-typeset pre>code` is `display: block` with no explicit
+   width, so the box is sized to the <pre>'s width, not its content — a long
+   line then renders past the box's right edge as ink overflow only, which
+   does not count toward the ancestor <pre>'s scrollable width (overflow-x:
+   auto above). Net effect at a narrow viewport, where lines commonly exceed
+   the available width: the line silently clips with no way to scroll to the
+   rest of it. `width: max-content` sizes the box to its real content so the
+   overflow becomes genuinely scrollable; `min-width: 100%` keeps ordinary
+   short lines filling the row exactly as before, so this only changes
+   anything for lines that actually overflow. */
+@media (max-width: 44rem) {
+  .md-typeset pre > code {
+    width: max-content;
+    min-width: 100%;
+  }
 }
 
 /* Standard defensive wrapping for ordinary prose text (not code/pre, which keep
@@ -530,6 +558,14 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs li[aria-current="page"] {
 .md-typeset .docs-inline-toc > summary {
   padding: 0 var(--docs-space-4) !important;
   background: transparent !important;
+}
+
+/* Material's admonition `::before` icon (blue dot, absolutely positioned at
+   left: .6rem) targets any `.md-typeset summary`, not just real admonitions —
+   the padding/background reset above never touched it, so it painted directly
+   on top of this component's own label text. */
+.md-typeset .docs-inline-toc > summary::before {
+  display: none !important;
 }
 
 .docs-inline-toc > summary {
@@ -1342,6 +1378,18 @@ body[data-md-color-scheme="slate"] .tok-number { color: #ffa657; }
   }
   .docs-source-viewer__toolbar-title {
     font-size: .8rem;
+  }
+
+  /* The width/min-width fix that makes long lines genuinely scrollable lives
+     with the general `.md-typeset pre > code` rule near the top of this file
+     (this <pre> is no exception to that). The blanket `.md-typeset code {
+     overflow-wrap: anywhere }` rule (for ordinary inline prose code) reaches
+     this <code> too at equal specificity — it never actually wraps here
+     since `white-space: pre` still forbids it, but restoring `normal`
+     (Material's own value for `pre > code`) keeps this component
+     unambiguous. */
+  .docs-source-viewer__code code {
+    overflow-wrap: normal;
   }
 }
 

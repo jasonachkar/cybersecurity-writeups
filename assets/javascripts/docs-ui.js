@@ -46,6 +46,16 @@
     searchTrigger
   );
 
+  // Breadcrumbs scroll horizontally (.docs-breadcrumbs { overflow-x: auto }) once
+  // the trail is wider than the left-nav's collapsed-to-drawer mobile width, but a
+  // fresh scroll container always starts at scrollLeft 0 — meaning the current
+  // page (the last, most useful crumb) is exactly what's scrolled out of view by
+  // default. Only relevant below the same width the left nav itself collapses at.
+  var breadcrumbs = document.querySelector(".docs-breadcrumbs");
+  if (breadcrumbs && window.matchMedia("(max-width: 59.9375em)").matches) {
+    breadcrumbs.scrollLeft = breadcrumbs.scrollWidth;
+  }
+
   // Persist which left-nav groups a visitor expanded, so moving between pages does
   // not re-collapse sections they deliberately opened (the currently active section
   // is still expanded on first load server-side, independent of this).
