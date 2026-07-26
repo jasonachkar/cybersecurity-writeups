@@ -88,7 +88,7 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -142,7 +142,7 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
@@ -220,7 +220,7 @@
           
             <!-- docs-left-nav:start -->
 <aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/" aria-current="page">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/cloud-security/">Cloud Security</a></li><li><a href="/scripts/application-security/">Application Security</a></li><li><a href="/scripts/devsecops/">DevSecOps</a></li><li><a href="/scripts/threat-intelligence/">Threat Intelligence</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/docs/certification-notes/az-900/">AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
+  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/" aria-current="page">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
 </aside>
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
@@ -233,7 +233,7 @@
   
 
 
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Azure landing zone</li></ol></nav><!-- docs-breadcrumbs:end -->
+<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">Azure landing zone</li></ol></nav><!-- docs-breadcrumbs:end -->
 <h1 id="azure-landing-zone-hierarchy-and-policy-lab">Azure landing-zone hierarchy and policy lab</h1>
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
@@ -242,11 +242,171 @@
     <ol><li><a href="#architecture-decision">Architecture decision</a></li><li><a href="#prerequisites-and-compile">Prerequisites and compile</a></li><li><a href="#what-if-not-deployment">What-if, not deployment</a></li><li><a href="#deployment-and-rollback-considerations">Deployment and rollback considerations</a></li><li><a href="#negative-cases-to-review">Negative cases to review</a></li><li><a href="#cleanup-and-limitations">Cleanup and limitations</a></li><li><a href="#references">References</a></li></ol>
   </nav>
 </details>
-<!-- docs-inline-toc:end -->
-<p>This lab compiles a small tenant-scope Bicep design for a management-group hierarchy
+<!-- docs-inline-toc:end --><p>This lab compiles a small tenant-scope Bicep design for a management-group hierarchy
 and an audit-first custom policy assignment. It demonstrates deployment shape,
 federated CI identity, and a reviewable what-if boundary; it does not deploy during
 repository validation.</p>
+<!-- docs-lab-source:start -->
+<h2 id="implementation">Implementation</h2>
+<section class="docs-source-viewer" data-source-viewer id="source-azure-landing-zone" aria-label="Source code: main.bicep">
+  <header class="docs-source-viewer__toolbar">
+    <span class="docs-source-viewer__toolbar-title">main.bicep</span>
+    <div class="docs-source-viewer__actions">
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    </div>
+  </header>
+  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-azure-landing-zone-tab-0" aria-controls="source-azure-landing-zone-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Landing-zone module</button><button type="button" role="tab" id="source-azure-landing-zone-tab-1" aria-controls="source-azure-landing-zone-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Policy baseline</button></div>
+  <div role="tabpanel" id="source-azure-landing-zone-panel-0" tabindex="0" aria-labelledby="source-azure-landing-zone-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">main.bicep</span><code class="docs-source-viewer__path">labs/azure-landing-zone/main.bicep</code><span class="docs-source-viewer__lines">78 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="main.bicep source code" class="language-bicep">targetScope = &#39;tenant&#39;
+
+@description(&#39;Stable management group identifier for the organization landing-zone root.&#39;)
+param rootManagementGroupId string
+
+@description(&#39;Display name for the organization landing-zone root.&#39;)
+param rootDisplayName string
+
+@description(&#39;Azure region required for tenant-scope deployment metadata.&#39;)
+param deploymentLocation string = &#39;canadacentral&#39;
+
+@description(&#39;Locations audited by the sample baseline policy.&#39;)
+param allowedLocations array = [
+  &#39;canadacentral&#39;
+  &#39;canadaeast&#39;
+]
+
+resource root &#39;Microsoft.Management/managementGroups@2023-04-01&#39; = {
+  name: rootManagementGroupId
+  properties: {
+    displayName: rootDisplayName
+  }
+}
+
+resource platform &#39;Microsoft.Management/managementGroups@2023-04-01&#39; = {
+  name: &#39;${rootManagementGroupId}-platform&#39;
+  properties: {
+    displayName: &#39;Platform&#39;
+    details: {
+      parent: {
+        id: root.id
+      }
+    }
+  }
+}
+
+resource landingZones &#39;Microsoft.Management/managementGroups@2023-04-01&#39; = {
+  name: &#39;${rootManagementGroupId}-landing-zones&#39;
+  properties: {
+    displayName: &#39;Landing zones&#39;
+    details: {
+      parent: {
+        id: root.id
+      }
+    }
+  }
+}
+
+resource sandbox &#39;Microsoft.Management/managementGroups@2023-04-01&#39; = {
+  name: &#39;${rootManagementGroupId}-sandbox&#39;
+  properties: {
+    displayName: &#39;Sandbox&#39;
+    details: {
+      parent: {
+        id: root.id
+      }
+    }
+  }
+}
+
+module baseline &#39;modules/policy-baseline.bicep&#39; = {
+  name: &#39;landing-zone-audit-baseline&#39;
+  scope: managementGroup(rootManagementGroupId)
+  params: {
+    allowedLocations: allowedLocations
+    assignmentLocation: deploymentLocation
+  }
+  dependsOn: [
+    root
+  ]
+}
+
+output managementGroupIds object = {
+  root: root.id
+  platform: platform.id
+  landingZones: landingZones.id
+  sandbox: sandbox.id
+}</code></pre>
+    </div><div role="tabpanel" id="source-azure-landing-zone-panel-1" tabindex="0" aria-labelledby="source-azure-landing-zone-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">policy-baseline.bicep</span><code class="docs-source-viewer__path">labs/azure-landing-zone/modules/policy-baseline.bicep</code><span class="docs-source-viewer__lines">62 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="policy-baseline.bicep source code" class="language-bicep">targetScope = &#39;managementGroup&#39;
+
+param allowedLocations array
+param assignmentLocation string
+
+resource allowedLocationsDefinition &#39;Microsoft.Authorization/policyDefinitions@2023-04-01&#39; = {
+  name: &#39;audit-allowed-locations&#39;
+  properties: {
+    displayName: &#39;Audit resources outside reviewed locations&#39;
+    description: &#39;Teaching policy: audit, rather than deny, while teams inventory exemptions and validate impact.&#39;
+    policyType: &#39;Custom&#39;
+    mode: &#39;Indexed&#39;
+    metadata: {
+      category: &#39;Landing zone lab&#39;
+      version: &#39;1.0.0&#39;
+    }
+    parameters: {
+      allowedLocations: {
+        type: &#39;Array&#39;
+        metadata: {
+          displayName: &#39;Allowed locations&#39;
+        }
+      }
+    }
+    policyRule: {
+      if: {
+        allOf: [
+          {
+            field: &#39;location&#39;
+            exists: &#39;true&#39;
+          }
+          {
+            field: &#39;location&#39;
+            notIn: &#39;[parameters(\&#39;allowedLocations\&#39;)]&#39;
+          }
+        ]
+      }
+      then: {
+        effect: &#39;audit&#39;
+      }
+    }
+  }
+}
+
+resource allowedLocationsAssignment &#39;Microsoft.Authorization/policyAssignments@2024-04-01&#39; = {
+  name: &#39;audit-allowed-locations&#39;
+  location: assignmentLocation
+  properties: {
+    displayName: &#39;Audit resources outside reviewed locations&#39;
+    description: &#39;Lab assignment begins in audit mode. Promote only after impact analysis, exemption ownership, and rollback validation.&#39;
+    policyDefinitionId: allowedLocationsDefinition.id
+    enforcementMode: &#39;Default&#39;
+    parameters: {
+      allowedLocations: {
+        value: allowedLocations
+      }
+    }
+  }
+}
+
+output policyDefinitionId string = allowedLocationsDefinition.id
+output policyAssignmentId string = allowedLocationsAssignment.id</code></pre>
+    </div>
+</section>
+<h3 id="run-it">Run it</h3>
+<ul class="docs-run-commands"><li><code>npm run verify:bicep</code></li></ul>
+<ul class="docs-safety-notes"><li>Compiled with the Bicep CLI only; no Azure authentication or deployment occurs.</li></ul>
+<!-- docs-lab-source:end -->
 <h2 id="architecture-decision">Architecture decision</h2>
 <p>The sample separates platform, landing-zone, and sandbox subscriptions beneath an
 organization root. The policy begins with <code>audit</code>, because changing a broad
@@ -320,7 +480,7 @@ not proof of runtime correctness.</p>
 
                 
 
-<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/labs/iac-policy/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Labs</span><span class="docs-prevnext__title">IaC policy</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/scripts/cloud-security/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Scripts</span><span class="docs-prevnext__title">Cloud Security</span></a></nav><!-- docs-prevnext:end -->
+<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/labs/iac-policy/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Labs</span><span class="docs-prevnext__title">IaC policy</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/scripts/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Documentation</span><span class="docs-prevnext__title">Scripts</span></a></nav><!-- docs-prevnext:end -->
 </article>
             </div><!-- docs-desktop-toc:start -->
 <aside class="docs-right-toc" aria-label="On this page">
@@ -373,6 +533,7 @@ not proof of runtime correctness.</p>
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
 <script src="../../assets/javascripts/docs-ui.js" defer></script>
 <script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
       

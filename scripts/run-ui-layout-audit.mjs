@@ -7,6 +7,7 @@ import http from "node:http";
 import path from "node:path";
 import {chromium} from "playwright";
 import {buildProvenance, writeQaReport, root} from "./qa-provenance.mjs";
+import {LABS} from "../labs/catalog.mjs";
 
 const types = {
   ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".mjs": "text/javascript",
@@ -69,7 +70,7 @@ const WIDE_VIEWPORTS = [
   {name: "1280x800", width: 1280, height: 800},
   {name: "1440x900", width: 1440, height: 900}
 ];
-const FOOTER_URLS = ["/", ARTICLE_URL, "/docs/research-audit/content-inventory/", "/404.html"];
+const FOOTER_URLS = ["/", ARTICLE_URL, "/scripts/", "/404.html"];
 
 // --- Narrow viewports: inline TOC must be reachable without scrolling past the article. ---
 for (const viewport of NARROW_VIEWPORTS) {
@@ -233,6 +234,272 @@ for (const url of FOOTER_URLS) {
   record(`${label}: exactly one <footer class="md-footer">`, state.footerCount === 1, `count=${state.footerCount}`);
 
   await context.close();
+}
+
+// --- Scripts: source viewer renders before the explanation, tabs/copy/expand work. ---
+{
+  const {context, page} = await newPage({width: 1280, height: 900}, "light");
+  await gotoPage(page, "/scripts/cloud-security/", "light");
+  const label = "scripts source-viewer /scripts/cloud-security/";
+
+  const order = await page.evaluate(() => {
+    const section = document.getElementById("k8s-rbac-auditor");
+    if (!section) return null;
+    const viewer = section.querySelector(".docs-source-viewer");
+    const heading = [...section.querySelectorAll("h3")].find(h => h.textContent.trim() === "What it does");
+    if (!viewer || !heading) return null;
+    return Boolean(viewer.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING);
+  });
+  record(`${label}: script section exists with a source viewer and "What it does"`, order !== null);
+  record(`${label}: source viewer precedes "What it does"`, order === true);
+
+  const noGithubLink = await page.evaluate(() => {
+    const section = document.getElementById("k8s-rbac-auditor");
+    return section ? !section.innerHTML.includes("github.com/jasonachkar/cybersecurity-writeups/blob") : null;
+  });
+  record(`${label}: does not depend on a GitHub link to show source`, noGithubLink === true);
+
+  // Tabs: switch to the "Tests" tab and confirm the panel + toolbar title change.
+  const tabsWork = await page.evaluate(() => {
+    const viewer = document.getElementById("source-k8s-rbac-auditor");
+    const testsTab = viewer.querySelector('[data-source-tab][data-index="1"]');
+    testsTab.click();
+    const panel0 = viewer.querySelector('[data-source-panel][data-index="0"]');
+    const panel1 = viewer.querySelector('[data-source-panel][data-index="1"]');
+    return {
+      tab1Selected: testsTab.getAttribute("aria-selected") === "true",
+      panel0Hidden: panel0.hasAttribute("hidden"),
+      panel1Visible: !panel1.hasAttribute("hidden"),
+      title: viewer.querySelector(".docs-source-viewer__toolbar-title").textContent
+    };
+  });
+  record(`${label}: clicking a file tab selects it`, tabsWork.tab1Selected);
+  record(`${label}: switching tabs hides the other panel`, tabsWork.panel0Hidden && tabsWork.panel1Visible);
+  record(`${label}: toolbar title follows the active tab`, tabsWork.title.includes("auditor_test.go"), `title=${tabsWork.title}`);
+
+  // Copy: stub the clipboard (Playwright contexts don't grant clipboard-write by default).
+  await page.evaluate(() => {
+    window.__copied = null;
+    navigator.clipboard.writeText = (text) => { window.__copied = text; return Promise.resolve(); };
+  });
+  const copyResult = await page.evaluate(() => {
+    const viewer = document.getElementById("source-k8s-rbac-auditor");
+    viewer.querySelector("[data-copy-source]").click();
+    return true;
+  });
+  await page.waitForTimeout(50);
+  const copiedText = await page.evaluate(() => window.__copied);
+  record(`${label}: copy button copies the visible file's source`, Boolean(copyResult) && typeof copiedText === "string" && copiedText.length > 0);
+
+  // Expand: toggling sets aria-expanded and removes the height cap class.
+  const expandState = await page.evaluate(() => {
+    const viewer = document.getElementById("source-k8s-rbac-auditor");
+    const button = viewer.querySelector("[data-expand-source]");
+    button.click();
+    const code = viewer.querySelector(".docs-source-viewer__code");
+    return {expanded: button.getAttribute("aria-expanded"), hasClass: code.classList.contains("docs-source-expanded")};
+  });
+  record(`${label}: expand button sets aria-expanded=true`, expandState.expanded === "true");
+  record(`${label}: expand button removes the height cap`, expandState.hasClass === true);
+
+  await context.close();
+}
+
+// --- Scripts mobile toolbar: buttons/tabs stay usable at 390px. ---
+{
+  const {context, page} = await newPage({width: 390, height: 844}, "light");
+  await gotoPage(page, "/scripts/cloud-security/", "light");
+  const label = "scripts mobile toolbar 390x844";
+  const state = await page.evaluate(() => {
+    const viewer = document.getElementById("source-k8s-rbac-auditor");
+    const toolbar = viewer.querySelector(".docs-source-viewer__toolbar");
+    const buttons = [...viewer.querySelectorAll(".docs-source-viewer__button")];
+    return {
+      noOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
+      toolbarWidth: toolbar.getBoundingClientRect().width,
+      docWidth: document.documentElement.clientWidth,
+      buttonHeights: buttons.map(b => b.getBoundingClientRect().height)
+    };
+  });
+  record(`${label}: no page-level horizontal overflow`, state.noOverflow);
+  record(`${label}: toolbar fits within the viewport`, state.toolbarWidth <= state.docWidth + 1,
+    `toolbarWidth=${state.toolbarWidth} docWidth=${state.docWidth}`);
+  record(`${label}: action buttons meet a ~44px touch target`, state.buttonHeights.every(h => h >= 40),
+    `heights=${state.buttonHeights.join(",")}`);
+  await context.close();
+}
+
+// --- Labs: every maintained lab shows its implementation near the top, before the
+// long explanation, with its run commands — not appended after references. ---
+for (const lab of LABS) {
+  const {context, page} = await newPage({width: 1280, height: 900}, "light");
+  await gotoPage(page, `/${lab.page.replace(/index\.html$/, "")}`, "light");
+  const label = `lab implementation /${lab.page.replace(/index\.html$/, "")}`;
+
+  const state = await page.evaluate(() => {
+    const article = document.querySelector(".md-content__inner");
+    const viewer = article ? article.querySelector(".docs-source-viewer") : null;
+    const h1 = article ? article.querySelector("h1") : null;
+    const headings = article ? [...article.querySelectorAll("h2")] : [];
+    const implIndex = headings.findIndex(h => h.id === "implementation");
+    return {
+      hasViewer: Boolean(viewer),
+      viewerAfterH1: Boolean(viewer && h1 && (h1.compareDocumentPosition(viewer) & Node.DOCUMENT_POSITION_FOLLOWING)),
+      implementationPosition: implIndex,
+      totalH2: headings.length,
+      hasRunCommands: Boolean(article && article.querySelector(".docs-run-commands"))
+    };
+  });
+  record(`${label}: renders an implementation source viewer`, state.hasViewer);
+  record(`${label}: viewer appears after the H1 (near the top)`, state.viewerAfterH1);
+  record(`${label}: "Implementation" heading is near the top, not appended at the end`,
+    state.implementationPosition !== -1 && state.implementationPosition <= 1,
+    `position=${state.implementationPosition} of ${state.totalH2}`);
+  record(`${label}: shows its run command(s)`, state.hasRunCommands);
+
+  await context.close();
+}
+
+// --- Breadcrumbs: click every ancestor and verify the resulting pathname, for a
+// deep page (AZ-900 domain) and one representative page per top-level section. ---
+const BREADCRUMB_ROUTES = [
+  {
+    start: "/docs/certification-notes/az-900/domain-1-concepts/",
+    clicks: [
+      {text: "AZ-900", expect: "/docs/certification-notes/az-900/"},
+      {text: "Study notes", expect: "/study-notes/"},
+      {text: "Home", expect: "/"}
+    ]
+  },
+  {
+    start: "/cloud-security/iam-at-scale/",
+    clicks: [
+      {text: "Cloud Security", expect: "/cloud-security/"},
+      {text: "Research", expect: "/research/"},
+      {text: "Home", expect: "/"}
+    ]
+  },
+  {
+    start: "/labs/secure-cicd/",
+    clicks: [
+      {text: "Labs", expect: "/labs/"},
+      {text: "Home", expect: "/"}
+    ]
+  },
+  {
+    start: "/scripts/cloud-security/",
+    clicks: [
+      {text: "Scripts", expect: "/scripts/"},
+      {text: "Home", expect: "/"}
+    ]
+  }
+];
+
+for (const route of BREADCRUMB_ROUTES) {
+  const {context, page} = await newPage({width: 1280, height: 900}, "light");
+  await gotoPage(page, route.start, "light");
+  const label = `breadcrumb clicks from ${route.start}`;
+  let currentUrl = route.start;
+  for (const step of route.clicks) {
+    const link = page.locator(".docs-breadcrumbs a", {hasText: step.text}).first();
+    const exists = (await link.count()) > 0;
+    if (!exists) {
+      record(`${label}: breadcrumb link "${step.text}" exists and is clickable`, false, `not found from ${currentUrl}`);
+      break;
+    }
+    // Playwright's own click() waits out the navigation it causes; driving the
+    // click through page.evaluate() instead raced the page tearing down its
+    // JS execution context mid-navigation and crashed the whole run.
+    await Promise.all([page.waitForLoadState("load"), link.click()]);
+    const pathname = await page.evaluate(() => location.pathname);
+    record(`${label}: clicking "${step.text}" navigates to ${step.expect}`, pathname === step.expect, `got ${pathname}`);
+    currentUrl = step.expect;
+  }
+  await context.close();
+}
+
+// --- Mobile navigation drawer: open, focus, Escape close, focus return, overlay close. ---
+{
+  const {context, page} = await newPage({width: 390, height: 844}, "light");
+  await gotoPage(page, "/", "light");
+  const label = "mobile drawer 390x844";
+
+  const trigger = page.locator('label.md-header__button[for="__drawer"]');
+  await trigger.click();
+  const openState = await page.evaluate(() => ({
+    checked: document.getElementById("__drawer").checked,
+    drawerVisible: (() => {
+      const rect = document.querySelector(".docs-left-nav").getBoundingClientRect();
+      return rect.width > 0 && rect.left < window.innerWidth;
+    })(),
+    bodyLocked: getComputedStyle(document.body).overflow === "hidden"
+  }));
+  record(`${label}: opening the trigger checks the drawer toggle`, openState.checked);
+  record(`${label}: drawer becomes visible on open`, openState.drawerVisible);
+  record(`${label}: background scroll is locked while open`, openState.bodyLocked);
+
+  await page.keyboard.press("Escape");
+  const afterEscape = await page.evaluate(() => document.getElementById("__drawer").checked);
+  record(`${label}: Escape closes the drawer`, afterEscape === false);
+  const focusReturned = await page.evaluate(() =>
+    document.activeElement === document.querySelector('label.md-header__button[for="__drawer"]'));
+  record(`${label}: focus returns to the trigger after Escape`, focusReturned);
+
+  // Overlay click also closes it.
+  await trigger.click();
+  await page.evaluate(() => document.querySelector(".md-overlay").click());
+  const afterOverlay = await page.evaluate(() => document.getElementById("__drawer").checked);
+  record(`${label}: clicking the overlay closes the drawer`, afterOverlay === false);
+
+  const widthOk = await page.evaluate(() => {
+    const rect = document.querySelector(".docs-left-nav").getBoundingClientRect();
+    return rect.width <= window.innerWidth;
+  });
+  record(`${label}: drawer never exceeds the viewport width`, widthOk);
+
+  await context.close();
+}
+
+// --- Mobile sweep: no page-level horizontal overflow across the required matrix. ---
+const MOBILE_SWEEP_VIEWPORTS = [
+  {name: "320x568", width: 320, height: 568},
+  {name: "360x800", width: 360, height: 800},
+  {name: "390x844", width: 390, height: 844},
+  {name: "412x915", width: 412, height: 915},
+  {name: "768x1024", width: 768, height: 1024},
+  {name: "1024x768", width: 1024, height: 768},
+  {name: "1280x800", width: 1280, height: 800},
+  {name: "1440x900", width: 1440, height: 900}
+];
+const MOBILE_SWEEP_PAGES = [
+  "/", ARTICLE_URL, "/research/", "/scripts/", "/scripts/cloud-security/", "/scripts/devsecops/",
+  "/labs/secure-cicd/", "/labs/postgresql-rls/", "/labs/kubernetes-security/", "/labs/azure-landing-zone/",
+  "/docs/certification-notes/az-900/", "/docs/certification-notes/az-900/domain-1-concepts/",
+  "/about/", "/404.html"
+];
+for (const viewport of MOBILE_SWEEP_VIEWPORTS) {
+  for (const scheme of ["light", "dark"]) {
+    for (const url of MOBILE_SWEEP_PAGES) {
+      const {context, page} = await newPage(viewport, scheme);
+      await gotoPage(page, url, scheme);
+      const label = `mobile sweep ${viewport.name} ${scheme} ${url}`;
+      const state = await page.evaluate(() => ({
+        scrollWidth: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth
+      }));
+      record(`${label}: no horizontal document overflow`, state.scrollWidth <= state.clientWidth + 1,
+        `scrollWidth=${state.scrollWidth} clientWidth=${state.clientWidth}`);
+
+      if (process.env.CAPTURE_UI_SCREENSHOTS === "1") {
+        const dir = path.join(root, "qa-artifacts", "ui-screenshots", scheme, viewport.name);
+        fs.mkdirSync(dir, {recursive: true});
+        const safeName = url === "/" ? "home" : url.replace(/^\/|\/$/g, "").replace(/\//g, "_") || "home";
+        await page.screenshot({path: path.join(dir, `${safeName}.png`), fullPage: true});
+      }
+
+      await context.close();
+    }
+  }
 }
 
 await browser.close();

@@ -88,7 +88,7 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -142,7 +142,7 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
@@ -220,15 +220,566 @@
           
             <!-- docs-left-nav:start -->
 <aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Labs</summary><ul><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Scripts</summary><ul><li><a href="/scripts/cloud-security/">Cloud Security</a></li><li><a href="/scripts/application-security/">Application Security</a></li><li><a href="/scripts/devsecops/">DevSecOps</a></li><li><a href="/scripts/threat-intelligence/" aria-current="page">Threat Intelligence</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/docs/certification-notes/az-900/">AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
+  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview" aria-current="page">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
 </aside>
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Threat Intelligence</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="threat-intelligence-scripts">Threat Intelligence scripts</h1><p>The threat intelligence scripts I've written and catalogued here.</p><h2 id="scripts-in-this-category">Scripts</h2><div class="docs-card-grid"><a class="docs-card" href="/scripts/threat-intelligence/cloudtrail-analyzer/"><h3 class="docs-card__title">CloudTrail suspicious-activity analyzer</h3><p class="docs-card__desc">It turns a batch of exported AWS CloudTrail events into a short list of findings worth a human look: console logins without MFA, privilege-escalation chains within a time window, repeated KMS Decrypt denies, and signs of log tampering (StopLogging / DeleteTrail)..</p><span class="docs-card__cta">Go &middot; Read-only</span></a></div>
+<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/scripts/">Scripts</a></li><li aria-current="page">Threat Intelligence</li></ol></nav><!-- docs-breadcrumbs:end -->
+<h1 id="threat-intelligence-scripts">Threat Intelligence scripts</h1><p>The threat intelligence scripts and packages I've written, with their source shown directly below &mdash; no need to open GitHub to read them.</p><section id="cloudtrail-analyzer" aria-labelledby="cloudtrail-analyzer-heading">
+<h2 id="cloudtrail-analyzer-heading">CloudTrail suspicious-activity analyzer</h2>
+<p class="docs-script-badges"><span class="docs-badge">Go</span><span class="docs-badge">Read-only</span><span class="docs-badge">Go test suite (9 cases)</span></p>
+<section class="docs-source-viewer" data-source-viewer id="source-cloudtrail-analyzer" aria-label="Source code: analyze.go">
+  <header class="docs-source-viewer__toolbar">
+    <span class="docs-source-viewer__toolbar-title">analyze.go</span>
+    <div class="docs-source-viewer__actions">
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    </div>
+  </header>
+  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-cloudtrail-analyzer-tab-0" aria-controls="source-cloudtrail-analyzer-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Implementation</button><button type="button" role="tab" id="source-cloudtrail-analyzer-tab-1" aria-controls="source-cloudtrail-analyzer-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Tests</button></div>
+  <div role="tabpanel" id="source-cloudtrail-analyzer-panel-0" tabindex="0" aria-labelledby="source-cloudtrail-analyzer-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">analyze.go</span><code class="docs-source-viewer__path">threat-intel/scripts/cloudtrail/analyze.go</code><span class="docs-source-viewer__lines">276 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="analyze.go source code" class="language-go"><span class="tok-comment">// Package cloudtrail is a bounded educational analyzer for AWS CloudTrail</span>
+<span class="tok-comment">// event fixtures. It is not a production detection product and does not</span>
+<span class="tok-comment">// claim AWS-equivalent evaluation.</span>
+<span class="tok-keyword">package</span> cloudtrail
 
-<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/scripts/devsecops/tetragon-policy-schema-check/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">DevSecOps</span><span class="docs-prevnext__title">Tetragon policy schema validator</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/scripts/threat-intelligence/cloudtrail-analyzer/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Threat Intelligence</span><span class="docs-prevnext__title">CloudTrail suspicious-activity analyzer</span></a></nav><!-- docs-prevnext:end -->
+<span class="tok-keyword">import</span> (
+	<span class="tok-string">&quot;encoding/json&quot;</span>
+	<span class="tok-string">&quot;fmt&quot;</span>
+	<span class="tok-string">&quot;sort&quot;</span>
+	<span class="tok-string">&quot;strings&quot;</span>
+	<span class="tok-string">&quot;time&quot;</span>
+)
+
+<span class="tok-comment">// Event is a subset of a CloudTrail management event used by this teaching analyzer.</span>
+<span class="tok-keyword">type</span> Event <span class="tok-keyword">struct</span> {
+	EventTime           time.Time      <span class="tok-string">`json:&quot;-&quot;`</span>
+	EventTimeRaw        string         <span class="tok-string">`json:&quot;eventTime&quot;`</span>
+	EventName           string         <span class="tok-string">`json:&quot;eventName&quot;`</span>
+	EventSource         string         <span class="tok-string">`json:&quot;eventSource&quot;`</span>
+	AWSRegion           string         <span class="tok-string">`json:&quot;awsRegion&quot;`</span>
+	SourceIPAddress     string         <span class="tok-string">`json:&quot;sourceIPAddress&quot;`</span>
+	ErrorCode           string         <span class="tok-string">`json:&quot;errorCode,omitempty&quot;`</span>
+	ErrorMessage        string         <span class="tok-string">`json:&quot;errorMessage,omitempty&quot;`</span>
+	UserIdentity        UserIdentity   <span class="tok-string">`json:&quot;userIdentity&quot;`</span>
+	ResponseElements    <span class="tok-keyword">map</span>[string]any <span class="tok-string">`json:&quot;responseElements&quot;`</span>
+	AdditionalEventData <span class="tok-keyword">map</span>[string]any <span class="tok-string">`json:&quot;additionalEventData&quot;`</span>
+}
+
+<span class="tok-comment">// UserIdentity identifies the caller.</span>
+<span class="tok-keyword">type</span> UserIdentity <span class="tok-keyword">struct</span> {
+	Type        string <span class="tok-string">`json:&quot;type&quot;`</span>
+	PrincipalID string <span class="tok-string">`json:&quot;principalId&quot;`</span>
+	ARN         string <span class="tok-string">`json:&quot;arn&quot;`</span>
+	AccountID   string <span class="tok-string">`json:&quot;accountId&quot;`</span>
+}
+
+<span class="tok-comment">// Finding is a high-signal observation that requires investigation.</span>
+<span class="tok-keyword">type</span> Finding <span class="tok-keyword">struct</span> {
+	Type        string
+	Description string
+	ActorARN    string
+	SourceIP    string
+	EventName   string
+	Time        string
+}
+
+<span class="tok-comment">// Options configures sequence and threshold detection.</span>
+<span class="tok-keyword">type</span> Options <span class="tok-keyword">struct</span> {
+	PrivilegeEscalationWindow time.Duration
+	KMSDecryptDenyThreshold   int
+}
+
+<span class="tok-comment">// DefaultOptions returns conservative teaching defaults.</span>
+<span class="tok-keyword">func</span> DefaultOptions() Options {
+	<span class="tok-keyword">return</span> Options{
+		PrivilegeEscalationWindow: <span class="tok-number">15</span> * time.Minute,
+		KMSDecryptDenyThreshold:   <span class="tok-number">3</span>,
+	}
+}
+
+<span class="tok-comment">// ParseEvents unmarshals CloudTrail JSON and rejects malformed timestamps.</span>
+<span class="tok-keyword">func</span> ParseEvents(raw []byte) ([]Event, error) {
+	<span class="tok-keyword">var</span> events []Event
+	<span class="tok-keyword">if</span> err := json.Unmarshal(raw, &amp;events); err != <span class="tok-keyword">nil</span> {
+		<span class="tok-keyword">return</span> <span class="tok-keyword">nil</span>, fmt.Errorf(<span class="tok-string">&quot;decode cloudtrail events: %w&quot;</span>, err)
+	}
+	<span class="tok-keyword">for</span> i := <span class="tok-keyword">range</span> events {
+		<span class="tok-keyword">if</span> strings.TrimSpace(events[i].EventTimeRaw) == <span class="tok-string">&quot;&quot;</span> {
+			<span class="tok-keyword">return</span> <span class="tok-keyword">nil</span>, fmt.Errorf(<span class="tok-string">&quot;event %d: missing eventTime&quot;</span>, i)
+		}
+		parsed, err := time.Parse(time.RFC3339, events[i].EventTimeRaw)
+		<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+			<span class="tok-keyword">return</span> <span class="tok-keyword">nil</span>, fmt.Errorf(<span class="tok-string">&quot;event %d: malformed eventTime %q: %w&quot;</span>, i, events[i].EventTimeRaw, err)
+		}
+		events[i].EventTime = parsed
+		<span class="tok-keyword">if</span> events[i].ResponseElements == <span class="tok-keyword">nil</span> {
+			events[i].ResponseElements = <span class="tok-keyword">map</span>[string]any{}
+		}
+		<span class="tok-keyword">if</span> events[i].AdditionalEventData == <span class="tok-keyword">nil</span> {
+			events[i].AdditionalEventData = <span class="tok-keyword">map</span>[string]any{}
+		}
+	}
+	<span class="tok-keyword">return</span> events, <span class="tok-keyword">nil</span>
+}
+
+<span class="tok-comment">// Analyze returns findings for the supplied events.</span>
+<span class="tok-keyword">func</span> Analyze(events []Event, opts Options) []Finding {
+	<span class="tok-keyword">if</span> opts.PrivilegeEscalationWindow &lt;= <span class="tok-number">0</span> {
+		opts.PrivilegeEscalationWindow = DefaultOptions().PrivilegeEscalationWindow
+	}
+	<span class="tok-keyword">if</span> opts.KMSDecryptDenyThreshold &lt;= <span class="tok-number">0</span> {
+		opts.KMSDecryptDenyThreshold = DefaultOptions().KMSDecryptDenyThreshold
+	}
+
+	<span class="tok-keyword">var</span> findings []Finding
+	findings = append(findings, analyzeConsoleLogins(events)...)
+	findings = append(findings, analyzePrivilegeChains(events, opts.PrivilegeEscalationWindow)...)
+	findings = append(findings, analyzeKMSDecryptDenies(events, opts.KMSDecryptDenyThreshold)...)
+	findings = append(findings, analyzeLogTampering(events)...)
+	<span class="tok-keyword">return</span> findings
+}
+
+<span class="tok-keyword">func</span> actorARN(event Event) string {
+	<span class="tok-keyword">return</span> strings.TrimSpace(event.UserIdentity.ARN)
+}
+
+<span class="tok-keyword">func</span> analyzeConsoleLogins(events []Event) []Finding {
+	<span class="tok-keyword">var</span> findings []Finding
+	<span class="tok-keyword">for</span> _, event := <span class="tok-keyword">range</span> events {
+		<span class="tok-keyword">if</span> event.EventName != <span class="tok-string">&quot;ConsoleLogin&quot;</span> {
+			<span class="tok-keyword">continue</span>
+		}
+		actor := actorARN(event)
+		<span class="tok-keyword">if</span> actor == <span class="tok-string">&quot;&quot;</span> {
+			findings = append(findings, Finding{
+				Type:        <span class="tok-string">&quot;malformed-actor&quot;</span>,
+				Description: <span class="tok-string">&quot;ConsoleLogin event is missing a usable userIdentity.arn&quot;</span>,
+				EventName:   event.EventName,
+				SourceIP:    event.SourceIPAddress,
+				Time:        event.EventTimeRaw,
+			})
+			<span class="tok-keyword">continue</span>
+		}
+
+		loginResult, ok := event.ResponseElements[<span class="tok-string">&quot;ConsoleLogin&quot;</span>].(string)
+		<span class="tok-keyword">if</span> !ok || loginResult != <span class="tok-string">&quot;Success&quot;</span> {
+			<span class="tok-comment">// Failed or incomplete login is not a successful non-MFA login.</span>
+			<span class="tok-keyword">continue</span>
+		}
+
+		mfaRaw, hasMFA := event.AdditionalEventData[<span class="tok-string">&quot;MFAUsed&quot;</span>]
+		mfa, mfaIsString := mfaRaw.(string)
+		<span class="tok-keyword">switch</span> {
+		<span class="tok-keyword">case</span> !hasMFA || !mfaIsString:
+			findings = append(findings, Finding{
+				Type:        <span class="tok-string">&quot;console-login-mfa-metadata-missing&quot;</span>,
+				Description: <span class="tok-string">&quot;Successful ConsoleLogin lacks explicit MFAUsed metadata; investigate session assurance separately&quot;</span>,
+				ActorARN:    actor,
+				SourceIP:    event.SourceIPAddress,
+				EventName:   event.EventName,
+				Time:        event.EventTimeRaw,
+			})
+		<span class="tok-keyword">case</span> strings.EqualFold(mfa, <span class="tok-string">&quot;No&quot;</span>) || strings.EqualFold(mfa, <span class="tok-string">&quot;false&quot;</span>):
+			findings = append(findings, Finding{
+				Type:        <span class="tok-string">&quot;console-login-without-mfa&quot;</span>,
+				Description: <span class="tok-string">&quot;Successful ConsoleLogin reported MFAUsed=No&quot;</span>,
+				ActorARN:    actor,
+				SourceIP:    event.SourceIPAddress,
+				EventName:   event.EventName,
+				Time:        event.EventTimeRaw,
+			})
+		}
+	}
+	<span class="tok-keyword">return</span> findings
+}
+
+<span class="tok-keyword">func</span> analyzePrivilegeChains(events []Event, window time.Duration) []Finding {
+	byActor := <span class="tok-keyword">map</span>[string][]Event{}
+	<span class="tok-keyword">for</span> _, event := <span class="tok-keyword">range</span> events {
+		actor := actorARN(event)
+		<span class="tok-keyword">if</span> actor == <span class="tok-string">&quot;&quot;</span> {
+			<span class="tok-keyword">continue</span>
+		}
+		byActor[actor] = append(byActor[actor], event)
+	}
+
+	<span class="tok-keyword">var</span> findings []Finding
+	<span class="tok-keyword">for</span> actor, actorEvents := <span class="tok-keyword">range</span> byActor {
+		sorted := append([]Event(<span class="tok-keyword">nil</span>), actorEvents...)
+		sort.SliceStable(sorted, <span class="tok-keyword">func</span>(i, j int) bool {
+			<span class="tok-keyword">return</span> sorted[i].EventTime.Before(sorted[j].EventTime)
+		})
+
+		<span class="tok-keyword">for</span> i := <span class="tok-number">0</span>; i &lt; len(sorted); i++ {
+			<span class="tok-keyword">if</span> sorted[i].EventName != <span class="tok-string">&quot;CreateUser&quot;</span> {
+				<span class="tok-keyword">continue</span>
+			}
+			<span class="tok-keyword">for</span> j := i + <span class="tok-number">1</span>; j &lt; len(sorted); j++ {
+				diff := sorted[j].EventTime.Sub(sorted[i].EventTime)
+				<span class="tok-keyword">if</span> diff &lt; <span class="tok-number">0</span> {
+					<span class="tok-comment">// Chronological sort makes this unreachable; guard anyway.</span>
+					<span class="tok-keyword">continue</span>
+				}
+				<span class="tok-keyword">if</span> diff &gt; window {
+					<span class="tok-keyword">break</span>
+				}
+				<span class="tok-keyword">if</span> sorted[j].EventName == <span class="tok-string">&quot;AttachUserPolicy&quot;</span> || sorted[j].EventName == <span class="tok-string">&quot;PutUserPolicy&quot;</span> {
+					findings = append(findings, Finding{
+						Type: <span class="tok-string">&quot;privilege-escalation-sequence&quot;</span>,
+						Description: fmt.Sprintf(
+							<span class="tok-string">&quot;CreateUser followed by %s within %s for the same actor; investigate for unauthorized privilege growth&quot;</span>,
+							sorted[j].EventName,
+							window,
+						),
+						ActorARN:  actor,
+						SourceIP:  sorted[j].SourceIPAddress,
+						EventName: sorted[j].EventName,
+						Time:      sorted[j].EventTimeRaw,
+					})
+					<span class="tok-keyword">break</span>
+				}
+			}
+		}
+	}
+	<span class="tok-keyword">return</span> findings
+}
+
+<span class="tok-keyword">func</span> analyzeKMSDecryptDenies(events []Event, threshold int) []Finding {
+	counts := <span class="tok-keyword">map</span>[string][]Event{}
+	<span class="tok-keyword">for</span> _, event := <span class="tok-keyword">range</span> events {
+		<span class="tok-keyword">if</span> event.EventSource != <span class="tok-string">&quot;kms.amazonaws.com&quot;</span> || event.EventName != <span class="tok-string">&quot;Decrypt&quot;</span> {
+			<span class="tok-keyword">continue</span>
+		}
+		<span class="tok-keyword">if</span> event.ErrorCode != <span class="tok-string">&quot;AccessDenied&quot;</span> &amp;&amp; event.ErrorCode != <span class="tok-string">&quot;AccessDeniedException&quot;</span> {
+			<span class="tok-keyword">continue</span>
+		}
+		actor := actorARN(event)
+		<span class="tok-keyword">if</span> actor == <span class="tok-string">&quot;&quot;</span> {
+			<span class="tok-keyword">continue</span>
+		}
+		counts[actor] = append(counts[actor], event)
+	}
+
+	<span class="tok-keyword">var</span> findings []Finding
+	<span class="tok-keyword">for</span> actor, denied := <span class="tok-keyword">range</span> counts {
+		<span class="tok-keyword">if</span> len(denied) &lt; threshold {
+			<span class="tok-comment">// A single denied decrypt is not &quot;multiple attempts&quot;.</span>
+			<span class="tok-keyword">continue</span>
+		}
+		last := denied[len(denied)-<span class="tok-number">1</span>]
+		findings = append(findings, Finding{
+			Type: <span class="tok-string">&quot;kms-decrypt-denied-threshold&quot;</span>,
+			Description: fmt.Sprintf(
+				<span class="tok-string">&quot;%d AccessDenied Decrypt attempts for the same actor met the configured threshold of %d&quot;</span>,
+				len(denied),
+				threshold,
+			),
+			ActorARN:  actor,
+			SourceIP:  last.SourceIPAddress,
+			EventName: <span class="tok-string">&quot;Decrypt&quot;</span>,
+			Time:      last.EventTimeRaw,
+		})
+	}
+	<span class="tok-keyword">return</span> findings
+}
+
+<span class="tok-keyword">func</span> analyzeLogTampering(events []Event) []Finding {
+	interesting := <span class="tok-keyword">map</span>[string]<span class="tok-keyword">struct</span>{}{
+		<span class="tok-string">&quot;StopLogging&quot;</span>:                 {},
+		<span class="tok-string">&quot;DeleteTrail&quot;</span>:                 {},
+		<span class="tok-string">&quot;UpdateTrail&quot;</span>:                 {},
+		<span class="tok-string">&quot;PutEventSelectors&quot;</span>:           {},
+		<span class="tok-string">&quot;DeleteEventDataStore&quot;</span>:        {},
+		<span class="tok-string">&quot;StopEventDataStoreIngestion&quot;</span>: {},
+	}
+
+	<span class="tok-keyword">var</span> findings []Finding
+	<span class="tok-keyword">for</span> _, event := <span class="tok-keyword">range</span> events {
+		<span class="tok-keyword">if</span> _, ok := interesting[event.EventName]; !ok {
+			<span class="tok-keyword">continue</span>
+		}
+		actor := actorARN(event)
+		findings = append(findings, Finding{
+			Type: <span class="tok-string">&quot;cloudtrail-admin-event&quot;</span>,
+			Description: fmt.Sprintf(
+				<span class="tok-string">&quot;High-signal CloudTrail administrative event %s observed; investigate intent and change authorization. This analyzer does not assert the event is malicious by itself.&quot;</span>,
+				event.EventName,
+			),
+			ActorARN:  actor,
+			SourceIP:  event.SourceIPAddress,
+			EventName: event.EventName,
+			Time:      event.EventTimeRaw,
+		})
+	}
+	<span class="tok-keyword">return</span> findings
+}</code></pre>
+    </div><div role="tabpanel" id="source-cloudtrail-analyzer-panel-1" tabindex="0" aria-labelledby="source-cloudtrail-analyzer-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">analyze_test.go</span><code class="docs-source-viewer__path">threat-intel/scripts/cloudtrail/analyze_test.go</code><span class="docs-source-viewer__lines">246 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="analyze_test.go source code" class="language-go"><span class="tok-keyword">package</span> cloudtrail_test
+
+<span class="tok-keyword">import</span> (
+	<span class="tok-string">&quot;strings&quot;</span>
+	<span class="tok-string">&quot;testing&quot;</span>
+	<span class="tok-string">&quot;time&quot;</span>
+
+	cloudtrail <span class="tok-string">&quot;github.com/jasonachkar/cybersecurity-writeups/threat-intel/scripts/cloudtrail&quot;</span>
+)
+
+<span class="tok-keyword">func</span> findingTypes(findings []cloudtrail.Finding) []string {
+	out := make([]string, <span class="tok-number">0</span>, len(findings))
+	<span class="tok-keyword">for</span> _, finding := <span class="tok-keyword">range</span> findings {
+		out = append(out, finding.Type)
+	}
+	<span class="tok-keyword">return</span> out
+}
+
+<span class="tok-keyword">func</span> hasType(findings []cloudtrail.Finding, want string) bool {
+	<span class="tok-keyword">for</span> _, finding := <span class="tok-keyword">range</span> findings {
+		<span class="tok-keyword">if</span> finding.Type == want {
+			<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
+		}
+	}
+	<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+}
+
+<span class="tok-keyword">func</span> TestParseEventsRejectsMalformedTimestamp(t *testing.T) {
+	_, err := cloudtrail.ParseEvents([]byte(<span class="tok-string">`[
+		{&quot;eventTime&quot;:&quot;not-a-time&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111:user/a&quot;}}
+	]`</span>))
+	<span class="tok-keyword">if</span> err == <span class="tok-keyword">nil</span> {
+		t.Fatal(<span class="tok-string">&quot;expected malformed eventTime to fail&quot;</span>)
+	}
+}
+
+<span class="tok-keyword">func</span> TestAnalyzeConsoleLoginCases(t *testing.T) {
+	tests := []<span class="tok-keyword">struct</span> {
+		name    string
+		raw     string
+		want    string
+		notWant string
+	}{
+		{
+			name: <span class="tok-string">&quot;successful login with MFA&quot;</span>,
+			raw: <span class="tok-string">`[
+			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
+			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},
+			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},
+			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:&quot;Yes&quot;}}
+			]`</span>,
+			notWant: <span class="tok-string">&quot;console-login-without-mfa&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;successful login without MFA&quot;</span>,
+			raw: <span class="tok-string">`[
+			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
+			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},
+			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},
+			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:&quot;No&quot;}}
+			]`</span>,
+			want: <span class="tok-string">&quot;console-login-without-mfa&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;failed login without MFA metadata is not treated as success&quot;</span>,
+			raw: <span class="tok-string">`[
+			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
+			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},
+			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Failure&quot;},
+			   &quot;errorCode&quot;:&quot;FailedAuthentication&quot;}
+			]`</span>,
+			notWant: <span class="tok-string">&quot;console-login-without-mfa&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;missing MFA metadata on success&quot;</span>,
+			raw: <span class="tok-string">`[
+			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
+			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},
+			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},
+			   &quot;additionalEventData&quot;:{}}
+			]`</span>,
+			want: <span class="tok-string">&quot;console-login-mfa-metadata-missing&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;malformed additional data type&quot;</span>,
+			raw: <span class="tok-string">`[
+			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
+			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},
+			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},
+			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:true}}
+			]`</span>,
+			want: <span class="tok-string">&quot;console-login-mfa-metadata-missing&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;empty ARN&quot;</span>,
+			raw: <span class="tok-string">`[
+			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,
+			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;&quot;},
+			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},
+			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:&quot;No&quot;}}
+			]`</span>,
+			want: <span class="tok-string">&quot;malformed-actor&quot;</span>,
+		},
+	}
+
+	<span class="tok-keyword">for</span> _, tt := <span class="tok-keyword">range</span> tests {
+		t.Run(tt.name, <span class="tok-keyword">func</span>(t *testing.T) {
+			events, err := cloudtrail.ParseEvents([]byte(tt.raw))
+			<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+				t.Fatalf(<span class="tok-string">&quot;ParseEvents: %v&quot;</span>, err)
+			}
+			findings := cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
+			<span class="tok-keyword">if</span> tt.want != <span class="tok-string">&quot;&quot;</span> &amp;&amp; !hasType(findings, tt.want) {
+				t.Fatalf(<span class="tok-string">&quot;missing %s in %v&quot;</span>, tt.want, findingTypes(findings))
+			}
+			<span class="tok-keyword">if</span> tt.notWant != <span class="tok-string">&quot;&quot;</span> &amp;&amp; hasType(findings, tt.notWant) {
+				t.Fatalf(<span class="tok-string">&quot;unexpected %s in %v&quot;</span>, tt.notWant, findingTypes(findings))
+			}
+		})
+	}
+}
+
+<span class="tok-keyword">func</span> TestPrivilegeEscalationSequence(t *testing.T) {
+	raw := <span class="tok-string">`[
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:05:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
+	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
+	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
+	]`</span>
+	events, err := cloudtrail.ParseEvents([]byte(raw))
+	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+		t.Fatal(err)
+	}
+	findings := cloudtrail.Analyze(events, cloudtrail.Options{
+		PrivilegeEscalationWindow: <span class="tok-number">15</span> * time.Minute,
+		KMSDecryptDenyThreshold:   <span class="tok-number">3</span>,
+	})
+	<span class="tok-keyword">if</span> !hasType(findings, <span class="tok-string">&quot;privilege-escalation-sequence&quot;</span>) {
+		t.Fatalf(<span class="tok-string">&quot;expected sorted CreateUser→AttachUserPolicy chain, got %v&quot;</span>, findingTypes(findings))
+	}
+}
+
+<span class="tok-keyword">func</span> TestPrivilegeEscalationOutsideWindow(t *testing.T) {
+	raw := <span class="tok-string">`[
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,
+	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
+	  {&quot;eventTime&quot;:&quot;2026-07-01T13:00:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,
+	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
+	]`</span>
+	events, err := cloudtrail.ParseEvents([]byte(raw))
+	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+		t.Fatal(err)
+	}
+	findings := cloudtrail.Analyze(events, cloudtrail.Options{
+		PrivilegeEscalationWindow: <span class="tok-number">15</span> * time.Minute,
+		KMSDecryptDenyThreshold:   <span class="tok-number">3</span>,
+	})
+	<span class="tok-keyword">if</span> hasType(findings, <span class="tok-string">&quot;privilege-escalation-sequence&quot;</span>) {
+		t.Fatal(<span class="tok-string">&quot;chain outside window should not match&quot;</span>)
+	}
+}
+
+<span class="tok-keyword">func</span> TestNegativeTimeDifferencePrevention(t *testing.T) {
+	<span class="tok-comment">// Same actor, Attach before Create chronologically after sort should not</span>
+	<span class="tok-comment">// create a reverse chain.</span>
+	raw := <span class="tok-string">`[
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,
+	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:10:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,
+	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
+	]`</span>
+	events, err := cloudtrail.ParseEvents([]byte(raw))
+	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+		t.Fatal(err)
+	}
+	findings := cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
+	<span class="tok-keyword">if</span> hasType(findings, <span class="tok-string">&quot;privilege-escalation-sequence&quot;</span>) {
+		t.Fatal(<span class="tok-string">&quot;reverse chronological Attach→Create must not correlate&quot;</span>)
+	}
+}
+
+<span class="tok-keyword">func</span> TestKMSDecryptThresholdAndSingleAttempt(t *testing.T) {
+	single := <span class="tok-string">`[
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,
+	   &quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
+	]`</span>
+	events, err := cloudtrail.ParseEvents([]byte(single))
+	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+		t.Fatal(err)
+	}
+	findings := cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
+	<span class="tok-keyword">if</span> hasType(findings, <span class="tok-string">&quot;kms-decrypt-denied-threshold&quot;</span>) {
+		t.Fatal(<span class="tok-string">&quot;single AccessDenied decrypt must not claim multiple attempts&quot;</span>)
+	}
+
+	repeated := <span class="tok-string">`[
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,&quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:01:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,&quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:02:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,&quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
+	]`</span>
+	events, err = cloudtrail.ParseEvents([]byte(repeated))
+	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+		t.Fatal(err)
+	}
+	findings = cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
+	<span class="tok-keyword">if</span> !hasType(findings, <span class="tok-string">&quot;kms-decrypt-denied-threshold&quot;</span>) {
+		t.Fatal(<span class="tok-string">&quot;expected thresholded decrypt findings&quot;</span>)
+	}
+}
+
+<span class="tok-keyword">func</span> TestActorSeparation(t *testing.T) {
+	raw := <span class="tok-string">`[
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:01:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/bob&quot;}}
+	]`</span>
+	events, err := cloudtrail.ParseEvents([]byte(raw))
+	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+		t.Fatal(err)
+	}
+	findings := cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
+	<span class="tok-keyword">if</span> hasType(findings, <span class="tok-string">&quot;privilege-escalation-sequence&quot;</span>) {
+		t.Fatal(<span class="tok-string">&quot;different actors must not form a chain&quot;</span>)
+	}
+}
+
+<span class="tok-keyword">func</span> TestLogTamperingClassification(t *testing.T) {
+	raw := <span class="tok-string">`[
+	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;UpdateTrail&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
+	]`</span>
+	events, err := cloudtrail.ParseEvents([]byte(raw))
+	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+		t.Fatal(err)
+	}
+	findings := cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
+	<span class="tok-keyword">if</span> !hasType(findings, <span class="tok-string">&quot;cloudtrail-admin-event&quot;</span>) {
+		t.Fatal(<span class="tok-string">&quot;expected high-signal admin classification&quot;</span>)
+	}
+	<span class="tok-keyword">for</span> _, finding := <span class="tok-keyword">range</span> findings {
+		<span class="tok-keyword">if</span> finding.Type == <span class="tok-string">&quot;cloudtrail-admin-event&quot;</span> &amp;&amp; finding.EventName != <span class="tok-string">&quot;UpdateTrail&quot;</span> {
+			t.Fatalf(<span class="tok-string">&quot;event name not preserved: %s&quot;</span>, finding.EventName)
+		}
+		<span class="tok-keyword">if</span> finding.Type == <span class="tok-string">&quot;cloudtrail-admin-event&quot;</span> &amp;&amp; !strings.Contains(finding.Description, <span class="tok-string">&quot;does not assert the event is malicious&quot;</span>) {
+			t.Fatalf(<span class="tok-string">&quot;description overclaims malice: %s&quot;</span>, finding.Description)
+		}
+	}
+}</code></pre>
+    </div>
+</section>
+<h3>What it does</h3><p>It turns a batch of exported AWS CloudTrail events into a short list of findings worth a human look: console logins without MFA, privilege-escalation chains within a time window, repeated KMS Decrypt denies, and signs of log tampering (StopLogging / DeleteTrail).</p>
+<h3>Why I wrote it</h3><p>Reading the incident case studies made it obvious how much of a real investigation is just pattern-spotting across thousands of events, so I wrote a small analyzer that does the first pass of that for CloudTrail.</p>
+<h3>How it works</h3><p>ParseEvents decodes a CloudTrail JSON export into typed events. Analyze runs four independent passes over that list — console-login, privilege-chain, KMS-deny-threshold, and log-tampering — each returning its own Finding records, which the caller merges.</p>
+<h3>Requirements</h3><ul><li>Go 1.22+</li><li>A CloudTrail JSON export to analyze — it does not call AWS APIs itself.</li></ul>
+<h3>Permissions and safety</h3><p>None from the tool itself. Reading the CloudTrail export is on you; treat that export as sensitive data regardless of what this analyzer does with it.</p>
+<h3>Usage</h3><pre><code>go test ./threat-intel/scripts/cloudtrail/...</code></pre>
+<h3>Inputs</h3><p>Raw CloudTrail JSON bytes (a []byte), plus an Options struct for thresholds like the privilege-chain time window and KMS-deny count.</p>
+<h3>Outputs</h3><p>A []Finding slice: which analysis flagged it, the actor ARN, and a description.</p>
+<h3>What I tested</h3><p>analyze_test.go covers each of the four analyses with both events that should fire a finding and quiet events that should not.</p>
+<h3>Limitations</h3><ul><li>This flags patterns worth checking, not confirmed compromise — every finding needs a human to correlate it against what was actually authorized.</li><li>It only understands the CloudTrail event shape it was built against; it has not been run against a live account&#39;s trail.</li><li>No CLI entry point yet; exercised via Analyze()/ParseEvents() and its test suite.</li></ul>
+<h3>Related research</h3><ul><li>Related research: <a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul>
+</section>
+
+<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/scripts/devsecops/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Scripts</span><span class="docs-prevnext__title">DevSecOps</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/study-notes/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Documentation</span><span class="docs-prevnext__title">Study notes</span></a></nav><!-- docs-prevnext:end -->
 </article>
             </div>
           
@@ -274,6 +825,7 @@
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
 <script src="../../assets/javascripts/docs-ui.js" defer></script>
 <script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
       

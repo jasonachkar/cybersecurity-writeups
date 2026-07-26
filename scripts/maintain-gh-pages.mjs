@@ -15,6 +15,8 @@ import {
   entries
 } from "./site-config.mjs";
 import {SCRIPTS, SCRIPT_CATEGORIES} from "./catalog.mjs";
+import {LABS} from "../labs/catalog.mjs";
+import {highlightCode} from "./highlight.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const toPosix = value => value.split(path.sep).join("/");
@@ -196,6 +198,10 @@ function stripGenerated(html) {
     // no trailing whitespace of our own (matches docs-evidence above).
     .replace(/\n?<!-- docs-inline-toc:start -->[\s\S]*?<!-- docs-inline-toc:end -->/g, "")
     .replace(/\n?<!-- docs-prevnext:start -->[\s\S]*?<!-- docs-prevnext:end -->\s*/g, "")
+    // Lab implementation-viewer block, injected right after the page's intro
+    // paragraph (see injectLabSourceViewer); stripped here so the content-
+    // preservation fingerprint below only ever sees the lab author's own prose.
+    .replace(/\n?<!-- docs-lab-source:start -->[\s\S]*?<!-- docs-lab-source:end -->\s*/g, "")
     // No trailing \s* here either: what follows in the template (the footer-meta div)
     // is original content, not ours to eat.
     .replace(/\n?<!-- docs-footer:start -->[\s\S]*?<!-- docs-footer:end -->/g, "")
@@ -243,17 +249,23 @@ function navContainsCurrent(node, currentUrl) {
 }
 
 function renderNavNode(node, currentUrl) {
-  if (node.href) {
-    // A leaf link. AZ-900/SC-500 also carry `children` (their exam domains) so
-    // breadcrumbs/prev-next can walk into them, but the left nav intentionally
-    // stays flat here, matching the requested navigation structure.
+  const hasChildren = Array.isArray(node.children) && node.children.length > 0;
+  if (!hasChildren) {
+    // A plain leaf link.
     const isCurrent = node.href === currentUrl;
-    const isAncestor = !isCurrent && node.children && navContainsCurrent(node, currentUrl);
-    const cls = isAncestor ? ' class="docs-nav-ancestor"' : "";
-    return `<li><a href="${node.href}"${cls}${isCurrent ? ' aria-current="page"' : ""}>${escapeHtml(node.title)}</a></li>`;
+    return `<li><a href="${node.href}"${isCurrent ? ' aria-current="page"' : ""}>${escapeHtml(node.title)}</a></li>`;
   }
+  // A group. If it also has its own href (Research, Cloud Security, AZ-900,
+  // Labs, ...), it is both a real overview page and a group of descendants —
+  // both must remain reachable, so it stays expandable and gets an explicit
+  // "Overview" link as its first child rather than collapsing into a flat
+  // leaf that hides everything beneath it.
   const open = navContainsCurrent(node, currentUrl);
-  return `<li><details class="docs-nav-group"${open ? " open" : ""}><summary>${escapeHtml(node.title)}</summary><ul>${node.children.map(child => renderNavNode(child, currentUrl)).join("")}</ul></details></li>`;
+  const overviewItem = node.href
+    ? `<li><a href="${node.href}" class="docs-nav-overview"${node.href === currentUrl ? ' aria-current="page"' : ""}>Overview</a></li>`
+    : "";
+  const childrenHtml = node.children.map(child => renderNavNode(child, currentUrl)).join("");
+  return `<li><details class="docs-nav-group"${open ? " open" : ""}><summary>${escapeHtml(node.title)}</summary><ul>${overviewItem}${childrenHtml}</ul></details></li>`;
 }
 
 function leftNav(currentUrl) {
@@ -263,6 +275,15 @@ function leftNav(currentUrl) {
   <nav aria-label="Documentation"><ul>${items}</ul></nav>
 </aside>
 <!-- docs-left-nav:end -->`;
+}
+
+// Embedded source code (Scripts/Labs) must stay fully visible on the page but
+// must not flood the search index with identifiers and code lines — a single
+// script can be hundreds of lines. Every search-facing extractor below runs
+// its article text through this first so headings/teasers/section text never
+// include a source viewer's contents, while the rendered page is untouched.
+function stripSourceViewers(article) {
+  return article.replace(/<section\b[^>]*class=["'][^"']*\bdocs-source-viewer\b[^"']*["'][^>]*>[\s\S]*?<\/section>/gi, "");
 }
 
 // Single source of heading data for both TOC presentations: a permanently-visible
@@ -292,7 +313,7 @@ function needsToc(entry, headings) {
 // page" expander. Without this, a single blob-per-page index gives every match a
 // wall-of-text teaser instead of a short, relevant excerpt.
 function articleSections(html) {
-  const article = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "";
+  const article = stripSourceViewers(html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "");
   const matches = [...article.matchAll(/<h2\b[^>]*id=["']([^"']+)["'][^>]*>([\s\S]*?)<\/h2>/gi)];
   const sections = [];
   for (let i = 0; i < matches.length; i++) {
@@ -314,7 +335,7 @@ function articleSections(html) {
 // sidesteps both, since neither breadcrumbs (a <nav>/<ol>) nor the TOC
 // (<details>/<nav>/<ol>) render as <p> elements.
 function articleIntro(html) {
-  const article = html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "";
+  const article = stripSourceViewers(html.match(/<article\b[^>]*>([\s\S]*?)<\/article>/i)?.[1] || "");
   const firstH2 = article.search(/<h2\b/i);
   const introHtml = firstH2 === -1 ? article : article.slice(0, firstH2);
   const paragraphs = [...introHtml.matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)]
@@ -354,6 +375,77 @@ function inlineToc(headings) {
   </nav>
 </details>
 <!-- docs-inline-toc:end -->`;
+}
+
+// Reads each source file directly from the tracked repository at maintain time
+// (never a copy pasted into a catalogue string) and renders an accessible,
+// tabbed, build-time-highlighted viewer. Used by both the Scripts pages and
+// the per-lab implementation viewers so the two features share one component.
+function renderSourceViewer(sourceFiles, viewerId) {
+  const files = sourceFiles.map((file) => {
+    const raw = read(file.path).replace(/\n$/, "");
+    const lineCount = raw.split("\n").length;
+    return {...file, raw, lineCount, highlighted: highlightCode(raw, file.language)};
+  });
+  const primaryIndex = Math.max(0, files.findIndex(file => file.primary));
+  const filename = value => value.split("/").pop();
+
+  const tabs = files.length > 1
+    ? `<div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files">${files.map((file, i) => `<button type="button" role="tab" id="${viewerId}-tab-${i}" aria-controls="${viewerId}-panel-${i}" aria-selected="${i === primaryIndex ? "true" : "false"}" tabindex="${i === primaryIndex ? "0" : "-1"}" class="docs-source-viewer__tab"${i === primaryIndex ? " data-current-tab" : ""} data-source-tab data-index="${i}">${escapeHtml(file.label)}</button>`).join("")}</div>`
+    : "";
+
+  const panels = files.map((file, i) => {
+    const hiddenAttr = i === primaryIndex ? "" : " hidden";
+    const labelledBy = files.length > 1 ? ` aria-labelledby="${viewerId}-tab-${i}"` : "";
+    return `<div role="tabpanel" id="${viewerId}-panel-${i}" tabindex="0"${labelledBy} class="docs-source-viewer__panel" data-source-panel data-index="${i}"${hiddenAttr}>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">${escapeHtml(filename(file.path))}</span><code class="docs-source-viewer__path">${escapeHtml(file.path)}</code><span class="docs-source-viewer__lines">${file.lineCount} line${file.lineCount === 1 ? "" : "s"}</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="${escapeHtml(filename(file.path))} source code" class="language-${escapeHtml(file.language)}">${file.highlighted}</code></pre>
+    </div>`;
+  }).join("");
+
+  return `<section class="docs-source-viewer" data-source-viewer id="${viewerId}" aria-label="Source code: ${escapeHtml(filename(files[primaryIndex].path))}">
+  <header class="docs-source-viewer__toolbar">
+    <span class="docs-source-viewer__toolbar-title">${escapeHtml(filename(files[primaryIndex].path))}</span>
+    <div class="docs-source-viewer__actions">
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    </div>
+  </header>
+  ${tabs}
+  ${panels}
+</section>`;
+}
+
+function renderLabSourceBlock(lab) {
+  const viewer = renderSourceViewer(lab.sourceFiles, `source-${lab.slug}`);
+  const commands = lab.runCommands.map(cmd => `<li><code>${escapeHtml(cmd)}</code></li>`).join("");
+  const notes = (lab.safetyNotes || []).map(note => `<li>${escapeHtml(note)}</li>`).join("");
+  return `<h2 id="implementation">Implementation</h2>
+${viewer}
+<h3 id="run-it">Run it</h3>
+<ul class="docs-run-commands">${commands}</ul>
+${notes ? `<ul class="docs-safety-notes">${notes}</ul>` : ""}`;
+}
+
+// Labs are hand-authored pages (their own prose is protected by the content-
+// preservation check further down), so the implementation viewer is injected
+// as an idempotent marked block — like the footer/nav/TOC — rather than by
+// regenerating the whole article. Placed right after the page's intro
+// paragraph, ahead of the lab's own detailed explanation, per the required
+// "source before explanation" page order.
+function injectLabSourceViewer(html, lab) {
+  html = html.replace(/\n?<!-- docs-lab-source:start -->[\s\S]*?<!-- docs-lab-source:end -->\s*/, "");
+  const h1Match = html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/i);
+  if (!h1Match) throw new Error(`${lab.page}: H1 not found for lab source injection`);
+  let cursor = h1Match.index + h1Match[0].length;
+  // Skip past the inline TOC (already inserted by normalizePage, which runs
+  // before this) so the viewer lands after it, not wedged in front of it.
+  const tocMatch = html.slice(cursor).match(/^\s*<!-- docs-inline-toc:start -->[\s\S]*?<!-- docs-inline-toc:end -->/);
+  if (tocMatch) cursor += tocMatch[0].length;
+  const introMatch = html.slice(cursor).match(/^\s*<p\b[^>]*>[\s\S]*?<\/p>/);
+  const insertAt = cursor + (introMatch ? introMatch[0].length : 0);
+  const block = `\n<!-- docs-lab-source:start -->\n${renderLabSourceBlock(lab)}\n<!-- docs-lab-source:end -->\n`;
+  return `${html.slice(0, insertAt)}${block}${html.slice(insertAt)}`;
 }
 
 function docsFooter() {
@@ -452,40 +544,78 @@ function archiveBody(entry) {
 }
 
 function scriptsIndexBody() {
-  const cards = SCRIPT_CATEGORIES.map(category => {
+  const groups = SCRIPT_CATEGORIES.map(category => {
     const scripts = SCRIPTS.filter(script => script.category === category.slug);
-    const items = scripts.map(script => `<li><a href="/scripts/${script.category}/${script.slug}/">${escapeHtml(script.name)}</a> <span class="docs-script-meta">${escapeHtml(script.language)} &middot; ${script.modifiesState ? "Modifies state" : "Read-only"}</span></li>`).join("");
-    return `<section aria-labelledby="scripts-${category.slug}"><h2 id="scripts-${category.slug}">${escapeHtml(category.title)}</h2><p><a href="/scripts/${category.slug}/">Browse the ${escapeHtml(category.title)} category</a></p><ul class="docs-link-list">${items}</ul></section>`;
+    const items = scripts.map(script => `<li><a href="/scripts/${script.category}/#${script.slug}">${escapeHtml(script.name)}</a> <span class="docs-script-meta">${escapeHtml(script.language)} &middot; ${script.modifiesState ? "Modifies state" : "Read-only"} &middot; ${escapeHtml(script.testStatus)}</span></li>`).join("");
+    return `<section aria-labelledby="scripts-${category.slug}"><h2 id="scripts-${category.slug}">${escapeHtml(category.title)}</h2><p><a href="/scripts/${category.slug}/">Open the ${escapeHtml(category.title)} category</a></p><ul class="docs-link-list docs-link-list--meta">${items}</ul></section>`;
   }).join("");
-  return `<h1 id="security-scripts-and-utilities">Security scripts and utilities</h1><p>This section contains the security scripts and small command-line tools I have written while researching cloud security, application security, DevSecOps, and threat intelligence. Each page explains what the script does, what access it requires, how I tested it, and where its limitations are.</p>${cards}`;
+  return `<h1 id="security-scripts-packages-and-utilities">Security scripts, packages, and small utilities</h1><p>This section contains the security scripts, packages, and small command-line tools I have written while researching cloud security, application security, DevSecOps, and threat intelligence. Not everything here is a standalone command-line program &mdash; some are Go packages meant to be imported or exercised through their own tests rather than run directly. Each category page shows the source directly on the page, along with what it does, what access it needs, how I tested it, and where its limitations are.</p>${groups}`;
+}
+
+function scriptSection(script) {
+  const related = [];
+  if (script.relatedResearch) related.push(`<li>Related research: <a href="${script.relatedResearch.href}">${escapeHtml(script.relatedResearch.title)}</a></li>`);
+  if (script.relatedLab) related.push(`<li>Related lab: <a href="${script.relatedLab.href}">${escapeHtml(script.relatedLab.title)}</a></li>`);
+  const relatedHtml = related.length ? `<h3>Related research</h3><ul>${related.join("")}</ul>` : "";
+  return `<section id="${script.slug}" aria-labelledby="${script.slug}-heading">
+<h2 id="${script.slug}-heading">${escapeHtml(script.name)}</h2>
+<p class="docs-script-badges"><span class="docs-badge">${escapeHtml(script.language)}</span><span class="docs-badge">${script.modifiesState ? "Modifies state" : "Read-only"}</span><span class="docs-badge">${escapeHtml(script.testStatus)}</span></p>
+${renderSourceViewer(script.sourceFiles, `source-${script.slug}`)}
+<h3>What it does</h3><p>${escapeHtml(script.purpose)}</p>
+<h3>Why I wrote it</h3><p>${escapeHtml(script.why)}</p>
+<h3>How it works</h3><p>${escapeHtml(script.how)}</p>
+<h3>Requirements</h3><ul>${script.requirements.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+<h3>Permissions and safety</h3><p>${escapeHtml(script.permissions)}</p>
+<h3>Usage</h3><pre><code>${escapeHtml(script.usage)}</code></pre>
+<h3>Inputs</h3><p>${escapeHtml(script.inputs)}</p>
+<h3>Outputs</h3><p>${escapeHtml(script.outputs)}</p>
+<h3>What I tested</h3><p>${escapeHtml(script.tested)}</p>
+<h3>Limitations</h3><ul>${script.limitations.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
+${relatedHtml}
+</section>`;
 }
 
 function scriptsCategoryBody(category) {
   const scripts = SCRIPTS.filter(script => script.category === category.slug);
-  const cards = scripts.map(script => `<a class="docs-card" href="/scripts/${script.category}/${script.slug}/"><h3 class="docs-card__title">${escapeHtml(script.name)}</h3><p class="docs-card__desc">${escapeHtml(script.purpose.split(". ")[0])}.</p><span class="docs-card__cta">${escapeHtml(script.language)} &middot; ${script.modifiesState ? "Modifies state" : "Read-only"}</span></a>`).join("");
-  return `<h1 id="${slug(category.title)}-scripts">${escapeHtml(category.title)} scripts</h1><p>The ${escapeHtml(category.title.toLowerCase())} scripts I've written and catalogued here.</p><h2 id="scripts-in-this-category">Scripts</h2><div class="docs-card-grid">${cards}</div>`;
+  const sections = scripts.map(scriptSection).join("\n");
+  return `<h1 id="${slug(category.title)}-scripts">${escapeHtml(category.title)} scripts</h1><p>The ${escapeHtml(category.title.toLowerCase())} scripts and packages I've written, with their source shown directly below &mdash; no need to open GitHub to read them.</p>${sections}`;
 }
 
-function scriptBody(script) {
-  const related = [];
-  if (script.relatedResearch) related.push(`<li>Related research: <a href="${script.relatedResearch.href}">${escapeHtml(script.relatedResearch.title)}</a></li>`);
-  if (script.relatedLab) related.push(`<li>Related lab: <a href="${script.relatedLab.href}">${escapeHtml(script.relatedLab.title)}</a></li>`);
-  const relatedHtml = related.length ? `<h2 id="related">Related research</h2><ul>${related.join("")}</ul>` : "";
-  return `<h1 id="${slug(script.name)}">${escapeHtml(script.name)}</h1>
-<p class="docs-script-badges"><span class="docs-badge">${escapeHtml(script.language)}</span><span class="docs-badge">${script.modifiesState ? "Modifies state" : "Read-only"}</span><span class="docs-badge">${escapeHtml(script.testStatus)}</span></p>
-<h2 id="what-it-does">What it does</h2><p>${escapeHtml(script.purpose)}</p>
-<h2 id="why-i-wrote-it">Why I wrote it</h2><p>${escapeHtml(script.why)}</p>
-<h2 id="how-it-works">How it works</h2><p>${escapeHtml(script.how)}</p>
-<h2 id="requirements">Requirements</h2><ul>${script.requirements.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-<h2 id="permissions-and-safety">Permissions and safety</h2><p>${escapeHtml(script.permissions)}</p>
-<h2 id="usage">Usage</h2><pre><code>${escapeHtml(script.usage)}</code></pre>
-<h2 id="inputs">Inputs</h2><p>${escapeHtml(script.inputs)}</p>
-<h2 id="outputs">Outputs</h2><p>${escapeHtml(script.outputs)}</p>
-<h2 id="what-i-tested">What I tested</h2><p>${escapeHtml(script.tested)}</p>
-<h2 id="limitations">Limitations</h2><ul>${script.limitations.map(item => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
-${relatedHtml}
-<h2 id="source-code">Source code</h2><p><a href="https://github.com/jasonachkar/cybersecurity-writeups/blob/gh-pages/${script.path}"><code>${escapeHtml(script.path)}</code></a></p>`;
+// Overview pages exist so every group node in NAV_TREE (Research, its four
+// categories, Labs, Study notes) resolves to a real destination instead of a
+// dead breadcrumb ancestor. Content is derived straight from NAV_TREE so the
+// link lists here can never drift out of sync with the nav itself.
+const RESEARCH_NODE = NAV_TREE.find(node => node.title === "Research");
+const LABS_NODE = NAV_TREE.find(node => node.title === "Labs");
+const STUDY_NODE = NAV_TREE.find(node => node.title === "Study notes");
+const dirFor = href => href.replace(/^\/|\/$/g, "");
+
+function categoryOverviewBody(title, id, intro, children) {
+  const items = children.map(item => `<li><a href="${item.href}">${escapeHtml(item.title)}</a></li>`).join("");
+  return `<h1 id="${id}">${escapeHtml(title)}</h1><p>${intro}</p><ul class="docs-link-list">${items}</ul>`;
 }
+
+const OVERVIEW_PAGES = [
+  {
+    file: "research/index.html",
+    body: () => {
+      const sections = RESEARCH_NODE.children.map(category => `<section aria-labelledby="research-${slug(category.title)}"><h2 id="research-${slug(category.title)}">${escapeHtml(category.title)}</h2><p><a href="${category.href}">Open the ${escapeHtml(category.title)} category</a></p><ul class="docs-link-list">${category.children.map(item => `<li><a href="${item.href}">${escapeHtml(item.title)}</a></li>`).join("")}</ul></section>`).join("");
+      return `<h1 id="research">Research</h1><p>Write-ups on a specific security decision or architecture question, grouped by area. Each one says what I tested myself versus what's still conceptual.</p>${sections}`;
+    }
+  },
+  ...RESEARCH_NODE.children.map(category => ({
+    file: `${dirFor(category.href)}/index.html`,
+    body: () => categoryOverviewBody(category.title, slug(category.title), `The ${escapeHtml(category.title)} research on this site.`, category.children)
+  })),
+  {
+    file: "labs/index.html",
+    body: () => categoryOverviewBody("Labs", "labs", "Small, dependency-free labs I wrote to test one decision in isolation, each with its own runnable implementation shown directly on the page.", LABS_NODE.children)
+  },
+  {
+    file: "study-notes/index.html",
+    body: () => categoryOverviewBody("Study notes", "study-notes", "My own notes from working through official certification material &mdash; study references, not implementation evidence.", STUDY_NODE.children)
+  }
+];
 
 function normalizePage(file, html, entry) {
   html = stripGenerated(html);
@@ -528,6 +658,7 @@ function normalizePage(file, html, entry) {
     let injected = bundleScript[0];
     if (!html.includes("portfolio-a11y.js")) injected += `\n<script src="${jsDir}portfolio-a11y.js" defer></script>`;
     if (!html.includes("docs-ui.js")) injected += `\n<script src="${jsDir}docs-ui.js" defer></script>`;
+    if (!html.includes("docs-source-viewer.js")) injected += `\n<script src="${jsDir}docs-source-viewer.js" defer></script>`;
     if (injected !== bundleScript[0]) html = html.replace(bundleScript[0], injected);
   }
 
@@ -558,6 +689,19 @@ function normalizePage(file, html, entry) {
   html = html.replace(
     /<label class="md-header__button md-icon" for="__search">/,
     '<label class="md-header__button md-icon" for="__search" aria-label="Search documentation">'
+  );
+
+  // A <label> is not natively focusable, so docs-ui.js's Escape handler calling
+  // trigger.focus() to return focus after closing the drawer/search overlay was
+  // silently doing nothing — focus fell back to <body> instead. tabindex="0"
+  // makes both header triggers real, focusable, keyboard-reachable controls.
+  html = html.replace(
+    /<label class="md-header__button md-icon" for="__drawer">/,
+    '<label class="md-header__button md-icon" for="__drawer" tabindex="0">'
+  );
+  html = html.replace(
+    /(<label class="md-header__button md-icon" for="__search" aria-label="Search documentation")(?![^>]*tabindex)>/,
+    '$1 tabindex="0">'
   );
 
   html = html.replace(/<meta\b[^>]*name=["']author["'][^>]*>/i, '<meta name="author" content="Jason Achkar Diab">');
@@ -653,7 +797,7 @@ const GENERATOR_OWNED_PATHS = new Set([
   "docs/certification-notes/security-plus/index.html",
   "scripts/index.html",
   ...SCRIPT_CATEGORIES.map(category => `scripts/${category.slug}/index.html`),
-  ...SCRIPTS.map(script => `scripts/${script.category}/${script.slug}/index.html`)
+  ...OVERVIEW_PAGES.map(page => page.file)
 ]);
 
 function articleProse(html) {
@@ -666,8 +810,9 @@ for (const record of records.values()) {
   const isGeneratorOwned = GENERATOR_OWNED_PATHS.has(record.file) || isArchived;
   const beforeProse = isGeneratorOwned ? null : articleProse(originalHtml);
 
-  const scriptEntry = SCRIPTS.find(script => record.file === `scripts/${script.category}/${script.slug}/index.html`);
   const categoryEntry = SCRIPT_CATEGORIES.find(category => record.file === `scripts/${category.slug}/index.html`);
+  const overviewEntry = OVERVIEW_PAGES.find(page => page.file === record.file);
+  const labEntry = LABS.find(lab => lab.page === record.file);
 
   let html = originalHtml;
   if (record.file === "index.html") html = replaceArticle(html, homeBody());
@@ -676,10 +821,15 @@ for (const record of records.values()) {
   else if (record.file === "docs/certification-notes/security-plus/index.html") html = replaceArticle(html, securityPlusBody());
   else if (record.file === "scripts/index.html") html = replaceArticle(html, scriptsIndexBody());
   else if (categoryEntry) html = replaceArticle(html, scriptsCategoryBody(categoryEntry));
-  else if (scriptEntry) html = replaceArticle(html, scriptBody(scriptEntry));
+  else if (overviewEntry) html = replaceArticle(html, overviewEntry.body());
   else if (isArchived) html = replaceArticle(html, archiveBody(record.entry));
 
   html = normalizePage(record.file, html, record.entry);
+
+  // Runs after normalizePage (which strips any stale docs-lab-source block
+  // from a previous run as part of its own stripGenerated() pass) so the
+  // freshly injected block survives instead of being immediately wiped.
+  if (labEntry) html = injectLabSourceViewer(html, labEntry);
 
   if (!isGeneratorOwned) {
     const afterProse = articleProse(html);
@@ -747,7 +897,14 @@ const sitemapUrls = [...entries.keys()].filter(file => entries.get(file).indexab
 });
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapUrls.join("\n")}\n</urlset>\n`;
 write("sitemap.xml", sitemap);
-fs.writeFileSync(path.join(root, "sitemap.xml.gz"), gzipSync(Buffer.from(sitemap), {level: 9, mtime: 0}));
+// gzipSync stamps byte 9 (the OS field) with the host platform's ID (3 = Unix,
+// 10 = NTFS/Windows, ...), which made this file differ byte-for-byte between a
+// Windows dev checkout and Linux CI even though the decompressed content was
+// identical. RFC 1952 reserves 255 for "unknown" — pinning it there makes the
+// gzip output itself platform-independent, not just its inflated content.
+const compressedSitemap = gzipSync(Buffer.from(sitemap), {level: 9, mtime: 0});
+compressedSitemap[9] = 255;
+fs.writeFileSync(path.join(root, "sitemap.xml.gz"), compressedSitemap);
 
 const legacyMetadataNotice = {
   deprecated: true,

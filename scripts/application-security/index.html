@@ -88,7 +88,7 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -142,7 +142,7 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
@@ -220,15 +220,185 @@
           
             <!-- docs-left-nav:start -->
 <aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Labs</summary><ul><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Scripts</summary><ul><li><a href="/scripts/cloud-security/">Cloud Security</a></li><li><a href="/scripts/application-security/" aria-current="page">Application Security</a></li><li><a href="/scripts/devsecops/">DevSecOps</a></li><li><a href="/scripts/threat-intelligence/">Threat Intelligence</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/docs/certification-notes/az-900/">AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
+  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview" aria-current="page">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
 </aside>
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Application Security</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="application-security-scripts">Application Security scripts</h1><p>The application security scripts I've written and catalogued here.</p><h2 id="scripts-in-this-category">Scripts</h2><div class="docs-card-grid"><a class="docs-card" href="/scripts/application-security/oauth-pkce-verifier/"><h3 class="docs-card__title">OAuth PKCE (S256) verifier and generator</h3><p class="docs-card__desc">A small, dependency-free implementation of RFC 7636&#39;s S256 PKCE flow: generating a valid random verifier, deriving its challenge, and validating a verifier against a stored challenge using a constant-time comparison..</p><span class="docs-card__cta">Go &middot; Read-only</span></a></div>
+<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/scripts/">Scripts</a></li><li aria-current="page">Application Security</li></ol></nav><!-- docs-breadcrumbs:end -->
+<h1 id="application-security-scripts">Application Security scripts</h1><p>The application security scripts and packages I've written, with their source shown directly below &mdash; no need to open GitHub to read them.</p><section id="oauth-pkce-verifier" aria-labelledby="oauth-pkce-verifier-heading">
+<h2 id="oauth-pkce-verifier-heading">OAuth PKCE (S256) verifier and generator</h2>
+<p class="docs-script-badges"><span class="docs-badge">Go</span><span class="docs-badge">Read-only</span><span class="docs-badge">Go test suite</span></p>
+<section class="docs-source-viewer" data-source-viewer id="source-oauth-pkce-verifier" aria-label="Source code: pkce.go">
+  <header class="docs-source-viewer__toolbar">
+    <span class="docs-source-viewer__toolbar-title">pkce.go</span>
+    <div class="docs-source-viewer__actions">
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    </div>
+  </header>
+  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-oauth-pkce-verifier-tab-0" aria-controls="source-oauth-pkce-verifier-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Implementation</button><button type="button" role="tab" id="source-oauth-pkce-verifier-tab-1" aria-controls="source-oauth-pkce-verifier-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Tests</button></div>
+  <div role="tabpanel" id="source-oauth-pkce-verifier-panel-0" tabindex="0" aria-labelledby="source-oauth-pkce-verifier-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">pkce.go</span><code class="docs-source-viewer__path">appsec/scripts/oauth-pkce/pkce.go</code><span class="docs-source-viewer__lines">85 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="pkce.go source code" class="language-go"><span class="tok-comment">// Package oauthpkce is a bounded educational S256-only OAuth PKCE verifier.</span>
+<span class="tok-comment">// It deliberately never logs verifiers or challenges.</span>
+<span class="tok-keyword">package</span> oauthpkce
 
-<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/scripts/cloud-security/k8s-rbac-auditor/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Cloud Security</span><span class="docs-prevnext__title">Kubernetes RBAC privilege-escalation auditor</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/scripts/application-security/oauth-pkce-verifier/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Application Security</span><span class="docs-prevnext__title">OAuth PKCE (S256) verifier and generator</span></a></nav><!-- docs-prevnext:end -->
+<span class="tok-keyword">import</span> (
+	<span class="tok-string">&quot;crypto/rand&quot;</span>
+	<span class="tok-string">&quot;crypto/sha256&quot;</span>
+	<span class="tok-string">&quot;crypto/subtle&quot;</span>
+	<span class="tok-string">&quot;encoding/base64&quot;</span>
+	<span class="tok-string">&quot;errors&quot;</span>
+	<span class="tok-string">&quot;fmt&quot;</span>
+	<span class="tok-string">&quot;math/big&quot;</span>
+	<span class="tok-string">&quot;regexp&quot;</span>
+)
+
+<span class="tok-keyword">const</span> (
+	MinVerifierLength = <span class="tok-number">43</span>
+	MaxVerifierLength = <span class="tok-number">128</span>
+)
+
+<span class="tok-keyword">var</span> verifierPattern = regexp.MustCompile(<span class="tok-string">`^[A-Za-z0-9\-._~]+$`</span>)
+
+<span class="tok-comment">// IsValidCodeVerifier enforces the RFC 7636 length and unreserved-character rules.</span>
+<span class="tok-keyword">func</span> IsValidCodeVerifier(verifier string) bool {
+	length := len(verifier)
+	<span class="tok-keyword">return</span> length &gt;= MinVerifierLength &amp;&amp;
+		length &lt;= MaxVerifierLength &amp;&amp;
+		verifierPattern.MatchString(verifier)
+}
+
+<span class="tok-comment">// GenerateRandomVerifier returns an RFC 7636 verifier generated from crypto/rand.</span>
+<span class="tok-keyword">func</span> GenerateRandomVerifier(length int) (string, error) {
+	<span class="tok-keyword">if</span> length &lt; MinVerifierLength || length &gt; MaxVerifierLength {
+		<span class="tok-keyword">return</span> <span class="tok-string">&quot;&quot;</span>, fmt.Errorf(
+			<span class="tok-string">&quot;verifier length must be between %d and %d characters&quot;</span>,
+			MinVerifierLength,
+			MaxVerifierLength,
+		)
+	}
+
+	<span class="tok-keyword">const</span> alphabet = <span class="tok-string">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~&quot;</span>
+	alphabetLength := big.NewInt(int64(len(alphabet)))
+	verifier := make([]byte, length)
+	<span class="tok-keyword">for</span> index := <span class="tok-keyword">range</span> verifier {
+		randomIndex, err := rand.Int(rand.Reader, alphabetLength)
+		<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+			<span class="tok-keyword">return</span> <span class="tok-string">&quot;&quot;</span>, fmt.Errorf(<span class="tok-string">&quot;generate verifier entropy: %w&quot;</span>, err)
+		}
+		verifier[index] = alphabet[randomIndex.Int64()]
+	}
+	<span class="tok-keyword">return</span> string(verifier), <span class="tok-keyword">nil</span>
+}
+
+<span class="tok-comment">// ComputeChallengeS256 derives BASE64URL(SHA-256(ASCII(code_verifier))).</span>
+<span class="tok-keyword">func</span> ComputeChallengeS256(verifier string) (string, error) {
+	<span class="tok-keyword">if</span> !IsValidCodeVerifier(verifier) {
+		<span class="tok-keyword">return</span> <span class="tok-string">&quot;&quot;</span>, errors.New(<span class="tok-string">&quot;code_verifier does not satisfy RFC 7636 syntax&quot;</span>)
+	}
+	sum := sha256.Sum256([]byte(verifier))
+	<span class="tok-keyword">return</span> base64.RawURLEncoding.EncodeToString(sum[:]), <span class="tok-keyword">nil</span>
+}
+
+<span class="tok-keyword">func</span> isValidS256Challenge(challenge string) bool {
+	decoded, err := base64.RawURLEncoding.Strict().DecodeString(challenge)
+	<span class="tok-keyword">return</span> err == <span class="tok-keyword">nil</span> &amp;&amp; len(decoded) == sha256.Size
+}
+
+<span class="tok-comment">// ValidatePKCES256 validates one token request against its stored authorization</span>
+<span class="tok-comment">// transaction. It rejects method downgrade and malformed inputs before performing a</span>
+<span class="tok-comment">// constant-time comparison of equal-length S256 challenges.</span>
+<span class="tok-keyword">func</span> ValidatePKCES256(codeVerifier, storedChallenge, method string) bool {
+	<span class="tok-keyword">if</span> method != <span class="tok-string">&quot;S256&quot;</span> || !IsValidCodeVerifier(codeVerifier) ||
+		!isValidS256Challenge(storedChallenge) {
+		<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+	}
+
+	computedChallenge, err := ComputeChallengeS256(codeVerifier)
+	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+		<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+	}
+	<span class="tok-keyword">return</span> subtle.ConstantTimeCompare(
+		[]byte(computedChallenge),
+		[]byte(storedChallenge),
+	) == <span class="tok-number">1</span>
+}</code></pre>
+    </div><div role="tabpanel" id="source-oauth-pkce-verifier-panel-1" tabindex="0" aria-labelledby="source-oauth-pkce-verifier-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">pkce_test.go</span><code class="docs-source-viewer__path">appsec/scripts/oauth-pkce/pkce_test.go</code><span class="docs-source-viewer__lines">56 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="pkce_test.go source code" class="language-go"><span class="tok-keyword">package</span> oauthpkce_test
+
+<span class="tok-keyword">import</span> (
+	<span class="tok-string">&quot;testing&quot;</span>
+
+	oauthpkce <span class="tok-string">&quot;github.com/jasonachkar/cybersecurity-writeups/appsec/scripts/oauth-pkce&quot;</span>
+)
+
+<span class="tok-keyword">func</span> TestValidatePKCES256(t *testing.T) {
+	<span class="tok-keyword">const</span> vectorVerifier = <span class="tok-string">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk&quot;</span>
+	<span class="tok-keyword">const</span> vectorChallenge = <span class="tok-string">&quot;E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&quot;</span>
+	<span class="tok-keyword">const</span> wrongVerifier = <span class="tok-string">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXa&quot;</span>
+	<span class="tok-keyword">const</span> invalidCharacterVerifier = <span class="tok-string">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjX!&quot;</span>
+
+	tests := []<span class="tok-keyword">struct</span> {
+		name      string
+		verifier  string
+		challenge string
+		method    string
+		want      bool
+	}{
+		{<span class="tok-string">&quot;RFC 7636 S256 vector is accepted&quot;</span>, vectorVerifier, vectorChallenge, <span class="tok-string">&quot;S256&quot;</span>, <span class="tok-keyword">true</span>},
+		{<span class="tok-string">&quot;wrong verifier is rejected&quot;</span>, wrongVerifier, vectorChallenge, <span class="tok-string">&quot;S256&quot;</span>, <span class="tok-keyword">false</span>},
+		{<span class="tok-string">&quot;plain method downgrade is rejected&quot;</span>, vectorVerifier, vectorVerifier, <span class="tok-string">&quot;plain&quot;</span>, <span class="tok-keyword">false</span>},
+		{<span class="tok-string">&quot;method names are not normalized&quot;</span>, vectorVerifier, vectorChallenge, <span class="tok-string">&quot;s256&quot;</span>, <span class="tok-keyword">false</span>},
+		{<span class="tok-string">&quot;short verifier is rejected&quot;</span>, <span class="tok-string">&quot;too-short&quot;</span>, vectorChallenge, <span class="tok-string">&quot;S256&quot;</span>, <span class="tok-keyword">false</span>},
+		{<span class="tok-string">&quot;non-unreserved character is rejected&quot;</span>, invalidCharacterVerifier, vectorChallenge, <span class="tok-string">&quot;S256&quot;</span>, <span class="tok-keyword">false</span>},
+		{<span class="tok-string">&quot;malformed stored challenge is rejected&quot;</span>, vectorVerifier, <span class="tok-string">&quot;not-base64url!&quot;</span>, <span class="tok-string">&quot;S256&quot;</span>, <span class="tok-keyword">false</span>},
+	}
+
+	<span class="tok-keyword">for</span> _, tt := <span class="tok-keyword">range</span> tests {
+		t.Run(tt.name, <span class="tok-keyword">func</span>(t *testing.T) {
+			got := oauthpkce.ValidatePKCES256(tt.verifier, tt.challenge, tt.method)
+			<span class="tok-keyword">if</span> got != tt.want {
+				t.Fatalf(<span class="tok-string">&quot;ValidatePKCES256() = %v, want %v&quot;</span>, got, tt.want)
+			}
+		})
+	}
+}
+
+<span class="tok-keyword">func</span> TestGeneratedVerifierRoundTrip(t *testing.T) {
+	verifier, err := oauthpkce.GenerateRandomVerifier(<span class="tok-number">64</span>)
+	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+		t.Fatalf(<span class="tok-string">&quot;GenerateRandomVerifier: %v&quot;</span>, err)
+	}
+	<span class="tok-keyword">if</span> !oauthpkce.IsValidCodeVerifier(verifier) {
+		t.Fatal(<span class="tok-string">&quot;generated verifier failed syntax validation&quot;</span>)
+	}
+	challenge, err := oauthpkce.ComputeChallengeS256(verifier)
+	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
+		t.Fatalf(<span class="tok-string">&quot;ComputeChallengeS256: %v&quot;</span>, err)
+	}
+	<span class="tok-keyword">if</span> !oauthpkce.ValidatePKCES256(verifier, challenge, <span class="tok-string">&quot;S256&quot;</span>) {
+		t.Fatal(<span class="tok-string">&quot;generated verifier round trip was rejected&quot;</span>)
+	}
+}</code></pre>
+    </div>
+</section>
+<h3>What it does</h3><p>A small, dependency-free implementation of RFC 7636&#39;s S256 PKCE flow: generating a valid random verifier, deriving its challenge, and validating a verifier against a stored challenge using a constant-time comparison.</p>
+<h3>Why I wrote it</h3><p>The OAuth/OIDC write-up needed a real PKCE implementation behind its test cases instead of a description of one, so I wrote the minimal correct version and used it as that reference implementation.</p>
+<h3>How it works</h3><p>GenerateRandomVerifier draws from crypto/rand and formats the result to RFC 7636&#39;s unreserved-character alphabet. ComputeChallengeS256 does the SHA-256 + base64url-no-padding derivation. ValidatePKCES256 recomputes the expected challenge from the supplied verifier and compares it to the stored one with crypto/subtle.ConstantTimeCompare, and only accepts the S256 method (deliberately, plain is never accepted).</p>
+<h3>Requirements</h3><ul><li>Go 1.22+</li></ul>
+<h3>Permissions and safety</h3><p>None — no filesystem, network, or credential access. It deliberately never logs the verifier or challenge values it handles.</p>
+<h3>Usage</h3><pre><code>go test ./appsec/scripts/oauth-pkce/...</code></pre>
+<h3>Inputs</h3><p>A verifier length (for generation) or a verifier/challenge/method triple (for validation).</p>
+<h3>Outputs</h3><p>A verifier string, a challenge string, or a boolean validation result.</p>
+<h3>What I tested</h3><p>pkce_test.go exercises the correct round trip plus the negative cases: a wrong verifier, a plain-method downgrade attempt, wrong verifier length, invalid characters, and a malformed stored challenge.</p>
+<h3>Limitations</h3><ul><li>This checks the PKCE mechanics only — it says nothing about redirect-URI matching, state/nonce handling, or token validation, which live in the OAuth/OIDC lab instead.</li><li>No CLI entry point; it is meant to be imported or exercised via its tests.</li></ul>
+<h3>Related research</h3><ul><li>Related research: <a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li>Related lab: <a href="/labs/oauth-oidc/">OAuth/OIDC lab</a></li></ul>
+</section>
+
+<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/scripts/cloud-security/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Scripts</span><span class="docs-prevnext__title">Cloud Security</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/scripts/devsecops/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Scripts</span><span class="docs-prevnext__title">DevSecOps</span></a></nav><!-- docs-prevnext:end -->
 </article>
             </div>
           
@@ -274,6 +444,7 @@
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
 <script src="../../assets/javascripts/docs-ui.js" defer></script>
 <script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
       

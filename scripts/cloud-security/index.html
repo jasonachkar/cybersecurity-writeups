@@ -88,7 +88,7 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -142,7 +142,7 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
@@ -220,15 +220,2012 @@
           
             <!-- docs-left-nav:start -->
 <aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Labs</summary><ul><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Scripts</summary><ul><li><a href="/scripts/cloud-security/" aria-current="page">Cloud Security</a></li><li><a href="/scripts/application-security/">Application Security</a></li><li><a href="/scripts/devsecops/">DevSecOps</a></li><li><a href="/scripts/threat-intelligence/">Threat Intelligence</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/docs/certification-notes/az-900/">AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
+  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group" open><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview" aria-current="page">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
 </aside>
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Cloud Security</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="cloud-security-scripts">Cloud Security scripts</h1><p>The cloud security scripts I've written and catalogued here.</p><h2 id="scripts-in-this-category">Scripts</h2><div class="docs-card-grid"><a class="docs-card" href="/scripts/cloud-security/k8s-rbac-auditor/"><h3 class="docs-card__title">Kubernetes RBAC privilege-escalation auditor</h3><p class="docs-card__desc">It checks a batch of exported Role/ClusterRole and (Cluster)RoleBinding YAML for the RBAC patterns that lead to privilege escalation: binding scope mismatches (RoleBinding referencing a ClusterRole-only resource), and the special verbs (bind, escalate, impersonate) that let a principal grant itself more than its own role appears to allow..</p><span class="docs-card__cta">Go &middot; Read-only</span></a></div>
+<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/scripts/">Scripts</a></li><li aria-current="page">Cloud Security</li></ol></nav><!-- docs-breadcrumbs:end -->
+<h1 id="cloud-security-scripts">Cloud Security scripts</h1><p>The cloud security scripts and packages I've written, with their source shown directly below &mdash; no need to open GitHub to read them.</p><section id="k8s-rbac-auditor" aria-labelledby="k8s-rbac-auditor-heading">
+<h2 id="k8s-rbac-auditor-heading">Kubernetes RBAC privilege-escalation auditor</h2>
+<p class="docs-script-badges"><span class="docs-badge">Go</span><span class="docs-badge">Read-only</span><span class="docs-badge">Go test suite (48 cases)</span></p>
+<section class="docs-source-viewer" data-source-viewer id="source-k8s-rbac-auditor" aria-label="Source code: auditor.go">
+  <header class="docs-source-viewer__toolbar">
+    <span class="docs-source-viewer__toolbar-title">auditor.go</span>
+    <div class="docs-source-viewer__actions">
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    </div>
+  </header>
+  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-k8s-rbac-auditor-tab-0" aria-controls="source-k8s-rbac-auditor-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Implementation</button><button type="button" role="tab" id="source-k8s-rbac-auditor-tab-1" aria-controls="source-k8s-rbac-auditor-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Tests</button></div>
+  <div role="tabpanel" id="source-k8s-rbac-auditor-panel-0" tabindex="0" aria-labelledby="source-k8s-rbac-auditor-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">auditor.go</span><code class="docs-source-viewer__path">cloud-security/scripts/k8s-rbac/auditor.go</code><span class="docs-source-viewer__lines">779 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="auditor.go source code" class="language-go"><span class="tok-comment">// Package k8srbac is a bounded static RBAC-risk heuristic for educational</span>
+<span class="tok-comment">// Role/ClusterRole fixtures.</span>
+<span class="tok-comment">//</span>
+<span class="tok-comment">// It validates roleRef API group and kind, distinguishes RoleBinding versus</span>
+<span class="tok-comment">// ClusterRoleBinding authorization scope for ordinary API resources, and</span>
+<span class="tok-comment">// models selected Kubernetes special authorization verbs (bind, escalate,</span>
+<span class="tok-comment">// impersonate) separately from ordinary resource scope. TokenRequest detection</span>
+<span class="tok-comment">// is limited to the core serviceaccounts/token subresource.</span>
+<span class="tok-comment">//</span>
+<span class="tok-comment">// It is not a full effective-permissions analysis and does not evaluate</span>
+<span class="tok-comment">// SubjectAccessReview, SelfSubjectRulesReview, aggregation, admission</span>
+<span class="tok-comment">// policies, or live API discovery. Unknown/custom resources are not assigned</span>
+<span class="tok-comment">// a fabricated scope.</span>
+<span class="tok-keyword">package</span> k8srbac
 
-<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/labs/azure-landing-zone/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Labs</span><span class="docs-prevnext__title">Azure landing zone</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/scripts/cloud-security/k8s-rbac-auditor/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Cloud Security</span><span class="docs-prevnext__title">Kubernetes RBAC privilege-escalation auditor</span></a></nav><!-- docs-prevnext:end -->
+<span class="tok-keyword">import</span> (
+	<span class="tok-string">&quot;fmt&quot;</span>
+	<span class="tok-string">&quot;sort&quot;</span>
+	<span class="tok-string">&quot;strings&quot;</span>
+)
+
+<span class="tok-keyword">const</span> rbacAPIGroup = <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>
+
+<span class="tok-comment">// ResourceScope classifies a built-in resource for binding-effective analysis.</span>
+<span class="tok-keyword">type</span> ResourceScope int
+
+<span class="tok-keyword">const</span> (
+	<span class="tok-comment">// ResourceScopeUnknown means the analyzer does not claim namespaced or</span>
+	<span class="tok-comment">// cluster scope for the resource (typically custom/unknown APIs).</span>
+	ResourceScopeUnknown ResourceScope = <span class="tok-keyword">iota</span>
+	<span class="tok-comment">// ResourceScopeNamespaced resources can take effect through a RoleBinding.</span>
+	ResourceScopeNamespaced
+	<span class="tok-comment">// ResourceScopeCluster resources take effect only through ClusterRoleBinding</span>
+	<span class="tok-comment">// (or equivalent cluster-wide authorization), not through a namespaced RoleBinding.</span>
+	ResourceScopeCluster
+)
+
+<span class="tok-comment">// RoleKey uniquely identifies a Role or ClusterRole.</span>
+<span class="tok-keyword">type</span> RoleKey <span class="tok-keyword">struct</span> {
+	Kind      string <span class="tok-comment">// &quot;Role&quot; or &quot;ClusterRole&quot;</span>
+	Namespace string <span class="tok-comment">// empty for ClusterRole</span>
+	Name      string
+}
+
+<span class="tok-comment">// RoleRef mirrors rbac RoleRef used by bindings.</span>
+<span class="tok-keyword">type</span> RoleRef <span class="tok-keyword">struct</span> {
+	APIGroup string
+	Kind     string
+	Name     string
+}
+
+<span class="tok-comment">// PolicyRule mirrors a subset of rbac.authorization.k8s.io PolicyRule.</span>
+<span class="tok-keyword">type</span> PolicyRule <span class="tok-keyword">struct</span> {
+	APIGroups     []string
+	Resources     []string
+	ResourceNames []string
+	Verbs         []string
+}
+
+<span class="tok-comment">// RoleLike is a Role or ClusterRole fixture.</span>
+<span class="tok-keyword">type</span> RoleLike <span class="tok-keyword">struct</span> {
+	Kind      string <span class="tok-comment">// Role or ClusterRole</span>
+	Name      string
+	Namespace string
+	Rules     []PolicyRule
+}
+
+<span class="tok-comment">// BindingLike is a RoleBinding or ClusterRoleBinding fixture.</span>
+<span class="tok-keyword">type</span> BindingLike <span class="tok-keyword">struct</span> {
+	Kind      string <span class="tok-comment">// RoleBinding or ClusterRoleBinding</span>
+	Name      string
+	Namespace string <span class="tok-comment">// RoleBinding namespace; empty for ClusterRoleBinding</span>
+	RoleRef   RoleRef
+	Subjects  []string
+}
+
+<span class="tok-comment">// Finding is one heuristic risk observation.</span>
+<span class="tok-keyword">type</span> Finding <span class="tok-keyword">struct</span> {
+	Code          string
+	Severity      string
+	Description   string
+	RoleKey       RoleKey
+	BindingKind   string
+	BindingName   string
+	BindingScope  string <span class="tok-comment">// namespace or &quot;cluster&quot;</span>
+	Subjects      []string
+	ResourceNames []string
+}
+
+<span class="tok-comment">// Audit resolves bindings against roles and returns heuristic risk findings.</span>
+<span class="tok-comment">// Roles are indexed by RoleKey so identically named Roles in different</span>
+<span class="tok-comment">// namespaces are never conflated. Unbound roles are not scored; findings are</span>
+<span class="tok-comment">// produced from bindings (plus invalid/unresolved binding diagnostics).</span>
+<span class="tok-keyword">func</span> Audit(roles []RoleLike, bindings []BindingLike) []Finding {
+	roleIndex := indexRoles(roles)
+
+	<span class="tok-keyword">var</span> findings []Finding
+	<span class="tok-keyword">for</span> _, binding := <span class="tok-keyword">range</span> bindings {
+		subjects := unique(binding.Subjects)
+		scope := bindingScope(binding)
+		role, roleKey, diag := resolveBinding(binding, roleIndex)
+		<span class="tok-keyword">if</span> diag != <span class="tok-keyword">nil</span> {
+			diag.Subjects = subjects
+			diag.BindingKind = binding.Kind
+			diag.BindingName = binding.Name
+			diag.BindingScope = scope
+			findings = append(findings, *diag)
+			<span class="tok-keyword">continue</span>
+		}
+		<span class="tok-keyword">for</span> _, rule := <span class="tok-keyword">range</span> role.Rules {
+			findings = append(findings, evaluateRule(roleKey, binding, scope, subjects, rule)...)
+		}
+	}
+	<span class="tok-keyword">return</span> mergeFindings(findings)
+}
+
+<span class="tok-keyword">func</span> indexRoles(roles []RoleLike) <span class="tok-keyword">map</span>[RoleKey]RoleLike {
+	out := make(<span class="tok-keyword">map</span>[RoleKey]RoleLike, len(roles))
+	<span class="tok-keyword">for</span> _, role := <span class="tok-keyword">range</span> roles {
+		key := roleKeyFor(role)
+		out[key] = role
+	}
+	<span class="tok-keyword">return</span> out
+}
+
+<span class="tok-keyword">func</span> roleKeyFor(role RoleLike) RoleKey {
+	kind := role.Kind
+	<span class="tok-keyword">if</span> kind == <span class="tok-string">&quot;&quot;</span> {
+		<span class="tok-keyword">if</span> role.Namespace == <span class="tok-string">&quot;&quot;</span> {
+			kind = <span class="tok-string">&quot;ClusterRole&quot;</span>
+		} <span class="tok-keyword">else</span> {
+			kind = <span class="tok-string">&quot;Role&quot;</span>
+		}
+	}
+	ns := role.Namespace
+	<span class="tok-keyword">if</span> kind == <span class="tok-string">&quot;ClusterRole&quot;</span> {
+		ns = <span class="tok-string">&quot;&quot;</span>
+	}
+	<span class="tok-keyword">return</span> RoleKey{Kind: kind, Namespace: ns, Name: role.Name}
+}
+
+<span class="tok-keyword">func</span> bindingScope(binding BindingLike) string {
+	<span class="tok-keyword">if</span> binding.Kind == <span class="tok-string">&quot;ClusterRoleBinding&quot;</span> {
+		<span class="tok-keyword">return</span> <span class="tok-string">&quot;cluster&quot;</span>
+	}
+	<span class="tok-keyword">return</span> binding.Namespace
+}
+
+<span class="tok-keyword">func</span> invalidBindingFinding(key RoleKey, description string) *Finding {
+	<span class="tok-keyword">return</span> &amp;Finding{
+		Code:        <span class="tok-string">&quot;invalid-binding&quot;</span>,
+		Severity:    <span class="tok-string">&quot;high&quot;</span>,
+		Description: description,
+		RoleKey:     key,
+	}
+}
+
+<span class="tok-keyword">func</span> resolveBinding(binding BindingLike, roles <span class="tok-keyword">map</span>[RoleKey]RoleLike) (RoleLike, RoleKey, *Finding) {
+	ref := binding.RoleRef
+	refKey := RoleKey{Kind: ref.Kind, Name: ref.Name}
+
+	<span class="tok-keyword">switch</span> binding.Kind {
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>:
+		<span class="tok-keyword">if</span> binding.Namespace != <span class="tok-string">&quot;&quot;</span> {
+			<span class="tok-keyword">return</span> RoleLike{}, refKey, invalidBindingFinding(refKey, <span class="tok-string">&quot;ClusterRoleBinding must not declare a namespace&quot;</span>)
+		}
+		<span class="tok-keyword">if</span> ref.APIGroup != rbacAPIGroup {
+			<span class="tok-keyword">return</span> RoleLike{}, refKey, invalidBindingFinding(refKey, <span class="tok-string">&quot;roleRef.apiGroup must be rbac.authorization.k8s.io&quot;</span>)
+		}
+		<span class="tok-keyword">if</span> ref.Kind == <span class="tok-string">&quot;&quot;</span> {
+			<span class="tok-keyword">return</span> RoleLike{}, refKey, invalidBindingFinding(refKey, <span class="tok-string">&quot;ClusterRoleBinding roleRef.kind must be ClusterRole&quot;</span>)
+		}
+		<span class="tok-keyword">if</span> ref.Kind != <span class="tok-string">&quot;ClusterRole&quot;</span> {
+			<span class="tok-keyword">if</span> ref.Kind == <span class="tok-string">&quot;Role&quot;</span> {
+				<span class="tok-keyword">return</span> RoleLike{}, RoleKey{Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: ref.Name}, invalidBindingFinding(
+					RoleKey{Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: ref.Name},
+					<span class="tok-string">&quot;ClusterRoleBinding roleRef.kind must be ClusterRole&quot;</span>,
+				)
+			}
+			<span class="tok-keyword">return</span> RoleLike{}, refKey, invalidBindingFinding(refKey, <span class="tok-string">&quot;ClusterRoleBinding roleRef.kind must be ClusterRole&quot;</span>)
+		}
+		key := RoleKey{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: ref.Name}
+		role, ok := roles[key]
+		<span class="tok-keyword">if</span> !ok {
+			<span class="tok-keyword">return</span> RoleLike{}, key, unresolvedFinding(key)
+		}
+		<span class="tok-keyword">return</span> role, key, <span class="tok-keyword">nil</span>
+
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;RoleBinding&quot;</span>:
+		<span class="tok-keyword">if</span> binding.Namespace == <span class="tok-string">&quot;&quot;</span> {
+			<span class="tok-keyword">return</span> RoleLike{}, refKey, invalidBindingFinding(refKey, <span class="tok-string">&quot;RoleBinding requires a namespace&quot;</span>)
+		}
+		<span class="tok-keyword">if</span> ref.APIGroup != rbacAPIGroup {
+			<span class="tok-keyword">return</span> RoleLike{}, refKey, invalidBindingFinding(refKey, <span class="tok-string">&quot;roleRef.apiGroup must be rbac.authorization.k8s.io&quot;</span>)
+		}
+		<span class="tok-keyword">switch</span> ref.Kind {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;Role&quot;</span>:
+			key := RoleKey{Kind: <span class="tok-string">&quot;Role&quot;</span>, Namespace: binding.Namespace, Name: ref.Name}
+			role, ok := roles[key]
+			<span class="tok-keyword">if</span> !ok {
+				<span class="tok-keyword">return</span> RoleLike{}, key, unresolvedFinding(key)
+			}
+			<span class="tok-keyword">return</span> role, key, <span class="tok-keyword">nil</span>
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;ClusterRole&quot;</span>:
+			key := RoleKey{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: ref.Name}
+			role, ok := roles[key]
+			<span class="tok-keyword">if</span> !ok {
+				<span class="tok-keyword">return</span> RoleLike{}, key, unresolvedFinding(key)
+			}
+			<span class="tok-keyword">return</span> role, key, <span class="tok-keyword">nil</span>
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;&quot;</span>:
+			<span class="tok-keyword">return</span> RoleLike{}, refKey, invalidBindingFinding(refKey, <span class="tok-string">&quot;RoleBinding roleRef.kind must be Role or ClusterRole&quot;</span>)
+		<span class="tok-keyword">default</span>:
+			<span class="tok-keyword">return</span> RoleLike{}, refKey, invalidBindingFinding(refKey, <span class="tok-string">&quot;RoleBinding roleRef.kind must be Role or ClusterRole&quot;</span>)
+		}
+
+	<span class="tok-keyword">default</span>:
+		<span class="tok-keyword">return</span> RoleLike{}, refKey, invalidBindingFinding(refKey, fmt.Sprintf(<span class="tok-string">&quot;unsupported binding kind %q&quot;</span>, binding.Kind))
+	}
+}
+
+<span class="tok-keyword">func</span> unresolvedFinding(key RoleKey) *Finding {
+	<span class="tok-keyword">return</span> &amp;Finding{
+		Code:        <span class="tok-string">&quot;unresolved-role-ref&quot;</span>,
+		Severity:    <span class="tok-string">&quot;medium&quot;</span>,
+		Description: fmt.Sprintf(<span class="tok-string">&quot;binding references %s %q that was not provided in the role set&quot;</span>, key.Kind, key.Name),
+		RoleKey:     key,
+	}
+}
+
+<span class="tok-comment">// knownResourceScope returns the analyzer&#39;s bounded classification for a</span>
+<span class="tok-comment">// built-in resource name (without subresource). Unknown APIs remain Unknown.</span>
+<span class="tok-keyword">func</span> knownResourceScope(apiGroup, resource string) ResourceScope {
+	<span class="tok-keyword">if</span> resource == <span class="tok-string">&quot;&quot;</span> || resource == <span class="tok-string">&quot;*&quot;</span> {
+		<span class="tok-keyword">return</span> ResourceScopeUnknown
+	}
+	<span class="tok-keyword">switch</span> apiGroup {
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;&quot;</span>, <span class="tok-string">&quot;core&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;pods&quot;</span>, <span class="tok-string">&quot;secrets&quot;</span>, <span class="tok-string">&quot;serviceaccounts&quot;</span>, <span class="tok-string">&quot;configmaps&quot;</span>, <span class="tok-string">&quot;services&quot;</span>,
+			<span class="tok-string">&quot;endpoints&quot;</span>, <span class="tok-string">&quot;events&quot;</span>, <span class="tok-string">&quot;limitranges&quot;</span>, <span class="tok-string">&quot;resourcequotas&quot;</span>,
+			<span class="tok-string">&quot;replicationcontrollers&quot;</span>, <span class="tok-string">&quot;persistentvolumeclaims&quot;</span>:
+			<span class="tok-keyword">return</span> ResourceScopeNamespaced
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;nodes&quot;</span>, <span class="tok-string">&quot;namespaces&quot;</span>, <span class="tok-string">&quot;persistentvolumes&quot;</span>, <span class="tok-string">&quot;componentstatuses&quot;</span>:
+			<span class="tok-keyword">return</span> ResourceScopeCluster
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;users&quot;</span>, <span class="tok-string">&quot;groups&quot;</span>, <span class="tok-string">&quot;userextras&quot;</span>:
+			<span class="tok-comment">// Impersonation targets are not namespaced RoleBinding-effective.</span>
+			<span class="tok-keyword">return</span> ResourceScopeCluster
+		}
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;apps&quot;</span>, <span class="tok-string">&quot;batch&quot;</span>, <span class="tok-string">&quot;extensions&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;deployments&quot;</span>, <span class="tok-string">&quot;statefulsets&quot;</span>, <span class="tok-string">&quot;daemonsets&quot;</span>, <span class="tok-string">&quot;replicasets&quot;</span>,
+			<span class="tok-string">&quot;jobs&quot;</span>, <span class="tok-string">&quot;cronjobs&quot;</span>:
+			<span class="tok-keyword">return</span> ResourceScopeNamespaced
+		}
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;roles&quot;</span>, <span class="tok-string">&quot;rolebindings&quot;</span>:
+			<span class="tok-keyword">return</span> ResourceScopeNamespaced
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;clusterroles&quot;</span>, <span class="tok-string">&quot;clusterrolebindings&quot;</span>:
+			<span class="tok-keyword">return</span> ResourceScopeCluster
+		}
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;certificates.k8s.io&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;certificatesigningrequests&quot;</span>, <span class="tok-string">&quot;signers&quot;</span>:
+			<span class="tok-keyword">return</span> ResourceScopeCluster
+		}
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;authentication.k8s.io&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;tokenreviews&quot;</span>:
+			<span class="tok-keyword">return</span> ResourceScopeCluster
+		}
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;authorization.k8s.io&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;subjectaccessreviews&quot;</span>, <span class="tok-string">&quot;selfsubjectaccessreviews&quot;</span>,
+			<span class="tok-string">&quot;selfsubjectrulesreviews&quot;</span>, <span class="tok-string">&quot;localsubjectaccessreviews&quot;</span>:
+			<span class="tok-comment">// LocalSubjectAccessReviews are namespaced; the others are cluster-scoped.</span>
+			<span class="tok-keyword">if</span> resource == <span class="tok-string">&quot;localsubjectaccessreviews&quot;</span> {
+				<span class="tok-keyword">return</span> ResourceScopeNamespaced
+			}
+			<span class="tok-keyword">return</span> ResourceScopeCluster
+		}
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;storage.k8s.io&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;storageclasses&quot;</span>, <span class="tok-string">&quot;csidrivers&quot;</span>, <span class="tok-string">&quot;csinodes&quot;</span>:
+			<span class="tok-keyword">return</span> ResourceScopeCluster
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;volumeattachments&quot;</span>:
+			<span class="tok-keyword">return</span> ResourceScopeCluster
+		}
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;admissionregistration.k8s.io&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;validatingwebhookconfigurations&quot;</span>, <span class="tok-string">&quot;mutatingwebhookconfigurations&quot;</span>,
+			<span class="tok-string">&quot;validatingadmissionpolicies&quot;</span>, <span class="tok-string">&quot;validatingadmissionpolicybindings&quot;</span>,
+			<span class="tok-string">&quot;mutatingadmissionpolicies&quot;</span>, <span class="tok-string">&quot;mutatingadmissionpolicybindings&quot;</span>:
+			<span class="tok-keyword">return</span> ResourceScopeCluster
+		}
+	}
+	<span class="tok-keyword">return</span> ResourceScopeUnknown
+}
+
+<span class="tok-comment">// permissionEffective reports whether an ordinary API resource permission can</span>
+<span class="tok-comment">// take effect through the binding under this bounded model. Special</span>
+<span class="tok-comment">// authorization verbs (bind, escalate, impersonate) use dedicated helpers.</span>
+<span class="tok-keyword">func</span> permissionEffective(binding BindingLike, apiGroup, resourceName string) bool {
+	<span class="tok-keyword">if</span> binding.Kind == <span class="tok-string">&quot;ClusterRoleBinding&quot;</span> {
+		<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
+	}
+	<span class="tok-comment">// Namespaced RoleBinding: only known namespaced resources are treated as effective.</span>
+	<span class="tok-keyword">switch</span> knownResourceScope(apiGroup, resourceName) {
+	<span class="tok-keyword">case</span> ResourceScopeNamespaced:
+		<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
+	<span class="tok-keyword">case</span> ResourceScopeCluster, ResourceScopeUnknown:
+		<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+	<span class="tok-keyword">default</span>:
+		<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+	}
+}
+
+<span class="tok-comment">// specialRBACPermissionEffective models Kubernetes special bind/escalate checks</span>
+<span class="tok-comment">// against roles and clusterroles. RoleBindings and ClusterRoleBindings are not</span>
+<span class="tok-comment">// valid special-verb targets.</span>
+<span class="tok-keyword">func</span> specialRBACPermissionEffective(binding BindingLike, resource, verb string) bool {
+	<span class="tok-keyword">switch</span> verb {
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;bind&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;roles&quot;</span>, <span class="tok-string">&quot;clusterroles&quot;</span>:
+			<span class="tok-keyword">return</span> binding.Kind == <span class="tok-string">&quot;RoleBinding&quot;</span> || binding.Kind == <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>
+		}
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;escalate&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;roles&quot;</span>:
+			<span class="tok-keyword">return</span> binding.Kind == <span class="tok-string">&quot;RoleBinding&quot;</span> || binding.Kind == <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;clusterroles&quot;</span>:
+			<span class="tok-comment">// Escalating ClusterRole definitions is cluster-scoped.</span>
+			<span class="tok-keyword">return</span> binding.Kind == <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>
+		}
+	}
+	<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+}
+
+<span class="tok-comment">// impersonationEffective reports whether identity impersonation can take effect</span>
+<span class="tok-comment">// through the binding. Impersonation is cluster-scoped identity authorization.</span>
+<span class="tok-keyword">func</span> impersonationEffective(binding BindingLike) bool {
+	<span class="tok-keyword">return</span> binding.Kind == <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>
+}
+
+<span class="tok-keyword">func</span> impersonationTargetAPIGroup(resource string) (string, bool) {
+	<span class="tok-keyword">switch</span> resource {
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;users&quot;</span>, <span class="tok-string">&quot;groups&quot;</span>, <span class="tok-string">&quot;serviceaccounts&quot;</span>:
+		<span class="tok-keyword">return</span> <span class="tok-string">&quot;&quot;</span>, <span class="tok-keyword">true</span>
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;userextras&quot;</span>:
+		<span class="tok-keyword">return</span> <span class="tok-string">&quot;authentication.k8s.io&quot;</span>, <span class="tok-keyword">true</span>
+	<span class="tok-keyword">default</span>:
+		<span class="tok-keyword">return</span> <span class="tok-string">&quot;&quot;</span>, <span class="tok-keyword">false</span>
+	}
+}
+
+<span class="tok-keyword">func</span> specialRBACVerbs(verbs []string) []string {
+	<span class="tok-keyword">if</span> contains(verbs, <span class="tok-string">&quot;*&quot;</span>) {
+		<span class="tok-keyword">return</span> []string{<span class="tok-string">&quot;bind&quot;</span>, <span class="tok-string">&quot;escalate&quot;</span>}
+	}
+	<span class="tok-keyword">var</span> out []string
+	<span class="tok-keyword">if</span> contains(verbs, <span class="tok-string">&quot;bind&quot;</span>) {
+		out = append(out, <span class="tok-string">&quot;bind&quot;</span>)
+	}
+	<span class="tok-keyword">if</span> contains(verbs, <span class="tok-string">&quot;escalate&quot;</span>) {
+		out = append(out, <span class="tok-string">&quot;escalate&quot;</span>)
+	}
+	<span class="tok-keyword">return</span> out
+}
+
+<span class="tok-keyword">func</span> specialRBACDescription(binding BindingLike, verb, resource, scope string) string {
+	<span class="tok-keyword">switch</span> verb {
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;bind&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;roles&quot;</span>:
+			<span class="tok-keyword">if</span> binding.Kind == <span class="tok-string">&quot;RoleBinding&quot;</span> {
+				<span class="tok-keyword">return</span> fmt.Sprintf(<span class="tok-string">&quot;bind on roles can permit binding selected Roles through RoleBindings in namespace %q&quot;</span>, scope)
+			}
+			<span class="tok-keyword">return</span> <span class="tok-string">&quot;bind on roles can permit binding selected Roles cluster-wide&quot;</span>
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;clusterroles&quot;</span>:
+			<span class="tok-keyword">if</span> binding.Kind == <span class="tok-string">&quot;RoleBinding&quot;</span> {
+				<span class="tok-keyword">return</span> fmt.Sprintf(<span class="tok-string">&quot;bind on clusterroles can permit binding selected ClusterRoles through RoleBindings in namespace %q&quot;</span>, scope)
+			}
+			<span class="tok-keyword">return</span> <span class="tok-string">&quot;bind on clusterroles can permit binding selected ClusterRoles cluster-wide&quot;</span>
+		}
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;escalate&quot;</span>:
+		<span class="tok-keyword">switch</span> resource {
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;roles&quot;</span>:
+			<span class="tok-keyword">if</span> binding.Kind == <span class="tok-string">&quot;RoleBinding&quot;</span> {
+				<span class="tok-keyword">return</span> fmt.Sprintf(<span class="tok-string">&quot;escalate on roles can permit creating or modifying Roles beyond the caller&#39;s currently held permissions in namespace %q&quot;</span>, scope)
+			}
+			<span class="tok-keyword">return</span> <span class="tok-string">&quot;escalate on roles can permit creating or modifying Roles beyond the caller&#39;s currently held permissions&quot;</span>
+		<span class="tok-keyword">case</span> <span class="tok-string">&quot;clusterroles&quot;</span>:
+			<span class="tok-keyword">return</span> <span class="tok-string">&quot;escalate on clusterroles can permit cluster-wide privilege escalation&quot;</span>
+		}
+	}
+	<span class="tok-keyword">return</span> fmt.Sprintf(<span class="tok-string">&quot;%s on %s expands RBAC authority&quot;</span>, verb, resource)
+}
+
+<span class="tok-keyword">func</span> evaluateRule(roleKey RoleKey, binding BindingLike, scope string, subjects []string, rule PolicyRule) []Finding {
+	<span class="tok-keyword">var</span> findings []Finding
+	appendFinding := <span class="tok-keyword">func</span>(code, severity, description, resourceNamesNote string) {
+		desc := description
+		resourceNames := append([]string(<span class="tok-keyword">nil</span>), rule.ResourceNames...)
+		<span class="tok-keyword">if</span> len(resourceNames) &gt; <span class="tok-number">0</span> {
+			note := resourceNamesNote
+			<span class="tok-keyword">if</span> note == <span class="tok-string">&quot;&quot;</span> {
+				note = <span class="tok-string">&quot;named constraints do not make the permission safe by themselves&quot;</span>
+			}
+			desc = fmt.Sprintf(<span class="tok-string">&quot;%s; constrained to resourceNames %v; %s&quot;</span>, description, resourceNames, note)
+		}
+		findings = append(findings, Finding{
+			Code:          code,
+			Severity:      severity,
+			Description:   desc,
+			RoleKey:       roleKey,
+			BindingKind:   binding.Kind,
+			BindingName:   binding.Name,
+			BindingScope:  scope,
+			Subjects:      append([]string(<span class="tok-keyword">nil</span>), subjects...),
+			ResourceNames: resourceNames,
+		})
+	}
+	addOrdinary := <span class="tok-keyword">func</span>(code, severity, description, apiGroup, resourceName string) {
+		<span class="tok-keyword">if</span> !permissionEffective(binding, apiGroup, resourceName) {
+			<span class="tok-keyword">return</span>
+		}
+		appendFinding(code, severity, description, <span class="tok-string">&quot;named constraints do not make the permission safe by themselves&quot;</span>)
+	}
+
+	<span class="tok-keyword">if</span> isAllResourcesAllVerbs(rule) {
+		<span class="tok-comment">// Wildcard grant is still meaningful inside a RoleBinding namespace, but</span>
+		<span class="tok-comment">// must not be described as granting cluster-scoped resources.</span>
+		desc := <span class="tok-string">&quot;apiGroups/resources/verbs wildcards grant unrestricted authorization within the binding scope for resources that can take effect there&quot;</span>
+		<span class="tok-keyword">if</span> binding.Kind == <span class="tok-string">&quot;RoleBinding&quot;</span> {
+			desc = <span class="tok-string">&quot;apiGroups/resources/verbs wildcards grant unrestricted authorization for namespaced resources within the RoleBinding namespace; known cluster-scoped resources are not treated as effective through this binding&quot;</span>
+		}
+		addOrdinary(<span class="tok-string">&quot;all-resources-all-verbs&quot;</span>, <span class="tok-string">&quot;critical&quot;</span>, desc, <span class="tok-string">&quot;&quot;</span>, <span class="tok-string">&quot;pods&quot;</span>)
+	}
+
+	apiGroups := rule.APIGroups
+	<span class="tok-keyword">if</span> len(apiGroups) == <span class="tok-number">0</span> {
+		apiGroups = []string{<span class="tok-string">&quot;&quot;</span>}
+	}
+
+	<span class="tok-keyword">for</span> _, group := <span class="tok-keyword">range</span> apiGroups {
+		<span class="tok-keyword">for</span> _, resource := <span class="tok-keyword">range</span> expandResources(rule.Resources) {
+			<span class="tok-comment">// TokenRequest is core serviceaccounts/token only.</span>
+			<span class="tok-keyword">if</span> groupMatches(group, <span class="tok-string">&quot;&quot;</span>) &amp;&amp;
+				resourceMatches(resource, <span class="tok-string">&quot;serviceaccounts&quot;</span>, <span class="tok-string">&quot;token&quot;</span>) &amp;&amp;
+				hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;create&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) {
+				addOrdinary(<span class="tok-string">&quot;sa-token-create&quot;</span>, <span class="tok-string">&quot;high&quot;</span>, <span class="tok-string">&quot;create on serviceaccounts/token can mint TokenRequest-bound service-account tokens&quot;</span>, <span class="tok-string">&quot;&quot;</span>, <span class="tok-string">&quot;serviceaccounts&quot;</span>)
+			}
+			<span class="tok-keyword">if</span> groupMatches(group, <span class="tok-string">&quot;certificates.k8s.io&quot;</span>) &amp;&amp;
+				resourceMatches(resource, <span class="tok-string">&quot;certificatesigningrequests&quot;</span>, <span class="tok-string">&quot;approval&quot;</span>) &amp;&amp;
+				hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;update&quot;</span>, <span class="tok-string">&quot;patch&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) {
+				addOrdinary(<span class="tok-string">&quot;csr-approval&quot;</span>, <span class="tok-string">&quot;high&quot;</span>, <span class="tok-string">&quot;update/patch on certificatesigningrequests/approval can approve certificate requests&quot;</span>, <span class="tok-string">&quot;certificates.k8s.io&quot;</span>, <span class="tok-string">&quot;certificatesigningrequests&quot;</span>)
+			}
+			<span class="tok-keyword">if</span> groupMatches(group, <span class="tok-string">&quot;certificates.k8s.io&quot;</span>) &amp;&amp;
+				resourceMatches(resource, <span class="tok-string">&quot;signers&quot;</span>, <span class="tok-string">&quot;&quot;</span>) &amp;&amp;
+				hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;approve&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) {
+				addOrdinary(<span class="tok-string">&quot;csr-signer-approve&quot;</span>, <span class="tok-string">&quot;high&quot;</span>, <span class="tok-string">&quot;approve on certificatesigningrequests signers grants signer approval authority&quot;</span>, <span class="tok-string">&quot;certificates.k8s.io&quot;</span>, <span class="tok-string">&quot;signers&quot;</span>)
+			}
+			<span class="tok-keyword">if</span> groupMatches(group, <span class="tok-string">&quot;authentication.k8s.io&quot;</span>) &amp;&amp;
+				resourceMatches(resource, <span class="tok-string">&quot;tokenreviews&quot;</span>, <span class="tok-string">&quot;&quot;</span>) &amp;&amp;
+				hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;create&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) {
+				addOrdinary(<span class="tok-string">&quot;tokenreview-oracle&quot;</span>, <span class="tok-string">&quot;medium&quot;</span>, <span class="tok-string">&quot;create on tokenreviews is a token-authentication oracle capability; it does not mint service-account tokens&quot;</span>, <span class="tok-string">&quot;authentication.k8s.io&quot;</span>, <span class="tok-string">&quot;tokenreviews&quot;</span>)
+			}
+
+			<span class="tok-keyword">if</span> hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;impersonate&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) &amp;&amp; impersonationEffective(binding) {
+				<span class="tok-keyword">var</span> targets []string
+				<span class="tok-keyword">switch</span> {
+				<span class="tok-keyword">case</span> resource.name == <span class="tok-string">&quot;*&quot;</span>:
+					targets = []string{<span class="tok-string">&quot;users&quot;</span>, <span class="tok-string">&quot;groups&quot;</span>, <span class="tok-string">&quot;serviceaccounts&quot;</span>, <span class="tok-string">&quot;userextras&quot;</span>}
+				<span class="tok-keyword">case</span> resource.subresource == <span class="tok-string">&quot;&quot;</span> &amp;&amp; (resource.name == <span class="tok-string">&quot;users&quot;</span> || resource.name == <span class="tok-string">&quot;groups&quot;</span> ||
+					resource.name == <span class="tok-string">&quot;serviceaccounts&quot;</span> || resource.name == <span class="tok-string">&quot;userextras&quot;</span>):
+					targets = []string{resource.name}
+				}
+				<span class="tok-keyword">for</span> _, target := <span class="tok-keyword">range</span> targets {
+					wantGroup, ok := impersonationTargetAPIGroup(target)
+					<span class="tok-keyword">if</span> !ok || !groupMatches(group, wantGroup) {
+						<span class="tok-keyword">continue</span>
+					}
+					appendFinding(<span class="tok-string">&quot;impersonate&quot;</span>, <span class="tok-string">&quot;high&quot;</span>,
+						fmt.Sprintf(<span class="tok-string">&quot;impersonate on %s expands identity authority&quot;</span>, target),
+						<span class="tok-string">&quot;named constraints do not make the permission safe by themselves&quot;</span>)
+				}
+			}
+
+			<span class="tok-keyword">if</span> groupMatches(group, <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>) {
+				candidates := []string{<span class="tok-string">&quot;roles&quot;</span>, <span class="tok-string">&quot;clusterroles&quot;</span>}
+				<span class="tok-keyword">if</span> resource.name != <span class="tok-string">&quot;*&quot;</span> {
+					<span class="tok-keyword">if</span> resource.subresource != <span class="tok-string">&quot;&quot;</span> {
+						candidates = <span class="tok-keyword">nil</span>
+					} <span class="tok-keyword">else</span> {
+						candidates = []string{resource.name}
+					}
+				}
+				<span class="tok-keyword">for</span> _, candidate := <span class="tok-keyword">range</span> candidates {
+					<span class="tok-keyword">if</span> candidate != <span class="tok-string">&quot;roles&quot;</span> &amp;&amp; candidate != <span class="tok-string">&quot;clusterroles&quot;</span> {
+						<span class="tok-keyword">continue</span>
+					}
+					<span class="tok-keyword">for</span> _, verb := <span class="tok-keyword">range</span> specialRBACVerbs(rule.Verbs) {
+						<span class="tok-keyword">if</span> !specialRBACPermissionEffective(binding, candidate, verb) {
+							<span class="tok-keyword">continue</span>
+						}
+						code := <span class="tok-string">&quot;rbac-bind&quot;</span>
+						<span class="tok-keyword">if</span> verb == <span class="tok-string">&quot;escalate&quot;</span> {
+							code = <span class="tok-string">&quot;rbac-escalate&quot;</span>
+						}
+						note := <span class="tok-string">&quot;named constraints do not make the permission safe by themselves&quot;</span>
+						<span class="tok-keyword">if</span> verb == <span class="tok-string">&quot;bind&quot;</span> {
+							note = <span class="tok-string">&quot;the restriction narrows which roles may be bound but does not make the permission safe by itself&quot;</span>
+						}
+						appendFinding(code, <span class="tok-string">&quot;high&quot;</span>, specialRBACDescription(binding, verb, candidate, scope), note)
+					}
+				}
+			}
+
+			<span class="tok-keyword">if</span> groupMatches(group, <span class="tok-string">&quot;apps&quot;</span>, <span class="tok-string">&quot;batch&quot;</span>, <span class="tok-string">&quot;extensions&quot;</span>) &amp;&amp;
+				isWorkloadController(resource.name) &amp;&amp;
+				hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;create&quot;</span>, <span class="tok-string">&quot;update&quot;</span>, <span class="tok-string">&quot;patch&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) {
+				name := resource.name
+				effective := name
+				<span class="tok-keyword">if</span> name == <span class="tok-string">&quot;*&quot;</span> {
+					name = <span class="tok-string">&quot;workload controllers&quot;</span>
+					effective = <span class="tok-string">&quot;deployments&quot;</span>
+				}
+				api := group
+				<span class="tok-keyword">if</span> api == <span class="tok-string">&quot;*&quot;</span> {
+					api = <span class="tok-string">&quot;apps&quot;</span>
+				}
+				addOrdinary(<span class="tok-string">&quot;workload-controller-mutate&quot;</span>, <span class="tok-string">&quot;medium&quot;</span>, fmt.Sprintf(<span class="tok-string">&quot;mutate %s; review pod templates and service-account bindings&quot;</span>, name), api, effective)
+			}
+			<span class="tok-keyword">if</span> groupMatches(group, <span class="tok-string">&quot;&quot;</span>) &amp;&amp;
+				resourceMatches(resource, <span class="tok-string">&quot;pods&quot;</span>, <span class="tok-string">&quot;&quot;</span>) &amp;&amp;
+				hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;create&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) {
+				addOrdinary(<span class="tok-string">&quot;pod-create&quot;</span>, <span class="tok-string">&quot;medium&quot;</span>, <span class="tok-string">&quot;create pods is a heuristic risk when combined with privileged service accounts or permissive admission; not proof of breakout alone&quot;</span>, <span class="tok-string">&quot;&quot;</span>, <span class="tok-string">&quot;pods&quot;</span>)
+			}
+			<span class="tok-keyword">if</span> groupMatches(group, <span class="tok-string">&quot;&quot;</span>) &amp;&amp;
+				(resourceMatches(resource, <span class="tok-string">&quot;pods&quot;</span>, <span class="tok-string">&quot;exec&quot;</span>) || resourceMatches(resource, <span class="tok-string">&quot;pods&quot;</span>, <span class="tok-string">&quot;attach&quot;</span>) || resourceMatches(resource, <span class="tok-string">&quot;pods&quot;</span>, <span class="tok-string">&quot;portforward&quot;</span>)) &amp;&amp;
+				hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;create&quot;</span>, <span class="tok-string">&quot;get&quot;</span>, <span class="tok-string">&quot;update&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) {
+				sub := resource.subresource
+				<span class="tok-keyword">if</span> resource.name == <span class="tok-string">&quot;*&quot;</span> || sub == <span class="tok-string">&quot;&quot;</span> {
+					sub = <span class="tok-string">&quot;exec|attach|portforward&quot;</span>
+				}
+				addOrdinary(<span class="tok-string">&quot;pod-interactive&quot;</span>, <span class="tok-string">&quot;high&quot;</span>, fmt.Sprintf(<span class="tok-string">&quot;pods/%s enables interactive access to running workloads&quot;</span>, sub), <span class="tok-string">&quot;&quot;</span>, <span class="tok-string">&quot;pods&quot;</span>)
+			}
+			<span class="tok-keyword">if</span> groupMatches(group, <span class="tok-string">&quot;&quot;</span>) &amp;&amp;
+				resourceMatches(resource, <span class="tok-string">&quot;secrets&quot;</span>, <span class="tok-string">&quot;&quot;</span>) &amp;&amp;
+				hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;get&quot;</span>, <span class="tok-string">&quot;list&quot;</span>, <span class="tok-string">&quot;watch&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) {
+				addOrdinary(<span class="tok-string">&quot;secrets-read&quot;</span>, <span class="tok-string">&quot;high&quot;</span>, <span class="tok-string">&quot;read access to secrets can expose credentials mounted or stored as Secret objects&quot;</span>, <span class="tok-string">&quot;&quot;</span>, <span class="tok-string">&quot;secrets&quot;</span>)
+			}
+			<span class="tok-keyword">if</span> groupMatches(group, <span class="tok-string">&quot;&quot;</span>) &amp;&amp;
+				resourceMatches(resource, <span class="tok-string">&quot;nodes&quot;</span>, <span class="tok-string">&quot;proxy&quot;</span>) &amp;&amp;
+				hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;create&quot;</span>, <span class="tok-string">&quot;get&quot;</span>, <span class="tok-string">&quot;update&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) {
+				addOrdinary(<span class="tok-string">&quot;nodes-proxy&quot;</span>, <span class="tok-string">&quot;high&quot;</span>, <span class="tok-string">&quot;nodes/proxy can reach kubelet APIs and bypass some network controls&quot;</span>, <span class="tok-string">&quot;&quot;</span>, <span class="tok-string">&quot;nodes&quot;</span>)
+			}
+			<span class="tok-keyword">if</span> groupMatches(group, <span class="tok-string">&quot;admissionregistration.k8s.io&quot;</span>) &amp;&amp;
+				(resourceMatches(resource, <span class="tok-string">&quot;validatingwebhookconfigurations&quot;</span>, <span class="tok-string">&quot;&quot;</span>) ||
+					resourceMatches(resource, <span class="tok-string">&quot;mutatingwebhookconfigurations&quot;</span>, <span class="tok-string">&quot;&quot;</span>)) &amp;&amp;
+				hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;create&quot;</span>, <span class="tok-string">&quot;update&quot;</span>, <span class="tok-string">&quot;patch&quot;</span>, <span class="tok-string">&quot;delete&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) {
+				name := resource.name
+				effective := name
+				<span class="tok-keyword">if</span> name == <span class="tok-string">&quot;*&quot;</span> {
+					name = <span class="tok-string">&quot;admission webhook configurations&quot;</span>
+					effective = <span class="tok-string">&quot;validatingwebhookconfigurations&quot;</span>
+				}
+				addOrdinary(<span class="tok-string">&quot;admission-policy-mutate&quot;</span>, <span class="tok-string">&quot;high&quot;</span>, fmt.Sprintf(<span class="tok-string">&quot;mutation of %s can weaken or bypass admission controls&quot;</span>, name), <span class="tok-string">&quot;admissionregistration.k8s.io&quot;</span>, effective)
+			}
+		}
+	}
+
+	findings = append(findings, evaluateCustomPolicyRules(roleKey, binding, scope, subjects, rule)...)
+	<span class="tok-keyword">return</span> findings
+}
+
+<span class="tok-keyword">func</span> evaluateCustomPolicyRules(roleKey RoleKey, binding BindingLike, scope string, subjects []string, rule PolicyRule) []Finding {
+	<span class="tok-keyword">if</span> binding.Kind != <span class="tok-string">&quot;ClusterRoleBinding&quot;</span> {
+		<span class="tok-keyword">return</span> <span class="tok-keyword">nil</span>
+	}
+	<span class="tok-keyword">var</span> findings []Finding
+	apiGroups := rule.APIGroups
+	<span class="tok-keyword">if</span> len(apiGroups) == <span class="tok-number">0</span> {
+		<span class="tok-keyword">return</span> <span class="tok-keyword">nil</span>
+	}
+	<span class="tok-keyword">for</span> _, group := <span class="tok-keyword">range</span> apiGroups {
+		<span class="tok-keyword">if</span> !groupMatches(group, <span class="tok-string">&quot;kyverno.io&quot;</span>, <span class="tok-string">&quot;constraints.gatekeeper.sh&quot;</span>, <span class="tok-string">&quot;templates.gatekeeper.sh&quot;</span>, <span class="tok-string">&quot;policy&quot;</span>) {
+			<span class="tok-keyword">continue</span>
+		}
+		<span class="tok-keyword">if</span> !hasAnyVerb(rule.Verbs, <span class="tok-string">&quot;create&quot;</span>, <span class="tok-string">&quot;update&quot;</span>, <span class="tok-string">&quot;patch&quot;</span>, <span class="tok-string">&quot;delete&quot;</span>, <span class="tok-string">&quot;*&quot;</span>) {
+			<span class="tok-keyword">continue</span>
+		}
+		<span class="tok-keyword">for</span> _, resource := <span class="tok-keyword">range</span> expandResources(rule.Resources) {
+			name := resource.name
+			<span class="tok-keyword">if</span> name == <span class="tok-string">&quot;&quot;</span> || name == <span class="tok-string">&quot;*&quot;</span> {
+				name = <span class="tok-string">&quot;policy resources&quot;</span>
+			}
+			desc := fmt.Sprintf(<span class="tok-string">&quot;mutation of %s can weaken or bypass admission controls&quot;</span>, name)
+			resourceNames := append([]string(<span class="tok-keyword">nil</span>), rule.ResourceNames...)
+			<span class="tok-keyword">if</span> len(resourceNames) &gt; <span class="tok-number">0</span> {
+				desc = fmt.Sprintf(
+					<span class="tok-string">&quot;%s; constrained to resourceNames %v (named constraints do not make the permission safe by themselves)&quot;</span>,
+					desc,
+					resourceNames,
+				)
+			}
+			findings = append(findings, Finding{
+				Code:          <span class="tok-string">&quot;admission-policy-mutate&quot;</span>,
+				Severity:      <span class="tok-string">&quot;high&quot;</span>,
+				Description:   desc,
+				RoleKey:       roleKey,
+				BindingKind:   binding.Kind,
+				BindingName:   binding.Name,
+				BindingScope:  scope,
+				Subjects:      append([]string(<span class="tok-keyword">nil</span>), subjects...),
+				ResourceNames: resourceNames,
+			})
+			<span class="tok-keyword">break</span>
+		}
+	}
+	<span class="tok-keyword">return</span> findings
+}
+
+<span class="tok-keyword">func</span> isAllResourcesAllVerbs(rule PolicyRule) bool {
+	<span class="tok-keyword">return</span> contains(rule.APIGroups, <span class="tok-string">&quot;*&quot;</span>) &amp;&amp; contains(rule.Resources, <span class="tok-string">&quot;*&quot;</span>) &amp;&amp; contains(rule.Verbs, <span class="tok-string">&quot;*&quot;</span>)
+}
+
+<span class="tok-keyword">type</span> resourceRef <span class="tok-keyword">struct</span> {
+	name        string
+	subresource string
+}
+
+<span class="tok-keyword">func</span> expandResources(resources []string) []resourceRef {
+	<span class="tok-keyword">if</span> len(resources) == <span class="tok-number">0</span> {
+		<span class="tok-keyword">return</span> <span class="tok-keyword">nil</span>
+	}
+	<span class="tok-keyword">var</span> out []resourceRef
+	<span class="tok-keyword">for</span> _, item := <span class="tok-keyword">range</span> resources {
+		<span class="tok-keyword">if</span> item == <span class="tok-string">&quot;*&quot;</span> {
+			out = append(out, resourceRef{name: <span class="tok-string">&quot;*&quot;</span>})
+			<span class="tok-keyword">continue</span>
+		}
+		name, sub, ok := strings.Cut(item, <span class="tok-string">&quot;/&quot;</span>)
+		<span class="tok-keyword">if</span> ok {
+			out = append(out, resourceRef{name: name, subresource: sub})
+		} <span class="tok-keyword">else</span> {
+			out = append(out, resourceRef{name: item})
+		}
+	}
+	<span class="tok-keyword">return</span> out
+}
+
+<span class="tok-keyword">func</span> groupMatches(actual string, allowed ...string) bool {
+	<span class="tok-keyword">if</span> actual == <span class="tok-string">&quot;*&quot;</span> {
+		<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
+	}
+	<span class="tok-keyword">for</span> _, item := <span class="tok-keyword">range</span> allowed {
+		<span class="tok-keyword">if</span> item == <span class="tok-string">&quot;*&quot;</span> || item == actual {
+			<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
+		}
+	}
+	<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+}
+
+<span class="tok-comment">// resourceMatches treats resources:[&quot;*&quot;] as covering every resource and</span>
+<span class="tok-comment">// subresource. A bare resource (no slash) never implies a subresource.</span>
+<span class="tok-keyword">func</span> resourceMatches(ref resourceRef, wantName, wantSub string) bool {
+	<span class="tok-keyword">if</span> ref.name == <span class="tok-string">&quot;*&quot;</span> {
+		<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
+	}
+	<span class="tok-keyword">if</span> ref.name != wantName {
+		<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+	}
+	<span class="tok-keyword">if</span> wantSub == <span class="tok-string">&quot;&quot;</span> {
+		<span class="tok-keyword">return</span> ref.subresource == <span class="tok-string">&quot;&quot;</span>
+	}
+	<span class="tok-keyword">return</span> ref.subresource == wantSub || ref.subresource == <span class="tok-string">&quot;*&quot;</span>
+}
+
+<span class="tok-keyword">func</span> hasAnyVerb(verbs []string, wanted ...string) bool {
+	<span class="tok-keyword">for</span> _, verb := <span class="tok-keyword">range</span> verbs {
+		<span class="tok-keyword">if</span> verb == <span class="tok-string">&quot;*&quot;</span> {
+			<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
+		}
+		<span class="tok-keyword">for</span> _, want := <span class="tok-keyword">range</span> wanted {
+			<span class="tok-keyword">if</span> verb == want {
+				<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
+			}
+		}
+	}
+	<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+}
+
+<span class="tok-keyword">func</span> isWorkloadController(name string) bool {
+	<span class="tok-keyword">switch</span> name {
+	<span class="tok-keyword">case</span> <span class="tok-string">&quot;deployments&quot;</span>, <span class="tok-string">&quot;statefulsets&quot;</span>, <span class="tok-string">&quot;daemonsets&quot;</span>, <span class="tok-string">&quot;replicasets&quot;</span>, <span class="tok-string">&quot;jobs&quot;</span>, <span class="tok-string">&quot;cronjobs&quot;</span>, <span class="tok-string">&quot;*&quot;</span>:
+		<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
+	<span class="tok-keyword">default</span>:
+		<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+	}
+}
+
+<span class="tok-keyword">func</span> contains(values []string, want string) bool {
+	<span class="tok-keyword">for</span> _, value := <span class="tok-keyword">range</span> values {
+		<span class="tok-keyword">if</span> value == want {
+			<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
+		}
+	}
+	<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+}
+
+<span class="tok-keyword">func</span> unique(values []string) []string {
+	seen := <span class="tok-keyword">map</span>[string]<span class="tok-keyword">struct</span>{}{}
+	<span class="tok-keyword">var</span> out []string
+	<span class="tok-keyword">for</span> _, value := <span class="tok-keyword">range</span> values {
+		<span class="tok-keyword">if</span> _, ok := seen[value]; ok {
+			<span class="tok-keyword">continue</span>
+		}
+		seen[value] = <span class="tok-keyword">struct</span>{}{}
+		out = append(out, value)
+	}
+	<span class="tok-keyword">return</span> out
+}
+
+<span class="tok-keyword">type</span> findingKey <span class="tok-keyword">struct</span> {
+	Code         string
+	RoleKind     string
+	RoleNS       string
+	RoleName     string
+	BindingKind  string
+	BindingName  string
+	BindingScope string
+}
+
+<span class="tok-keyword">func</span> mergeFindings(in []Finding) []Finding {
+	order := make([]findingKey, <span class="tok-number">0</span>, len(in))
+	byKey := <span class="tok-keyword">map</span>[findingKey]*Finding{}
+	<span class="tok-keyword">for</span> _, finding := <span class="tok-keyword">range</span> in {
+		key := findingKey{
+			Code:         finding.Code,
+			RoleKind:     finding.RoleKey.Kind,
+			RoleNS:       finding.RoleKey.Namespace,
+			RoleName:     finding.RoleKey.Name,
+			BindingKind:  finding.BindingKind,
+			BindingName:  finding.BindingName,
+			BindingScope: finding.BindingScope,
+		}
+		<span class="tok-keyword">if</span> existing, ok := byKey[key]; ok {
+			existing.Subjects = unique(append(existing.Subjects, finding.Subjects...))
+			existing.ResourceNames = unique(append(existing.ResourceNames, finding.ResourceNames...))
+			<span class="tok-keyword">continue</span>
+		}
+		copyFinding := finding
+		copyFinding.Subjects = unique(append([]string(<span class="tok-keyword">nil</span>), finding.Subjects...))
+		copyFinding.ResourceNames = unique(append([]string(<span class="tok-keyword">nil</span>), finding.ResourceNames...))
+		byKey[key] = &amp;copyFinding
+		order = append(order, key)
+	}
+	out := make([]Finding, <span class="tok-number">0</span>, len(order))
+	<span class="tok-keyword">for</span> _, key := <span class="tok-keyword">range</span> order {
+		f := *byKey[key]
+		sort.Strings(f.Subjects)
+		sort.Strings(f.ResourceNames)
+		out = append(out, f)
+	}
+	<span class="tok-keyword">return</span> out
+}
+
+<span class="tok-comment">// HasCode reports whether any finding uses the code.</span>
+<span class="tok-keyword">func</span> HasCode(findings []Finding, code string) bool {
+	<span class="tok-keyword">for</span> _, finding := <span class="tok-keyword">range</span> findings {
+		<span class="tok-keyword">if</span> finding.Code == code {
+			<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
+		}
+	}
+	<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
+}</code></pre>
+    </div><div role="tabpanel" id="source-k8s-rbac-auditor-panel-1" tabindex="0" aria-labelledby="source-k8s-rbac-auditor-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">auditor_test.go</span><code class="docs-source-viewer__path">cloud-security/scripts/k8s-rbac/auditor_test.go</code><span class="docs-source-viewer__lines">1189 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="auditor_test.go source code" class="language-go"><span class="tok-keyword">package</span> k8srbac_test
+
+<span class="tok-keyword">import</span> (
+	<span class="tok-string">&quot;strings&quot;</span>
+	<span class="tok-string">&quot;testing&quot;</span>
+
+	k8srbac <span class="tok-string">&quot;github.com/jasonachkar/cybersecurity-writeups/cloud-security/scripts/k8s-rbac&quot;</span>
+)
+
+<span class="tok-keyword">func</span> bindRole(ns, bindingName, roleName string, subjects ...string) k8srbac.BindingLike {
+	<span class="tok-keyword">return</span> k8srbac.BindingLike{
+		Kind:      <span class="tok-string">&quot;RoleBinding&quot;</span>,
+		Name:      bindingName,
+		Namespace: ns,
+		RoleRef:   k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: roleName},
+		Subjects:  subjects,
+	}
+}
+
+<span class="tok-keyword">func</span> bindClusterRoleViaRoleBinding(ns, bindingName, clusterRoleName string, subjects ...string) k8srbac.BindingLike {
+	<span class="tok-keyword">return</span> k8srbac.BindingLike{
+		Kind:      <span class="tok-string">&quot;RoleBinding&quot;</span>,
+		Name:      bindingName,
+		Namespace: ns,
+		RoleRef:   k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: clusterRoleName},
+		Subjects:  subjects,
+	}
+}
+
+<span class="tok-keyword">func</span> bindClusterRole(bindingName, clusterRoleName string, subjects ...string) k8srbac.BindingLike {
+	<span class="tok-keyword">return</span> k8srbac.BindingLike{
+		Kind:     <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>,
+		Name:     bindingName,
+		RoleRef:  k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: clusterRoleName},
+		Subjects: subjects,
+	}
+}
+
+<span class="tok-keyword">func</span> findingsWithCode(findings []k8srbac.Finding, code string) []k8srbac.Finding {
+	<span class="tok-keyword">var</span> out []k8srbac.Finding
+	<span class="tok-keyword">for</span> _, finding := <span class="tok-keyword">range</span> findings {
+		<span class="tok-keyword">if</span> finding.Code == code {
+			out = append(out, finding)
+		}
+	}
+	<span class="tok-keyword">return</span> out
+}
+
+<span class="tok-keyword">func</span> TestWildcardAPIGroupResourcesAndVerbs(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>,
+		Name: <span class="tok-string">&quot;superuser&quot;</span>,
+		Rules: []k8srbac.PolicyRule{{
+			APIGroups: []string{<span class="tok-string">&quot;*&quot;</span>},
+			Resources: []string{<span class="tok-string">&quot;*&quot;</span>},
+			Verbs:     []string{<span class="tok-string">&quot;*&quot;</span>},
+		}},
+	}}
+	bindings := []k8srbac.BindingLike{bindClusterRole(<span class="tok-string">&quot;bind&quot;</span>, <span class="tok-string">&quot;superuser&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:kube-system:admin&quot;</span>)}
+	findings := k8srbac.Audit(roles, bindings)
+
+	<span class="tok-keyword">if</span> !k8srbac.HasCode(findings, <span class="tok-string">&quot;all-resources-all-verbs&quot;</span>) {
+		t.Fatalf(<span class="tok-string">&quot;expected all-resources-all-verbs, got %#v&quot;</span>, findings)
+	}
+	<span class="tok-comment">// Derived risk classes should also evaluate under full wildcards.</span>
+	<span class="tok-keyword">for</span> _, code := <span class="tok-keyword">range</span> []string{<span class="tok-string">&quot;sa-token-create&quot;</span>, <span class="tok-string">&quot;secrets-read&quot;</span>, <span class="tok-string">&quot;pod-interactive&quot;</span>, <span class="tok-string">&quot;rbac-bind&quot;</span>, <span class="tok-string">&quot;rbac-escalate&quot;</span>, <span class="tok-string">&quot;impersonate&quot;</span>} {
+		<span class="tok-keyword">if</span> !k8srbac.HasCode(findings, code) {
+			t.Fatalf(<span class="tok-string">&quot;expected derived risk %s under wildcards, got %#v&quot;</span>, code, findings)
+		}
+	}
+	got := findingsWithCode(findings, <span class="tok-string">&quot;all-resources-all-verbs&quot;</span>)
+	<span class="tok-keyword">if</span> got[<span class="tok-number">0</span>].Severity != <span class="tok-string">&quot;critical&quot;</span> {
+		t.Fatalf(<span class="tok-string">&quot;severity = %q, want critical&quot;</span>, got[<span class="tok-number">0</span>].Severity)
+	}
+}
+
+<span class="tok-keyword">func</span> TestSameRoleNameDifferentNamespaces(t *testing.T) {
+	roles := []k8srbac.RoleLike{
+		{
+			Kind:      <span class="tok-string">&quot;Role&quot;</span>,
+			Name:      <span class="tok-string">&quot;reader&quot;</span>,
+			Namespace: <span class="tok-string">&quot;alpha&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;secrets&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;get&quot;</span>},
+			}},
+		},
+		{
+			Kind:      <span class="tok-string">&quot;Role&quot;</span>,
+			Name:      <span class="tok-string">&quot;reader&quot;</span>,
+			Namespace: <span class="tok-string">&quot;beta&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;pods&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>},
+			}},
+		},
+	}
+	bindings := []k8srbac.BindingLike{
+		bindRole(<span class="tok-string">&quot;alpha&quot;</span>, <span class="tok-string">&quot;a&quot;</span>, <span class="tok-string">&quot;reader&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:alpha:sa&quot;</span>),
+		bindRole(<span class="tok-string">&quot;beta&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;reader&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:beta:sa&quot;</span>),
+	}
+	findings := k8srbac.Audit(roles, bindings)
+
+	secretFindings := findingsWithCode(findings, <span class="tok-string">&quot;secrets-read&quot;</span>)
+	<span class="tok-keyword">if</span> len(secretFindings) != <span class="tok-number">1</span> {
+		t.Fatalf(<span class="tok-string">&quot;secrets-read findings = %#v&quot;</span>, secretFindings)
+	}
+	<span class="tok-keyword">if</span> secretFindings[<span class="tok-number">0</span>].RoleKey.Namespace != <span class="tok-string">&quot;alpha&quot;</span> || secretFindings[<span class="tok-number">0</span>].BindingScope != <span class="tok-string">&quot;alpha&quot;</span> {
+		t.Fatalf(<span class="tok-string">&quot;secrets finding keyed wrong: %#v&quot;</span>, secretFindings[<span class="tok-number">0</span>])
+	}
+
+	podFindings := findingsWithCode(findings, <span class="tok-string">&quot;pod-create&quot;</span>)
+	<span class="tok-keyword">if</span> len(podFindings) != <span class="tok-number">1</span> {
+		t.Fatalf(<span class="tok-string">&quot;pod-create findings = %#v&quot;</span>, podFindings)
+	}
+	<span class="tok-keyword">if</span> podFindings[<span class="tok-number">0</span>].RoleKey.Namespace != <span class="tok-string">&quot;beta&quot;</span> || podFindings[<span class="tok-number">0</span>].BindingScope != <span class="tok-string">&quot;beta&quot;</span> {
+		t.Fatalf(<span class="tok-string">&quot;pod finding keyed wrong: %#v&quot;</span>, podFindings[<span class="tok-number">0</span>])
+	}
+}
+
+<span class="tok-keyword">func</span> TestRoleBindingReferencesRole(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind:      <span class="tok-string">&quot;Role&quot;</span>,
+		Name:      <span class="tok-string">&quot;secret-reader&quot;</span>,
+		Namespace: <span class="tok-string">&quot;app&quot;</span>,
+		Rules: []k8srbac.PolicyRule{{
+			APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+			Resources: []string{<span class="tok-string">&quot;secrets&quot;</span>},
+			Verbs:     []string{<span class="tok-string">&quot;get&quot;</span>},
+		}},
+	}}
+	bindings := []k8srbac.BindingLike{
+		bindRole(<span class="tok-string">&quot;app&quot;</span>, <span class="tok-string">&quot;bind&quot;</span>, <span class="tok-string">&quot;secret-reader&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:app:worker&quot;</span>),
+	}
+	findings := k8srbac.Audit(roles, bindings)
+	got := findingsWithCode(findings, <span class="tok-string">&quot;secrets-read&quot;</span>)
+	<span class="tok-keyword">if</span> len(got) != <span class="tok-number">1</span> {
+		t.Fatalf(<span class="tok-string">&quot;expected one secrets-read finding, got %#v&quot;</span>, findings)
+	}
+	<span class="tok-keyword">if</span> got[<span class="tok-number">0</span>].RoleKey != (k8srbac.RoleKey{Kind: <span class="tok-string">&quot;Role&quot;</span>, Namespace: <span class="tok-string">&quot;app&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>}) {
+		t.Fatalf(<span class="tok-string">&quot;RoleKey = %#v&quot;</span>, got[<span class="tok-number">0</span>].RoleKey)
+	}
+	<span class="tok-keyword">if</span> got[<span class="tok-number">0</span>].BindingKind != <span class="tok-string">&quot;RoleBinding&quot;</span> || got[<span class="tok-number">0</span>].BindingScope != <span class="tok-string">&quot;app&quot;</span> {
+		t.Fatalf(<span class="tok-string">&quot;binding metadata = %#v&quot;</span>, got[<span class="tok-number">0</span>])
+	}
+}
+
+<span class="tok-keyword">func</span> TestRoleBindingReferencesClusterRole(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>,
+		Name: <span class="tok-string">&quot;secret-reader&quot;</span>,
+		Rules: []k8srbac.PolicyRule{{
+			APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+			Resources: []string{<span class="tok-string">&quot;secrets&quot;</span>},
+			Verbs:     []string{<span class="tok-string">&quot;list&quot;</span>},
+		}},
+	}}
+	bindings := []k8srbac.BindingLike{
+		bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;team&quot;</span>, <span class="tok-string">&quot;bind&quot;</span>, <span class="tok-string">&quot;secret-reader&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:team:worker&quot;</span>),
+	}
+	findings := k8srbac.Audit(roles, bindings)
+	got := findingsWithCode(findings, <span class="tok-string">&quot;secrets-read&quot;</span>)
+	<span class="tok-keyword">if</span> len(got) != <span class="tok-number">1</span> {
+		t.Fatalf(<span class="tok-string">&quot;expected secrets-read, got %#v&quot;</span>, findings)
+	}
+	<span class="tok-keyword">if</span> got[<span class="tok-number">0</span>].RoleKey.Kind != <span class="tok-string">&quot;ClusterRole&quot;</span> || got[<span class="tok-number">0</span>].RoleKey.Namespace != <span class="tok-string">&quot;&quot;</span> {
+		t.Fatalf(<span class="tok-string">&quot;RoleKey = %#v&quot;</span>, got[<span class="tok-number">0</span>].RoleKey)
+	}
+	<span class="tok-keyword">if</span> got[<span class="tok-number">0</span>].BindingScope != <span class="tok-string">&quot;team&quot;</span> {
+		t.Fatalf(<span class="tok-string">&quot;BindingScope = %q, want team (namespaced grant of cluster role)&quot;</span>, got[<span class="tok-number">0</span>].BindingScope)
+	}
+}
+
+<span class="tok-keyword">func</span> TestClusterRoleBindingReferencesClusterRole(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>,
+		Name: <span class="tok-string">&quot;node-proxy&quot;</span>,
+		Rules: []k8srbac.PolicyRule{{
+			APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+			Resources: []string{<span class="tok-string">&quot;nodes/proxy&quot;</span>},
+			Verbs:     []string{<span class="tok-string">&quot;get&quot;</span>},
+		}},
+	}}
+	bindings := []k8srbac.BindingLike{
+		bindClusterRole(<span class="tok-string">&quot;bind&quot;</span>, <span class="tok-string">&quot;node-proxy&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:kube-system:proxy&quot;</span>),
+	}
+	findings := k8srbac.Audit(roles, bindings)
+	got := findingsWithCode(findings, <span class="tok-string">&quot;nodes-proxy&quot;</span>)
+	<span class="tok-keyword">if</span> len(got) != <span class="tok-number">1</span> {
+		t.Fatalf(<span class="tok-string">&quot;expected nodes-proxy, got %#v&quot;</span>, findings)
+	}
+	<span class="tok-keyword">if</span> got[<span class="tok-number">0</span>].BindingKind != <span class="tok-string">&quot;ClusterRoleBinding&quot;</span> || got[<span class="tok-number">0</span>].BindingScope != <span class="tok-string">&quot;cluster&quot;</span> {
+		t.Fatalf(<span class="tok-string">&quot;binding metadata = %#v&quot;</span>, got[<span class="tok-number">0</span>])
+	}
+}
+
+<span class="tok-keyword">func</span> TestInvalidClusterRoleBindingToRole(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind:      <span class="tok-string">&quot;Role&quot;</span>,
+		Name:      <span class="tok-string">&quot;local&quot;</span>,
+		Namespace: <span class="tok-string">&quot;app&quot;</span>,
+		Rules: []k8srbac.PolicyRule{{
+			APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+			Resources: []string{<span class="tok-string">&quot;secrets&quot;</span>},
+			Verbs:     []string{<span class="tok-string">&quot;get&quot;</span>},
+		}},
+	}}
+	bindings := []k8srbac.BindingLike{{
+		Kind: <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>,
+		Name: <span class="tok-string">&quot;bad&quot;</span>,
+		RoleRef: k8srbac.RoleRef{
+			APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>,
+			Kind:     <span class="tok-string">&quot;Role&quot;</span>,
+			Name:     <span class="tok-string">&quot;local&quot;</span>,
+		},
+		Subjects: []string{<span class="tok-string">&quot;user:attacker&quot;</span>},
+	}}
+	findings := k8srbac.Audit(roles, bindings)
+	<span class="tok-keyword">if</span> !k8srbac.HasCode(findings, <span class="tok-string">&quot;invalid-binding&quot;</span>) {
+		t.Fatalf(<span class="tok-string">&quot;expected invalid-binding, got %#v&quot;</span>, findings)
+	}
+	<span class="tok-keyword">if</span> k8srbac.HasCode(findings, <span class="tok-string">&quot;secrets-read&quot;</span>) {
+		t.Fatal(<span class="tok-string">&quot;invalid ClusterRoleBinding→Role must not evaluate Role rules&quot;</span>)
+	}
+}
+
+<span class="tok-keyword">func</span> TestNamespaceLimitedClusterRoleViaRoleBinding(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>,
+		Name: <span class="tok-string">&quot;pod-creator&quot;</span>,
+		Rules: []k8srbac.PolicyRule{{
+			APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+			Resources: []string{<span class="tok-string">&quot;pods&quot;</span>},
+			Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>},
+		}},
+	}}
+	bindings := []k8srbac.BindingLike{
+		bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;payments&quot;</span>, <span class="tok-string">&quot;ns-grant&quot;</span>, <span class="tok-string">&quot;pod-creator&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:payments:ci&quot;</span>),
+	}
+	findings := k8srbac.Audit(roles, bindings)
+	got := findingsWithCode(findings, <span class="tok-string">&quot;pod-create&quot;</span>)
+	<span class="tok-keyword">if</span> len(got) != <span class="tok-number">1</span> {
+		t.Fatalf(<span class="tok-string">&quot;expected pod-create, got %#v&quot;</span>, findings)
+	}
+	<span class="tok-keyword">if</span> got[<span class="tok-number">0</span>].BindingScope != <span class="tok-string">&quot;payments&quot;</span> {
+		t.Fatalf(<span class="tok-string">&quot;BindingScope = %q, want payments&quot;</span>, got[<span class="tok-number">0</span>].BindingScope)
+	}
+	<span class="tok-keyword">if</span> got[<span class="tok-number">0</span>].RoleKey.Kind != <span class="tok-string">&quot;ClusterRole&quot;</span> {
+		t.Fatalf(<span class="tok-string">&quot;RoleKey.Kind = %q, want ClusterRole&quot;</span>, got[<span class="tok-number">0</span>].RoleKey.Kind)
+	}
+}
+
+<span class="tok-keyword">func</span> TestResourceNamesPreserved(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>,
+		Name: <span class="tok-string">&quot;signer&quot;</span>,
+		Rules: []k8srbac.PolicyRule{{
+			APIGroups:     []string{<span class="tok-string">&quot;certificates.k8s.io&quot;</span>},
+			Resources:     []string{<span class="tok-string">&quot;signers&quot;</span>},
+			ResourceNames: []string{<span class="tok-string">&quot;kubernetes.io/kubelet-serving&quot;</span>},
+			Verbs:         []string{<span class="tok-string">&quot;approve&quot;</span>},
+		}},
+	}}
+	bindings := []k8srbac.BindingLike{
+		bindClusterRole(<span class="tok-string">&quot;bind&quot;</span>, <span class="tok-string">&quot;signer&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:kube-system:csr&quot;</span>),
+	}
+	findings := k8srbac.Audit(roles, bindings)
+	got := findingsWithCode(findings, <span class="tok-string">&quot;csr-signer-approve&quot;</span>)
+	<span class="tok-keyword">if</span> len(got) != <span class="tok-number">1</span> {
+		t.Fatalf(<span class="tok-string">&quot;expected csr-signer-approve, got %#v&quot;</span>, findings)
+	}
+	<span class="tok-keyword">if</span> len(got[<span class="tok-number">0</span>].ResourceNames) != <span class="tok-number">1</span> || got[<span class="tok-number">0</span>].ResourceNames[<span class="tok-number">0</span>] != <span class="tok-string">&quot;kubernetes.io/kubelet-serving&quot;</span> {
+		t.Fatalf(<span class="tok-string">&quot;ResourceNames = %#v&quot;</span>, got[<span class="tok-number">0</span>].ResourceNames)
+	}
+	<span class="tok-keyword">if</span> !strings.Contains(got[<span class="tok-number">0</span>].Description, <span class="tok-string">&quot;resourceNames&quot;</span>) {
+		t.Fatalf(<span class="tok-string">&quot;description must mention resourceNames constraint: %q&quot;</span>, got[<span class="tok-number">0</span>].Description)
+	}
+	<span class="tok-keyword">if</span> strings.Contains(strings.ToLower(got[<span class="tok-number">0</span>].Description), <span class="tok-string">&quot;safe&quot;</span>) &amp;&amp;
+		!strings.Contains(got[<span class="tok-number">0</span>].Description, <span class="tok-string">&quot;do not make the permission safe&quot;</span>) {
+		t.Fatalf(<span class="tok-string">&quot;must not claim resourceNames makes permission safe: %q&quot;</span>, got[<span class="tok-number">0</span>].Description)
+	}
+}
+
+<span class="tok-keyword">func</span> TestUnresolvedRoleReferences(t *testing.T) {
+	bindings := []k8srbac.BindingLike{
+		bindRole(<span class="tok-string">&quot;app&quot;</span>, <span class="tok-string">&quot;missing-role&quot;</span>, <span class="tok-string">&quot;no-such-role&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:app:sa&quot;</span>),
+		bindClusterRole(<span class="tok-string">&quot;missing-cr&quot;</span>, <span class="tok-string">&quot;no-such-clusterrole&quot;</span>, <span class="tok-string">&quot;user:admin&quot;</span>),
+	}
+	findings := k8srbac.Audit(<span class="tok-keyword">nil</span>, bindings)
+	unresolved := findingsWithCode(findings, <span class="tok-string">&quot;unresolved-role-ref&quot;</span>)
+	<span class="tok-keyword">if</span> len(unresolved) != <span class="tok-number">2</span> {
+		t.Fatalf(<span class="tok-string">&quot;expected 2 unresolved-role-ref findings, got %#v&quot;</span>, findings)
+	}
+}
+
+<span class="tok-keyword">func</span> TestDuplicateBindingsSubjectDedup(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind:      <span class="tok-string">&quot;Role&quot;</span>,
+		Name:      <span class="tok-string">&quot;secret-reader&quot;</span>,
+		Namespace: <span class="tok-string">&quot;app&quot;</span>,
+		Rules: []k8srbac.PolicyRule{{
+			APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+			Resources: []string{<span class="tok-string">&quot;secrets&quot;</span>},
+			Verbs:     []string{<span class="tok-string">&quot;get&quot;</span>},
+		}},
+	}}
+	bindings := []k8srbac.BindingLike{
+		{
+			Kind:      <span class="tok-string">&quot;RoleBinding&quot;</span>,
+			Name:      <span class="tok-string">&quot;bind&quot;</span>,
+			Namespace: <span class="tok-string">&quot;app&quot;</span>,
+			RoleRef:   k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>},
+			Subjects:  []string{<span class="tok-string">&quot;user:a&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>, <span class="tok-string">&quot;user:b&quot;</span>},
+		},
+		{
+			Kind:      <span class="tok-string">&quot;RoleBinding&quot;</span>,
+			Name:      <span class="tok-string">&quot;bind&quot;</span>,
+			Namespace: <span class="tok-string">&quot;app&quot;</span>,
+			RoleRef:   k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>},
+			Subjects:  []string{<span class="tok-string">&quot;user:b&quot;</span>, <span class="tok-string">&quot;user:c&quot;</span>},
+		},
+	}
+	findings := k8srbac.Audit(roles, bindings)
+	got := findingsWithCode(findings, <span class="tok-string">&quot;secrets-read&quot;</span>)
+	<span class="tok-keyword">if</span> len(got) != <span class="tok-number">1</span> {
+		t.Fatalf(<span class="tok-string">&quot;expected merged secrets-read finding, got %#v&quot;</span>, findings)
+	}
+	<span class="tok-keyword">if</span> len(got[<span class="tok-number">0</span>].Subjects) != <span class="tok-number">3</span> {
+		t.Fatalf(<span class="tok-string">&quot;subjects = %#v, want 3 unique&quot;</span>, got[<span class="tok-number">0</span>].Subjects)
+	}
+	joined := strings.Join(got[<span class="tok-number">0</span>].Subjects, <span class="tok-string">&quot;,&quot;</span>)
+	<span class="tok-keyword">if</span> joined != <span class="tok-string">&quot;user:a,user:b,user:c&quot;</span> {
+		t.Fatalf(<span class="tok-string">&quot;subjects = %q&quot;</span>, joined)
+	}
+}
+
+<span class="tok-keyword">func</span> TestRiskClasses(t *testing.T) {
+	tests := []<span class="tok-keyword">struct</span> {
+		name    string
+		role    k8srbac.RoleLike
+		want    string
+		notWant string
+	}{
+		{
+			name: <span class="tok-string">&quot;serviceaccounts token create&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Namespace: <span class="tok-string">&quot;ns&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;serviceaccounts/token&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;sa-token-create&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;CSR approval subresource&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;certificates.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;certificatesigningrequests/approval&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;update&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;csr-approval&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;CSR create alone is not approval&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;certificates.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;certificatesigningrequests&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>, <span class="tok-string">&quot;update&quot;</span>, <span class="tok-string">&quot;patch&quot;</span>},
+			}}},
+			notWant: <span class="tok-string">&quot;csr-approval&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;signer approve&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups:     []string{<span class="tok-string">&quot;certificates.k8s.io&quot;</span>},
+				Resources:     []string{<span class="tok-string">&quot;signers&quot;</span>},
+				ResourceNames: []string{<span class="tok-string">&quot;kubernetes.io/kubelet-serving&quot;</span>},
+				Verbs:         []string{<span class="tok-string">&quot;approve&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;csr-signer-approve&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;tokenreviews is oracle not minting&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;authentication.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;tokenreviews&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;tokenreview-oracle&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;impersonate users&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;users&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;impersonate&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;impersonate&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;bind escalate&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;clusterroles&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;bind&quot;</span>, <span class="tok-string">&quot;escalate&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;rbac-bind&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;escalate clusterroles&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;clusterroles&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;escalate&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;rbac-escalate&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;workload controller mutate&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Namespace: <span class="tok-string">&quot;ns&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;apps&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;deployments&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>, <span class="tok-string">&quot;patch&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;workload-controller-mutate&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;pod create heuristic&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Namespace: <span class="tok-string">&quot;ns&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;pods&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;pod-create&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;pods exec&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Namespace: <span class="tok-string">&quot;ns&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;pods/exec&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;pod-interactive&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;bare pods get is not interactive&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Namespace: <span class="tok-string">&quot;ns&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;pods&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;get&quot;</span>, <span class="tok-string">&quot;list&quot;</span>},
+			}}},
+			notWant: <span class="tok-string">&quot;pod-interactive&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;secrets read&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Namespace: <span class="tok-string">&quot;ns&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;secrets&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;get&quot;</span>, <span class="tok-string">&quot;list&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;secrets-read&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;nodes proxy&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;nodes/proxy&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;get&quot;</span>, <span class="tok-string">&quot;create&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;nodes-proxy&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;admission webhook mutate&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;admissionregistration.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;mutatingwebhookconfigurations&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;update&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;admission-policy-mutate&quot;</span>,
+		},
+		{
+			name: <span class="tok-string">&quot;wildcard resources with read verbs&quot;</span>,
+			role: k8srbac.RoleLike{Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;r&quot;</span>, Namespace: <span class="tok-string">&quot;ns&quot;</span>, Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;*&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;get&quot;</span>},
+			}}},
+			want: <span class="tok-string">&quot;secrets-read&quot;</span>,
+		},
+	}
+
+	<span class="tok-keyword">for</span> _, tt := <span class="tok-keyword">range</span> tests {
+		t.Run(tt.name, <span class="tok-keyword">func</span>(t *testing.T) {
+			<span class="tok-keyword">var</span> binding k8srbac.BindingLike
+			<span class="tok-keyword">if</span> tt.role.Kind == <span class="tok-string">&quot;ClusterRole&quot;</span> || tt.role.Namespace == <span class="tok-string">&quot;&quot;</span> {
+				tt.role.Kind = <span class="tok-string">&quot;ClusterRole&quot;</span>
+				tt.role.Namespace = <span class="tok-string">&quot;&quot;</span>
+				binding = bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, tt.role.Name, <span class="tok-string">&quot;user:test&quot;</span>)
+			} <span class="tok-keyword">else</span> {
+				binding = bindRole(tt.role.Namespace, <span class="tok-string">&quot;b&quot;</span>, tt.role.Name, <span class="tok-string">&quot;user:test&quot;</span>)
+			}
+			findings := k8srbac.Audit([]k8srbac.RoleLike{tt.role}, []k8srbac.BindingLike{binding})
+			<span class="tok-keyword">if</span> tt.want != <span class="tok-string">&quot;&quot;</span> &amp;&amp; !k8srbac.HasCode(findings, tt.want) {
+				t.Fatalf(<span class="tok-string">&quot;missing %s in %#v&quot;</span>, tt.want, findings)
+			}
+			<span class="tok-keyword">if</span> tt.notWant != <span class="tok-string">&quot;&quot;</span> &amp;&amp; k8srbac.HasCode(findings, tt.notWant) {
+				t.Fatalf(<span class="tok-string">&quot;unexpected %s in %#v&quot;</span>, tt.notWant, findings)
+			}
+		})
+	}
+}
+
+<span class="tok-keyword">func</span> assertHas(t *testing.T, findings []k8srbac.Finding, code string) {
+	t.Helper()
+	<span class="tok-keyword">if</span> !k8srbac.HasCode(findings, code) {
+		t.Fatalf(<span class="tok-string">&quot;missing %s in %#v&quot;</span>, code, findings)
+	}
+}
+
+<span class="tok-keyword">func</span> assertNotHas(t *testing.T, findings []k8srbac.Finding, codes ...string) {
+	t.Helper()
+	<span class="tok-keyword">for</span> _, code := <span class="tok-keyword">range</span> codes {
+		<span class="tok-keyword">if</span> k8srbac.HasCode(findings, code) {
+			t.Fatalf(<span class="tok-string">&quot;unexpected false-positive %s in %#v&quot;</span>, code, findings)
+		}
+	}
+}
+
+<span class="tok-keyword">func</span> TestBindingValidation(t *testing.T) {
+	secretRole := k8srbac.RoleLike{
+		Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>,
+		Rules: []k8srbac.PolicyRule{{APIGroups: []string{<span class="tok-string">&quot;&quot;</span>}, Resources: []string{<span class="tok-string">&quot;secrets&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;get&quot;</span>}}},
+	}
+	namespacedRole := k8srbac.RoleLike{
+		Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>, Namespace: <span class="tok-string">&quot;app&quot;</span>,
+		Rules: []k8srbac.PolicyRule{{APIGroups: []string{<span class="tok-string">&quot;&quot;</span>}, Resources: []string{<span class="tok-string">&quot;secrets&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;get&quot;</span>}}},
+	}
+
+	t.Run(<span class="tok-string">&quot;RoleBinding Role resolves&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		findings := k8srbac.Audit([]k8srbac.RoleLike{namespacedRole}, []k8srbac.BindingLike{
+			bindRole(<span class="tok-string">&quot;app&quot;</span>, <span class="tok-string">&quot;ok&quot;</span>, <span class="tok-string">&quot;secret-reader&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>),
+		})
+		assertHas(t, findings, <span class="tok-string">&quot;secrets-read&quot;</span>)
+		assertNotHas(t, findings, <span class="tok-string">&quot;invalid-binding&quot;</span>)
+	})
+	t.Run(<span class="tok-string">&quot;RoleBinding ClusterRole resolves&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		findings := k8srbac.Audit([]k8srbac.RoleLike{secretRole}, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;app&quot;</span>, <span class="tok-string">&quot;ok&quot;</span>, <span class="tok-string">&quot;secret-reader&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>),
+		})
+		assertHas(t, findings, <span class="tok-string">&quot;secrets-read&quot;</span>)
+		assertNotHas(t, findings, <span class="tok-string">&quot;invalid-binding&quot;</span>)
+	})
+	t.Run(<span class="tok-string">&quot;ClusterRoleBinding ClusterRole resolves&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		findings := k8srbac.Audit([]k8srbac.RoleLike{secretRole}, []k8srbac.BindingLike{
+			bindClusterRole(<span class="tok-string">&quot;ok&quot;</span>, <span class="tok-string">&quot;secret-reader&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>),
+		})
+		assertHas(t, findings, <span class="tok-string">&quot;secrets-read&quot;</span>)
+		assertNotHas(t, findings, <span class="tok-string">&quot;invalid-binding&quot;</span>)
+	})
+
+	cases := []<span class="tok-keyword">struct</span> {
+		name    string
+		roles   []k8srbac.RoleLike
+		binding k8srbac.BindingLike
+		wantMsg string
+	}{
+		{
+			name:  <span class="tok-string">&quot;wrong apiGroup&quot;</span>,
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>, Name: <span class="tok-string">&quot;bad&quot;</span>,
+				RoleRef:  k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io.wrong&quot;</span>, Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>},
+				Subjects: []string{<span class="tok-string">&quot;user:a&quot;</span>},
+			},
+			wantMsg: <span class="tok-string">&quot;roleRef.apiGroup must be rbac.authorization.k8s.io&quot;</span>,
+		},
+		{
+			name:  <span class="tok-string">&quot;empty apiGroup&quot;</span>,
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: <span class="tok-string">&quot;RoleBinding&quot;</span>, Name: <span class="tok-string">&quot;bad&quot;</span>, Namespace: <span class="tok-string">&quot;app&quot;</span>,
+				RoleRef:  k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;&quot;</span>, Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>},
+				Subjects: []string{<span class="tok-string">&quot;user:a&quot;</span>},
+			},
+			wantMsg: <span class="tok-string">&quot;roleRef.apiGroup must be rbac.authorization.k8s.io&quot;</span>,
+		},
+		{
+			name:  <span class="tok-string">&quot;RoleBinding empty kind&quot;</span>,
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: <span class="tok-string">&quot;RoleBinding&quot;</span>, Name: <span class="tok-string">&quot;bad&quot;</span>, Namespace: <span class="tok-string">&quot;app&quot;</span>,
+				RoleRef:  k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>},
+				Subjects: []string{<span class="tok-string">&quot;user:a&quot;</span>},
+			},
+			wantMsg: <span class="tok-string">&quot;RoleBinding roleRef.kind must be Role or ClusterRole&quot;</span>,
+		},
+		{
+			name:  <span class="tok-string">&quot;RoleBinding unknown kind&quot;</span>,
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: <span class="tok-string">&quot;RoleBinding&quot;</span>, Name: <span class="tok-string">&quot;bad&quot;</span>, Namespace: <span class="tok-string">&quot;app&quot;</span>,
+				RoleRef:  k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;ServiceAccount&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>},
+				Subjects: []string{<span class="tok-string">&quot;user:a&quot;</span>},
+			},
+			wantMsg: <span class="tok-string">&quot;RoleBinding roleRef.kind must be Role or ClusterRole&quot;</span>,
+		},
+		{
+			name:  <span class="tok-string">&quot;ClusterRoleBinding references Role&quot;</span>,
+			roles: []k8srbac.RoleLike{namespacedRole},
+			binding: k8srbac.BindingLike{
+				Kind: <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>, Name: <span class="tok-string">&quot;bad&quot;</span>,
+				RoleRef:  k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>},
+				Subjects: []string{<span class="tok-string">&quot;user:a&quot;</span>},
+			},
+			wantMsg: <span class="tok-string">&quot;ClusterRoleBinding roleRef.kind must be ClusterRole&quot;</span>,
+		},
+		{
+			name:  <span class="tok-string">&quot;ClusterRoleBinding empty kind&quot;</span>,
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>, Name: <span class="tok-string">&quot;bad&quot;</span>,
+				RoleRef:  k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>},
+				Subjects: []string{<span class="tok-string">&quot;user:a&quot;</span>},
+			},
+			wantMsg: <span class="tok-string">&quot;ClusterRoleBinding roleRef.kind must be ClusterRole&quot;</span>,
+		},
+		{
+			name:  <span class="tok-string">&quot;ClusterRoleBinding unknown kind&quot;</span>,
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>, Name: <span class="tok-string">&quot;bad&quot;</span>,
+				RoleRef:  k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;Pod&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>},
+				Subjects: []string{<span class="tok-string">&quot;user:a&quot;</span>},
+			},
+			wantMsg: <span class="tok-string">&quot;ClusterRoleBinding roleRef.kind must be ClusterRole&quot;</span>,
+		},
+		{
+			name:  <span class="tok-string">&quot;RoleBinding missing namespace&quot;</span>,
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: <span class="tok-string">&quot;RoleBinding&quot;</span>, Name: <span class="tok-string">&quot;bad&quot;</span>, Namespace: <span class="tok-string">&quot;&quot;</span>,
+				RoleRef:  k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>},
+				Subjects: []string{<span class="tok-string">&quot;user:a&quot;</span>},
+			},
+			wantMsg: <span class="tok-string">&quot;RoleBinding requires a namespace&quot;</span>,
+		},
+		{
+			name:  <span class="tok-string">&quot;ClusterRoleBinding with namespace&quot;</span>,
+			roles: []k8srbac.RoleLike{secretRole},
+			binding: k8srbac.BindingLike{
+				Kind: <span class="tok-string">&quot;ClusterRoleBinding&quot;</span>, Name: <span class="tok-string">&quot;bad&quot;</span>, Namespace: <span class="tok-string">&quot;app&quot;</span>,
+				RoleRef:  k8srbac.RoleRef{APIGroup: <span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>, Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;secret-reader&quot;</span>},
+				Subjects: []string{<span class="tok-string">&quot;user:a&quot;</span>},
+			},
+			wantMsg: <span class="tok-string">&quot;ClusterRoleBinding must not declare a namespace&quot;</span>,
+		},
+	}
+
+	<span class="tok-keyword">for</span> _, tt := <span class="tok-keyword">range</span> cases {
+		t.Run(tt.name, <span class="tok-keyword">func</span>(t *testing.T) {
+			findings := k8srbac.Audit(tt.roles, []k8srbac.BindingLike{tt.binding})
+			got := findingsWithCode(findings, <span class="tok-string">&quot;invalid-binding&quot;</span>)
+			<span class="tok-keyword">if</span> len(got) != <span class="tok-number">1</span> {
+				t.Fatalf(<span class="tok-string">&quot;expected invalid-binding, got %#v&quot;</span>, findings)
+			}
+			<span class="tok-keyword">if</span> !strings.Contains(got[<span class="tok-number">0</span>].Description, tt.wantMsg) {
+				t.Fatalf(<span class="tok-string">&quot;description = %q, want substring %q&quot;</span>, got[<span class="tok-number">0</span>].Description, tt.wantMsg)
+			}
+			assertNotHas(t, findings, <span class="tok-string">&quot;secrets-read&quot;</span>)
+		})
+	}
+}
+
+<span class="tok-keyword">func</span> TestRoleBindingDoesNotActivateClusterScopedRisks(t *testing.T) {
+	tests := []<span class="tok-keyword">struct</span> {
+		name    string
+		rules   []k8srbac.PolicyRule
+		notWant []string
+		want    []string
+	}{
+		{
+			name:    <span class="tok-string">&quot;nodes/proxy&quot;</span>,
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{<span class="tok-string">&quot;&quot;</span>}, Resources: []string{<span class="tok-string">&quot;nodes/proxy&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;get&quot;</span>, <span class="tok-string">&quot;create&quot;</span>}}},
+			notWant: []string{<span class="tok-string">&quot;nodes-proxy&quot;</span>},
+		},
+		{
+			name:    <span class="tok-string">&quot;tokenreviews&quot;</span>,
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{<span class="tok-string">&quot;authentication.k8s.io&quot;</span>}, Resources: []string{<span class="tok-string">&quot;tokenreviews&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;create&quot;</span>}}},
+			notWant: []string{<span class="tok-string">&quot;tokenreview-oracle&quot;</span>},
+		},
+		{
+			name:    <span class="tok-string">&quot;csr approval&quot;</span>,
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{<span class="tok-string">&quot;certificates.k8s.io&quot;</span>}, Resources: []string{<span class="tok-string">&quot;certificatesigningrequests/approval&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;update&quot;</span>}}},
+			notWant: []string{<span class="tok-string">&quot;csr-approval&quot;</span>},
+		},
+		{
+			name:    <span class="tok-string">&quot;signers&quot;</span>,
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{<span class="tok-string">&quot;certificates.k8s.io&quot;</span>}, Resources: []string{<span class="tok-string">&quot;signers&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;approve&quot;</span>}}},
+			notWant: []string{<span class="tok-string">&quot;csr-signer-approve&quot;</span>},
+		},
+		{
+			name: <span class="tok-string">&quot;clusterroles bind is effective; escalate is not&quot;</span>,
+			rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;clusterroles&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;bind&quot;</span>, <span class="tok-string">&quot;escalate&quot;</span>},
+			}},
+			want:    []string{<span class="tok-string">&quot;rbac-bind&quot;</span>},
+			notWant: []string{<span class="tok-string">&quot;rbac-escalate&quot;</span>},
+		},
+		{
+			name:    <span class="tok-string">&quot;admission webhooks&quot;</span>,
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{<span class="tok-string">&quot;admissionregistration.k8s.io&quot;</span>}, Resources: []string{<span class="tok-string">&quot;validatingwebhookconfigurations&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;update&quot;</span>}}},
+			notWant: []string{<span class="tok-string">&quot;admission-policy-mutate&quot;</span>},
+		},
+		{
+			name:    <span class="tok-string">&quot;secrets still effective&quot;</span>,
+			rules:   []k8srbac.PolicyRule{{APIGroups: []string{<span class="tok-string">&quot;&quot;</span>}, Resources: []string{<span class="tok-string">&quot;secrets&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;get&quot;</span>}}},
+			want:    []string{<span class="tok-string">&quot;secrets-read&quot;</span>},
+			notWant: []string{<span class="tok-string">&quot;nodes-proxy&quot;</span>, <span class="tok-string">&quot;tokenreview-oracle&quot;</span>},
+		},
+		{
+			name:  <span class="tok-string">&quot;pods/exec still effective&quot;</span>,
+			rules: []k8srbac.PolicyRule{{APIGroups: []string{<span class="tok-string">&quot;&quot;</span>}, Resources: []string{<span class="tok-string">&quot;pods/exec&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;create&quot;</span>}}},
+			want:  []string{<span class="tok-string">&quot;pod-interactive&quot;</span>},
+		},
+		{
+			name:  <span class="tok-string">&quot;serviceaccounts/token still effective&quot;</span>,
+			rules: []k8srbac.PolicyRule{{APIGroups: []string{<span class="tok-string">&quot;&quot;</span>}, Resources: []string{<span class="tok-string">&quot;serviceaccounts/token&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;create&quot;</span>}}},
+			want:  []string{<span class="tok-string">&quot;sa-token-create&quot;</span>},
+		},
+	}
+
+	<span class="tok-keyword">for</span> _, tt := <span class="tok-keyword">range</span> tests {
+		t.Run(tt.name, <span class="tok-keyword">func</span>(t *testing.T) {
+			roles := []k8srbac.RoleLike{{Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;cr&quot;</span>, Rules: tt.rules}}
+			bindings := []k8srbac.BindingLike{
+				bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;team&quot;</span>, <span class="tok-string">&quot;ns-bind&quot;</span>, <span class="tok-string">&quot;cr&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:team:sa&quot;</span>),
+			}
+			findings := k8srbac.Audit(roles, bindings)
+			<span class="tok-keyword">for</span> _, code := <span class="tok-keyword">range</span> tt.want {
+				assertHas(t, findings, code)
+			}
+			assertNotHas(t, findings, tt.notWant...)
+		})
+	}
+}
+
+<span class="tok-keyword">func</span> TestClusterRoleBindingActivatesClusterScopedRisks(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>,
+		Name: <span class="tok-string">&quot;dangerous&quot;</span>,
+		Rules: []k8srbac.PolicyRule{
+			{APIGroups: []string{<span class="tok-string">&quot;&quot;</span>}, Resources: []string{<span class="tok-string">&quot;nodes/proxy&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;get&quot;</span>}},
+			{APIGroups: []string{<span class="tok-string">&quot;authentication.k8s.io&quot;</span>}, Resources: []string{<span class="tok-string">&quot;tokenreviews&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;create&quot;</span>}},
+			{APIGroups: []string{<span class="tok-string">&quot;certificates.k8s.io&quot;</span>}, Resources: []string{<span class="tok-string">&quot;certificatesigningrequests/approval&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;update&quot;</span>}},
+			{APIGroups: []string{<span class="tok-string">&quot;certificates.k8s.io&quot;</span>}, Resources: []string{<span class="tok-string">&quot;signers&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;approve&quot;</span>}},
+			{APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>}, Resources: []string{<span class="tok-string">&quot;clusterroles&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;bind&quot;</span>}},
+			{APIGroups: []string{<span class="tok-string">&quot;admissionregistration.k8s.io&quot;</span>}, Resources: []string{<span class="tok-string">&quot;mutatingwebhookconfigurations&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;update&quot;</span>}},
+			{APIGroups: []string{<span class="tok-string">&quot;&quot;</span>}, Resources: []string{<span class="tok-string">&quot;secrets&quot;</span>}, Verbs: []string{<span class="tok-string">&quot;get&quot;</span>}},
+		},
+	}}
+	findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+		bindClusterRole(<span class="tok-string">&quot;cluster-bind&quot;</span>, <span class="tok-string">&quot;dangerous&quot;</span>, <span class="tok-string">&quot;user:admin&quot;</span>),
+	})
+	<span class="tok-keyword">for</span> _, code := <span class="tok-keyword">range</span> []string{
+		<span class="tok-string">&quot;nodes-proxy&quot;</span>, <span class="tok-string">&quot;tokenreview-oracle&quot;</span>, <span class="tok-string">&quot;csr-approval&quot;</span>, <span class="tok-string">&quot;csr-signer-approve&quot;</span>,
+		<span class="tok-string">&quot;rbac-bind&quot;</span>, <span class="tok-string">&quot;admission-policy-mutate&quot;</span>, <span class="tok-string">&quot;secrets-read&quot;</span>,
+	} {
+		assertHas(t, findings, code)
+	}
+}
+
+<span class="tok-keyword">func</span> TestNamespacedWildcardOmitsClusterScopedFindings(t *testing.T) {
+	roles := []k8srbac.RoleLike{{
+		Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>,
+		Name: <span class="tok-string">&quot;wildcard&quot;</span>,
+		Rules: []k8srbac.PolicyRule{{
+			APIGroups: []string{<span class="tok-string">&quot;*&quot;</span>},
+			Resources: []string{<span class="tok-string">&quot;*&quot;</span>},
+			Verbs:     []string{<span class="tok-string">&quot;*&quot;</span>},
+		}},
+	}}
+	nsFindings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+		bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;app&quot;</span>, <span class="tok-string">&quot;ns-wild&quot;</span>, <span class="tok-string">&quot;wildcard&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:app:sa&quot;</span>),
+	})
+	assertHas(t, nsFindings, <span class="tok-string">&quot;all-resources-all-verbs&quot;</span>)
+	assertHas(t, nsFindings, <span class="tok-string">&quot;secrets-read&quot;</span>)
+	assertHas(t, nsFindings, <span class="tok-string">&quot;pod-interactive&quot;</span>)
+	assertHas(t, nsFindings, <span class="tok-string">&quot;sa-token-create&quot;</span>)
+	assertHas(t, nsFindings, <span class="tok-string">&quot;pod-create&quot;</span>)
+	assertHas(t, nsFindings, <span class="tok-string">&quot;workload-controller-mutate&quot;</span>)
+	<span class="tok-comment">// Special verbs: bind on roles/clusterroles and escalate on roles remain effective.</span>
+	assertHas(t, nsFindings, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+	assertHas(t, nsFindings, <span class="tok-string">&quot;rbac-escalate&quot;</span>)
+	assertNotHas(t, nsFindings,
+		<span class="tok-string">&quot;nodes-proxy&quot;</span>, <span class="tok-string">&quot;tokenreview-oracle&quot;</span>, <span class="tok-string">&quot;csr-approval&quot;</span>, <span class="tok-string">&quot;csr-signer-approve&quot;</span>,
+		<span class="tok-string">&quot;admission-policy-mutate&quot;</span>, <span class="tok-string">&quot;impersonate&quot;</span>,
+	)
+
+	clusterFindings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+		bindClusterRole(<span class="tok-string">&quot;cluster-wild&quot;</span>, <span class="tok-string">&quot;wildcard&quot;</span>, <span class="tok-string">&quot;user:admin&quot;</span>),
+	})
+	assertHas(t, clusterFindings, <span class="tok-string">&quot;all-resources-all-verbs&quot;</span>)
+	assertHas(t, clusterFindings, <span class="tok-string">&quot;secrets-read&quot;</span>)
+	assertHas(t, clusterFindings, <span class="tok-string">&quot;nodes-proxy&quot;</span>)
+	assertHas(t, clusterFindings, <span class="tok-string">&quot;tokenreview-oracle&quot;</span>)
+	assertHas(t, clusterFindings, <span class="tok-string">&quot;csr-approval&quot;</span>)
+	assertHas(t, clusterFindings, <span class="tok-string">&quot;admission-policy-mutate&quot;</span>)
+	assertHas(t, clusterFindings, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+	assertHas(t, clusterFindings, <span class="tok-string">&quot;rbac-escalate&quot;</span>)
+	assertHas(t, clusterFindings, <span class="tok-string">&quot;impersonate&quot;</span>)
+}
+
+<span class="tok-keyword">func</span> TestSpecialBindSemantics(t *testing.T) {
+	t.Run(<span class="tok-string">&quot;RoleBinding bind on clusterroles is effective in namespace&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;binder&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;clusterroles&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;bind&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;payments&quot;</span>, <span class="tok-string">&quot;ns-bind&quot;</span>, <span class="tok-string">&quot;binder&quot;</span>, <span class="tok-string">&quot;system:serviceaccount:payments:sa&quot;</span>),
+		})
+		got := findingsWithCode(findings, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+		<span class="tok-keyword">if</span> len(got) != <span class="tok-number">1</span> {
+			t.Fatalf(<span class="tok-string">&quot;expected rbac-bind, got %#v&quot;</span>, findings)
+		}
+		<span class="tok-keyword">if</span> got[<span class="tok-number">0</span>].BindingKind != <span class="tok-string">&quot;RoleBinding&quot;</span> || got[<span class="tok-number">0</span>].BindingScope != <span class="tok-string">&quot;payments&quot;</span> {
+			t.Fatalf(<span class="tok-string">&quot;binding metadata = %#v&quot;</span>, got[<span class="tok-number">0</span>])
+		}
+		<span class="tok-keyword">if</span> !strings.Contains(got[<span class="tok-number">0</span>].Description, <span class="tok-string">&quot;bind on clusterroles&quot;</span>) {
+			t.Fatalf(<span class="tok-string">&quot;description = %q&quot;</span>, got[<span class="tok-number">0</span>].Description)
+		}
+		assertNotHas(t, findings, <span class="tok-string">&quot;rbac-escalate&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;RoleBinding bind on roles is effective&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;binder&quot;</span>, Namespace: <span class="tok-string">&quot;app&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;roles&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;bind&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindRole(<span class="tok-string">&quot;app&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;binder&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>),
+		})
+		assertHas(t, findings, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+		got := findingsWithCode(findings, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+		<span class="tok-keyword">if</span> got[<span class="tok-number">0</span>].BindingScope != <span class="tok-string">&quot;app&quot;</span> {
+			t.Fatalf(<span class="tok-string">&quot;BindingScope = %q&quot;</span>, got[<span class="tok-number">0</span>].BindingScope)
+		}
+	})
+
+	t.Run(<span class="tok-string">&quot;ClusterRoleBinding bind on clusterroles is effective&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;binder&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;clusterroles&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;bind&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;binder&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>),
+		})
+		got := findingsWithCode(findings, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+		<span class="tok-keyword">if</span> len(got) != <span class="tok-number">1</span> || got[<span class="tok-number">0</span>].BindingKind != <span class="tok-string">&quot;ClusterRoleBinding&quot;</span> || got[<span class="tok-number">0</span>].BindingScope != <span class="tok-string">&quot;cluster&quot;</span> {
+			t.Fatalf(<span class="tok-string">&quot;unexpected finding %#v&quot;</span>, findings)
+		}
+	})
+
+	t.Run(<span class="tok-string">&quot;bind on rolebindings is not a special binding risk&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;binder&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;rolebindings&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;bind&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;binder&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertNotHas(t, findings, <span class="tok-string">&quot;rbac-bind&quot;</span>, <span class="tok-string">&quot;rbac-escalate&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;bind on clusterrolebindings is not a special binding risk&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;binder&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;clusterrolebindings&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;bind&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;binder&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertNotHas(t, findings, <span class="tok-string">&quot;rbac-bind&quot;</span>, <span class="tok-string">&quot;rbac-escalate&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;resourceNames retained for bind on clusterroles&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;binder&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups:     []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources:     []string{<span class="tok-string">&quot;clusterroles&quot;</span>},
+				ResourceNames: []string{<span class="tok-string">&quot;view&quot;</span>, <span class="tok-string">&quot;edit&quot;</span>},
+				Verbs:         []string{<span class="tok-string">&quot;bind&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;payments&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;binder&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>),
+		})
+		got := findingsWithCode(findings, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+		<span class="tok-keyword">if</span> len(got) != <span class="tok-number">1</span> {
+			t.Fatalf(<span class="tok-string">&quot;expected rbac-bind, got %#v&quot;</span>, findings)
+		}
+		<span class="tok-keyword">if</span> len(got[<span class="tok-number">0</span>].ResourceNames) != <span class="tok-number">2</span> {
+			t.Fatalf(<span class="tok-string">&quot;ResourceNames = %#v&quot;</span>, got[<span class="tok-number">0</span>].ResourceNames)
+		}
+		<span class="tok-keyword">if</span> !strings.Contains(got[<span class="tok-number">0</span>].Description, <span class="tok-string">&quot;resourceNames&quot;</span>) ||
+			!strings.Contains(got[<span class="tok-number">0</span>].Description, <span class="tok-string">&quot;does not make the permission safe&quot;</span>) {
+			t.Fatalf(<span class="tok-string">&quot;description = %q&quot;</span>, got[<span class="tok-number">0</span>].Description)
+		}
+	})
+}
+
+<span class="tok-keyword">func</span> TestSpecialEscalateSemantics(t *testing.T) {
+	t.Run(<span class="tok-string">&quot;RoleBinding escalate on roles is effective&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;esc&quot;</span>, Namespace: <span class="tok-string">&quot;app&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;roles&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;escalate&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindRole(<span class="tok-string">&quot;app&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;esc&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertHas(t, findings, <span class="tok-string">&quot;rbac-escalate&quot;</span>)
+		assertNotHas(t, findings, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;RoleBinding escalate on clusterroles is not effective&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;esc&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;clusterroles&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;escalate&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;app&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;esc&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>),
+		})
+		assertNotHas(t, findings, <span class="tok-string">&quot;rbac-escalate&quot;</span>, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;ClusterRoleBinding escalate on clusterroles is effective&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;esc&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;clusterroles&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;escalate&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;esc&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertHas(t, findings, <span class="tok-string">&quot;rbac-escalate&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;escalate on rolebindings is not a special escalation risk&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;esc&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;rolebindings&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;escalate&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;esc&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertNotHas(t, findings, <span class="tok-string">&quot;rbac-escalate&quot;</span>, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;escalate on clusterrolebindings is not a special escalation risk&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;esc&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;clusterrolebindings&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;escalate&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;esc&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertNotHas(t, findings, <span class="tok-string">&quot;rbac-escalate&quot;</span>, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;RoleBinding bind+escalate on clusterroles reports only bind&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;both&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;rbac.authorization.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;clusterroles&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;bind&quot;</span>, <span class="tok-string">&quot;escalate&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;payments&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;both&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>),
+		})
+		assertHas(t, findings, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+		assertNotHas(t, findings, <span class="tok-string">&quot;rbac-escalate&quot;</span>)
+		got := findingsWithCode(findings, <span class="tok-string">&quot;rbac-bind&quot;</span>)
+		<span class="tok-keyword">if</span> strings.Contains(got[<span class="tok-number">0</span>].Description, <span class="tok-string">&quot;escalate&quot;</span>) {
+			t.Fatalf(<span class="tok-string">&quot;bind finding must not use vague joined-verb wording: %q&quot;</span>, got[<span class="tok-number">0</span>].Description)
+		}
+	})
+}
+
+<span class="tok-keyword">func</span> TestImpersonationScope(t *testing.T) {
+	targets := []<span class="tok-keyword">struct</span> {
+		name  string
+		group string
+	}{
+		{<span class="tok-string">&quot;users&quot;</span>, <span class="tok-string">&quot;&quot;</span>},
+		{<span class="tok-string">&quot;groups&quot;</span>, <span class="tok-string">&quot;&quot;</span>},
+		{<span class="tok-string">&quot;serviceaccounts&quot;</span>, <span class="tok-string">&quot;&quot;</span>},
+		{<span class="tok-string">&quot;userextras&quot;</span>, <span class="tok-string">&quot;authentication.k8s.io&quot;</span>},
+	}
+
+	<span class="tok-keyword">for</span> _, target := <span class="tok-keyword">range</span> targets {
+		t.Run(<span class="tok-string">&quot;RoleBinding impersonate &quot;</span>+target.name+<span class="tok-string">&quot; suppressed&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+			roles := []k8srbac.RoleLike{{
+				Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;imp&quot;</span>,
+				Rules: []k8srbac.PolicyRule{{
+					APIGroups: []string{target.group},
+					Resources: []string{target.name},
+					Verbs:     []string{<span class="tok-string">&quot;impersonate&quot;</span>},
+				}},
+			}}
+			findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+				bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;app&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;imp&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>),
+			})
+			assertNotHas(t, findings, <span class="tok-string">&quot;impersonate&quot;</span>)
+		})
+
+		t.Run(<span class="tok-string">&quot;ClusterRoleBinding impersonate &quot;</span>+target.name+<span class="tok-string">&quot; effective&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+			roles := []k8srbac.RoleLike{{
+				Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;imp&quot;</span>,
+				Rules: []k8srbac.PolicyRule{{
+					APIGroups: []string{target.group},
+					Resources: []string{target.name},
+					Verbs:     []string{<span class="tok-string">&quot;impersonate&quot;</span>},
+				}},
+			}}
+			findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;imp&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+			assertHas(t, findings, <span class="tok-string">&quot;impersonate&quot;</span>)
+		})
+	}
+
+	t.Run(<span class="tok-string">&quot;userextras under core API group rejected&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;imp&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;userextras&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;impersonate&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;imp&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertNotHas(t, findings, <span class="tok-string">&quot;impersonate&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;users under unrelated API group rejected&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;imp&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;example.com&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;users&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;impersonate&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;imp&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertNotHas(t, findings, <span class="tok-string">&quot;impersonate&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;namespaced wildcard RoleBinding does not produce impersonate&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;wild&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;*&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;*&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;*&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;app&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;wild&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>),
+		})
+		assertNotHas(t, findings, <span class="tok-string">&quot;impersonate&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;ClusterRoleBinding wildcards produce impersonate&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;wild&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;*&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;*&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;*&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;wild&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertHas(t, findings, <span class="tok-string">&quot;impersonate&quot;</span>)
+	})
+}
+
+<span class="tok-keyword">func</span> TestTokenRequestAPIGroup(t *testing.T) {
+	t.Run(<span class="tok-string">&quot;core group serviceaccounts/token create&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;tok&quot;</span>, Namespace: <span class="tok-string">&quot;ns&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;serviceaccounts/token&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindRole(<span class="tok-string">&quot;ns&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;tok&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertHas(t, findings, <span class="tok-string">&quot;sa-token-create&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;wildcard API group serviceaccounts/token create&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;tok&quot;</span>, Namespace: <span class="tok-string">&quot;ns&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;*&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;serviceaccounts/token&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindRole(<span class="tok-string">&quot;ns&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;tok&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertHas(t, findings, <span class="tok-string">&quot;sa-token-create&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;authentication.k8s.io serviceaccounts/token does not mint&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;tok&quot;</span>, Namespace: <span class="tok-string">&quot;ns&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;authentication.k8s.io&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;serviceaccounts/token&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindRole(<span class="tok-string">&quot;ns&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;tok&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertNotHas(t, findings, <span class="tok-string">&quot;sa-token-create&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;bare serviceaccounts create is not TokenRequest&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;Role&quot;</span>, Name: <span class="tok-string">&quot;sa&quot;</span>, Namespace: <span class="tok-string">&quot;ns&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;serviceaccounts&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;create&quot;</span>},
+			}},
+		}}
+		findings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindRole(<span class="tok-string">&quot;ns&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;sa&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertNotHas(t, findings, <span class="tok-string">&quot;sa-token-create&quot;</span>)
+	})
+
+	t.Run(<span class="tok-string">&quot;bare serviceaccounts impersonate follows impersonation rules&quot;</span>, <span class="tok-keyword">func</span>(t *testing.T) {
+		roles := []k8srbac.RoleLike{{
+			Kind: <span class="tok-string">&quot;ClusterRole&quot;</span>, Name: <span class="tok-string">&quot;imp&quot;</span>,
+			Rules: []k8srbac.PolicyRule{{
+				APIGroups: []string{<span class="tok-string">&quot;&quot;</span>},
+				Resources: []string{<span class="tok-string">&quot;serviceaccounts&quot;</span>},
+				Verbs:     []string{<span class="tok-string">&quot;impersonate&quot;</span>},
+			}},
+		}}
+		nsFindings := k8srbac.Audit(roles, []k8srbac.BindingLike{
+			bindClusterRoleViaRoleBinding(<span class="tok-string">&quot;app&quot;</span>, <span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;imp&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>),
+		})
+		assertNotHas(t, nsFindings, <span class="tok-string">&quot;impersonate&quot;</span>, <span class="tok-string">&quot;sa-token-create&quot;</span>)
+
+		clusterFindings := k8srbac.Audit(roles, []k8srbac.BindingLike{bindClusterRole(<span class="tok-string">&quot;b&quot;</span>, <span class="tok-string">&quot;imp&quot;</span>, <span class="tok-string">&quot;user:a&quot;</span>)})
+		assertHas(t, clusterFindings, <span class="tok-string">&quot;impersonate&quot;</span>)
+		assertNotHas(t, clusterFindings, <span class="tok-string">&quot;sa-token-create&quot;</span>)
+	})
+}</code></pre>
+    </div>
+</section>
+<h3>What it does</h3><p>It checks a batch of exported Role/ClusterRole and (Cluster)RoleBinding YAML for the RBAC patterns that lead to privilege escalation: binding scope mismatches (RoleBinding referencing a ClusterRole-only resource), and the special verbs (bind, escalate, impersonate) that let a principal grant itself more than its own role appears to allow.</p>
+<h3>Why I wrote it</h3><p>The Kubernetes isolation write-up kept coming back to the same question — does this binding actually grant what it looks like it grants? — so I wrote something that answers that mechanically instead of by eye.</p>
+<h3>How it works</h3><p>It indexes the supplied roles by kind/namespace/name, resolves each binding&#39;s roleRef against that index, and evaluates each PolicyRule against a small table of known built-in resource scopes plus the special-verb cases. Unknown or custom resources are never assigned a fabricated scope — they come back unknown rather than guessed.</p>
+<h3>Requirements</h3><ul><li>Go 1.22+</li><li>No cluster or kubeconfig access — it never calls the Kubernetes API.</li></ul>
+<h3>Permissions and safety</h3><p>None. It is a pure function over data structures you provide; it does not read files, make network calls, or need any credentials.</p>
+<h3>Usage</h3><pre><code>go test ./cloud-security/scripts/k8s-rbac/...</code></pre>
+<h3>Inputs</h3><p>In-memory RoleLike / BindingLike values (in the shipped tests, built from fixture data). There is no CLI entry point today — it is a package you import or exercise via its test suite, not a standalone binary.</p>
+<h3>Outputs</h3><p>A []Finding slice describing each risky binding: the role, the binding scope, and a human-readable reason.</p>
+<h3>What I tested</h3><p>The 48 test cases in auditor_test.go cover both roles that should be flagged and roles that should come back clean, across ordinary resources, the special verbs, and unresolved/unknown bindings.</p>
+<h3>Limitations</h3><ul><li>This is a static heuristic over role/binding objects you hand it, not a full effective-permissions engine.</li><li>It does not evaluate SubjectAccessReview, SelfSubjectRulesReview, aggregated ClusterRoles, admission policy, or live API discovery.</li><li>It has no CLI or YAML-loading entry point yet — wiring in a real `kubectl get -o yaml` export is on my list, not something this does today.</li></ul>
+<h3>Related research</h3><ul><li>Related research: <a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li>Related lab: <a href="/labs/kubernetes-security/">Kubernetes security lab</a></li></ul>
+</section>
+
+<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/scripts/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Documentation</span><span class="docs-prevnext__title">Scripts</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/scripts/application-security/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Scripts</span><span class="docs-prevnext__title">Application Security</span></a></nav><!-- docs-prevnext:end -->
 </article>
             </div>
           
@@ -274,6 +2271,7 @@
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
 <script src="../../assets/javascripts/docs-ui.js" defer></script>
 <script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
       

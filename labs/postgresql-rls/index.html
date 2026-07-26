@@ -88,7 +88,7 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -142,7 +142,7 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
@@ -220,7 +220,7 @@
           
             <!-- docs-left-nav:start -->
 <aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/" aria-current="page">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/cloud-security/">Cloud Security</a></li><li><a href="/scripts/application-security/">Application Security</a></li><li><a href="/scripts/devsecops/">DevSecOps</a></li><li><a href="/scripts/threat-intelligence/">Threat Intelligence</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/docs/certification-notes/az-900/">AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
+  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/" aria-current="page">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
 </aside>
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
@@ -233,7 +233,7 @@
   
 
 
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">PostgreSQL RLS</li></ol></nav><!-- docs-breadcrumbs:end -->
+<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">PostgreSQL RLS</li></ol></nav><!-- docs-breadcrumbs:end -->
 <h1 id="postgresql-row-level-security-isolation-lab">PostgreSQL row-level security isolation lab</h1>
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
@@ -242,10 +242,369 @@
     <ol><li><a href="#prerequisites-and-tested-versions">Prerequisites and tested versions</a></li><li><a href="#run">Run</a></li><li><a href="#security-properties-exercised">Security properties exercised</a></li><li><a href="#application-integration-boundary">Application integration boundary</a></li><li><a href="#limitations">Limitations</a></li><li><a href="#references">References</a></li></ol>
   </nav>
 </details>
-<!-- docs-inline-toc:end -->
-<p>This disposable lab tests a transaction-scoped tenant context, complete <code>USING</code> and
+<!-- docs-inline-toc:end --><p>This disposable lab tests a transaction-scoped tenant context, complete <code>USING</code> and
 <code>WITH CHECK</code> policies, forced row security, and role properties that prevent ordinary
 application identities from bypassing the boundary.</p>
+<!-- docs-lab-source:start -->
+<h2 id="implementation">Implementation</h2>
+<section class="docs-source-viewer" data-source-viewer id="source-postgresql-rls" aria-label="Source code: 001-schema.sql">
+  <header class="docs-source-viewer__toolbar">
+    <span class="docs-source-viewer__toolbar-title">001-schema.sql</span>
+    <div class="docs-source-viewer__actions">
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    </div>
+  </header>
+  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-postgresql-rls-tab-0" aria-controls="source-postgresql-rls-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Schema + RLS policies</button><button type="button" role="tab" id="source-postgresql-rls-tab-1" aria-controls="source-postgresql-rls-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">RLS tests</button><button type="button" role="tab" id="source-postgresql-rls-tab-2" aria-controls="source-postgresql-rls-panel-2" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="2">Pool lifecycle tests</button></div>
+  <div role="tabpanel" id="source-postgresql-rls-panel-0" tabindex="0" aria-labelledby="source-postgresql-rls-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">001-schema.sql</span><code class="docs-source-viewer__path">labs/postgresql-rls/init/001-schema.sql</code><span class="docs-source-viewer__lines">40 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="001-schema.sql source code" class="language-sql">\set ON_ERROR_STOP on
+
+CREATE ROLE tenant_migrator NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+CREATE ROLE tenant_runtime NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
+\getenv tenant_app_password POSTGRES_PASSWORD
+CREATE ROLE tenant_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS
+    PASSWORD :&#39;tenant_app_password&#39;;
+GRANT tenant_runtime TO tenant_app;
+\unset tenant_app_password
+
+CREATE SCHEMA app AUTHORIZATION tenant_migrator;
+GRANT USAGE ON SCHEMA app TO tenant_runtime;
+
+SET ROLE tenant_migrator;
+
+CREATE TABLE app.customer_record (
+    id uuid PRIMARY KEY,
+    tenant_id uuid NOT NULL,
+    display_name text NOT NULL,
+    created_at timestamptz NOT NULL DEFAULT clock_timestamp()
+);
+
+ALTER TABLE app.customer_record ENABLE ROW LEVEL SECURITY;
+ALTER TABLE app.customer_record FORCE ROW LEVEL SECURITY;
+
+CREATE POLICY tenant_isolation ON app.customer_record
+    FOR ALL
+    TO tenant_runtime, tenant_migrator
+    USING (
+        tenant_id = NULLIF(current_setting(&#39;app.tenant_id&#39;, true), &#39;&#39;)::uuid
+    )
+    WITH CHECK (
+        tenant_id = NULLIF(current_setting(&#39;app.tenant_id&#39;, true), &#39;&#39;)::uuid
+    );
+
+GRANT SELECT, INSERT, UPDATE, DELETE ON app.customer_record TO tenant_runtime;
+RESET ROLE;
+
+COMMENT ON POLICY tenant_isolation ON app.customer_record IS
+    &#39;Fail-closed tenant context: absent context sees no rows; malformed UUID raises an error; writes require the active tenant.&#39;;</code></pre>
+    </div><div role="tabpanel" id="source-postgresql-rls-panel-1" tabindex="0" aria-labelledby="source-postgresql-rls-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">rls-tests.sql</span><code class="docs-source-viewer__path">labs/postgresql-rls/tests/rls-tests.sql</code><span class="docs-source-viewer__lines">99 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="rls-tests.sql source code" class="language-sql">\set ON_ERROR_STOP on
+\pset pager off
+
+CREATE OR REPLACE FUNCTION pg_temp.assert_equal(actual bigint, expected bigint, message text)
+RETURNS void LANGUAGE plpgsql AS $$
+BEGIN
+  IF actual IS DISTINCT FROM expected THEN
+    RAISE EXCEPTION &#39;assertion failed: % (actual %, expected %)&#39;, message, actual, expected;
+  END IF;
+END;
+$$;
+
+SET ROLE tenant_runtime;
+
+BEGIN;
+SELECT set_config(&#39;app.tenant_id&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, true);
+INSERT INTO app.customer_record (id, tenant_id, display_name)
+VALUES (&#39;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, &#39;Tenant A record&#39;);
+COMMIT;
+
+BEGIN;
+SELECT set_config(&#39;app.tenant_id&#39;, &#39;22222222-2222-2222-2222-222222222222&#39;, true);
+INSERT INTO app.customer_record (id, tenant_id, display_name)
+VALUES (&#39;bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb&#39;, &#39;22222222-2222-2222-2222-222222222222&#39;, &#39;Tenant B record&#39;);
+COMMIT;
+
+BEGIN;
+SELECT set_config(&#39;app.tenant_id&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, true);
+SELECT pg_temp.assert_equal((SELECT count(*) FROM app.customer_record), 1, &#39;tenant A sees only its row&#39;);
+SELECT pg_temp.assert_equal((SELECT count(*) FROM app.customer_record WHERE tenant_id = &#39;22222222-2222-2222-2222-222222222222&#39;), 0, &#39;cross-tenant select returns no row&#39;);
+DO $$
+DECLARE affected bigint;
+BEGIN
+  UPDATE app.customer_record SET display_name = &#39;blocked update&#39;
+  WHERE id = &#39;bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb&#39;;
+  GET DIAGNOSTICS affected = ROW_COUNT;
+  PERFORM pg_temp.assert_equal(affected, 0, &#39;cross-tenant update affects no row&#39;);
+END;
+$$;
+ROLLBACK;
+
+BEGIN;
+SELECT set_config(&#39;app.tenant_id&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, true);
+DO $$
+BEGIN
+  BEGIN
+    INSERT INTO app.customer_record (id, tenant_id, display_name)
+    VALUES (&#39;cccccccc-cccc-cccc-cccc-cccccccccccc&#39;, &#39;22222222-2222-2222-2222-222222222222&#39;, &#39;must fail&#39;);
+    RAISE EXCEPTION &#39;cross-tenant insert unexpectedly succeeded&#39;;
+  EXCEPTION
+    WHEN insufficient_privilege THEN
+      RAISE NOTICE &#39;PASS: cross-tenant insert rejected by WITH CHECK&#39;;
+  END;
+END;
+$$;
+ROLLBACK;
+
+BEGIN;
+RESET app.tenant_id;
+SELECT pg_temp.assert_equal((SELECT count(*) FROM app.customer_record), 0, &#39;missing tenant context sees no rows&#39;);
+DO $$
+BEGIN
+  BEGIN
+    INSERT INTO app.customer_record (id, tenant_id, display_name)
+    VALUES (&#39;dddddddd-dddd-dddd-dddd-dddddddddddd&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, &#39;must fail&#39;);
+    RAISE EXCEPTION &#39;insert without context unexpectedly succeeded&#39;;
+  EXCEPTION
+    WHEN insufficient_privilege THEN
+      RAISE NOTICE &#39;PASS: write without tenant context rejected&#39;;
+  END;
+END;
+$$;
+ROLLBACK;
+
+BEGIN;
+DO $$
+BEGIN
+  PERFORM set_config(&#39;app.tenant_id&#39;, &#39;not-a-uuid&#39;, true);
+  BEGIN
+    PERFORM count(*) FROM app.customer_record;
+    RAISE EXCEPTION &#39;malformed tenant context unexpectedly succeeded&#39;;
+  EXCEPTION
+    WHEN invalid_text_representation THEN
+      RAISE NOTICE &#39;PASS: malformed tenant context failed closed&#39;;
+  END;
+END;
+$$;
+ROLLBACK;
+
+BEGIN;
+SELECT set_config(&#39;app.tenant_id&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, true);
+SELECT pg_temp.assert_equal((SELECT count(*) FROM app.customer_record), 1, &#39;connection reuse transaction A&#39;);
+COMMIT;
+BEGIN;
+SELECT pg_temp.assert_equal((SELECT count(*) FROM app.customer_record), 0, &#39;SET LOCAL context cleared before reused transaction&#39;);
+ROLLBACK;
+
+RESET ROLE;
+\echo &#39;PASS: runtime RLS negative tests completed&#39;</code></pre>
+    </div><div role="tabpanel" id="source-postgresql-rls-panel-2" tabindex="0" aria-labelledby="source-postgresql-rls-tab-2" class="docs-source-viewer__panel" data-source-panel data-index="2" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">pool-tests.js</span><code class="docs-source-viewer__path">labs/postgresql-rls/tests/pool-tests.js</code><span class="docs-source-viewer__lines">198 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="pool-tests.js source code" class="language-javascript">&quot;use strict&quot;;
+
+const assert = require(&quot;node:assert/strict&quot;);
+const { Pool } = require(&quot;pg&quot;);
+
+const password = process.env.POSTGRES_PASSWORD;
+assert.ok(password, &quot;POSTGRES_PASSWORD is required for the disposable pooled-client test&quot;);
+
+const tenantA = &quot;11111111-1111-1111-1111-111111111111&quot;;
+const tenantB = &quot;22222222-2222-2222-2222-222222222222&quot;;
+const recordA = &quot;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&quot;;
+const recordB = &quot;bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb&quot;;
+
+const connection = {
+  host: &quot;127.0.0.1&quot;,
+  port: Number(process.env.POSTGRES_PORT || &quot;55432&quot;),
+  database: &quot;tenant_lab&quot;,
+  user: &quot;tenant_app&quot;,
+  password,
+  application_name: &quot;postgresql-rls-pool-boundary-test&quot;,
+  connectionTimeoutMillis: 5000,
+  idleTimeoutMillis: 1000,
+};
+
+async function backendPid(client) {
+  const result = await client.query(&quot;SELECT pg_backend_pid() AS pid&quot;);
+  return Number(result.rows[0].pid);
+}
+
+async function beginTenant(client, tenantId) {
+  await client.query(&quot;BEGIN&quot;);
+  await client.query(&quot;SET LOCAL ROLE tenant_runtime&quot;);
+  if (tenantId !== null) {
+    await client.query(&quot;SELECT set_config(&#39;app.tenant_id&#39;, $1, true)&quot;, [tenantId]);
+  }
+}
+
+async function rollback(client) {
+  await client.query(&quot;ROLLBACK&quot;);
+}
+
+async function assertMissingContext(client, label) {
+  const context = await client.query(
+    &quot;SELECT current_setting(&#39;app.tenant_id&#39;, true) AS tenant_id&quot;,
+  );
+  assert.ok(
+    context.rows[0].tenant_id === null || context.rows[0].tenant_id === &quot;&quot;,
+    `${label}: previous transaction-local tenant context leaked`,
+  );
+  const visible = await client.query(&quot;SELECT id FROM app.customer_record ORDER BY id&quot;);
+  assert.deepEqual(visible.rows, [], `${label}: missing context must expose no rows`);
+}
+
+async function verifySinglePhysicalSessionReuse() {
+  const pool = new Pool({ ...connection, max: 1 });
+  try {
+    const first = await pool.connect();
+    let firstPid;
+    try {
+      firstPid = await backendPid(first);
+      await beginTenant(first, tenantA);
+      const visible = await first.query(&quot;SELECT id FROM app.customer_record ORDER BY id&quot;);
+      assert.deepEqual(visible.rows.map((row) =&gt; row.id), [recordA]);
+      await first.query(&quot;COMMIT&quot;);
+    } finally {
+      first.release();
+    }
+
+    const reused = await pool.connect();
+    try {
+      assert.equal(await backendPid(reused), firstPid, &quot;max=1 pool should reuse its physical session&quot;);
+      await beginTenant(reused, null);
+      await assertMissingContext(reused, &quot;reacquired physical session&quot;);
+      await rollback(reused);
+    } finally {
+      reused.release();
+    }
+
+    const errored = await pool.connect();
+    try {
+      assert.equal(await backendPid(errored), firstPid);
+      await beginTenant(errored, tenantA);
+      await assert.rejects(
+        errored.query(&quot;SELECT 1 / 0&quot;),
+        (error) =&gt; error &amp;&amp; error.code === &quot;22012&quot;,
+        &quot;division error should abort the tenant transaction&quot;,
+      );
+      await rollback(errored);
+    } finally {
+      errored.release();
+    }
+
+    const afterError = await pool.connect();
+    try {
+      assert.equal(await backendPid(afterError), firstPid);
+      await beginTenant(afterError, null);
+      await assertMissingContext(afterError, &quot;session after query error&quot;);
+      await rollback(afterError);
+    } finally {
+      afterError.release();
+    }
+
+    const cancelled = await pool.connect();
+    try {
+      assert.equal(await backendPid(cancelled), firstPid);
+      await beginTenant(cancelled, tenantB);
+      await cancelled.query(&quot;SET LOCAL statement_timeout = &#39;50ms&#39;&quot;);
+      await assert.rejects(
+        cancelled.query(&quot;SELECT pg_sleep(2)&quot;),
+        (error) =&gt; error &amp;&amp; error.code === &quot;57014&quot;,
+        &quot;statement timeout should cancel the tenant query&quot;,
+      );
+      await rollback(cancelled);
+    } finally {
+      cancelled.release();
+    }
+
+    const afterCancellation = await pool.connect();
+    try {
+      assert.equal(await backendPid(afterCancellation), firstPid);
+      await beginTenant(afterCancellation, null);
+      await assertMissingContext(afterCancellation, &quot;session after cancellation&quot;);
+      await rollback(afterCancellation);
+    } finally {
+      afterCancellation.release();
+    }
+  } finally {
+    await pool.end();
+  }
+}
+
+async function verifyConcurrentTenants() {
+  const pool = new Pool({ ...connection, max: 2 });
+  let readyCount = 0;
+  let releaseReady;
+  const bothReady = new Promise((resolve) =&gt; {
+    releaseReady = resolve;
+  });
+
+  async function queryAsTenant(tenantId, expectedRecord) {
+    const client = await pool.connect();
+    try {
+      await beginTenant(client, tenantId);
+      const pid = await backendPid(client);
+      readyCount += 1;
+      if (readyCount === 2) {
+        releaseReady();
+      }
+      await bothReady;
+      const visible = await client.query(&quot;SELECT id FROM app.customer_record ORDER BY id&quot;);
+      assert.deepEqual(visible.rows.map((row) =&gt; row.id), [expectedRecord]);
+      await client.query(&quot;COMMIT&quot;);
+      return pid;
+    } catch (error) {
+      await rollback(client).catch(() =&gt; {});
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  try {
+    const pids = await Promise.all([
+      queryAsTenant(tenantA, recordA),
+      queryAsTenant(tenantB, recordB),
+    ]);
+    assert.notEqual(pids[0], pids[1], &quot;concurrent tenants must use independent sessions&quot;);
+
+    const clients = await Promise.all([pool.connect(), pool.connect()]);
+    try {
+      await Promise.all(
+        clients.map(async (client, index) =&gt; {
+          await beginTenant(client, null);
+          await assertMissingContext(client, `concurrent pooled session ${index + 1}`);
+          await rollback(client);
+        }),
+      );
+    } finally {
+      clients.forEach((client) =&gt; client.release());
+    }
+  } finally {
+    await pool.end();
+  }
+}
+
+async function main() {
+  await verifySinglePhysicalSessionReuse();
+  await verifyConcurrentTenants();
+  console.log(
+    &quot;PASS: pg 8.22.0 pool tests covered physical-session reuse, missing context, &quot; +
+      &quot;errors, cancellation, and concurrent tenants.&quot;,
+  );
+}
+
+main().catch((error) =&gt; {
+  console.error(error &amp;&amp; error.stack ? error.stack : error);
+  process.exitCode = 1;
+});</code></pre>
+    </div>
+</section>
+<h3 id="run-it">Run it</h3>
+<ul class="docs-run-commands"><li><code>labs/postgresql-rls/run-tests.sh</code></li><li><code>labs/postgresql-rls/run-tests.ps1</code></li></ul>
+<ul class="docs-safety-notes"><li>Requires Docker: the runner starts a disposable postgres:18.4-alpine3.24 container and removes it afterward.</li></ul>
+<!-- docs-lab-source:end -->
 <h2 id="prerequisites-and-tested-versions">Prerequisites and tested versions</h2>
 <ul>
 <li>Docker Engine or Docker Desktop with Compose v2.</li>
@@ -371,6 +730,7 @@ administrative controls and monitoring.</p>
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
 <script src="../../assets/javascripts/docs-ui.js" defer></script>
 <script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
       

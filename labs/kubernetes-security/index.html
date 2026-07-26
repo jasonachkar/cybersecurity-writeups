@@ -88,7 +88,7 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -142,7 +142,7 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
@@ -220,7 +220,7 @@
           
             <!-- docs-left-nav:start -->
 <aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/" aria-current="page">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/cloud-security/">Cloud Security</a></li><li><a href="/scripts/application-security/">Application Security</a></li><li><a href="/scripts/devsecops/">DevSecOps</a></li><li><a href="/scripts/threat-intelligence/">Threat Intelligence</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/docs/certification-notes/az-900/">AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
+  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/" aria-current="page">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
 </aside>
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
@@ -233,7 +233,7 @@
   
 
 
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">Kubernetes security</li></ol></nav><!-- docs-breadcrumbs:end -->
+<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">Kubernetes security</li></ol></nav><!-- docs-breadcrumbs:end -->
 <h1 id="kubernetes-admission-network-and-image-policy-lab">Kubernetes admission, network, and image-policy lab</h1>
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
@@ -242,10 +242,308 @@
     <ol><li><a href="#pinned-validation-scope">Pinned validation scope</a></li><li><a href="#enforcement-demonstrated">Enforcement demonstrated</a></li><li><a href="#network-boundary">Network boundary</a></li><li><a href="#operational-rollout">Operational rollout</a></li><li><a href="#references">References</a></li></ol>
   </nav>
 </details>
-<!-- docs-inline-toc:end -->
-<p><strong>Evidence status:</strong> partially tested lab. Native Kyverno v1.18.2 testing
+<!-- docs-inline-toc:end --><p><strong>Evidence status:</strong> partially tested lab. Native Kyverno v1.18.2 testing
 exercised the hardened-pod policy. The image policy is a schema-validated example;
 signature, certificate, registry, transparency, mutation, and live admission were not tested.</p>
+<!-- docs-lab-source:start -->
+<h2 id="implementation">Implementation</h2>
+<section class="docs-source-viewer" data-source-viewer id="source-kubernetes-security" aria-label="Source code: hardened-pods.yaml">
+  <header class="docs-source-viewer__toolbar">
+    <span class="docs-source-viewer__toolbar-title">hardened-pods.yaml</span>
+    <div class="docs-source-viewer__actions">
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    </div>
+  </header>
+  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-kubernetes-security-tab-0" aria-controls="source-kubernetes-security-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Kyverno policy</button><button type="button" role="tab" id="source-kubernetes-security-tab-1" aria-controls="source-kubernetes-security-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Image-verification policy</button><button type="button" role="tab" id="source-kubernetes-security-tab-2" aria-controls="source-kubernetes-security-panel-2" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="2">Decision-model tests</button></div>
+  <div role="tabpanel" id="source-kubernetes-security-panel-0" tabindex="0" aria-labelledby="source-kubernetes-security-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">hardened-pods.yaml</span><code class="docs-source-viewer__path">labs/kubernetes-security/policies/hardened-pods.yaml</code><span class="docs-source-viewer__lines">78 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="hardened-pods.yaml source code" class="language-yaml">apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: hardened-pods
+  annotations:
+    policies.kyverno.io/title: Hardened Pod baseline
+    policies.kyverno.io/category: Pod Security
+    policies.kyverno.io/severity: high
+spec:
+  validationActions:
+    - Deny
+  failurePolicy: Fail
+  evaluation:
+    admission:
+      enabled: true
+    background:
+      enabled: true
+    mode: Kubernetes
+  webhookConfiguration:
+    timeoutSeconds: 10
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - &quot;&quot;
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+  variables:
+    - name: allContainers
+      expression: &gt;-
+        object.spec.containers
+        + object.spec.?initContainers.orValue([])
+        + object.spec.?ephemeralContainers.orValue([])
+  validations:
+    - message: Host PID, IPC, and network namespaces are not allowed.
+      expression: &gt;-
+        !object.spec.?hostPID.orValue(false)
+        &amp;&amp; !object.spec.?hostIPC.orValue(false)
+        &amp;&amp; !object.spec.?hostNetwork.orValue(false)
+    - message: hostPath volumes are not allowed by this workload baseline.
+      expression: &gt;-
+        !has(object.spec.volumes)
+        || object.spec.volumes.all(volume, !has(volume.hostPath))
+    - message: Service-account token automount must be explicitly disabled.
+      expression: object.spec.?automountServiceAccountToken.orValue(true) == false
+    - message: Containers must run as non-root without privileged mode or privilege escalation.
+      expression: &gt;-
+        variables.allContainers.all(container,
+          has(container.securityContext)
+          &amp;&amp; container.securityContext.?runAsNonRoot.orValue(false) == true
+          &amp;&amp; container.securityContext.?privileged.orValue(false) == false
+          &amp;&amp; container.securityContext.?allowPrivilegeEscalation.orValue(true) == false)
+    - message: Containers must use a read-only root filesystem and drop all capabilities.
+      expression: &gt;-
+        variables.allContainers.all(container,
+          container.securityContext.?readOnlyRootFilesystem.orValue(false) == true
+          &amp;&amp; has(container.securityContext.capabilities)
+          &amp;&amp; container.securityContext.capabilities.?drop.orValue([]).exists(capability, capability == &quot;ALL&quot;)
+          &amp;&amp; size(container.securityContext.capabilities.?add.orValue([])) == 0)
+    - message: A RuntimeDefault or Localhost seccomp profile is required.
+      expression: &gt;-
+        has(object.spec.securityContext)
+        &amp;&amp; has(object.spec.securityContext.seccompProfile)
+        &amp;&amp; object.spec.securityContext.seccompProfile.type in [&quot;RuntimeDefault&quot;, &quot;Localhost&quot;]
+    - message: CPU and memory requests and limits are required for every container.
+      expression: &gt;-
+        variables.allContainers.all(container,
+          has(container.resources)
+          &amp;&amp; has(container.resources.requests)
+          &amp;&amp; has(container.resources.requests.cpu)
+          &amp;&amp; has(container.resources.requests.memory)
+          &amp;&amp; has(container.resources.limits)
+          &amp;&amp; has(container.resources.limits.cpu)
+          &amp;&amp; has(container.resources.limits.memory))</code></pre>
+    </div><div role="tabpanel" id="source-kubernetes-security-panel-1" tabindex="0" aria-labelledby="source-kubernetes-security-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">verify-release-images.yaml</span><code class="docs-source-viewer__path">labs/kubernetes-security/policies/verify-release-images.yaml</code><span class="docs-source-viewer__lines">65 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="verify-release-images.yaml source code" class="language-yaml">apiVersion: policies.kyverno.io/v1
+kind: ImageValidatingPolicy
+metadata:
+  name: verify-secureobs-release
+  annotations:
+    policies.kyverno.io/title: Verify SecureObs release identity and provenance
+    policies.kyverno.io/category: Software Supply Chain
+    policies.kyverno.io/severity: high
+spec:
+  validationActions:
+    - Deny
+  failurePolicy: Fail
+  evaluation:
+    admission:
+      enabled: true
+    background:
+      enabled: true
+    mode: Kubernetes
+  webhookConfiguration:
+    timeoutSeconds: 15
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - &quot;&quot;
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+  matchImageReferences:
+    - glob: &quot;ghcr.io/jasonachkar/secureobs:*&quot;
+    - glob: &quot;ghcr.io/jasonachkar/secureobs@sha256:*&quot;
+  attestors:
+    - name: releaseIdentity
+      cosign:
+        keyless:
+          identities:
+            - issuer: &quot;https://token.actions.githubusercontent.com&quot;
+              subject: &quot;https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main&quot;
+        ctlog:
+          url: &quot;https://rekor.sigstore.dev&quot;
+  attestations:
+    - name: slsaProvenance
+      intoto:
+        type: &quot;https://slsa.dev/provenance/v1&quot;
+  validationConfigurations:
+    mutateDigest: true
+    required: true
+    verifyDigest: true
+  validations:
+    - message: Image signature is missing or the keyless workflow identity is not authorized.
+      expression: &gt;-
+        images.containers
+          .map(image, verifyImageSignatures(image, [attestors.releaseIdentity]))
+          .all(result, result &gt; 0)
+    - message: SLSA provenance is missing or is not signed by the authorized workflow identity.
+      expression: &gt;-
+        images.containers
+          .map(image, verifyAttestationSignatures(
+            image,
+            attestations.slsaProvenance,
+            [attestors.releaseIdentity]))
+          .all(result, result &gt; 0)</code></pre>
+    </div><div role="tabpanel" id="source-kubernetes-security-panel-2" tabindex="0" aria-labelledby="source-kubernetes-security-tab-2" class="docs-source-viewer__panel" data-source-panel data-index="2" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">run-tests.js</span><code class="docs-source-viewer__path">labs/kubernetes-security/tests/run-tests.js</code><span class="docs-source-viewer__lines">133 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="run-tests.js source code" class="language-javascript">&quot;use strict&quot;;
+
+const assert = require(&quot;node:assert/strict&quot;);
+const fs = require(&quot;node:fs&quot;);
+const path = require(&quot;node:path&quot;);
+const YAML = require(&quot;yaml&quot;);
+
+const lab = path.resolve(__dirname, &quot;..&quot;);
+const read = (relative) =&gt; fs.readFileSync(path.join(lab, relative), &quot;utf8&quot;);
+
+const podPolicy = YAML.parse(read(&quot;policies/hardened-pods.yaml&quot;));
+assert.equal(podPolicy.apiVersion, &quot;policies.kyverno.io/v1&quot;);
+assert.equal(podPolicy.kind, &quot;ValidatingPolicy&quot;);
+assert.deepEqual(podPolicy.spec.validationActions, [&quot;Deny&quot;]);
+assert.equal(podPolicy.spec.failurePolicy, &quot;Fail&quot;);
+assert.equal(podPolicy.spec.evaluation.admission.enabled, true);
+assert.equal(podPolicy.spec.evaluation.background.enabled, true);
+
+const validationText = JSON.stringify(podPolicy.spec.validations);
+for (const required of [
+  &quot;hostPID&quot;,
+  &quot;hostIPC&quot;,
+  &quot;hostNetwork&quot;,
+  &quot;hostPath&quot;,
+  &quot;automountServiceAccountToken&quot;,
+  &quot;runAsNonRoot&quot;,
+  &quot;privileged&quot;,
+  &quot;allowPrivilegeEscalation&quot;,
+  &quot;readOnlyRootFilesystem&quot;,
+  &quot;capabilities&quot;,
+  &quot;seccomp&quot;,
+  &quot;requests&quot;,
+  &quot;limits&quot;,
+]) {
+  assert.match(validationText, new RegExp(required));
+}
+
+const imagePolicy = YAML.parse(read(&quot;policies/verify-release-images.yaml&quot;));
+assert.equal(imagePolicy.apiVersion, &quot;policies.kyverno.io/v1&quot;);
+assert.equal(imagePolicy.kind, &quot;ImageValidatingPolicy&quot;);
+assert.equal(imagePolicy.spec.failurePolicy, &quot;Fail&quot;);
+assert.deepEqual(imagePolicy.spec.validationActions, [&quot;Deny&quot;]);
+assert.equal(imagePolicy.spec.validationConfigurations.required, true);
+assert.equal(imagePolicy.spec.validationConfigurations.verifyDigest, true);
+assert.equal(imagePolicy.spec.validationConfigurations.mutateDigest, true);
+
+const imageCases = JSON.parse(read(&quot;fixtures/image-cases.json&quot;));
+const expected = imageCases.expected;
+const identity = imagePolicy.spec.attestors[0].cosign.keyless.identities[0];
+assert.equal(identity.issuer, expected.issuer);
+assert.equal(identity.subject, expected.subject);
+assert.equal(imagePolicy.spec.attestations[0].intoto.type, expected.predicateType);
+assert.deepEqual(
+  imagePolicy.spec.matchImageReferences.map((reference) =&gt; reference.glob),
+  [`${expected.repository}:*`, `${expected.repository}@sha256:*`],
+);
+
+function matchesImageReference(reference) {
+  return imagePolicy.spec.matchImageReferences.some(({ glob }) =&gt; {
+    assert.match(glob, /\*$/, &quot;the offline matcher supports reviewed trailing-star globs only&quot;);
+    return reference.startsWith(glob.slice(0, -1));
+  });
+}
+
+assert.equal(matchesImageReference(`${expected.repository}:release-2026-07-23`), true);
+assert.equal(matchesImageReference(`${expected.repository}@${expected.digest}`), true);
+assert.equal(matchesImageReference(`ghcr.io/attacker/secureobs@${expected.digest}`), false);
+assert.equal(matchesImageReference(`ghcr.io/jasonachkar/secureobs-evil@${expected.digest}`), false);
+
+function evaluate(candidate) {
+  const imageDigest = candidate.image.includes(&quot;@&quot;) ? candidate.image.split(&quot;@&quot;)[1] : null;
+  const repository = candidate.image.split(/[@:]/)[0];
+  return (
+    candidate.verifierSucceeded !== false &amp;&amp;
+    candidate.signed === true &amp;&amp;
+    candidate.issuer === expected.issuer &amp;&amp;
+    candidate.subject === expected.subject &amp;&amp;
+    repository === expected.repository &amp;&amp;
+    candidate.predicateType === expected.predicateType &amp;&amp;
+    candidate.provenanceValid === true &amp;&amp;
+    imageDigest === expected.digest &amp;&amp;
+    candidate.subjectDigest === expected.digest
+  );
+}
+
+const evaluatedImageCases = imageCases.cases.filter((candidate) =&gt; candidate.accepted !== null);
+for (const candidate of evaluatedImageCases) {
+  assert.equal(evaluate(candidate), candidate.accepted, candidate.name);
+}
+
+const tagOnlyCase = imageCases.cases.find(
+  (candidate) =&gt; candidate.name === &quot;tag-only-reference-match&quot;,
+);
+assert.equal(matchesImageReference(tagOnlyCase.image), true);
+assert.equal(tagOnlyCase.accepted, null);
+assert.match(tagOnlyCase.matchOnlyReason, /not executed/i);
+
+assert.deepEqual(
+  evaluatedImageCases.filter((candidate) =&gt; !candidate.accepted).map((candidate) =&gt; candidate.name),
+  [
+    &quot;unsigned&quot;,
+    &quot;wrong-repository&quot;,
+    &quot;wrong-workflow&quot;,
+    &quot;wrong-branch&quot;,
+    &quot;wrong-issuer&quot;,
+    &quot;missing-attestation&quot;,
+    &quot;malformed-provenance&quot;,
+    &quot;wrong-predicate&quot;,
+    &quot;verifier-or-transparency-failure&quot;,
+    &quot;tag-substitution-digest-mismatch&quot;,
+  ],
+);
+
+const networkPolicies = YAML.parseAllDocuments(read(&quot;fixtures/network-policies.yaml&quot;))
+  .map((document) =&gt; document.toJSON());
+const defaultDeny = networkPolicies.find(
+  (policy) =&gt; policy.metadata.name === &quot;default-deny-ingress-and-egress&quot;,
+);
+assert.deepEqual(defaultDeny.spec.podSelector, {});
+assert.deepEqual(defaultDeny.spec.policyTypes.sort(), [&quot;Egress&quot;, &quot;Ingress&quot;]);
+assert.equal(defaultDeny.spec.ingress, undefined);
+assert.equal(defaultDeny.spec.egress, undefined);
+
+const dns = networkPolicies.find((policy) =&gt; policy.metadata.name === &quot;allow-cluster-dns&quot;);
+assert.deepEqual(
+  dns.spec.egress[0].ports.map((port) =&gt; `${port.protocol}/${port.port}`).sort(),
+  [&quot;TCP/53&quot;, &quot;UDP/53&quot;],
+);
+
+console.log(
+  `PASS: Kubernetes admission, image identity (${imageCases.cases.length} cases), ` +
+    &quot;and NetworkPolicy structural tests completed.&quot;,
+);</code></pre>
+    </div>
+</section>
+<h3 id="run-it">Run it</h3>
+<ul class="docs-run-commands"><li><code>kyverno test labs/kubernetes-security</code></li><li><code>node labs/kubernetes-security/tests/run-tests.js</code></li></ul>
+<ul class="docs-safety-notes"><li>The Kyverno policy is exercised with the native `kyverno test` CLI against local fixtures; no live cluster is contacted.</li></ul>
+<!-- docs-lab-source:end -->
 <p>This lab validates a narrow Kubernetes security baseline with positive and negative
 fixtures. It does not claim that a namespace, admission policy, or NetworkPolicy is a
 hard hostile-tenant boundary.</p>
@@ -387,6 +685,7 @@ or cluster. Keep a reviewed break-glass path outside tenant administrator contro
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
 <script src="../../assets/javascripts/docs-ui.js" defer></script>
 <script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
       

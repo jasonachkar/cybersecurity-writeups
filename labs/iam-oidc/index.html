@@ -88,7 +88,7 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -142,7 +142,7 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
@@ -220,7 +220,7 @@
           
             <!-- docs-left-nav:start -->
 <aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/" aria-current="page">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/cloud-security/">Cloud Security</a></li><li><a href="/scripts/application-security/">Application Security</a></li><li><a href="/scripts/devsecops/">DevSecOps</a></li><li><a href="/scripts/threat-intelligence/">Threat Intelligence</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/docs/certification-notes/az-900/">AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
+  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/" aria-current="page">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
 </aside>
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
@@ -233,7 +233,7 @@
   
 
 
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">IAM and OIDC</li></ol></nav><!-- docs-breadcrumbs:end -->
+<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">IAM and OIDC</li></ol></nav><!-- docs-breadcrumbs:end -->
 <h1 id="iam-and-workload-identity-decision-lab">IAM and workload-identity decision lab</h1>
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
@@ -242,10 +242,579 @@
     <ol><li><a href="#prerequisites-and-run-command">Prerequisites and run command</a></li><li><a href="#tested-fixture-coverage">Tested fixture coverage</a></li><li><a href="#files-and-evidence-boundary">Files and evidence boundary</a></li><li><a href="#production-validation-sequence">Production validation sequence</a></li><li><a href="#aws-simulator-limitations">AWS simulator limitations</a></li><li><a href="#failure-modes-and-limitations">Failure modes and limitations</a></li><li><a href="#cleanup">Cleanup</a></li><li><a href="#references">References</a></li></ol>
   </nav>
 </details>
-<!-- docs-inline-toc:end -->
-<p>This dependency-free offline lab tests exact workload-identity trust fixtures and a
+<!-- docs-inline-toc:end --><p>This dependency-free offline lab tests exact workload-identity trust fixtures and a
 small, explicit subset of authorization semantics. It exists to prevent four
 different decisions from being collapsed into “the token worked”:</p>
+<!-- docs-lab-source:start -->
+<h2 id="implementation">Implementation</h2>
+<section class="docs-source-viewer" data-source-viewer id="source-iam-oidc" aria-label="Source code: evaluator.js">
+  <header class="docs-source-viewer__toolbar">
+    <span class="docs-source-viewer__toolbar-title">evaluator.js</span>
+    <div class="docs-source-viewer__actions">
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    </div>
+  </header>
+  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-iam-oidc-tab-0" aria-controls="source-iam-oidc-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Policy evaluator</button><button type="button" role="tab" id="source-iam-oidc-tab-1" aria-controls="source-iam-oidc-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Fixture tests</button></div>
+  <div role="tabpanel" id="source-iam-oidc-panel-0" tabindex="0" aria-labelledby="source-iam-oidc-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">evaluator.js</span><code class="docs-source-viewer__path">labs/iam-oidc/evaluator.js</code><span class="docs-source-viewer__lines">290 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="evaluator.js source code" class="language-javascript">&quot;use strict&quot;;
+
+const STAGES = Object.freeze({
+  SIGNATURE_INVALID: &quot;SIGNATURE_INVALID&quot;,
+  CLAIMS_REJECTED: &quot;CLAIMS_REJECTED&quot;,
+  TRUST_POLICY_REJECTED: &quot;TRUST_POLICY_REJECTED&quot;,
+  PERMISSIONS_DENIED: &quot;PERMISSIONS_DENIED&quot;,
+  AUTHORIZED: &quot;AUTHORIZED&quot;,
+});
+
+function asArray(value) {
+  if (value === undefined || value === null) {
+    return [];
+  }
+  return Array.isArray(value) ? value : [value];
+}
+
+function globMatches(pattern, value) {
+  const escaped = String(pattern)
+    .replace(/[.+^${}()|[\]\\]/g, &quot;\\$&amp;&quot;)
+    .replace(/\*/g, &quot;.*&quot;)
+    .replace(/\?/g, &quot;.&quot;);
+  return new RegExp(`^${escaped}$`).test(String(value));
+}
+
+function anyPatternMatches(patterns, value) {
+  return asArray(patterns).some((pattern) =&gt; globMatches(pattern, value));
+}
+
+function principalMatches(expectedPrincipal, actualPrincipal) {
+  if (expectedPrincipal === undefined) {
+    return true;
+  }
+  if (!actualPrincipal) {
+    return false;
+  }
+  if (typeof expectedPrincipal === &quot;string&quot;) {
+    return anyPatternMatches(expectedPrincipal, actualPrincipal.value);
+  }
+  const expected = expectedPrincipal[actualPrincipal.type];
+  return expected !== undefined &amp;&amp; anyPatternMatches(expected, actualPrincipal.value);
+}
+
+function valuesEqual(actual, expected) {
+  const actualValues = asArray(actual).map(String);
+  const expectedValues = asArray(expected).map(String);
+  return actualValues.some((value) =&gt; expectedValues.includes(value));
+}
+
+function valuesLike(actual, expected) {
+  const actualValues = asArray(actual);
+  const expectedValues = asArray(expected);
+  return actualValues.some((value) =&gt;
+    expectedValues.some((pattern) =&gt; globMatches(pattern, value)),
+  );
+}
+
+function conditionBlockMatches(operator, entries, context) {
+  return Object.entries(entries).every(([key, expected]) =&gt; {
+    const actual = context[key];
+
+    switch (operator) {
+      case &quot;StringEquals&quot;:
+      case &quot;ArnEquals&quot;:
+        return valuesEqual(actual, expected);
+      case &quot;StringLike&quot;:
+      case &quot;ArnLike&quot;:
+        return valuesLike(actual, expected);
+      case &quot;ForAllValues:StringEquals&quot;: {
+        const actualValues = asArray(actual);
+        const expectedValues = asArray(expected).map(String);
+        return actualValues.length &gt; 0 &amp;&amp;
+          actualValues.every((value) =&gt; expectedValues.includes(String(value)));
+      }
+      case &quot;Null&quot;: {
+        const isNull = actual === undefined || actual === null;
+        return String(isNull) === String(expected).toLowerCase();
+      }
+      default:
+        throw new Error(`Unsupported condition operator in lab model: ${operator}`);
+    }
+  });
+}
+
+function conditionsMatch(conditions = {}, context = {}) {
+  return Object.entries(conditions).every(([operator, entries]) =&gt;
+    conditionBlockMatches(operator, entries, context),
+  );
+}
+
+function statementMatches(statement, request) {
+  const actionMatches = anyPatternMatches(statement.Action, request.action);
+  const resourceMatches = statement.Resource === undefined ||
+    anyPatternMatches(statement.Resource, request.resource || &quot;*&quot;);
+
+  return actionMatches &amp;&amp;
+    resourceMatches &amp;&amp;
+    principalMatches(statement.Principal, request.principal) &amp;&amp;
+    conditionsMatch(statement.Condition, request.context);
+}
+
+function policyDecision(policy, request) {
+  const matching = asArray(policy.Statement).filter((statement) =&gt;
+    statementMatches(statement, request),
+  );
+  if (matching.some((statement) =&gt; statement.Effect === &quot;Deny&quot;)) {
+    return &quot;explicitDeny&quot;;
+  }
+  if (matching.some((statement) =&gt; statement.Effect === &quot;Allow&quot;)) {
+    return &quot;allowed&quot;;
+  }
+  return &quot;implicitDeny&quot;;
+}
+
+function permissionIsAllowed(identityPolicies, boundary, request) {
+  const identityDecisions = asArray(identityPolicies).map((policy) =&gt;
+    policyDecision(policy, request),
+  );
+  if (identityDecisions.includes(&quot;explicitDeny&quot;)) {
+    return false;
+  }
+  if (!identityDecisions.includes(&quot;allowed&quot;)) {
+    return false;
+  }
+  if (!boundary) {
+    return true;
+  }
+  return policyDecision(boundary, request) === &quot;allowed&quot;;
+}
+
+function tokenAudienceMatches(actual, expected) {
+  return asArray(actual).map(String).includes(String(expected));
+}
+
+function validateToken(token, requirements) {
+  if (token.signatureVerified !== true) {
+    return {
+      stage: STAGES.SIGNATURE_INVALID,
+      reason: &quot;The external cryptographic-verifier boundary did not authenticate the token signature.&quot;,
+    };
+  }
+
+  const now = requirements.now;
+  const claimsValid =
+    token.issuer === requirements.expectedIssuer &amp;&amp;
+    tokenAudienceMatches(token.audience, requirements.expectedAudience) &amp;&amp;
+    Number.isFinite(token.notBefore) &amp;&amp;
+    Number.isFinite(token.expiresAt) &amp;&amp;
+    token.notBefore &lt;= now &amp;&amp;
+    token.expiresAt &gt; now;
+
+  if (!claimsValid) {
+    return {
+      stage: STAGES.CLAIMS_REJECTED,
+      reason: &quot;The authenticated token failed issuer, audience, or lifetime validation.&quot;,
+    };
+  }
+
+  return null;
+}
+
+function permissionStage(permissionSet) {
+  if (!permissionSet) {
+    return { stage: STAGES.AUTHORIZED, reason: &quot;Trust was accepted; no post-assumption API was modeled.&quot; };
+  }
+
+  const allowed = permissionIsAllowed(
+    permissionSet.identityPolicies,
+    permissionSet.boundary,
+    permissionSet.request,
+  );
+  return allowed
+    ? { stage: STAGES.AUTHORIZED, reason: &quot;Trust and the modeled post-assumption authorization both allowed the request.&quot; }
+    : { stage: STAGES.PERMISSIONS_DENIED, reason: &quot;The role session exists, but effective permissions denied the requested API.&quot; };
+}
+
+function evaluateAwsWebIdentity(scenario) {
+  const tokenFailure = validateToken(scenario.token, scenario.claimRequirements);
+  if (tokenFailure) {
+    return tokenFailure;
+  }
+
+  const prefix = scenario.claimRequirements.conditionPrefix;
+  const trustRequest = {
+    action: &quot;sts:AssumeRoleWithWebIdentity&quot;,
+    principal: {
+      type: &quot;Federated&quot;,
+      value: scenario.providerArn,
+    },
+    context: {
+      [`${prefix}:aud`]: scenario.token.audience,
+      [`${prefix}:sub`]: scenario.token.subject,
+    },
+  };
+
+  if (policyDecision(scenario.trustPolicy, trustRequest) !== &quot;allowed&quot;) {
+    return {
+      stage: STAGES.TRUST_POLICY_REJECTED,
+      reason: &quot;The token claims were authentic and protocol-valid, but the role trust policy did not authorize this principal/subject.&quot;,
+    };
+  }
+
+  return permissionStage(scenario.permissionSet);
+}
+
+function evaluateAzureFederation(scenario) {
+  const tokenFailure = validateToken(scenario.token, scenario.claimRequirements);
+  if (tokenFailure) {
+    return tokenFailure;
+  }
+
+  const credential = scenario.federatedCredential;
+  const trustMatches =
+    credential.issuer === scenario.token.issuer &amp;&amp;
+    credential.subject === scenario.token.subject &amp;&amp;
+    asArray(credential.audiences).length === 1 &amp;&amp;
+    tokenAudienceMatches(scenario.token.audience, credential.audiences[0]);
+
+  if (!trustMatches) {
+    return {
+      stage: STAGES.TRUST_POLICY_REJECTED,
+      reason: &quot;The token was protocol-valid, but it did not exactly match the configured federated credential.&quot;,
+    };
+  }
+
+  const request = scenario.permissionSet.request;
+  const actionAllowed = asArray(scenario.permissionSet.allowedActions).some((action) =&gt;
+    globMatches(action, request.action),
+  );
+  const scopeAllowed = asArray(scenario.permissionSet.allowedScopes).some((scope) =&gt;
+    globMatches(scope, request.scope),
+  );
+
+  return actionAllowed &amp;&amp; scopeAllowed
+    ? { stage: STAGES.AUTHORIZED, reason: &quot;Token exchange trust and the modeled Azure authorization both allowed the request.&quot; }
+    : { stage: STAGES.PERMISSIONS_DENIED, reason: &quot;Token exchange succeeded, but the modeled Azure authorization denied the request.&quot; };
+}
+
+function evaluateAwsAssumeRole(scenario) {
+  if (scenario.callerAuthenticated !== true) {
+    return {
+      stage: STAGES.SIGNATURE_INVALID,
+      reason: &quot;The fixture boundary did not authenticate the calling AWS principal.&quot;,
+    };
+  }
+
+  const context = {
+    &quot;sts:ExternalId&quot;: scenario.externalId,
+    &quot;aws:TagKeys&quot;: Object.keys(scenario.sessionTags || {}),
+  };
+  for (const [key, value] of Object.entries(scenario.sessionTags || {})) {
+    context[`aws:RequestTag/${key}`] = value;
+  }
+
+  const baseRequest = {
+    principal: {
+      type: &quot;AWS&quot;,
+      value: scenario.principalArn,
+    },
+    context,
+  };
+
+  const assumeAllowed = policyDecision(scenario.trustPolicy, {
+    ...baseRequest,
+    action: &quot;sts:AssumeRole&quot;,
+  }) === &quot;allowed&quot;;
+  const tagsAllowed = Object.keys(scenario.sessionTags || {}).length === 0 ||
+    policyDecision(scenario.trustPolicy, {
+      ...baseRequest,
+      action: &quot;sts:TagSession&quot;,
+    }) === &quot;allowed&quot;;
+
+  if (!assumeAllowed || !tagsAllowed) {
+    return {
+      stage: STAGES.TRUST_POLICY_REJECTED,
+      reason: &quot;The caller, external ID, or requested session tags failed role-trust authorization.&quot;,
+    };
+  }
+
+  return permissionStage(scenario.permissionSet);
+}
+
+module.exports = {
+  STAGES,
+  evaluateAwsAssumeRole,
+  evaluateAwsWebIdentity,
+  evaluateAzureFederation,
+  permissionIsAllowed,
+  policyDecision,
+};</code></pre>
+    </div><div role="tabpanel" id="source-iam-oidc-panel-1" tabindex="0" aria-labelledby="source-iam-oidc-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">run-tests.js</span><code class="docs-source-viewer__path">labs/iam-oidc/tests/run-tests.js</code><span class="docs-source-viewer__lines">259 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="run-tests.js source code" class="language-javascript">&quot;use strict&quot;;
+
+const assert = require(&quot;node:assert/strict&quot;);
+const fs = require(&quot;node:fs&quot;);
+const path = require(&quot;node:path&quot;);
+const {
+  STAGES,
+  evaluateAwsAssumeRole,
+  evaluateAwsWebIdentity,
+  evaluateAzureFederation,
+  permissionIsAllowed,
+  policyDecision,
+} = require(&quot;../evaluator&quot;);
+
+const lab = path.resolve(__dirname, &quot;..&quot;);
+const fixturesDirectory = path.join(lab, &quot;fixtures&quot;);
+const policiesDirectory = path.join(lab, &quot;policies&quot;);
+let evaluationCount = 0;
+
+function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, &quot;utf8&quot;));
+}
+
+function fixture(name) {
+  return readJson(path.join(fixturesDirectory, name));
+}
+
+function policy(name) {
+  return readJson(path.join(policiesDirectory, name));
+}
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function setPath(target, dottedPath, value) {
+  const segments = dottedPath.split(&quot;.&quot;);
+  let cursor = target;
+  for (const segment of segments.slice(0, -1)) {
+    assert.notEqual(cursor[segment], undefined, `Unknown mutation path: ${dottedPath}`);
+    cursor = cursor[segment];
+  }
+  cursor[segments.at(-1)] = value;
+}
+
+function applyMutations(target, mutations) {
+  for (const [dottedPath, value] of Object.entries(mutations)) {
+    setPath(target, dottedPath, value);
+  }
+}
+
+function hydratePermissionSet(permissionSet) {
+  if (!permissionSet) {
+    return permissionSet;
+  }
+  permissionSet.identityPolicies = (permissionSet.identityPolicies || []).map((item) =&gt;
+    typeof item === &quot;string&quot; ? policy(item) : item,
+  );
+  if (typeof permissionSet.boundary === &quot;string&quot;) {
+    permissionSet.boundary = policy(permissionSet.boundary);
+  }
+  return permissionSet;
+}
+
+function expectStage(name, actual, expected) {
+  evaluationCount += 1;
+  assert.equal(
+    actual.stage,
+    expected,
+    `${name}: expected ${expected}, got ${actual.stage} (${actual.reason})`,
+  );
+}
+
+function runAwsWebIdentityFixture(document) {
+  const scenarios = document.scenarios || [document];
+  for (const scenario of scenarios) {
+    for (const testCase of scenario.cases) {
+      const input = clone(scenario.base);
+      input.trustPolicy = policy(scenario.trustPolicy);
+      hydratePermissionSet(input.permissionSet);
+      applyMutations(input, testCase.mutations);
+      expectStage(
+        `${scenario.name || scenario.trustPolicy}: ${testCase.name}`,
+        evaluateAwsWebIdentity(input),
+        testCase.expectedStage,
+      );
+    }
+  }
+}
+
+function runAzureFixture(document) {
+  for (const testCase of document.cases) {
+    const input = clone(document.base);
+    input.federatedCredential = policy(document.federatedCredential);
+    applyMutations(input, testCase.mutations);
+    expectStage(
+      testCase.name,
+      evaluateAzureFederation(input),
+      testCase.expectedStage,
+    );
+  }
+}
+
+function runAssumeRoleFixture(document) {
+  for (const testCase of document.cases) {
+    const input = clone(document.base);
+    input.trustPolicy = policy(document.trustPolicy);
+    hydratePermissionSet(input.permissionSet);
+    applyMutations(input, testCase.mutations);
+    expectStage(
+      testCase.name,
+      evaluateAwsAssumeRole(input),
+      testCase.expectedStage,
+    );
+  }
+}
+
+function runAuthorizationFixture(document) {
+  const identityPolicy = policy(document.identityPolicy);
+  for (const testCase of document.cases) {
+    evaluationCount += 1;
+    assert.equal(
+      permissionIsAllowed([identityPolicy], null, testCase.request),
+      testCase.expectedAllowed,
+      testCase.name,
+    );
+  }
+}
+
+function assertPolicyDocument(document, name) {
+  assert.equal(document.Version, &quot;2012-10-17&quot;, `${name}: policy version`);
+  assert.ok(Array.isArray(document.Statement), `${name}: Statement must be an array`);
+  assert.ok(document.Statement.length &gt; 0, `${name}: Statement must not be empty`);
+}
+
+function runStructuralTests() {
+  const policyFiles = fs.readdirSync(policiesDirectory)
+    .filter((name) =&gt; name.endsWith(&quot;.json&quot;) &amp;&amp; name !== &quot;azure-github-federated-credential.json&quot;);
+  for (const name of policyFiles) {
+    assertPolicyDocument(policy(name), name);
+  }
+
+  const githubMain = policy(&quot;aws-github-main-trust.json&quot;).Statement[0];
+  const githubEnvironment = policy(&quot;aws-github-production-trust.json&quot;).Statement[0];
+  for (const statement of [githubMain, githubEnvironment]) {
+    assert.equal(statement.Action, &quot;sts:AssumeRoleWithWebIdentity&quot;);
+    assert.equal(
+      statement.Principal.Federated,
+      &quot;arn:aws:iam::111122223333:oidc-provider/token.actions.githubusercontent.com&quot;,
+    );
+    const conditions = statement.Condition.StringEquals;
+    assert.equal(conditions[&quot;token.actions.githubusercontent.com:aud&quot;], &quot;sts.amazonaws.com&quot;);
+    assert.doesNotMatch(conditions[&quot;token.actions.githubusercontent.com:sub&quot;], /[*?]/);
+  }
+  assert.equal(
+    githubMain.Condition.StringEquals[&quot;token.actions.githubusercontent.com:sub&quot;],
+    &quot;repo:example-security/cloud-controls:ref:refs/heads/main&quot;,
+  );
+  assert.equal(
+    githubEnvironment.Condition.StringEquals[&quot;token.actions.githubusercontent.com:sub&quot;],
+    &quot;repo:example-security/cloud-controls:environment:production&quot;,
+  );
+
+  const azureCredential = policy(&quot;azure-github-federated-credential.json&quot;);
+  assert.equal(azureCredential.issuer, &quot;https://token.actions.githubusercontent.com&quot;);
+  assert.equal(
+    azureCredential.subject,
+    &quot;repo:example-security/cloud-controls:environment:production&quot;,
+  );
+  assert.deepEqual(azureCredential.audiences, [&quot;api://AzureADTokenExchange&quot;]);
+
+  const irsa = policy(&quot;eks-irsa-trust.json&quot;).Statement[0];
+  assert.equal(irsa.Action, &quot;sts:AssumeRoleWithWebIdentity&quot;);
+  assert.equal(
+    irsa.Condition.StringEquals[
+      &quot;oidc.eks.ca-central-1.amazonaws.com/id/EXAMPLECLUSTERID:sub&quot;
+    ],
+    &quot;system:serviceaccount:payments:reconciler&quot;,
+  );
+  assert.equal(
+    irsa.Condition.StringEquals[
+      &quot;oidc.eks.ca-central-1.amazonaws.com/id/EXAMPLECLUSTERID:aud&quot;
+    ],
+    &quot;sts.amazonaws.com&quot;,
+  );
+
+  const thirdParty = policy(&quot;third-party-trust.json&quot;);
+  const externalId =
+    thirdParty.Statement[0].Condition.StringEquals[&quot;sts:ExternalId&quot;];
+  assert.equal(
+    externalId,
+    &quot;example-tenant-a-7a7a7a7a-0000-4000-8000-000000000000&quot;,
+  );
+  assert.match(externalId, /^[\w+=,.@:\/-]{2,1224}$/);
+  assert.equal(thirdParty.Statement[1].Action, &quot;sts:TagSession&quot;);
+  assert.deepEqual(
+    thirdParty.Statement[1].Condition[&quot;ForAllValues:StringEquals&quot;][&quot;aws:TagKeys&quot;],
+    [&quot;tenant-id&quot;, &quot;workload&quot;],
+  );
+
+  const delegated = policy(&quot;delegated-role-admin.json&quot;);
+  const create = delegated.Statement.find((statement) =&gt;
+    statement.Sid === &quot;CreateDelegatedRoleOnlyWithApprovedBoundary&quot;);
+  assert.equal(
+    create.Condition.ArnEquals[&quot;iam:PermissionsBoundary&quot;],
+    &quot;arn:aws:iam::111122223333:policy/DelegatedWorkloadBoundary&quot;,
+  );
+  const boundaryDeny = delegated.Statement.find((statement) =&gt;
+    statement.Sid === &quot;DenyBoundaryRemovalOrReplacement&quot;);
+  assert.equal(boundaryDeny.Effect, &quot;Deny&quot;);
+  assert.deepEqual(
+    new Set(boundaryDeny.Action),
+    new Set([&quot;iam:DeleteRolePermissionsBoundary&quot;, &quot;iam:PutRolePermissionsBoundary&quot;]),
+  );
+
+  const passRole = policy(&quot;restricted-passrole.json&quot;).Statement[0];
+  assert.equal(passRole.Action, &quot;iam:PassRole&quot;);
+  assert.equal(
+    passRole.Resource,
+    &quot;arn:aws:iam::111122223333:role/service/ecs/payments-task&quot;,
+  );
+  assert.equal(
+    passRole.Condition.StringEquals[&quot;iam:PassedToService&quot;],
+    &quot;ecs-tasks.amazonaws.com&quot;,
+  );
+  assert.equal(
+    policyDecision(policy(&quot;ecs-payments-task-trust.json&quot;), {
+      action: &quot;sts:AssumeRole&quot;,
+      principal: { type: &quot;Service&quot;, value: &quot;ecs-tasks.amazonaws.com&quot; },
+      context: {},
+    }),
+    &quot;allowed&quot;,
+    &quot;The destination role must trust the service that receives it.&quot;,
+  );
+}
+
+runStructuralTests();
+runAwsWebIdentityFixture(fixture(&quot;github-oidc.json&quot;));
+runAzureFixture(fixture(&quot;azure-federation.json&quot;));
+runAwsWebIdentityFixture(fixture(&quot;eks-irsa.json&quot;));
+runAssumeRoleFixture(fixture(&quot;third-party-assume-role.json&quot;));
+runAuthorizationFixture(fixture(&quot;permission-boundary.json&quot;));
+runAuthorizationFixture(fixture(&quot;passrole.json&quot;));
+
+const requiredStages = new Set(Object.values(STAGES));
+const githubStages = new Set(
+  fixture(&quot;github-oidc.json&quot;).scenarios.flatMap((scenario) =&gt;
+    scenario.cases.map((testCase) =&gt; testCase.expectedStage),
+  ),
+);
+assert.deepEqual(
+  githubStages,
+  requiredStages,
+  &quot;GitHub OIDC fixtures must preserve all four rejection/authorization stages.&quot;,
+);
+
+console.log(
+  `PASS: ${evaluationCount} IAM/OIDC structural and policy-model evaluations completed.`,
+);</code></pre>
+    </div>
+</section>
+<h3 id="run-it">Run it</h3>
+<ul class="docs-run-commands"><li><code>node labs/iam-oidc/tests/run-tests.js</code></li></ul>
+<ul class="docs-safety-notes"><li>Evaluates the JSON trust/permission policies under labs/iam-oidc/policies locally; never calls AWS or Azure.</li></ul>
+<!-- docs-lab-source:end -->
 <ol>
 <li><code>SIGNATURE_INVALID</code> - an external cryptographic-verifier boundary did not
    authenticate the token signature.</li>
@@ -484,6 +1053,7 @@ files, credentials, containers, or cloud resources, so no cleanup is required.</
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
 <script src="../../assets/javascripts/docs-ui.js" defer></script>
 <script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
       

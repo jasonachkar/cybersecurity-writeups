@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url><loc>https://docs.jasonachkardiab.com/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>1.0</priority></url>
+  <url><loc>https://docs.jasonachkardiab.com/research/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.jasonachkardiab.com/cloud-security/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.jasonachkardiab.com/appsec/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.jasonachkardiab.com/devsecops/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.jasonachkardiab.com/threat-intel/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.jasonachkardiab.com/labs/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://docs.jasonachkardiab.com/study-notes/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://docs.jasonachkardiab.com/about/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://docs.jasonachkardiab.com/devsecops/secure-cicd-pipeline-design/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://docs.jasonachkardiab.com/appsec/saas-multitenancy-isolation/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
@@ -34,11 +41,6 @@
   <url><loc>https://docs.jasonachkardiab.com/scripts/application-security/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://docs.jasonachkardiab.com/scripts/devsecops/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://docs.jasonachkardiab.com/scripts/threat-intelligence/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://docs.jasonachkardiab.com/scripts/cloud-security/k8s-rbac-auditor/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://docs.jasonachkardiab.com/scripts/application-security/oauth-pkce-verifier/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://docs.jasonachkardiab.com/scripts/threat-intelligence/cloudtrail-analyzer/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://docs.jasonachkardiab.com/scripts/devsecops/kyverno-policy-schema-check/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://docs.jasonachkardiab.com/scripts/devsecops/tetragon-policy-schema-check/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://docs.jasonachkardiab.com/docs/certification-notes/az-900/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
   <url><loc>https://docs.jasonachkardiab.com/docs/certification-notes/az-900/domain-1-concepts/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>
   <url><loc>https://docs.jasonachkardiab.com/docs/certification-notes/az-900/domain-2-architecture-services/</loc><lastmod>2026-07-25</lastmod><changefreq>monthly</changefreq><priority>0.4</priority></url>

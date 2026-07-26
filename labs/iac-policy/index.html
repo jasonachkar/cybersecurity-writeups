@@ -88,7 +88,7 @@
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer">
+    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -142,7 +142,7 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation">
+        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
@@ -220,7 +220,7 @@
           
             <!-- docs-left-nav:start -->
 <aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/" aria-current="page">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/cloud-security/">Cloud Security</a></li><li><a href="/scripts/application-security/">Application Security</a></li><li><a href="/scripts/devsecops/">DevSecOps</a></li><li><a href="/scripts/threat-intelligence/">Threat Intelligence</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/docs/certification-notes/az-900/">AZ-900</a></li><li><a href="/docs/certification-notes/sc-500/">SC-500</a></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
+  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group" open><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/" aria-current="page">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
 </aside>
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
@@ -233,7 +233,7 @@
   
 
 
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li aria-current="page">IaC policy</li></ol></nav><!-- docs-breadcrumbs:end -->
+<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">IaC policy</li></ol></nav><!-- docs-breadcrumbs:end -->
 <h1 id="terraform-plan-and-rego-policy-lab">Terraform plan and Rego policy lab</h1>
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
@@ -242,9 +242,262 @@
     <ol><li><a href="#tested-scope">Tested scope</a></li><li><a href="#evidence-and-negative-cases">Evidence and negative cases</a></li><li><a href="#backend-comparison">Backend comparison</a></li><li><a href="#limitations">Limitations</a></li><li><a href="#references">References</a></li></ol>
   </nav>
 </details>
-<!-- docs-inline-toc:end -->
-<p>This lab demonstrates why source scanning, plan evaluation, provider-side controls,
+<!-- docs-inline-toc:end --><p>This lab demonstrates why source scanning, plan evaluation, provider-side controls,
 and drift monitoring are separate layers. It does not deploy infrastructure.</p>
+<!-- docs-lab-source:start -->
+<h2 id="implementation">Implementation</h2>
+<section class="docs-source-viewer" data-source-viewer id="source-iac-policy" aria-label="Source code: terraform.rego">
+  <header class="docs-source-viewer__toolbar">
+    <span class="docs-source-viewer__toolbar-title">terraform.rego</span>
+    <div class="docs-source-viewer__actions">
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    </div>
+  </header>
+  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-iac-policy-tab-0" aria-controls="source-iac-policy-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Rego policy</button><button type="button" role="tab" id="source-iac-policy-tab-1" aria-controls="source-iac-policy-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Rego tests</button><button type="button" role="tab" id="source-iac-policy-tab-2" aria-controls="source-iac-policy-panel-2" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="2">Harness tests</button></div>
+  <div role="tabpanel" id="source-iac-policy-panel-0" tabindex="0" aria-labelledby="source-iac-policy-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">terraform.rego</span><code class="docs-source-viewer__path">labs/iac-policy/policy/terraform.rego</code><span class="docs-source-viewer__lines">157 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="terraform.rego source code" class="language-rego">package terraform.security
+
+import rego.v1
+
+active(resource) if {
+	not &quot;delete&quot; in resource.change.actions
+}
+
+deleted(resource) if {
+	&quot;delete&quot; in resource.change.actions
+}
+
+has_bucket_control(resource_type, bucket) if {
+	some control in input.resource_changes
+	control.type == resource_type
+	active(control)
+	control.change.after.bucket == bucket
+}
+
+has_required_tags(resource) if {
+	is_object(resource.change.after.tags)
+	is_string(resource.change.after.tags.Environment)
+	resource.change.after.tags.Environment != &quot;&quot;
+	is_string(resource.change.after.tags.Owner)
+	resource.change.after.tags.Owner != &quot;&quot;
+}
+
+wildcard(value) if {
+	is_string(value)
+	value == &quot;*&quot;
+}
+
+wildcard(value) if {
+	is_array(value)
+	&quot;*&quot; in value
+}
+
+deny contains {
+	&quot;address&quot;: resource.address,
+	&quot;reason&quot;: &quot;S3 bucket has a public ACL&quot;,
+} if {
+	some resource in input.resource_changes
+	resource.type == &quot;aws_s3_bucket_acl&quot;
+	active(resource)
+	resource.change.after.acl in {&quot;public-read&quot;, &quot;public-read-write&quot;, &quot;authenticated-read&quot;}
+}
+
+deny contains {
+	&quot;address&quot;: resource.address,
+	&quot;reason&quot;: &quot;S3 bucket is missing a complete public-access block&quot;,
+} if {
+	some resource in input.resource_changes
+	resource.type == &quot;aws_s3_bucket&quot;
+	active(resource)
+	not has_bucket_control(&quot;aws_s3_bucket_public_access_block&quot;, resource.change.after.bucket)
+}
+
+deny contains {
+	&quot;address&quot;: resource.address,
+	&quot;reason&quot;: &quot;S3 bucket is missing server-side encryption configuration&quot;,
+} if {
+	some resource in input.resource_changes
+	resource.type == &quot;aws_s3_bucket&quot;
+	active(resource)
+	not has_bucket_control(&quot;aws_s3_bucket_server_side_encryption_configuration&quot;, resource.change.after.bucket)
+}
+
+deny contains {
+	&quot;address&quot;: resource.address,
+	&quot;reason&quot;: &quot;S3 bucket is missing access logging configuration&quot;,
+} if {
+	some resource in input.resource_changes
+	resource.type == &quot;aws_s3_bucket&quot;
+	active(resource)
+	not has_bucket_control(&quot;aws_s3_bucket_logging&quot;, resource.change.after.bucket)
+}
+
+deny contains {
+	&quot;address&quot;: resource.address,
+	&quot;reason&quot;: &quot;security group exposes ingress to the public internet&quot;,
+} if {
+	some resource in input.resource_changes
+	resource.type == &quot;aws_security_group&quot;
+	active(resource)
+	some ingress in resource.change.after.ingress
+	some cidr in ingress.cidr_blocks
+	cidr in {&quot;0.0.0.0/0&quot;, &quot;::/0&quot;}
+}
+
+deny contains {
+	&quot;address&quot;: resource.address,
+	&quot;reason&quot;: &quot;database is publicly accessible&quot;,
+} if {
+	some resource in input.resource_changes
+	resource.type == &quot;aws_db_instance&quot;
+	active(resource)
+	resource.change.after.publicly_accessible == true
+}
+
+deny contains {
+	&quot;address&quot;: resource.address,
+	&quot;reason&quot;: &quot;database storage encryption is disabled&quot;,
+} if {
+	some resource in input.resource_changes
+	resource.type == &quot;aws_db_instance&quot;
+	active(resource)
+	resource.change.after.storage_encrypted != true
+	not resource.change.after_unknown.storage_encrypted
+}
+
+deny contains {
+	&quot;address&quot;: resource.address,
+	&quot;reason&quot;: &quot;security-relevant database value is unknown at policy evaluation&quot;,
+} if {
+	some resource in input.resource_changes
+	resource.type == &quot;aws_db_instance&quot;
+	active(resource)
+	some field in {&quot;publicly_accessible&quot;, &quot;storage_encrypted&quot;}
+	resource.change.after_unknown[field] == true
+}
+
+deny contains {
+	&quot;address&quot;: resource.address,
+	&quot;reason&quot;: &quot;IAM policy allows wildcard action and resource&quot;,
+} if {
+	some resource in input.resource_changes
+	resource.type == &quot;aws_iam_policy&quot;
+	active(resource)
+	document := json.unmarshal(resource.change.after.policy)
+	some statement in document.Statement
+	statement.Effect == &quot;Allow&quot;
+	wildcard(statement.Action)
+	wildcard(statement.Resource)
+}
+
+deny contains {
+	&quot;address&quot;: resource.address,
+	&quot;reason&quot;: &quot;authorization-driving Environment and Owner tags are required&quot;,
+} if {
+	some resource in input.resource_changes
+	resource.type in {&quot;aws_s3_bucket&quot;, &quot;aws_security_group&quot;, &quot;aws_db_instance&quot;, &quot;aws_iam_policy&quot;}
+	active(resource)
+	not has_required_tags(resource)
+}
+
+deny contains {
+	&quot;address&quot;: resource.address,
+	&quot;reason&quot;: &quot;plan deletes a modeled security control&quot;,
+} if {
+	some resource in input.resource_changes
+	resource.type in {
+		&quot;aws_s3_bucket_public_access_block&quot;,
+		&quot;aws_s3_bucket_server_side_encryption_configuration&quot;,
+		&quot;aws_s3_bucket_logging&quot;,
+	}
+	deleted(resource)
+}</code></pre>
+    </div><div role="tabpanel" id="source-iac-policy-panel-1" tabindex="0" aria-labelledby="source-iac-policy-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">secure_fixture_test.rego</span><code class="docs-source-viewer__path">labs/iac-policy/policy/secure_fixture_test.rego</code><span class="docs-source-viewer__lines">13 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="secure_fixture_test.rego source code" class="language-rego">package terraform.security
+
+import rego.v1
+
+test_secure_plan_is_accepted if {
+	plan := {
+		&quot;format_version&quot;: data.format_version,
+		&quot;terraform_version&quot;: data.terraform_version,
+		&quot;resource_changes&quot;: data.resource_changes,
+	}
+	results := deny with input as plan
+	count(results) == 0
+}</code></pre>
+    </div><div role="tabpanel" id="source-iac-policy-panel-2" tabindex="0" aria-labelledby="source-iac-policy-tab-2" class="docs-source-viewer__panel" data-source-panel data-index="2" hidden>
+      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">run-tests.js</span><code class="docs-source-viewer__path">labs/iac-policy/tests/run-tests.js</code><span class="docs-source-viewer__lines">61 lines</span></p>
+      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="run-tests.js source code" class="language-javascript">&quot;use strict&quot;;
+
+const assert = require(&quot;node:assert/strict&quot;);
+const fs = require(&quot;node:fs&quot;);
+const path = require(&quot;node:path&quot;);
+
+const lab = path.resolve(__dirname, &quot;..&quot;);
+const read = (relative) =&gt; fs.readFileSync(path.join(lab, relative), &quot;utf8&quot;);
+const readJson = (relative) =&gt; JSON.parse(read(relative));
+
+const secure = readJson(&quot;fixtures/secure_plan.json&quot;);
+const insecure = readJson(&quot;fixtures/insecure_plan.json&quot;);
+const unknown = readJson(&quot;fixtures/unknown_plan.json&quot;);
+const deleted = readJson(&quot;fixtures/deleted_control_plan.json&quot;);
+
+for (const [name, plan] of Object.entries({ secure, insecure, unknown, deleted })) {
+  assert.equal(plan.format_version, &quot;1.2&quot;, `${name}: unexpected plan format`);
+  assert.ok(Array.isArray(plan.resource_changes), `${name}: resource_changes missing`);
+}
+
+const insecureTypes = new Set(insecure.resource_changes.map((item) =&gt; item.type));
+assert.ok(insecureTypes.has(&quot;aws_s3_bucket_acl&quot;));
+assert.ok(insecureTypes.has(&quot;aws_security_group&quot;));
+assert.ok(insecureTypes.has(&quot;aws_db_instance&quot;));
+assert.match(
+  insecure.resource_changes.find((item) =&gt; item.type === &quot;aws_iam_policy&quot;).change.after.policy,
+  /&quot;Action&quot;:&quot;\*&quot;,&quot;Resource&quot;:&quot;\*&quot;/,
+);
+
+const unknownDatabase = unknown.resource_changes[0];
+assert.equal(unknownDatabase.change.after_unknown.publicly_accessible, true);
+assert.equal(unknownDatabase.change.after_unknown.storage_encrypted, true);
+assert.deepEqual(deleted.resource_changes[0].change.actions, [&quot;delete&quot;]);
+
+const insecureBackend = read(&quot;terraform/insecure/backend.tf&quot;);
+assert.match(insecureBackend, /dynamodb_table\s*=/);
+assert.match(insecureBackend, /encrypt\s*=\s*false/);
+assert.doesNotMatch(insecureBackend, /use_lockfile\s*=\s*true/);
+
+const hardenedBackend = read(&quot;terraform/hardened/backend.tf&quot;);
+assert.match(hardenedBackend, /use_lockfile\s*=\s*true/);
+assert.match(hardenedBackend, /encrypt\s*=\s*true/);
+assert.match(hardenedBackend, /kms_key_id\s*=/);
+assert.doesNotMatch(hardenedBackend, /dynamodb_table\s*=/);
+
+const policy = read(&quot;policy/terraform.rego&quot;);
+for (const requiredReason of [
+  &quot;public ACL&quot;,
+  &quot;public-access block&quot;,
+  &quot;server-side encryption&quot;,
+  &quot;access logging&quot;,
+  &quot;public internet&quot;,
+  &quot;publicly accessible&quot;,
+  &quot;wildcard action and resource&quot;,
+  &quot;unknown at policy evaluation&quot;,
+  &quot;deletes a modeled security control&quot;,
+]) {
+  assert.match(policy, new RegExp(requiredReason.replace(/[.*+?^${}()|[\]\\]/g, &quot;\\$&amp;&quot;)));
+}
+
+console.log(&quot;PASS: Terraform backend and plan-policy structural fixtures completed.&quot;);</code></pre>
+    </div>
+</section>
+<h3 id="run-it">Run it</h3>
+<ul class="docs-run-commands"><li><code>npm run verify:terraform</code></li><li><code>npm run verify:opa</code></li><li><code>node labs/iac-policy/tests/run-tests.js</code></li></ul>
+<ul class="docs-safety-notes"><li>No cloud plan is ever applied; `terraform validate` and `opa test` both run against static fixtures.</li></ul>
+<!-- docs-lab-source:end -->
 <h2 id="tested-scope">Tested scope</h2>
 <ul>
 <li>Terraform CLI <code>1.14.6</code> for formatting and offline initialization/validation.</li>
@@ -375,6 +628,7 @@ State readers should therefore be treated as readers of potentially sensitive da
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
 <script src="../../assets/javascripts/docs-ui.js" defer></script>
 <script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
       

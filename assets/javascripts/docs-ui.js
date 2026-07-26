@@ -1,9 +1,10 @@
 // docs-ui.js — small, dependency-free enhancements for the documentation shell.
 // Everything here is progressive: the shell works without JavaScript (the left-nav
 // drawer is a plain checkbox + CSS, disclosures are native <details>). This file only
-// adds Escape handling with focus return, persisted left-nav group state across page
-// loads, and TOC active-section highlighting (synced across the desktop and inline
-// TOC presentations, since only one is visible at a given viewport width).
+// adds Escape handling with focus return, keyboard activation for the header's
+// label-as-button triggers, persisted left-nav group state across page loads, and
+// TOC active-section highlighting (synced across the desktop and inline TOC
+// presentations, since only one is visible at a given viewport width).
 (function () {
   "use strict";
 
@@ -16,13 +17,33 @@
     });
   }
 
+  // A <label for="checkbox"> toggles its control on a mouse click natively, but
+  // not on a keyboard Enter/Space activation — needed now that these triggers
+  // are also given tabindex="0" (see maintain-gh-pages.mjs) to be focusable at
+  // all, e.g. so focus has somewhere real to land back on after Escape closes
+  // the drawer or search overlay.
+  function onKeyboardActivate(trigger, toggle) {
+    if (!trigger || !toggle) return;
+    trigger.addEventListener("keydown", function (event) {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      toggle.checked = !toggle.checked;
+      toggle.dispatchEvent(new Event("change", {bubbles: true}));
+    });
+  }
+
+  var drawerToggle = document.getElementById("__drawer");
+  var drawerTrigger = document.querySelector('label.md-header__button[for="__drawer"]');
+  var searchToggle = document.getElementById("__search");
+  var searchTrigger = document.querySelector('label.md-header__button[for="__search"]');
+
+  onKeyboardActivate(drawerTrigger, drawerToggle);
+  onKeyboardActivate(searchTrigger, searchToggle);
+
+  onEscapeClose(drawerToggle, drawerTrigger);
   onEscapeClose(
-    document.getElementById("__drawer"),
-    document.querySelector('label.md-header__button[for="__drawer"]')
-  );
-  onEscapeClose(
-    document.getElementById("__search"),
-    document.querySelector('label.md-header__button[for="__search"]')
+    searchToggle,
+    searchTrigger
   );
 
   // Persist which left-nav groups a visitor expanded, so moving between pages does
