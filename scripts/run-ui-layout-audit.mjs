@@ -460,6 +460,89 @@ for (const route of BREADCRUMB_ROUTES) {
   await context.close();
 }
 
+// --- Mobile-only polish fixes: each assertion here locks in a real defect found by
+// manual screenshot inspection at 375-390px (not just "no page-level overflow"),
+// so it cannot silently regress. ---
+{
+  const {context, page} = await newPage({width: 390, height: 844}, "light");
+  await gotoPage(page, ARTICLE_URL, "light");
+  const label = "mobile polish 390x844";
+
+  // Material's own admonition `::before` icon targets any `.md-typeset summary`,
+  // including this component's — it must stay suppressed, not just repainted.
+  const tocIconHidden = await page.evaluate(() => {
+    const summary = document.querySelector(".docs-inline-toc > summary");
+    if (!summary) return null;
+    return getComputedStyle(summary, "::before").display === "none";
+  });
+  record(`${label}: inline TOC summary has no admonition icon bleed`, tocIconHidden === true);
+
+  // A data table must scroll horizontally, not shrink its columns to fit.
+  const tableState = await page.evaluate(() => {
+    const wrap = document.querySelector(".md-typeset__scrollwrap");
+    const table = wrap ? wrap.querySelector("table:not([class])") : null;
+    if (!wrap || !table) return null;
+    return {wrapScrollWidth: wrap.scrollWidth, wrapClientWidth: wrap.clientWidth};
+  });
+  if (tableState) {
+    record(`${label}: data table scrolls instead of shrinking to fit`,
+      tableState.wrapScrollWidth > tableState.wrapClientWidth + 1,
+      `scrollWidth=${tableState.wrapScrollWidth} clientWidth=${tableState.wrapClientWidth}`);
+  }
+
+  await context.close();
+}
+
+{
+  const {context, page} = await newPage({width: 390, height: 844}, "light");
+  await gotoPage(page, "/scripts/cloud-security/", "light");
+  const label = "mobile polish source-viewer 390x844";
+
+  // A long source line must be genuinely reachable by scrolling the <pre>, not
+  // just ink-overflow past the edge of a <code> box the ancestor never counts.
+  const codeState = await page.evaluate(() => {
+    const pre = document.querySelector(".docs-source-viewer__code");
+    if (!pre) return null;
+    const before = pre.scrollLeft;
+    pre.scrollLeft = 300;
+    const after = pre.scrollLeft;
+    pre.scrollLeft = before;
+    return {scrollWidth: pre.scrollWidth, clientWidth: pre.clientWidth, movedOnScroll: after > 0};
+  });
+  record(`${label}: source code <pre> registers real scrollable overflow`,
+    codeState && codeState.scrollWidth > codeState.clientWidth + 1,
+    codeState ? `scrollWidth=${codeState.scrollWidth} clientWidth=${codeState.clientWidth}` : "no source viewer found");
+  record(`${label}: source code <pre> is actually scrollable (not just measured wider)`,
+    codeState && codeState.movedOnScroll === true);
+
+  await context.close();
+}
+
+{
+  const {context, page} = await newPage({width: 390, height: 844}, "light");
+  await gotoPage(page, "/docs/certification-notes/az-900/domain-1-concepts/", "light");
+  const label = "mobile polish breadcrumbs 390x844";
+
+  // When the breadcrumb trail overflows a narrow viewport, the current page
+  // (the last, most useful crumb) must be what's visible by default, not
+  // scrolled out of view behind "Home".
+  const state = await page.evaluate(() => {
+    const el = document.querySelector(".docs-breadcrumbs");
+    if (!el) return null;
+    return {scrollLeft: el.scrollLeft, scrollWidth: el.scrollWidth, clientWidth: el.clientWidth};
+  });
+  if (state && state.scrollWidth > state.clientWidth + 1) {
+    record(`${label}: overflowing breadcrumbs auto-scroll to reveal the current page`,
+      state.scrollLeft >= state.scrollWidth - state.clientWidth - 1,
+      `scrollLeft=${state.scrollLeft} scrollWidth=${state.scrollWidth} clientWidth=${state.clientWidth}`);
+  } else {
+    record(`${label}: breadcrumb trail overflows at this viewport (test is meaningful)`, false,
+      state ? `scrollWidth=${state.scrollWidth} clientWidth=${state.clientWidth}` : "no breadcrumbs found");
+  }
+
+  await context.close();
+}
+
 // --- Mobile sweep: no page-level horizontal overflow across the required matrix. ---
 const MOBILE_SWEEP_VIEWPORTS = [
   {name: "320x568", width: 320, height: 568},
