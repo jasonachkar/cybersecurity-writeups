@@ -55,6 +55,10 @@
   background-color: var(--docs-surface);
 }
 
+.md-search__scrollwrap {
+  background-color: var(--docs-bg);
+}
+
 /* Material renders each result's title as a real .md-typeset <h1>, so without
    scoping here it inherits this site's full article heading sizing above and a
    search dropdown ends up rendering every match like a full article page. The
@@ -100,20 +104,20 @@
   font-weight: 700;
 }
 
-/* The per-page tag chip (e.g. "engineering investigation") that follows the
-   teaser text. */
-.md-search-result .md-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: .3rem;
-  margin-top: .4rem;
+/* One quiet category/content-type line generated from the navigation and entry
+   metadata (e.g. "DevSecOps · Research"). */
+.md-search-result article.md-search-result__article > nav.md-tags {
+  display: block;
+  margin: .25rem 0 .35rem;
 }
 
 .md-search-result .md-tag {
-  padding: .1rem .5rem;
-  border-radius: 999px;
-  border: 1px solid var(--docs-border);
-  font-size: .68rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: .7rem;
+  font-weight: 600;
   color: var(--docs-text-muted);
 }
 
@@ -156,7 +160,10 @@
 .md-typeset > ul,
 .md-typeset > ol,
 .md-typeset > dl,
-.md-typeset > blockquote,
+.md-typeset > blockquote {
+  max-width: var(--docs-prose-max);
+}
+
 .md-typeset > h1,
 .md-typeset > h2,
 .md-typeset > h3,
@@ -166,8 +173,7 @@
 .md-typeset > hr,
 .md-typeset > .admonition,
 .md-typeset > img,
-.docs-breadcrumbs,
-.study-currency,
+.docs-article-header,
 .docs-prevnext {
   max-width: var(--docs-article-max);
 }
@@ -295,8 +301,8 @@
 }
 
 .docs-left-nav ul ul {
-  padding-left: .75rem;
-  margin-left: .3rem;
+  padding-left: .7rem;
+  margin: .15rem 0 .35rem .35rem;
   border-left: 1px solid var(--docs-border);
 }
 
@@ -306,7 +312,7 @@
 
 .docs-left-nav a {
   display: block;
-  padding: .4rem .6rem;
+  padding: .44rem .65rem;
   border-radius: var(--docs-radius-sm);
   color: var(--docs-text);
   text-decoration: none;
@@ -320,14 +326,14 @@
 }
 
 .docs-left-nav a[aria-current="page"] {
-  background: color-mix(in srgb, var(--docs-accent) 12%, transparent);
+  background: var(--docs-nav-active-bg);
   color: var(--docs-accent);
-  font-weight: 700;
+  font-weight: 650;
 }
 
 .docs-left-nav summary {
   cursor: pointer;
-  padding: .4rem .6rem;
+  padding: .5rem .65rem;
   border-radius: var(--docs-radius-sm);
   font-weight: 700;
   list-style: none;
@@ -423,6 +429,14 @@
 /* ========================================================
    BREADCRUMBS
    ======================================================== */
+.docs-article-header {
+  margin: 0 0 var(--docs-space-4);
+}
+
+.docs-article-header > h1 {
+  margin-top: 0 !important;
+}
+
 .docs-breadcrumbs {
   margin: 0 0 var(--docs-space-3);
   overflow-x: auto;
@@ -447,8 +461,14 @@
 }
 
 .docs-breadcrumbs li:not(:last-child)::after {
-  content: "/";
-  color: var(--docs-border);
+  content: "";
+  width: .38rem;
+  height: .38rem;
+  border-top: 1px solid var(--docs-text-muted);
+  border-right: 1px solid var(--docs-text-muted);
+  transform: rotate(45deg);
+  opacity: .6;
+  flex: none;
 }
 
 .docs-breadcrumbs a {
@@ -465,7 +485,7 @@
 }
 
 .docs-breadcrumbs a:focus-visible {
-  outline: 2px solid var(--docs-accent);
+  outline: 2px solid var(--docs-focus);
   outline-offset: 2px;
 }
 
@@ -525,7 +545,7 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs li[aria-current="page"] {
 
 .docs-right-toc__title {
   display: block;
-  margin: 0 0 var(--docs-space-2);
+  margin: 0 0 var(--docs-space-3);
   font-size: .78rem;
   font-weight: 700;
 }
@@ -598,7 +618,7 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs li[aria-current="page"] {
   list-style: none;
   margin: var(--docs-space-2) 0 0;
   padding: 0;
-  border-left: 2px solid var(--docs-border);
+  border-left: 1px solid var(--docs-border);
 }
 
 .docs-right-toc nav li,
@@ -610,7 +630,7 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs li[aria-current="page"] {
 .docs-inline-toc nav a {
   display: block;
   padding: .3rem .6rem;
-  margin-left: -2px;
+  margin-left: -1px;
   border-left: 2px solid transparent;
   color: var(--docs-text-muted) !important;
   border-bottom: 0 !important;
@@ -637,6 +657,12 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs li[aria-current="page"] {
   color: var(--docs-accent) !important;
   border-left-color: var(--docs-accent);
   font-weight: 600;
+}
+
+.docs-right-toc nav a:focus-visible,
+.docs-inline-toc nav a:focus-visible {
+  outline: 2px solid var(--docs-focus);
+  outline-offset: 1px;
 }
 
 /* ========================================================
@@ -670,6 +696,11 @@ body[data-md-color-scheme="slate"] .docs-breadcrumbs li[aria-current="page"] {
    ======================================================== */
 .portfolio-hero {
   padding: clamp(16px, 2vw, 28px) 0 clamp(14px, 2vw, 24px);
+}
+
+.portfolio-hero + section,
+.md-typeset > section + section {
+  margin-top: var(--docs-space-7);
 }
 
 .portfolio-hero__kicker {
@@ -1199,82 +1230,147 @@ body[data-md-color-scheme="slate"] .md-copyright__highlight {
    ======================================================== */
 .docs-source-viewer {
   margin: var(--docs-space-4) 0 var(--docs-space-6);
-  border: 1px solid var(--docs-border);
+  border: 1px solid var(--docs-code-border);
   border-radius: var(--docs-radius-lg);
-  background: var(--docs-surface-subtle);
+  background: var(--docs-code-bg);
   overflow: hidden;
 }
 
 .docs-source-viewer__toolbar {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--docs-space-3);
-  padding: var(--docs-space-2) var(--docs-space-3);
-  border-bottom: 1px solid var(--docs-border);
-  background: var(--docs-surface);
+  padding: var(--docs-space-3);
+  border-bottom: 1px solid var(--docs-code-border);
+  background: var(--docs-code-toolbar-bg);
   flex-wrap: wrap;
+}
+
+.docs-source-viewer__identity {
+  min-width: 0;
+  flex: 1 1 15rem;
+}
+
+.docs-source-viewer__title-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: .25rem .65rem;
+  min-width: 0;
 }
 
 .docs-source-viewer__toolbar-title {
   font-family: var(--md-code-font, monospace);
   font-size: .85rem;
-  font-weight: 600;
-  color: var(--docs-text);
+  font-weight: 700;
+  color: var(--docs-code-text);
   overflow-wrap: anywhere;
 }
 
+.docs-source-viewer__summary,
+.docs-source-viewer__path {
+  color: var(--docs-text-muted);
+  font-size: .76rem;
+}
+
+/* Material's global `.md-typeset code`, `pre > code`, and form-control rules use
+   important declarations. The scoped important resets in this viewer are the
+   remaining cascade exceptions verified across both palettes and all QA widths. */
+.docs-source-viewer__path {
+  display: block;
+  max-width: 100%;
+  margin-top: .15rem;
+  padding: 0 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent !important;
+}
+
 .docs-source-viewer__actions {
-  display: flex;
-  gap: var(--docs-space-2);
+  display: none;
+  gap: var(--docs-space-1);
   flex-shrink: 0;
 }
 
+.docs-source-viewer[data-enhanced="true"] .docs-source-viewer__actions {
+  display: flex;
+}
+
 .docs-source-viewer__button {
-  min-height: 2.25rem;
-  padding: 0 .75rem;
-  border: 1px solid var(--docs-border);
+  min-height: 2rem;
+  padding: 0 .55rem;
+  border: 1px solid transparent;
   border-radius: var(--docs-radius-sm);
-  background: var(--docs-bg);
-  color: var(--docs-text) !important;
-  font-size: .8rem;
+  background: transparent;
+  color: var(--docs-code-text) !important;
+  font-size: .76rem;
   font-weight: 600;
   cursor: pointer;
 }
 
 .docs-source-viewer__button:hover,
 .docs-source-viewer__button:focus-visible {
-  border-color: var(--docs-accent);
-  color: var(--docs-accent) !important;
+  border-color: var(--docs-code-border);
+  background: var(--docs-code-bg);
+  color: var(--docs-code-tab-active) !important;
 }
 
 .docs-source-viewer__button:focus-visible {
-  outline: 2px solid var(--docs-accent);
+  outline: 2px solid var(--docs-focus);
   outline-offset: 1px;
 }
 
-.docs-source-viewer__button[aria-expanded="true"] {
-  border-color: var(--docs-accent);
-  color: var(--docs-accent) !important;
+.docs-source-viewer__button[aria-expanded="true"],
+.docs-source-viewer__button[aria-pressed="true"] {
+  color: var(--docs-code-tab-active) !important;
+  background: var(--docs-code-bg);
+}
+
+.docs-source-viewer__status {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + var(--docs-space-2));
+  right: var(--docs-space-3);
+  padding: .22rem .5rem;
+  border: 1px solid var(--docs-code-border);
+  border-radius: var(--docs-radius-sm);
+  background: var(--docs-code-toolbar-bg);
+  color: var(--docs-code-text);
+  font-size: .72rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .12);
+}
+
+.docs-source-viewer__status:empty {
+  display: none;
 }
 
 .docs-source-viewer__tabs {
-  display: flex;
-  gap: .25rem;
-  padding: var(--docs-space-2) var(--docs-space-3) 0;
+  display: none;
+  gap: var(--docs-space-4);
+  padding: 0 var(--docs-space-3);
+  border-bottom: 1px solid var(--docs-code-border);
+  background: var(--docs-code-toolbar-bg);
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.docs-source-viewer[data-enhanced="true"] .docs-source-viewer__tabs {
+  display: flex;
 }
 
 .docs-source-viewer__tab {
-  min-height: 2.25rem;
-  padding: .4rem .8rem;
-  border: 1px solid transparent;
-  border-bottom: none;
-  border-radius: var(--docs-radius-sm) var(--docs-radius-sm) 0 0;
+  min-height: 2.55rem;
+  padding: .5rem 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
   background: transparent;
   color: var(--docs-text-muted);
-  font-size: .82rem;
+  font-size: .78rem;
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -1287,80 +1383,103 @@ body[data-md-color-scheme="slate"] .md-copyright__highlight {
 }
 
 .docs-source-viewer__tab:focus-visible {
-  outline: 2px solid var(--docs-accent);
+  outline: 2px solid var(--docs-focus);
   outline-offset: -2px;
 }
 
 .docs-source-viewer__tab[aria-selected="true"] {
-  color: var(--docs-accent);
-  border-color: var(--docs-border);
-  background: var(--docs-surface-subtle);
+  color: var(--docs-code-tab-active);
+  border-bottom-color: var(--docs-code-tab-active);
 }
 
 .docs-source-viewer__panel {
-  padding: 0 var(--docs-space-3) var(--docs-space-3);
+  min-width: 0;
 }
 
-.docs-source-viewer__meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: .6rem;
-  margin: var(--docs-space-3) 0 var(--docs-space-2) !important;
-  font-size: .78rem;
-  color: var(--docs-text-muted);
-}
-
-.docs-source-viewer__filename {
-  font-weight: 700;
-  color: var(--docs-text);
-}
-
-.docs-source-viewer__path {
-  font-size: .78rem;
-  color: var(--docs-text-muted);
-  background: transparent !important;
-  padding: 0 !important;
-}
-
-.docs-source-viewer__code {
+.md-typeset .docs-source-viewer__code {
   margin: 0 !important;
-  border: 1px solid var(--docs-border);
-  border-radius: var(--docs-radius-md);
-  background: var(--docs-bg) !important;
-  max-height: min(60vh, 36rem);
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: var(--docs-code-bg) !important;
   overflow: auto;
   overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
-/* "Expand full source" removes the height cap; the source itself is always
-   present in the DOM either way, so this only ever changes how much is
-   visible without scrolling — nothing is truncated at any state. */
-.docs-source-viewer__code.docs-source-expanded {
+.docs-source-viewer__panel[data-source-expandable]:not([data-source-expanded="true"]) .docs-source-viewer__code {
+  max-height: calc((40 * 1.55em) + (2 * var(--docs-space-3)));
+}
+
+.docs-source-viewer__panel[data-source-expanded="true"] .docs-source-viewer__code {
   max-height: none;
 }
 
 .docs-source-viewer__code code {
   display: block;
-  padding: var(--docs-space-3);
+  width: max-content;
+  min-width: 100%;
+  padding: var(--docs-space-3) 0 !important;
   font-size: .82rem;
   line-height: 1.55;
   white-space: pre;
   tab-size: 2;
+  counter-reset: docs-source-line;
+  color: var(--docs-code-text);
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  overflow-wrap: normal;
 }
 
-.docs-source-viewer__code code:focus-visible {
-  outline: 2px solid var(--docs-accent);
+.docs-source-viewer__code:focus-visible {
+  outline: 2px solid var(--docs-focus);
   outline-offset: -2px;
 }
 
-.tok-comment { color: var(--docs-text-muted); font-style: italic; }
-.tok-string { color: #0a7c3e; }
-.tok-number { color: #8a4508; }
-.tok-keyword { color: var(--docs-accent); font-weight: 600; }
+.docs-source-viewer__code .line {
+  position: relative;
+  display: block;
+  min-height: 1.55em;
+  padding: 0 var(--docs-space-4) 0 4.6rem;
+  counter-increment: docs-source-line;
+}
 
-body[data-md-color-scheme="slate"] .tok-string { color: #7ee787; }
-body[data-md-color-scheme="slate"] .tok-number { color: #ffa657; }
+.docs-source-viewer__code .line::before {
+  content: counter(docs-source-line);
+  position: absolute;
+  left: 0;
+  width: 3.5rem;
+  padding-right: var(--docs-space-3);
+  color: var(--docs-code-line-number);
+  text-align: right;
+  user-select: none;
+  pointer-events: none;
+}
+
+.docs-source-viewer__code,
+.docs-source-viewer__code span {
+  color: var(--shiki-light, var(--docs-code-text));
+}
+
+body[data-md-color-scheme="slate"] .docs-source-viewer__code,
+body[data-md-color-scheme="slate"] .docs-source-viewer__code span {
+  color: var(--shiki-dark, var(--docs-code-text));
+}
+
+.docs-source-viewer__code ::selection {
+  background: var(--docs-code-selection);
+}
+
+.docs-source-viewer[data-source-wrapped="true"] .docs-source-viewer__code code {
+  width: 100%;
+  white-space: pre-wrap;
+}
+
+.docs-source-viewer[data-source-wrapped="true"] .docs-source-viewer__code .line {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   .docs-source-viewer__button,
@@ -1370,26 +1489,29 @@ body[data-md-color-scheme="slate"] .tok-number { color: #ffa657; }
 }
 
 @media (max-width: 44rem) {
-  .docs-source-viewer__code {
-    max-height: min(55vh, 24rem);
-  }
   .docs-source-viewer__toolbar {
     gap: var(--docs-space-2);
   }
-  .docs-source-viewer__toolbar-title {
-    font-size: .8rem;
+  .docs-source-viewer__identity {
+    flex-basis: 100%;
   }
-
-  /* The width/min-width fix that makes long lines genuinely scrollable lives
-     with the general `.md-typeset pre > code` rule near the top of this file
-     (this <pre> is no exception to that). The blanket `.md-typeset code {
-     overflow-wrap: anywhere }` rule (for ordinary inline prose code) reaches
-     this <code> too at equal specificity — it never actually wraps here
-     since `white-space: pre` still forbids it, but restoring `normal`
-     (Material's own value for `pre > code`) keeps this component
-     unambiguous. */
-  .docs-source-viewer__code code {
-    overflow-wrap: normal;
+  .docs-source-viewer__toolbar-title {
+    font-size: .82rem;
+  }
+  .docs-source-viewer__actions {
+    width: 100%;
+  }
+  .docs-source-viewer__button {
+    min-height: 44px;
+    flex: 1 1 auto;
+  }
+  .docs-source-viewer__code .line {
+    padding-left: 3.9rem;
+    padding-right: var(--docs-space-3);
+  }
+  .docs-source-viewer__code .line::before {
+    width: 3rem;
+    padding-right: var(--docs-space-2);
   }
 }
 

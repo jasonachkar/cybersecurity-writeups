@@ -233,8 +233,8 @@
   
 
 
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">Azure landing zone</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="azure-landing-zone-hierarchy-and-policy-lab">Azure landing-zone hierarchy and policy lab</h1>
+<!-- docs-article-header:start --><header class="docs-article-header"><!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">Azure landing zone</li></ol></nav><!-- docs-breadcrumbs:end -->
+<h1 id="azure-landing-zone-hierarchy-and-policy-lab">Azure landing-zone hierarchy and policy lab</h1></header><!-- docs-article-header:end -->
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
   <summary>On this page</summary>
@@ -250,157 +250,162 @@ repository validation.</p>
 <h2 id="implementation">Implementation</h2>
 <section class="docs-source-viewer" data-source-viewer id="source-azure-landing-zone" aria-label="Source code: main.bicep">
   <header class="docs-source-viewer__toolbar">
-    <span class="docs-source-viewer__toolbar-title">main.bicep</span>
-    <div class="docs-source-viewer__actions">
-      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
-      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    <div class="docs-source-viewer__identity">
+      <div class="docs-source-viewer__title-row"><strong class="docs-source-viewer__toolbar-title" data-source-active-filename>main.bicep</strong><span class="docs-source-viewer__summary"><span data-source-active-language>Bicep</span><span aria-hidden="true"> · </span><span data-source-active-lines>78 lines</span></span></div>
+      <code class="docs-source-viewer__path" data-source-active-path title="labs/azure-landing-zone/main.bicep">labs/azure-landing-zone/main.bicep</code>
     </div>
+    <div class="docs-source-viewer__actions" data-source-actions>
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-pressed="false" data-wrap-source>Wrap</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source hidden>Expand</button>
+    </div>
+    <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
   </header>
   <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-azure-landing-zone-tab-0" aria-controls="source-azure-landing-zone-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Landing-zone module</button><button type="button" role="tab" id="source-azure-landing-zone-tab-1" aria-controls="source-azure-landing-zone-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Policy baseline</button></div>
-  <div role="tabpanel" id="source-azure-landing-zone-panel-0" tabindex="0" aria-labelledby="source-azure-landing-zone-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">main.bicep</span><code class="docs-source-viewer__path">labs/azure-landing-zone/main.bicep</code><span class="docs-source-viewer__lines">78 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="main.bicep source code" class="language-bicep">targetScope = &#39;tenant&#39;
-
-@description(&#39;Stable management group identifier for the organization landing-zone root.&#39;)
-param rootManagementGroupId string
-
-@description(&#39;Display name for the organization landing-zone root.&#39;)
-param rootDisplayName string
-
-@description(&#39;Azure region required for tenant-scope deployment metadata.&#39;)
-param deploymentLocation string = &#39;canadacentral&#39;
-
-@description(&#39;Locations audited by the sample baseline policy.&#39;)
-param allowedLocations array = [
-  &#39;canadacentral&#39;
-  &#39;canadaeast&#39;
-]
-
-resource root &#39;Microsoft.Management/managementGroups@2023-04-01&#39; = {
-  name: rootManagementGroupId
-  properties: {
-    displayName: rootDisplayName
-  }
-}
-
-resource platform &#39;Microsoft.Management/managementGroups@2023-04-01&#39; = {
-  name: &#39;${rootManagementGroupId}-platform&#39;
-  properties: {
-    displayName: &#39;Platform&#39;
-    details: {
-      parent: {
-        id: root.id
-      }
-    }
-  }
-}
-
-resource landingZones &#39;Microsoft.Management/managementGroups@2023-04-01&#39; = {
-  name: &#39;${rootManagementGroupId}-landing-zones&#39;
-  properties: {
-    displayName: &#39;Landing zones&#39;
-    details: {
-      parent: {
-        id: root.id
-      }
-    }
-  }
-}
-
-resource sandbox &#39;Microsoft.Management/managementGroups@2023-04-01&#39; = {
-  name: &#39;${rootManagementGroupId}-sandbox&#39;
-  properties: {
-    displayName: &#39;Sandbox&#39;
-    details: {
-      parent: {
-        id: root.id
-      }
-    }
-  }
-}
-
-module baseline &#39;modules/policy-baseline.bicep&#39; = {
-  name: &#39;landing-zone-audit-baseline&#39;
-  scope: managementGroup(rootManagementGroupId)
-  params: {
-    allowedLocations: allowedLocations
-    assignmentLocation: deploymentLocation
-  }
-  dependsOn: [
-    root
-  ]
-}
-
-output managementGroupIds object = {
-  root: root.id
-  platform: platform.id
-  landingZones: landingZones.id
-  sandbox: sandbox.id
-}</code></pre>
-    </div><div role="tabpanel" id="source-azure-landing-zone-panel-1" tabindex="0" aria-labelledby="source-azure-landing-zone-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">policy-baseline.bicep</span><code class="docs-source-viewer__path">labs/azure-landing-zone/modules/policy-baseline.bicep</code><span class="docs-source-viewer__lines">62 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="policy-baseline.bicep source code" class="language-bicep">targetScope = &#39;managementGroup&#39;
-
-param allowedLocations array
-param assignmentLocation string
-
-resource allowedLocationsDefinition &#39;Microsoft.Authorization/policyDefinitions@2023-04-01&#39; = {
-  name: &#39;audit-allowed-locations&#39;
-  properties: {
-    displayName: &#39;Audit resources outside reviewed locations&#39;
-    description: &#39;Teaching policy: audit, rather than deny, while teams inventory exemptions and validate impact.&#39;
-    policyType: &#39;Custom&#39;
-    mode: &#39;Indexed&#39;
-    metadata: {
-      category: &#39;Landing zone lab&#39;
-      version: &#39;1.0.0&#39;
-    }
-    parameters: {
-      allowedLocations: {
-        type: &#39;Array&#39;
-        metadata: {
-          displayName: &#39;Allowed locations&#39;
-        }
-      }
-    }
-    policyRule: {
-      if: {
-        allOf: [
-          {
-            field: &#39;location&#39;
-            exists: &#39;true&#39;
-          }
-          {
-            field: &#39;location&#39;
-            notIn: &#39;[parameters(\&#39;allowedLocations\&#39;)]&#39;
-          }
-        ]
-      }
-      then: {
-        effect: &#39;audit&#39;
-      }
-    }
-  }
-}
-
-resource allowedLocationsAssignment &#39;Microsoft.Authorization/policyAssignments@2024-04-01&#39; = {
-  name: &#39;audit-allowed-locations&#39;
-  location: assignmentLocation
-  properties: {
-    displayName: &#39;Audit resources outside reviewed locations&#39;
-    description: &#39;Lab assignment begins in audit mode. Promote only after impact analysis, exemption ownership, and rollback validation.&#39;
-    policyDefinitionId: allowedLocationsDefinition.id
-    enforcementMode: &#39;Default&#39;
-    parameters: {
-      allowedLocations: {
-        value: allowedLocations
-      }
-    }
-  }
-}
-
-output policyDefinitionId string = allowedLocationsDefinition.id
-output policyAssignmentId string = allowedLocationsAssignment.id</code></pre>
+  <div role="tabpanel" id="source-azure-landing-zone-panel-0" aria-labelledby="source-azure-landing-zone-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0" data-source-filename="main.bicep" data-source-language="Bicep" data-source-path="labs/azure-landing-zone/main.bicep" data-source-lines="78" data-source-highlighter="shiki">
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="main.bicep source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-bicep"><span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">targetScope</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> = </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;tenant&#39;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">@</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">description</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Stable management group identifier for the organization landing-zone root.&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">param</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> rootManagementGroupId string</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">@</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">description</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Display name for the organization landing-zone root.&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">param</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> rootDisplayName string</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">@</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">description</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Azure region required for tenant-scope deployment metadata.&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">param</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> deploymentLocation string = </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;canadacentral&#39;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">@</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">description</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Locations audited by the sample baseline policy.&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">param</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> allowedLocations array = [</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;canadacentral&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;canadaeast&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">resource</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> root </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Microsoft.Management/managementGroups@2023-04-01&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> = {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  name: rootManagementGroupId</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  properties: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    displayName: rootDisplayName</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">resource</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> platform </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Microsoft.Management/managementGroups@2023-04-01&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> = {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">rootManagementGroupId</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}-platform&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  properties: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    displayName: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Platform&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    details: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      parent: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        id: root.id</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">resource</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> landingZones </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Microsoft.Management/managementGroups@2023-04-01&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> = {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">rootManagementGroupId</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}-landing-zones&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  properties: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    displayName: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Landing zones&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    details: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      parent: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        id: root.id</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">resource</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sandbox </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Microsoft.Management/managementGroups@2023-04-01&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> = {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">rootManagementGroupId</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}-sandbox&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  properties: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    displayName: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Sandbox&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    details: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      parent: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        id: root.id</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">module</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> baseline </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;modules/policy-baseline.bicep&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> = {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;landing-zone-audit-baseline&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  scope: </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">managementGroup</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(rootManagementGroupId)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  params: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    allowedLocations: allowedLocations</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    assignmentLocation: deploymentLocation</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  dependsOn: [</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    root</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  ]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">output</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> managementGroupIds object = {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  root: root.id</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  platform: platform.id</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  landingZones: landingZones.id</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  sandbox: sandbox.id</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+</code></pre>
+    </div><div role="tabpanel" id="source-azure-landing-zone-panel-1" aria-labelledby="source-azure-landing-zone-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" data-source-filename="policy-baseline.bicep" data-source-language="Bicep" data-source-path="labs/azure-landing-zone/modules/policy-baseline.bicep" data-source-lines="62" data-source-highlighter="shiki" hidden>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="policy-baseline.bicep source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-bicep"><span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">targetScope</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> = </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;managementGroup&#39;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">param</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> allowedLocations array</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">param</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> assignmentLocation string</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">resource</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> allowedLocationsDefinition </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Microsoft.Authorization/policyDefinitions@2023-04-01&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> = {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;audit-allowed-locations&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  properties: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    displayName: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Audit resources outside reviewed locations&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    description: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Teaching policy: audit, rather than deny, while teams inventory exemptions and validate impact.&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    policyType: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Custom&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    mode: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Indexed&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    metadata: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      category: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Landing zone lab&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      version: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;1.0.0&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    parameters: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      allowedLocations: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        type: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Array&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        metadata: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          displayName: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Allowed locations&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    policyRule: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      if: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        allOf: [</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">            field: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;location&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">            exists: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;true&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">            field: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;location&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">            notIn: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;[parameters(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">\&#39;</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">allowedLocations</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">\&#39;</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">)]&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        ]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      then: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        effect: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;audit&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">resource</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> allowedLocationsAssignment </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Microsoft.Authorization/policyAssignments@2024-04-01&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> = {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;audit-allowed-locations&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  location: assignmentLocation</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  properties: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    displayName: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Audit resources outside reviewed locations&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    description: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Lab assignment begins in audit mode. Promote only after impact analysis, exemption ownership, and rollback validation.&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    policyDefinitionId: allowedLocationsDefinition.id</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    enforcementMode: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Default&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    parameters: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      allowedLocations: {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        value: allowedLocations</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">output</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> policyDefinitionId string = allowedLocationsDefinition.id</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">output</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> policyAssignmentId string = allowedLocationsAssignment.id</span></span>
+</code></pre>
     </div>
 </section>
 <h3 id="run-it">Run it</h3>

@@ -8,6 +8,8 @@ import path from "node:path";
 import {chromium} from "playwright";
 import {buildProvenance, writeQaReport, root} from "./qa-provenance.mjs";
 import {LABS} from "../labs/catalog.mjs";
+import {SCRIPTS} from "./catalog.mjs";
+import {resolveSourceLanguage} from "./source-languages.mjs";
 
 const types = {
   ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".mjs": "text/javascript",
@@ -54,7 +56,10 @@ async function newPage(viewport, scheme) {
 }
 
 async function gotoPage(page, url, scheme) {
-  await page.goto(`${base}${url}`, {waitUntil: "load"});
+  // Shiki-expanded catalogue pages can be several megabytes of static HTML; the
+  // full screenshot matrix deliberately gives those deterministic local loads
+  // more headroom than Playwright's generic 30-second navigation default.
+  await page.goto(`${base}${url}`, {waitUntil: "load", timeout: 60000});
   await page.evaluate((paletteScheme) => {
     document.body?.setAttribute("data-md-color-scheme", paletteScheme === "dark" ? "slate" : "default");
   }, scheme);
@@ -236,17 +241,86 @@ for (const url of FOOTER_URLS) {
   await context.close();
 }
 
-// --- Scripts: source viewer renders before the explanation, tabs/copy/expand work. ---
+// --- Search: generated category/type metadata sits between a concise title and
+// teaser while Material's keyboard-navigation behavior remains available. ---
+{
+  const {context, page} = await newPage({width: 1440, height: 900}, "light");
+  await gotoPage(page, "/", "light");
+  const input = page.locator('[data-md-component="search-query"]');
+  await input.click();
+  await input.pressSequentially("secure cicd", {delay: 20});
+  await page.locator(".md-search-result__article").first().waitFor({state: "visible", timeout: 10000});
+  const state = await page.evaluate(() => {
+    const article = document.querySelector(".md-search-result__article");
+    const title = article?.querySelector("h1");
+    const metadata = article?.querySelector(":scope > .md-tags");
+    return {
+      count: document.querySelectorAll(".md-search-result__article").length,
+      title: title?.textContent.trim(),
+      metadata: metadata?.textContent.trim(),
+      metadataAfterTitle: Boolean(title && metadata && title.nextElementSibling === metadata),
+      articleHeight: article?.getBoundingClientRect().height,
+      articleMaxHeight: article ? parseFloat(getComputedStyle(article).maxHeight) : null
+    };
+  });
+  record("search results: relevant results render", state.count > 0 && /secure|ci\/cd/i.test(state.title || ""), JSON.stringify(state));
+  record("search results: category/type metadata follows title", state.metadataAfterTitle && / · /.test(state.metadata || ""), JSON.stringify(state));
+  record("search results: teaser remains visually bounded", state.articleHeight <= state.articleMaxHeight + 1, JSON.stringify(state));
+  const readKeyboardTarget = () => page.evaluate(() => {
+    const active = document.activeElement;
+    return {
+      matched: Boolean(active && active.closest(".md-search-result") && active.matches("a, summary, [tabindex]")),
+      tag: active?.tagName || null,
+      className: active?.className || null
+    };
+  });
+  await input.press("ArrowDown");
+  await page.waitForTimeout(250);
+  let keyboardTarget = await readKeyboardTarget();
+  if (!keyboardTarget.matched) {
+    await input.focus();
+    await input.press("ArrowDown");
+    await page.waitForTimeout(500);
+    keyboardTarget = await readKeyboardTarget();
+  }
+  record("search results: ArrowDown moves keyboard focus into results", keyboardTarget.matched, JSON.stringify(keyboardTarget));
+  await context.close();
+}
+
+// --- Generated source contract: every catalogue language is highlighted or uses
+// its one explicit fallback, and every tracked path appears in its generated page. ---
+for (const owner of [
+  ...SCRIPTS.map(script => ({page: `scripts/${script.category}/index.html`, id: script.slug, sourceFiles: script.sourceFiles})),
+  ...LABS.map(lab => ({page: lab.page, id: lab.slug, sourceFiles: lab.sourceFiles}))
+]) {
+  const html = fs.readFileSync(path.join(root, owner.page), "utf8");
+  for (const sourceFile of owner.sourceFiles) {
+    const language = resolveSourceLanguage(sourceFile.language);
+    const escapedPath = sourceFile.path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const panelMatch = html.match(new RegExp(`<div[^>]+data-source-path="${escapedPath}"[^>]+data-source-highlighter="([^"]+)"[\\s\\S]*?<\\/div>`));
+    const expectedHighlighter = language.mode === "shiki" ? "shiki" : "plaintext";
+    record(`source generation ${owner.id}: ${sourceFile.path} is rendered`, Boolean(panelMatch));
+    record(`source generation ${owner.id}: ${sourceFile.path} uses ${expectedHighlighter}`,
+      panelMatch?.[1] === expectedHighlighter, `got ${panelMatch?.[1] || "no panel"}`);
+    if (language.mode === "shiki") {
+      record(`source generation ${owner.id}: ${sourceFile.path} contains themed Shiki tokens`,
+        Boolean(panelMatch && /--shiki-light:[^;"']+;--shiki-dark:/.test(panelMatch[0])));
+    }
+  }
+}
+
+// --- Source viewer: progressive source, metadata, tabs, copy, wrap, line numbers,
+// and short/long-file behavior are verified against real tracked files. ---
 {
   const {context, page} = await newPage({width: 1280, height: 900}, "light");
-  await gotoPage(page, "/scripts/cloud-security/", "light");
-  const label = "scripts source-viewer /scripts/cloud-security/";
+  await gotoPage(page, "/labs/secure-cicd/", "light");
+  const label = "source-viewer /labs/secure-cicd/";
 
   const order = await page.evaluate(() => {
-    const section = document.getElementById("k8s-rbac-auditor");
+    const section = document.querySelector(".md-content__inner");
     if (!section) return null;
     const viewer = section.querySelector(".docs-source-viewer");
-    const heading = [...section.querySelectorAll("h3")].find(h => h.textContent.trim() === "What it does");
+    const heading = [...section.querySelectorAll("h2")].find(h => h.id === "prerequisites-and-run-commands");
     if (!viewer || !heading) return null;
     return Boolean(viewer.compareDocumentPosition(heading) & Node.DOCUMENT_POSITION_FOLLOWING);
   });
@@ -254,28 +328,58 @@ for (const url of FOOTER_URLS) {
   record(`${label}: source viewer precedes "What it does"`, order === true);
 
   const noGithubLink = await page.evaluate(() => {
-    const section = document.getElementById("k8s-rbac-auditor");
+    const section = document.querySelector(".md-content__inner");
     return section ? !section.innerHTML.includes("github.com/jasonachkar/cybersecurity-writeups/blob") : null;
   });
   record(`${label}: does not depend on a GitHub link to show source`, noGithubLink === true);
 
-  // Tabs: switch to the "Tests" tab and confirm the panel + toolbar title change.
+  const primarySource = fs.readFileSync(path.join(root, "labs/secure-cicd/gate.js"), "utf8").replace(/\r\n/g, "\n");
+  const longSource = fs.readFileSync(path.join(root, "labs/secure-cicd/tests/policy-tests.js"), "utf8").replace(/\r\n/g, "\n");
+  const initial = await page.evaluate(() => {
+    const viewer = document.getElementById("source-secure-cicd");
+    const panel = viewer.querySelector('[data-source-panel][data-index="0"]');
+    const pre = panel.querySelector("pre");
+    const firstLine = panel.querySelector(".line");
+    return {
+      source: panel.querySelector("code").textContent,
+      filename: viewer.querySelector("[data-source-active-filename]").textContent,
+      language: viewer.querySelector("[data-source-active-language]").textContent,
+      lines: viewer.querySelector("[data-source-active-lines]").textContent,
+      path: viewer.querySelector("[data-source-active-path]").textContent,
+      noVerticalScroll: pre.scrollHeight <= pre.clientHeight + 1,
+      expandHidden: viewer.querySelector("[data-expand-source]").hidden,
+      lineNumber: getComputedStyle(firstLine, "::before").content,
+      lineNumberSelectable: getComputedStyle(firstLine, "::before").userSelect
+    };
+  });
+  record(`${label}: primary rendered text exactly matches tracked source`, initial.source === primarySource);
+  record(`${label}: compact metadata is source-derived`, initial.filename === "gate.js" && initial.language === "JavaScript" && initial.lines === "46 lines" && initial.path === "labs/secure-cicd/gate.js");
+  record(`${label}: short source has no internal vertical scrollbar`, initial.noVerticalScroll);
+  record(`${label}: short source has no Expand action`, initial.expandHidden);
+  record(`${label}: line numbers render through non-selectable generated content`, /counter\(docs-source-line\)|"1"/.test(initial.lineNumber) && initial.lineNumberSelectable === "none",
+    `content=${initial.lineNumber} userSelect=${initial.lineNumberSelectable}`);
+
   const tabsWork = await page.evaluate(() => {
-    const viewer = document.getElementById("source-k8s-rbac-auditor");
-    const testsTab = viewer.querySelector('[data-source-tab][data-index="1"]');
+    const viewer = document.getElementById("source-secure-cicd");
+    const testsTab = viewer.querySelector('[data-source-tab][data-index="2"]');
     testsTab.click();
     const panel0 = viewer.querySelector('[data-source-panel][data-index="0"]');
-    const panel1 = viewer.querySelector('[data-source-panel][data-index="1"]');
+    const panel1 = viewer.querySelector('[data-source-panel][data-index="2"]');
     return {
       tab1Selected: testsTab.getAttribute("aria-selected") === "true",
       panel0Hidden: panel0.hasAttribute("hidden"),
       panel1Visible: !panel1.hasAttribute("hidden"),
-      title: viewer.querySelector(".docs-source-viewer__toolbar-title").textContent
+      title: viewer.querySelector("[data-source-active-filename]").textContent,
+      language: viewer.querySelector("[data-source-active-language]").textContent,
+      lines: viewer.querySelector("[data-source-active-lines]").textContent,
+      path: viewer.querySelector("[data-source-active-path]").textContent,
+      expandVisible: !viewer.querySelector("[data-expand-source]").hidden
     };
   });
   record(`${label}: clicking a file tab selects it`, tabsWork.tab1Selected);
   record(`${label}: switching tabs hides the other panel`, tabsWork.panel0Hidden && tabsWork.panel1Visible);
-  record(`${label}: toolbar title follows the active tab`, tabsWork.title.includes("auditor_test.go"), `title=${tabsWork.title}`);
+  record(`${label}: toolbar metadata follows the active tab`, tabsWork.title === "policy-tests.js" && tabsWork.language === "JavaScript" && tabsWork.lines === "201 lines" && tabsWork.path.endsWith("policy-tests.js"));
+  record(`${label}: Expand appears for the active long file`, tabsWork.expandVisible);
 
   // Copy: stub the clipboard (Playwright contexts don't grant clipboard-write by default).
   await page.evaluate(() => {
@@ -283,25 +387,78 @@ for (const url of FOOTER_URLS) {
     navigator.clipboard.writeText = (text) => { window.__copied = text; return Promise.resolve(); };
   });
   const copyResult = await page.evaluate(() => {
-    const viewer = document.getElementById("source-k8s-rbac-auditor");
+    const viewer = document.getElementById("source-secure-cicd");
     viewer.querySelector("[data-copy-source]").click();
     return true;
   });
   await page.waitForTimeout(50);
   const copiedText = await page.evaluate(() => window.__copied);
-  record(`${label}: copy button copies the visible file's source`, Boolean(copyResult) && typeof copiedText === "string" && copiedText.length > 0);
+  record(`${label}: copy button copies the active raw file exactly`, Boolean(copyResult) && copiedText === longSource);
 
-  // Expand: toggling sets aria-expanded and removes the height cap class.
   const expandState = await page.evaluate(() => {
-    const viewer = document.getElementById("source-k8s-rbac-auditor");
+    const viewer = document.getElementById("source-secure-cicd");
     const button = viewer.querySelector("[data-expand-source]");
+    const panel = viewer.querySelector('[data-source-panel][data-index="2"]');
+    const code = panel.querySelector(".docs-source-viewer__code");
+    const collapsed = {clientHeight: code.clientHeight, scrollHeight: code.scrollHeight};
     button.click();
-    const code = viewer.querySelector(".docs-source-viewer__code");
-    return {expanded: button.getAttribute("aria-expanded"), hasClass: code.classList.contains("docs-source-expanded")};
+    const expanded = {clientHeight: code.clientHeight, scrollHeight: code.scrollHeight};
+    viewer.querySelector('[data-source-tab][data-index="0"]').click();
+    const hiddenOnShort = button.hidden;
+    viewer.querySelector('[data-source-tab][data-index="2"]').click();
+    return {aria: button.getAttribute("aria-expanded"), collapsed, expanded, hiddenOnShort, restored: button.textContent};
   });
-  record(`${label}: expand button sets aria-expanded=true`, expandState.expanded === "true");
-  record(`${label}: expand button removes the height cap`, expandState.hasClass === true);
+  record(`${label}: long source is capped initially`, expandState.collapsed.scrollHeight > expandState.collapsed.clientHeight + 1);
+  record(`${label}: expand removes the cap and sets aria-expanded`, expandState.aria === "true" && expandState.expanded.clientHeight >= expandState.expanded.scrollHeight - 1);
+  record(`${label}: expand state is active-file aware and restored`, expandState.hiddenOnShort && expandState.restored === "Collapse");
 
+  const wrapState = await page.evaluate(() => {
+    const viewer = document.getElementById("source-secure-cicd");
+    const button = viewer.querySelector("[data-wrap-source]");
+    const line = viewer.querySelector('[data-source-panel][data-index="2"] .line');
+    const before = getComputedStyle(line).whiteSpace;
+    button.click();
+    const after = getComputedStyle(line).whiteSpace;
+    viewer.querySelector('[data-source-tab][data-index="0"]').click();
+    const persisted = getComputedStyle(viewer.querySelector('[data-source-panel][data-index="0"] .line')).whiteSpace;
+    return {before, after, persisted, pressed: button.getAttribute("aria-pressed")};
+  });
+  record(`${label}: Wrap changes computed white-space and aria-pressed`, wrapState.before === "pre" && wrapState.after === "pre-wrap" && wrapState.pressed === "true", JSON.stringify(wrapState));
+  record(`${label}: Wrap persists across file tabs`, wrapState.persisted === "pre-wrap");
+
+  // Keyboard navigation exercises End, Home, and both arrows with roving focus.
+  await page.locator('#source-secure-cicd-tab-0').focus();
+  await page.keyboard.press("End");
+  await page.keyboard.press("ArrowLeft");
+  await page.keyboard.press("ArrowRight");
+  await page.keyboard.press("Home");
+  const keyboardState = await page.evaluate(() => ({
+    selected: document.querySelector('#source-secure-cicd-tab-0').getAttribute("aria-selected"),
+    focused: document.activeElement?.id,
+    tabStops: [...document.querySelectorAll('#source-secure-cicd [role="tab"]')].filter(tab => tab.tabIndex === 0).length
+  }));
+  record(`${label}: Arrow/Home/End preserve roving tab semantics`, keyboardState.selected === "true" && keyboardState.focused === "source-secure-cicd-tab-0" && keyboardState.tabStops === 1, JSON.stringify(keyboardState));
+
+  await context.close();
+}
+
+// JavaScript is enhancement only: the primary source remains visible and actions
+// that cannot work are not presented as controls.
+{
+  const context = await browser.newContext({viewport: {width: 390, height: 844}, javaScriptEnabled: false});
+  const page = await context.newPage();
+  await page.goto(`${base}/labs/secure-cicd/`, {waitUntil: "load"});
+  const state = await page.evaluate(() => {
+    const viewer = document.getElementById("source-secure-cicd");
+    return {
+      primaryVisible: viewer.querySelector('[data-source-panel][data-index="0"]').getBoundingClientRect().height > 0,
+      sourceLength: viewer.querySelector('[data-source-panel][data-index="0"] code').textContent.length,
+      actionsDisplay: getComputedStyle(viewer.querySelector("[data-source-actions]")).display,
+      tabsDisplay: getComputedStyle(viewer.querySelector("[role=tablist]")).display
+    };
+  });
+  record("source-viewer progressive enhancement: primary source remains readable", state.primaryVisible && state.sourceLength > 0);
+  record("source-viewer progressive enhancement: inactive controls stay hidden", state.actionsDisplay === "none" && state.tabsDisplay === "none", JSON.stringify(state));
   await context.close();
 }
 
@@ -418,6 +575,52 @@ for (const route of BREADCRUMB_ROUTES) {
   await context.close();
 }
 
+// Structural alignment and breadcrumb presentation across representative content
+// types, both palettes, and every requested documentation breakpoint.
+const BREADCRUMB_GEOMETRY_PAGES = [
+  "/appsec/ai-agent-security/",
+  "/labs/secure-cicd/",
+  "/scripts/devsecops/",
+  "/docs/certification-notes/az-900/domain-1-concepts/"
+];
+for (const width of [375, 768, 1024, 1280, 1440]) {
+  for (const scheme of ["light", "dark"]) {
+    const {context, page} = await newPage({width, height: 900}, scheme);
+    for (const url of BREADCRUMB_GEOMETRY_PAGES) {
+      await gotoPage(page, url, scheme);
+      const state = await page.evaluate(() => {
+        const header = document.querySelector(".docs-article-header");
+        const breadcrumbs = header?.querySelector(".docs-breadcrumbs");
+        const h1 = header?.querySelector("h1");
+        const current = breadcrumbs?.querySelector('[aria-current="page"]');
+        const first = breadcrumbs?.querySelector("li:first-child");
+        const breadcrumbRect = breadcrumbs?.getBoundingClientRect();
+        const h1Rect = h1?.getBoundingClientRect();
+        const currentRect = current?.getBoundingClientRect();
+        const separator = first ? getComputedStyle(first, "::after") : null;
+        return {
+          headerContainsBoth: Boolean(header && breadcrumbs && h1),
+          delta: breadcrumbRect && h1Rect ? Math.abs(breadcrumbRect.left - h1Rect.left) : null,
+          noOverlap: breadcrumbRect && h1Rect ? breadcrumbRect.bottom <= h1Rect.top + 1 : false,
+          noOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1,
+          currentIsLink: Boolean(current?.querySelector("a")),
+          currentVisible: Boolean(currentRect && breadcrumbRect && currentRect.right <= breadcrumbRect.right + 1 && currentRect.left >= breadcrumbRect.left - 1),
+          separatorContent: separator?.content,
+          separatorTransform: separator?.transform
+        };
+      });
+      const label = `breadcrumb geometry ${width}px ${scheme} ${url}`;
+      record(`${label}: breadcrumb and H1 share article header`, state.headerContainsBoth);
+      record(`${label}: left edges align within 1px`, state.delta !== null && state.delta <= 1, `delta=${state.delta}`);
+      record(`${label}: breadcrumb does not overlap H1`, state.noOverlap);
+      record(`${label}: no document overflow`, state.noOverflow);
+      record(`${label}: current crumb is non-clickable and visible`, !state.currentIsLink && state.currentVisible, JSON.stringify(state));
+      record(`${label}: separator is a presentational chevron`, state.separatorContent === '""' && state.separatorTransform !== "none", JSON.stringify(state));
+    }
+    await context.close();
+  }
+}
+
 // --- Mobile navigation drawer: open, focus, Escape close, focus return, overlay close. ---
 {
   const {context, page} = await newPage({width: 390, height: 844}, "light");
@@ -493,6 +696,35 @@ for (const route of BREADCRUMB_ROUTES) {
   await context.close();
 }
 
+for (const width of [320, 360, 390, 412]) {
+  for (const scheme of ["light", "dark"]) {
+    const {context, page} = await newPage({width, height: 844}, scheme);
+    await gotoPage(page, "/labs/secure-cicd/", scheme);
+    const state = await page.evaluate(() => {
+      const viewer = document.getElementById("source-secure-cicd");
+      const toolbar = viewer.querySelector(".docs-source-viewer__toolbar");
+      const actions = [...viewer.querySelectorAll(".docs-source-viewer__button:not([hidden])")];
+      const tabs = viewer.querySelector(".docs-source-viewer__tabs");
+      const code = viewer.querySelector(".docs-source-viewer__code code");
+      const viewerRect = viewer.getBoundingClientRect();
+      const toolbarRect = toolbar.getBoundingClientRect();
+      return {
+        contained: toolbarRect.left >= viewerRect.left - 1 && toolbarRect.right <= viewerRect.right + 1,
+        actionHeights: actions.map(button => button.getBoundingClientRect().height),
+        tabOverflowContained: tabs.scrollWidth >= tabs.clientWidth && tabs.getBoundingClientRect().right <= viewerRect.right + 1,
+        fontSize: parseFloat(getComputedStyle(code).fontSize),
+        noDocumentOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth + 1
+      };
+    });
+    const label = `source-viewer mobile ${width}px ${scheme}`;
+    record(`${label}: toolbar and tab row stay within viewer`, state.contained && state.tabOverflowContained, JSON.stringify(state));
+    record(`${label}: visible actions are touch-friendly`, state.actionHeights.length >= 2 && state.actionHeights.every(height => height >= 40), `heights=${state.actionHeights.join(",")}`);
+    record(`${label}: code remains readable`, state.fontSize >= 12.5, `fontSize=${state.fontSize}`);
+    record(`${label}: no document overflow`, state.noDocumentOverflow);
+    await context.close();
+  }
+}
+
 {
   const {context, page} = await newPage({width: 390, height: 844}, "light");
   await gotoPage(page, "/scripts/cloud-security/", "light");
@@ -555,7 +787,7 @@ const MOBILE_SWEEP_VIEWPORTS = [
   {name: "1440x900", width: 1440, height: 900}
 ];
 const MOBILE_SWEEP_PAGES = [
-  "/", ARTICLE_URL, "/research/", "/scripts/", "/scripts/cloud-security/", "/scripts/devsecops/",
+  "/", ARTICLE_URL, "/devsecops/secure-cicd-pipeline-design/", "/research/", "/scripts/", "/scripts/cloud-security/", "/scripts/devsecops/",
   "/labs/secure-cicd/", "/labs/postgresql-rls/", "/labs/kubernetes-security/", "/labs/azure-landing-zone/",
   "/docs/certification-notes/az-900/", "/docs/certification-notes/az-900/domain-1-concepts/",
   "/about/", "/404.html"
@@ -583,6 +815,51 @@ for (const viewport of MOBILE_SWEEP_VIEWPORTS) {
       await context.close();
     }
   }
+}
+
+if (process.env.CAPTURE_UI_SCREENSHOTS === "1") {
+  const componentDir = path.join(root, "qa-artifacts", "ui-components");
+  fs.mkdirSync(componentDir, {recursive: true});
+
+  const {context, page} = await newPage({width: 1440, height: 900}, "light");
+  await gotoPage(page, "/labs/secure-cicd/", "light");
+  const viewer = page.locator("#source-secure-cicd");
+  await viewer.screenshot({path: path.join(componentDir, "source-short-light.png")});
+  await page.locator('#source-secure-cicd-tab-2').click();
+  await viewer.screenshot({path: path.join(componentDir, "source-long-collapsed-light.png")});
+  await page.locator("#source-secure-cicd [data-expand-source]").click();
+  await viewer.screenshot({path: path.join(componentDir, "source-long-expanded-light.png")});
+  await page.locator("#source-secure-cicd [data-wrap-source]").click();
+  await viewer.screenshot({path: path.join(componentDir, "source-long-wrapped-light.png")});
+  await page.locator(".docs-article-header").screenshot({path: path.join(componentDir, "breadcrumbs-light.png")});
+  await context.close();
+
+  const dark = await newPage({width: 1440, height: 900}, "dark");
+  await gotoPage(dark.page, "/labs/secure-cicd/", "dark");
+  await dark.page.locator("#source-secure-cicd").screenshot({path: path.join(componentDir, "source-short-dark.png")});
+  await dark.context.close();
+
+  const search = await newPage({width: 1440, height: 900}, "light");
+  await gotoPage(search.page, "/", "light");
+  const searchInput = search.page.locator('[data-md-component="search-query"]');
+  await searchInput.click();
+  await searchInput.pressSequentially("secure cicd", {delay: 20});
+  await search.page.locator(".md-search-result__article").first().waitFor({state: "visible", timeout: 10000});
+  await search.page.waitForFunction(() => Number.parseFloat(getComputedStyle(document.querySelector(".md-search__output")).opacity) >= .999);
+  await search.page.locator(".md-search__output").screenshot({path: path.join(componentDir, "search-results-light.png")});
+  await search.context.close();
+
+  const mobile = await newPage({width: 390, height: 844}, "dark");
+  await gotoPage(mobile.page, "/labs/secure-cicd/", "dark");
+  await mobile.page.locator('label.md-header__button[for="__drawer"]').click();
+  await mobile.page.waitForFunction(() => {
+    const drawer = document.querySelector(".docs-left-nav");
+    const rect = drawer?.getBoundingClientRect();
+    return Boolean(document.getElementById("__drawer")?.checked && rect && rect.left >= 0);
+  });
+  await mobile.page.waitForTimeout(250);
+  await mobile.page.screenshot({path: path.join(componentDir, "mobile-drawer-dark.png")});
+  await mobile.context.close();
 }
 
 await browser.close();

@@ -152,4 +152,22 @@
       updateActiveToc();
     }
   }
+
+  // Material appends generated search tags after the teaser text. Our single tag
+  // is category/content-type metadata, so move it directly below the result title
+  // as results stream into the dialog. Search remains fully functional without
+  // this enhancement; this only improves the visual reading order.
+  var searchResults = document.querySelector(".md-search-result__list");
+  function positionSearchMetadata(root) {
+    (root || document).querySelectorAll(".md-search-result__article").forEach(function (article) {
+      var title = article.querySelector("h1");
+      var metadata = article.querySelector(":scope > .md-tags");
+      if (title && metadata && title.nextElementSibling !== metadata) title.insertAdjacentElement("afterend", metadata);
+    });
+  }
+  if (searchResults) {
+    positionSearchMetadata(searchResults);
+    new MutationObserver(function () { positionSearchMetadata(searchResults); })
+      .observe(searchResults, {childList: true, subtree: true});
+  }
 })();

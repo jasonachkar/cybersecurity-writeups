@@ -225,57 +225,62 @@
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/scripts/">Scripts</a></li><li aria-current="page">DevSecOps</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="devsecops-scripts">DevSecOps scripts</h1><p>The devsecops scripts and packages I've written, with their source shown directly below &mdash; no need to open GitHub to read them.</p><section id="kyverno-policy-schema-check" aria-labelledby="kyverno-policy-schema-check-heading">
+<!-- docs-article-header:start --><header class="docs-article-header"><!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/scripts/">Scripts</a></li><li aria-current="page">DevSecOps</li></ol></nav><!-- docs-breadcrumbs:end -->
+<h1 id="devsecops-scripts">DevSecOps scripts</h1></header><!-- docs-article-header:end --><p>The devsecops scripts and packages I've written, with their source shown directly below &mdash; no need to open GitHub to read them.</p><section id="kyverno-policy-schema-check" aria-labelledby="kyverno-policy-schema-check-heading">
 <h2 id="kyverno-policy-schema-check-heading">Kyverno policy schema validator</h2>
 <p class="docs-script-badges"><span class="docs-badge">Python</span><span class="docs-badge">Read-only</span><span class="docs-badge">Runs in CI against the pinned Kyverno v1.18.2 CRD</span></p>
 <section class="docs-source-viewer" data-source-viewer id="source-kyverno-policy-schema-check" aria-label="Source code: validate-kyverno-policy.py">
   <header class="docs-source-viewer__toolbar">
-    <span class="docs-source-viewer__toolbar-title">validate-kyverno-policy.py</span>
-    <div class="docs-source-viewer__actions">
-      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
-      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    <div class="docs-source-viewer__identity">
+      <div class="docs-source-viewer__title-row"><strong class="docs-source-viewer__toolbar-title" data-source-active-filename>validate-kyverno-policy.py</strong><span class="docs-source-viewer__summary"><span data-source-active-language>Python</span><span aria-hidden="true"> · </span><span data-source-active-lines>36 lines</span></span></div>
+      <code class="docs-source-viewer__path" data-source-active-path title="scripts/validate-kyverno-policy.py">scripts/validate-kyverno-policy.py</code>
     </div>
+    <div class="docs-source-viewer__actions" data-source-actions>
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-pressed="false" data-wrap-source>Wrap</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source hidden>Expand</button>
+    </div>
+    <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
   </header>
   
-  <div role="tabpanel" id="source-kyverno-policy-schema-check-panel-0" tabindex="0" class="docs-source-viewer__panel" data-source-panel data-index="0">
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">validate-kyverno-policy.py</span><code class="docs-source-viewer__path">scripts/validate-kyverno-policy.py</code><span class="docs-source-viewer__lines">36 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="validate-kyverno-policy.py source code" class="language-python"><span class="tok-string">&quot;&quot;&quot;Validate the lab image policy against the pinned Kyverno v1.18.2 CRD structural schema.
-
-Usage: python scripts/validate-kyverno-policy.py &lt;crd.yaml&gt; &lt;policy.yaml&gt;
-
-This is offline schema validation only. It does not execute signature,
-certificate, registry, transparency-log, or admission verification.
-&quot;&quot;&quot;</span>
-<span class="tok-keyword">import</span> sys
-
-<span class="tok-keyword">import</span> jsonschema
-<span class="tok-keyword">import</span> yaml
-
-crd_path, policy_path = sys.argv[<span class="tok-number">1</span>], sys.argv[<span class="tok-number">2</span>]
-
-<span class="tok-keyword">with</span> open(crd_path, encoding=<span class="tok-string">&quot;utf-8&quot;</span>) <span class="tok-keyword">as</span> handle:
-    crd = yaml.safe_load(handle)
-<span class="tok-keyword">with</span> open(policy_path, encoding=<span class="tok-string">&quot;utf-8&quot;</span>) <span class="tok-keyword">as</span> handle:
-    policy = yaml.safe_load(handle)
-
-names = crd[<span class="tok-string">&quot;spec&quot;</span>][<span class="tok-string">&quot;names&quot;</span>]
-group = crd[<span class="tok-string">&quot;spec&quot;</span>][<span class="tok-string">&quot;group&quot;</span>]
-versions = {v[<span class="tok-string">&quot;name&quot;</span>]: v <span class="tok-keyword">for</span> v <span class="tok-keyword">in</span> crd[<span class="tok-string">&quot;spec&quot;</span>][<span class="tok-string">&quot;versions&quot;</span>]}
-
-api_group, _, api_version = policy[<span class="tok-string">&quot;apiVersion&quot;</span>].partition(<span class="tok-string">&quot;/&quot;</span>)
-<span class="tok-keyword">assert</span> api_group == group, f<span class="tok-string">&quot;group mismatch: {api_group} != {group}&quot;</span>
-<span class="tok-keyword">assert</span> policy[<span class="tok-string">&quot;kind&quot;</span>] == names[<span class="tok-string">&quot;kind&quot;</span>], f<span class="tok-string">&quot;kind mismatch: {policy[&#39;kind&#39;]} != {names[&#39;kind&#39;]}&quot;</span>
-<span class="tok-keyword">assert</span> api_version <span class="tok-keyword">in</span> versions, f<span class="tok-string">&quot;version {api_version} not served by CRD&quot;</span>
-
-schema = versions[api_version][<span class="tok-string">&quot;schema&quot;</span>][<span class="tok-string">&quot;openAPIV3Schema&quot;</span>]
-jsonschema.validate(instance=policy, schema=schema)
-
-print(
-    f<span class="tok-string">&quot;PASS: {policy_path} conforms to {names[&#39;kind&#39;]} ({policy[&#39;apiVersion&#39;]}) &quot;</span>
-    f<span class="tok-string">&quot;structural schema from the pinned Kyverno v1.18.2 CRD.&quot;</span>
-)
-print(<span class="tok-string">&quot;NOTE: schema validation only; no signature, registry, transparency, or admission test was run.&quot;</span>)</code></pre>
+  <div role="tabpanel" id="source-kyverno-policy-schema-check-panel-0" class="docs-source-viewer__panel" data-source-panel data-index="0" data-source-filename="validate-kyverno-policy.py" data-source-language="Python" data-source-path="scripts/validate-kyverno-policy.py" data-source-lines="36" data-source-highlighter="shiki">
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="validate-kyverno-policy.py source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-python"><span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;&quot;Validate the lab image policy against the pinned Kyverno v1.18.2 CRD structural schema.</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Usage: python scripts/validate-kyverno-policy.py &lt;crd.yaml&gt; &lt;policy.yaml&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">This is offline schema validation only. It does not execute signature,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">certificate, registry, transparency-log, or admission verification.</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;&quot;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sys</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> jsonschema</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> yaml</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">crd_path, policy_path </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sys.argv[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">], sys.argv[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">2</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">with</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">open</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(crd_path, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">encoding</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;utf-8&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">as</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> handle:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    crd </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> yaml.safe_load(handle)</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">with</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">open</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(policy_path, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">encoding</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;utf-8&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">as</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> handle:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    policy </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> yaml.safe_load(handle)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">names </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> crd[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;spec&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">][</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;names&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">group </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> crd[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;spec&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">][</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;group&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">versions </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {v[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;name&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]: v </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> v </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">in</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> crd[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;spec&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">][</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;versions&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">api_group, _, api_version </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> policy[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;apiVersion&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">].partition(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;/&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">assert</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> api_group </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> group, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">f</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;group mismatch: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">api_group</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> != </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">group</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">assert</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> policy[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;kind&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">] </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> names[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;kind&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">], </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">f</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;kind mismatch: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">policy[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;kind&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> != </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">names[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;kind&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">assert</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> api_version </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">in</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> versions, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">f</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;version </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">api_version</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> not served by CRD&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">schema </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> versions[api_version][</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;schema&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">][</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;openAPIV3Schema&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">jsonschema.validate(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">instance</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">policy, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">schema</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">schema)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">print</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">f</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;PASS: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">policy_path</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> conforms to </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">names[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;kind&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">policy[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;apiVersion&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">) &quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">f</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;structural schema from the pinned Kyverno v1.18.2 CRD.&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">print</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;NOTE: schema validation only; no signature, registry, transparency, or admission test was run.&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+</code></pre>
     </div>
 </section>
 <h3>What it does</h3><p>Checks a Kyverno ImageValidatingPolicy against the pinned Kyverno v1.18.2 CRD&#39;s structural schema — a quick way to catch a typo&#39;d field or wrong apiVersion without needing a live cluster.</p>
@@ -295,53 +300,58 @@ print(<span class="tok-string">&quot;NOTE: schema validation only; no signature,
 <p class="docs-script-badges"><span class="docs-badge">Python</span><span class="docs-badge">Read-only</span><span class="docs-badge">Runs in CI against the pinned Tetragon v1.7.0 CRD</span></p>
 <section class="docs-source-viewer" data-source-viewer id="source-tetragon-policy-schema-check" aria-label="Source code: validate-tetragon-policy.py">
   <header class="docs-source-viewer__toolbar">
-    <span class="docs-source-viewer__toolbar-title">validate-tetragon-policy.py</span>
-    <div class="docs-source-viewer__actions">
-      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
-      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    <div class="docs-source-viewer__identity">
+      <div class="docs-source-viewer__title-row"><strong class="docs-source-viewer__toolbar-title" data-source-active-filename>validate-tetragon-policy.py</strong><span class="docs-source-viewer__summary"><span data-source-active-language>Python</span><span aria-hidden="true"> · </span><span data-source-active-lines>38 lines</span></span></div>
+      <code class="docs-source-viewer__path" data-source-active-path title="scripts/validate-tetragon-policy.py">scripts/validate-tetragon-policy.py</code>
     </div>
+    <div class="docs-source-viewer__actions" data-source-actions>
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-pressed="false" data-wrap-source>Wrap</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source hidden>Expand</button>
+    </div>
+    <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
   </header>
   
-  <div role="tabpanel" id="source-tetragon-policy-schema-check-panel-0" tabindex="0" class="docs-source-viewer__panel" data-source-panel data-index="0">
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">validate-tetragon-policy.py</span><code class="docs-source-viewer__path">scripts/validate-tetragon-policy.py</code><span class="docs-source-viewer__lines">38 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="validate-tetragon-policy.py source code" class="language-python"><span class="tok-string">&quot;&quot;&quot;Validate the published Tetragon policy against the pinned v1.7.0 CRD structural schema.
-
-Usage: python scripts/validate-tetragon-policy.py &lt;crd.yaml&gt; &lt;policy.yaml&gt;
-
-Kubernetes CRD structural schemas are a restricted subset of JSON Schema, so a
-JSON Schema validator gives a faithful offline schema check. This is schema
-validation only; it is not a live admission or enforcement test.
-&quot;&quot;&quot;</span>
-<span class="tok-keyword">import</span> sys
-
-<span class="tok-keyword">import</span> jsonschema
-<span class="tok-keyword">import</span> yaml
-
-crd_path, policy_path = sys.argv[<span class="tok-number">1</span>], sys.argv[<span class="tok-number">2</span>]
-
-<span class="tok-keyword">with</span> open(crd_path, encoding=<span class="tok-string">&quot;utf-8&quot;</span>) <span class="tok-keyword">as</span> handle:
-    crd = yaml.safe_load(handle)
-<span class="tok-keyword">with</span> open(policy_path, encoding=<span class="tok-string">&quot;utf-8&quot;</span>) <span class="tok-keyword">as</span> handle:
-    policy = yaml.safe_load(handle)
-
-names = crd[<span class="tok-string">&quot;spec&quot;</span>][<span class="tok-string">&quot;names&quot;</span>]
-group = crd[<span class="tok-string">&quot;spec&quot;</span>][<span class="tok-string">&quot;group&quot;</span>]
-versions = {v[<span class="tok-string">&quot;name&quot;</span>]: v <span class="tok-keyword">for</span> v <span class="tok-keyword">in</span> crd[<span class="tok-string">&quot;spec&quot;</span>][<span class="tok-string">&quot;versions&quot;</span>]}
-
-api_group, _, api_version = policy[<span class="tok-string">&quot;apiVersion&quot;</span>].partition(<span class="tok-string">&quot;/&quot;</span>)
-<span class="tok-keyword">assert</span> api_group == group, f<span class="tok-string">&quot;group mismatch: {api_group} != {group}&quot;</span>
-<span class="tok-keyword">assert</span> policy[<span class="tok-string">&quot;kind&quot;</span>] == names[<span class="tok-string">&quot;kind&quot;</span>], f<span class="tok-string">&quot;kind mismatch: {policy[&#39;kind&#39;]} != {names[&#39;kind&#39;]}&quot;</span>
-<span class="tok-keyword">assert</span> api_version <span class="tok-keyword">in</span> versions, f<span class="tok-string">&quot;version {api_version} not served by CRD&quot;</span>
-<span class="tok-keyword">assert</span> crd[<span class="tok-string">&quot;spec&quot;</span>][<span class="tok-string">&quot;scope&quot;</span>] == <span class="tok-string">&quot;Namespaced&quot;</span>, <span class="tok-string">&quot;expected a namespaced CRD&quot;</span>
-
-schema = versions[api_version][<span class="tok-string">&quot;schema&quot;</span>][<span class="tok-string">&quot;openAPIV3Schema&quot;</span>]
-jsonschema.validate(instance=policy, schema=schema)
-
-print(
-    f<span class="tok-string">&quot;PASS: {policy_path} conforms to {names[&#39;kind&#39;]} ({policy[&#39;apiVersion&#39;]}) &quot;</span>
-    f<span class="tok-string">&quot;structural schema from the pinned Tetragon v1.7.0 CRD.&quot;</span>
-)
-print(<span class="tok-string">&quot;NOTE: schema validation only; no live cluster enforcement test was run.&quot;</span>)</code></pre>
+  <div role="tabpanel" id="source-tetragon-policy-schema-check-panel-0" class="docs-source-viewer__panel" data-source-panel data-index="0" data-source-filename="validate-tetragon-policy.py" data-source-language="Python" data-source-path="scripts/validate-tetragon-policy.py" data-source-lines="38" data-source-highlighter="shiki">
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="validate-tetragon-policy.py source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-python"><span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;&quot;Validate the published Tetragon policy against the pinned v1.7.0 CRD structural schema.</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Usage: python scripts/validate-tetragon-policy.py &lt;crd.yaml&gt; &lt;policy.yaml&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Kubernetes CRD structural schemas are a restricted subset of JSON Schema, so a</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">JSON Schema validator gives a faithful offline schema check. This is schema</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">validation only; it is not a live admission or enforcement test.</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;&quot;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sys</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> jsonschema</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> yaml</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">crd_path, policy_path </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sys.argv[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">], sys.argv[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">2</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">with</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">open</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(crd_path, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">encoding</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;utf-8&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">as</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> handle:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    crd </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> yaml.safe_load(handle)</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">with</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">open</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(policy_path, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">encoding</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;utf-8&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">as</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> handle:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    policy </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> yaml.safe_load(handle)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">names </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> crd[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;spec&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">][</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;names&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">group </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> crd[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;spec&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">][</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;group&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">versions </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {v[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;name&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]: v </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> v </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">in</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> crd[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;spec&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">][</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;versions&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">api_group, _, api_version </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> policy[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;apiVersion&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">].partition(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;/&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">assert</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> api_group </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> group, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">f</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;group mismatch: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">api_group</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> != </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">group</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">assert</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> policy[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;kind&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">] </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> names[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;kind&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">], </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">f</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;kind mismatch: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">policy[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;kind&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> != </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">names[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;kind&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">assert</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> api_version </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">in</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> versions, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">f</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;version </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">api_version</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> not served by CRD&quot;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">assert</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> crd[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;spec&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">][</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;scope&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">] </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Namespaced&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;expected a namespaced CRD&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">schema </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> versions[api_version][</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;schema&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">][</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;openAPIV3Schema&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">jsonschema.validate(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">instance</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">policy, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">schema</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">schema)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">print</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">f</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;PASS: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">policy_path</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> conforms to </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">names[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;kind&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">{</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">policy[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;apiVersion&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">}</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">) &quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">f</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;structural schema from the pinned Tetragon v1.7.0 CRD.&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">print</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;NOTE: schema validation only; no live cluster enforcement test was run.&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+</code></pre>
     </div>
 </section>
 <h3>What it does</h3><p>The same idea as the Kyverno checker, aimed at Cilium Tetragon&#39;s TracingPolicyNamespaced CRD: catch a malformed eBPF tracing policy before it&#39;s ever pointed at a real cluster.</p>

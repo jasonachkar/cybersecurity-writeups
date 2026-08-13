@@ -1,71 +1,71 @@
-// Minimal, dependency-free build-time syntax highlighter. Runs once inside
-// `npm run maintain` and emits plain <span class="tok-*"> markup — nothing is
-// shipped to the browser to do this at runtime, and there is no CDN or remote
-// highlighter involved. Deliberately supports only the languages actually
-// used by the catalogued scripts/labs (Go, Python); anything else falls back
-// to escaped plain text rather than guessing.
+// Deterministic build-time highlighting for the Scripts/Labs source viewer.
+// Shiki and its grammars never ship to the browser; maintain-gh-pages.mjs writes
+// the already-tokenized, safely escaped HTML into the committed static pages.
+import {createHighlighter} from "shiki";
+import {resolveSourceLanguage, SHIKI_SOURCE_LANGUAGES} from "./source-languages.mjs";
+
+export const SOURCE_THEMES = Object.freeze({
+  light: "github-light-default",
+  dark: "github-dark-default"
+});
 
 const escapeHtml = value => String(value)
-  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+  .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
-const GO_KEYWORDS = new Set([
-  "break", "case", "chan", "const", "continue", "default", "defer", "else", "fallthrough",
-  "for", "func", "go", "goto", "if", "import", "interface", "map", "package", "range",
-  "return", "select", "struct", "switch", "type", "var", "nil", "true", "false", "iota"
-]);
+const highlighter = await createHighlighter({
+  themes: Object.values(SOURCE_THEMES),
+  langs: SHIKI_SOURCE_LANGUAGES
+});
 
-const PY_KEYWORDS = new Set([
-  "def", "return", "if", "elif", "else", "for", "while", "import", "from", "as", "class",
-  "try", "except", "finally", "with", "raise", "assert", "pass", "break", "continue",
-  "lambda", "None", "True", "False", "and", "or", "not", "in", "is", "global", "yield", "async", "await"
-]);
+function conventionalLines(source) {
+  if (!source) return [""];
+  return source.endsWith("\n") ? source.slice(0, -1).split("\n") : source.split("\n");
+}
 
-const TOKEN_PATTERNS = {
-  go: [
-    {type: "comment", re: /\/\/[^\n]*|\/\*[\s\S]*?\*\//y},
-    {type: "string", re: /`[^`]*`|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'/y},
-    {type: "number", re: /\b0[xX][0-9a-fA-F]+\b|\b\d+(?:\.\d+)?\b/y},
-    {type: "word", re: /[A-Za-z_][A-Za-z0-9_]*/y}
-  ],
-  python: [
-    {type: "comment", re: /#[^\n]*/y},
-    {type: "string", re: /"""[\s\S]*?"""|'''[\s\S]*?'''|"(?:\\.|[^"\\\n])*"|'(?:\\.|[^'\\\n])*'/y},
-    {type: "number", re: /\b0[xX][0-9a-fA-F]+\b|\b\d+(?:\.\d+)?\b/y},
-    {type: "word", re: /[A-Za-z_][A-Za-z0-9_]*/y}
-  ]
-};
+function styleAttribute(style) {
+  const value = Object.entries(style || {}).map(([property, setting]) => `${property}:${setting}`).join(";");
+  return value ? ` style="${escapeHtml(value)}"` : "";
+}
 
-const KEYWORDS_BY_LANG = {go: GO_KEYWORDS, python: PY_KEYWORDS};
+function renderPlaintext(source) {
+  return conventionalLines(source)
+    .map(line => `<span class="line">${escapeHtml(line)}</span>`)
+    .join("\n") + (source.endsWith("\n") ? "\n" : "");
+}
 
-/** Tokenizes `source` for `language` and returns highlighted HTML (no outer <pre>/<code>). */
-export function highlightCode(source, language) {
-  const patterns = TOKEN_PATTERNS[language];
-  if (!patterns) return escapeHtml(source);
-  const keywords = KEYWORDS_BY_LANG[language] || new Set();
-  let index = 0;
-  let out = "";
-  while (index < source.length) {
-    let matched = false;
-    for (const {type, re} of patterns) {
-      re.lastIndex = index;
-      const match = re.exec(source);
-      if (!match || match.index !== index) continue;
-      const text = match[0];
-      if (type === "word") {
-        out += keywords.has(text)
-          ? `<span class="tok-keyword">${escapeHtml(text)}</span>`
-          : escapeHtml(text);
-      } else {
-        out += `<span class="tok-${type}">${escapeHtml(text)}</span>`;
-      }
-      index += text.length;
-      matched = true;
-      break;
-    }
-    if (!matched) {
-      out += escapeHtml(source[index]);
-      index += 1;
-    }
+export function highlightSource(source, declaredLanguage) {
+  const language = resolveSourceLanguage(declaredLanguage);
+  if (language.mode === "plaintext") {
+    return {
+      html: renderPlaintext(source),
+      language,
+      highlighter: "plaintext",
+      rootStyle: ""
+    };
   }
-  return out;
+
+  const result = highlighter.codeToTokens(source, {
+    lang: language.id,
+    themes: SOURCE_THEMES,
+    defaultColor: false
+  });
+  let tokenLines = result.tokens;
+  // Shiki represents a terminal newline as an extra empty token line. Omit that
+  // visual line number, but keep a trailing text newline so code.textContent is
+  // byte-faithful to the normalized LF source copied from the repository.
+  if (source.endsWith("\n") && tokenLines.length > 1 && tokenLines.at(-1).length === 0) {
+    tokenLines = tokenLines.slice(0, -1);
+  }
+  const html = tokenLines.map(tokens => {
+    const line = tokens.map(token => `<span${styleAttribute(token.htmlStyle)}>${escapeHtml(token.content)}</span>`).join("");
+    return `<span class="line">${line}</span>`;
+  }).join("\n") + (source.endsWith("\n") ? "\n" : "");
+
+  return {
+    html,
+    language,
+    highlighter: "shiki",
+    rootStyle: result.rootStyle
+  };
 }

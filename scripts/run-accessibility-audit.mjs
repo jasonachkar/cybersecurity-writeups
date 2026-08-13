@@ -156,10 +156,11 @@ async function auditCombination(palette, viewport) {
     }
 
     await page.evaluate(axeSource);
-    const audit = await page.evaluate(async () => await window.axe.run(document, {
+    const runAxe = async () => await page.evaluate(async () => await window.axe.run(document, {
       resultTypes: ["violations"],
       runOnly: {type: "tag", values: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"]}
     }));
+    const audit = await runAxe();
     const violations = audit.violations.map(violation => ({
       id: violation.id,
       impact: violation.impact,
@@ -167,6 +168,32 @@ async function auditCombination(palette, viewport) {
       nodes: violation.nodes.slice(0, 5).map(node => `${node.target.join(" ")} :: ${node.failureSummary?.replace(/\s+/g, " ")}`)
     }));
     results.push({url, palette, viewport: viewport.name, violations});
+
+    // Exercise the enhanced viewer state as well: a secondary/long tab, wrapped
+    // lines, and expanded source must remain accessible in both palettes/sizes.
+    const hasViewer = await page.locator("[data-source-viewer]").count();
+    if (hasViewer) {
+      await page.evaluate(() => {
+        const viewer = document.querySelector("[data-source-viewer]");
+        const tabs = viewer.querySelectorAll("[data-source-tab]");
+        if (tabs.length > 1) tabs[tabs.length - 1].click();
+        viewer.querySelector("[data-wrap-source]")?.click();
+        const expand = viewer.querySelector("[data-expand-source]:not([hidden])");
+        if (expand) expand.click();
+      });
+      const interactiveAudit = await runAxe();
+      results.push({
+        url: `${url}#source-interactive-state`,
+        palette,
+        viewport: viewport.name,
+        violations: interactiveAudit.violations.map(violation => ({
+          id: violation.id,
+          impact: violation.impact,
+          help: violation.help,
+          nodes: violation.nodes.slice(0, 5).map(node => `${node.target.join(" ")} :: ${node.failureSummary?.replace(/\s+/g, " ")}`)
+        }))
+      });
+    }
   }
 
   await context.close();

@@ -225,164 +225,169 @@
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/scripts/">Scripts</a></li><li aria-current="page">Application Security</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="application-security-scripts">Application Security scripts</h1><p>The application security scripts and packages I've written, with their source shown directly below &mdash; no need to open GitHub to read them.</p><section id="oauth-pkce-verifier" aria-labelledby="oauth-pkce-verifier-heading">
+<!-- docs-article-header:start --><header class="docs-article-header"><!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/scripts/">Scripts</a></li><li aria-current="page">Application Security</li></ol></nav><!-- docs-breadcrumbs:end -->
+<h1 id="application-security-scripts">Application Security scripts</h1></header><!-- docs-article-header:end --><p>The application security scripts and packages I've written, with their source shown directly below &mdash; no need to open GitHub to read them.</p><section id="oauth-pkce-verifier" aria-labelledby="oauth-pkce-verifier-heading">
 <h2 id="oauth-pkce-verifier-heading">OAuth PKCE (S256) verifier and generator</h2>
 <p class="docs-script-badges"><span class="docs-badge">Go</span><span class="docs-badge">Read-only</span><span class="docs-badge">Go test suite</span></p>
 <section class="docs-source-viewer" data-source-viewer id="source-oauth-pkce-verifier" aria-label="Source code: pkce.go">
   <header class="docs-source-viewer__toolbar">
-    <span class="docs-source-viewer__toolbar-title">pkce.go</span>
-    <div class="docs-source-viewer__actions">
-      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
-      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    <div class="docs-source-viewer__identity">
+      <div class="docs-source-viewer__title-row"><strong class="docs-source-viewer__toolbar-title" data-source-active-filename>pkce.go</strong><span class="docs-source-viewer__summary"><span data-source-active-language>Go</span><span aria-hidden="true"> · </span><span data-source-active-lines>85 lines</span></span></div>
+      <code class="docs-source-viewer__path" data-source-active-path title="appsec/scripts/oauth-pkce/pkce.go">appsec/scripts/oauth-pkce/pkce.go</code>
     </div>
+    <div class="docs-source-viewer__actions" data-source-actions>
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-pressed="false" data-wrap-source>Wrap</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source hidden>Expand</button>
+    </div>
+    <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
   </header>
   <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-oauth-pkce-verifier-tab-0" aria-controls="source-oauth-pkce-verifier-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Implementation</button><button type="button" role="tab" id="source-oauth-pkce-verifier-tab-1" aria-controls="source-oauth-pkce-verifier-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Tests</button></div>
-  <div role="tabpanel" id="source-oauth-pkce-verifier-panel-0" tabindex="0" aria-labelledby="source-oauth-pkce-verifier-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">pkce.go</span><code class="docs-source-viewer__path">appsec/scripts/oauth-pkce/pkce.go</code><span class="docs-source-viewer__lines">85 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="pkce.go source code" class="language-go"><span class="tok-comment">// Package oauthpkce is a bounded educational S256-only OAuth PKCE verifier.</span>
-<span class="tok-comment">// It deliberately never logs verifiers or challenges.</span>
-<span class="tok-keyword">package</span> oauthpkce
-
-<span class="tok-keyword">import</span> (
-	<span class="tok-string">&quot;crypto/rand&quot;</span>
-	<span class="tok-string">&quot;crypto/sha256&quot;</span>
-	<span class="tok-string">&quot;crypto/subtle&quot;</span>
-	<span class="tok-string">&quot;encoding/base64&quot;</span>
-	<span class="tok-string">&quot;errors&quot;</span>
-	<span class="tok-string">&quot;fmt&quot;</span>
-	<span class="tok-string">&quot;math/big&quot;</span>
-	<span class="tok-string">&quot;regexp&quot;</span>
-)
-
-<span class="tok-keyword">const</span> (
-	MinVerifierLength = <span class="tok-number">43</span>
-	MaxVerifierLength = <span class="tok-number">128</span>
-)
-
-<span class="tok-keyword">var</span> verifierPattern = regexp.MustCompile(<span class="tok-string">`^[A-Za-z0-9\-._~]+$`</span>)
-
-<span class="tok-comment">// IsValidCodeVerifier enforces the RFC 7636 length and unreserved-character rules.</span>
-<span class="tok-keyword">func</span> IsValidCodeVerifier(verifier string) bool {
-	length := len(verifier)
-	<span class="tok-keyword">return</span> length &gt;= MinVerifierLength &amp;&amp;
-		length &lt;= MaxVerifierLength &amp;&amp;
-		verifierPattern.MatchString(verifier)
-}
-
-<span class="tok-comment">// GenerateRandomVerifier returns an RFC 7636 verifier generated from crypto/rand.</span>
-<span class="tok-keyword">func</span> GenerateRandomVerifier(length int) (string, error) {
-	<span class="tok-keyword">if</span> length &lt; MinVerifierLength || length &gt; MaxVerifierLength {
-		<span class="tok-keyword">return</span> <span class="tok-string">&quot;&quot;</span>, fmt.Errorf(
-			<span class="tok-string">&quot;verifier length must be between %d and %d characters&quot;</span>,
-			MinVerifierLength,
-			MaxVerifierLength,
-		)
-	}
-
-	<span class="tok-keyword">const</span> alphabet = <span class="tok-string">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~&quot;</span>
-	alphabetLength := big.NewInt(int64(len(alphabet)))
-	verifier := make([]byte, length)
-	<span class="tok-keyword">for</span> index := <span class="tok-keyword">range</span> verifier {
-		randomIndex, err := rand.Int(rand.Reader, alphabetLength)
-		<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-			<span class="tok-keyword">return</span> <span class="tok-string">&quot;&quot;</span>, fmt.Errorf(<span class="tok-string">&quot;generate verifier entropy: %w&quot;</span>, err)
-		}
-		verifier[index] = alphabet[randomIndex.Int64()]
-	}
-	<span class="tok-keyword">return</span> string(verifier), <span class="tok-keyword">nil</span>
-}
-
-<span class="tok-comment">// ComputeChallengeS256 derives BASE64URL(SHA-256(ASCII(code_verifier))).</span>
-<span class="tok-keyword">func</span> ComputeChallengeS256(verifier string) (string, error) {
-	<span class="tok-keyword">if</span> !IsValidCodeVerifier(verifier) {
-		<span class="tok-keyword">return</span> <span class="tok-string">&quot;&quot;</span>, errors.New(<span class="tok-string">&quot;code_verifier does not satisfy RFC 7636 syntax&quot;</span>)
-	}
-	sum := sha256.Sum256([]byte(verifier))
-	<span class="tok-keyword">return</span> base64.RawURLEncoding.EncodeToString(sum[:]), <span class="tok-keyword">nil</span>
-}
-
-<span class="tok-keyword">func</span> isValidS256Challenge(challenge string) bool {
-	decoded, err := base64.RawURLEncoding.Strict().DecodeString(challenge)
-	<span class="tok-keyword">return</span> err == <span class="tok-keyword">nil</span> &amp;&amp; len(decoded) == sha256.Size
-}
-
-<span class="tok-comment">// ValidatePKCES256 validates one token request against its stored authorization</span>
-<span class="tok-comment">// transaction. It rejects method downgrade and malformed inputs before performing a</span>
-<span class="tok-comment">// constant-time comparison of equal-length S256 challenges.</span>
-<span class="tok-keyword">func</span> ValidatePKCES256(codeVerifier, storedChallenge, method string) bool {
-	<span class="tok-keyword">if</span> method != <span class="tok-string">&quot;S256&quot;</span> || !IsValidCodeVerifier(codeVerifier) ||
-		!isValidS256Challenge(storedChallenge) {
-		<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
-	}
-
-	computedChallenge, err := ComputeChallengeS256(codeVerifier)
-	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-		<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
-	}
-	<span class="tok-keyword">return</span> subtle.ConstantTimeCompare(
-		[]byte(computedChallenge),
-		[]byte(storedChallenge),
-	) == <span class="tok-number">1</span>
-}</code></pre>
-    </div><div role="tabpanel" id="source-oauth-pkce-verifier-panel-1" tabindex="0" aria-labelledby="source-oauth-pkce-verifier-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">pkce_test.go</span><code class="docs-source-viewer__path">appsec/scripts/oauth-pkce/pkce_test.go</code><span class="docs-source-viewer__lines">56 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="pkce_test.go source code" class="language-go"><span class="tok-keyword">package</span> oauthpkce_test
-
-<span class="tok-keyword">import</span> (
-	<span class="tok-string">&quot;testing&quot;</span>
-
-	oauthpkce <span class="tok-string">&quot;github.com/jasonachkar/cybersecurity-writeups/appsec/scripts/oauth-pkce&quot;</span>
-)
-
-<span class="tok-keyword">func</span> TestValidatePKCES256(t *testing.T) {
-	<span class="tok-keyword">const</span> vectorVerifier = <span class="tok-string">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk&quot;</span>
-	<span class="tok-keyword">const</span> vectorChallenge = <span class="tok-string">&quot;E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&quot;</span>
-	<span class="tok-keyword">const</span> wrongVerifier = <span class="tok-string">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXa&quot;</span>
-	<span class="tok-keyword">const</span> invalidCharacterVerifier = <span class="tok-string">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjX!&quot;</span>
-
-	tests := []<span class="tok-keyword">struct</span> {
-		name      string
-		verifier  string
-		challenge string
-		method    string
-		want      bool
-	}{
-		{<span class="tok-string">&quot;RFC 7636 S256 vector is accepted&quot;</span>, vectorVerifier, vectorChallenge, <span class="tok-string">&quot;S256&quot;</span>, <span class="tok-keyword">true</span>},
-		{<span class="tok-string">&quot;wrong verifier is rejected&quot;</span>, wrongVerifier, vectorChallenge, <span class="tok-string">&quot;S256&quot;</span>, <span class="tok-keyword">false</span>},
-		{<span class="tok-string">&quot;plain method downgrade is rejected&quot;</span>, vectorVerifier, vectorVerifier, <span class="tok-string">&quot;plain&quot;</span>, <span class="tok-keyword">false</span>},
-		{<span class="tok-string">&quot;method names are not normalized&quot;</span>, vectorVerifier, vectorChallenge, <span class="tok-string">&quot;s256&quot;</span>, <span class="tok-keyword">false</span>},
-		{<span class="tok-string">&quot;short verifier is rejected&quot;</span>, <span class="tok-string">&quot;too-short&quot;</span>, vectorChallenge, <span class="tok-string">&quot;S256&quot;</span>, <span class="tok-keyword">false</span>},
-		{<span class="tok-string">&quot;non-unreserved character is rejected&quot;</span>, invalidCharacterVerifier, vectorChallenge, <span class="tok-string">&quot;S256&quot;</span>, <span class="tok-keyword">false</span>},
-		{<span class="tok-string">&quot;malformed stored challenge is rejected&quot;</span>, vectorVerifier, <span class="tok-string">&quot;not-base64url!&quot;</span>, <span class="tok-string">&quot;S256&quot;</span>, <span class="tok-keyword">false</span>},
-	}
-
-	<span class="tok-keyword">for</span> _, tt := <span class="tok-keyword">range</span> tests {
-		t.Run(tt.name, <span class="tok-keyword">func</span>(t *testing.T) {
-			got := oauthpkce.ValidatePKCES256(tt.verifier, tt.challenge, tt.method)
-			<span class="tok-keyword">if</span> got != tt.want {
-				t.Fatalf(<span class="tok-string">&quot;ValidatePKCES256() = %v, want %v&quot;</span>, got, tt.want)
-			}
-		})
-	}
-}
-
-<span class="tok-keyword">func</span> TestGeneratedVerifierRoundTrip(t *testing.T) {
-	verifier, err := oauthpkce.GenerateRandomVerifier(<span class="tok-number">64</span>)
-	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-		t.Fatalf(<span class="tok-string">&quot;GenerateRandomVerifier: %v&quot;</span>, err)
-	}
-	<span class="tok-keyword">if</span> !oauthpkce.IsValidCodeVerifier(verifier) {
-		t.Fatal(<span class="tok-string">&quot;generated verifier failed syntax validation&quot;</span>)
-	}
-	challenge, err := oauthpkce.ComputeChallengeS256(verifier)
-	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-		t.Fatalf(<span class="tok-string">&quot;ComputeChallengeS256: %v&quot;</span>, err)
-	}
-	<span class="tok-keyword">if</span> !oauthpkce.ValidatePKCES256(verifier, challenge, <span class="tok-string">&quot;S256&quot;</span>) {
-		t.Fatal(<span class="tok-string">&quot;generated verifier round trip was rejected&quot;</span>)
-	}
-}</code></pre>
+  <div role="tabpanel" id="source-oauth-pkce-verifier-panel-0" aria-labelledby="source-oauth-pkce-verifier-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0" data-source-filename="pkce.go" data-source-language="Go" data-source-path="appsec/scripts/oauth-pkce/pkce.go" data-source-lines="85" data-source-highlighter="shiki">
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="pkce.go source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-go"><span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// Package oauthpkce is a bounded educational S256-only OAuth PKCE verifier.</span></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// It deliberately never logs verifiers or challenges.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">package</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">oauthpkce</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">crypto/rand</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">crypto/sha256</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">crypto/subtle</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">encoding/base64</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">errors</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">fmt</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">math/big</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">regexp</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">MinVerifierLength</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">43</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">MaxVerifierLength</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">128</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">var</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> verifierPattern </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> regexp.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">MustCompile</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`^[A-Za-z0-9\-._~]+$`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// IsValidCodeVerifier enforces the RFC 7636 length and unreserved-character rules.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">verifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MinVerifierLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MaxVerifierLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		verifierPattern.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">MatchString</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// GenerateRandomVerifier returns an RFC 7636 verifier generated from crypto/rand.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">GenerateRandomVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">length</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">int</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MinVerifierLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MaxVerifierLength {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Errorf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;verifier length must be between </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%d</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> and </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%d</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> characters&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			MinVerifierLength,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			MaxVerifierLength,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">alphabet</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	alphabetLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> big.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">NewInt</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">int64</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(alphabet)))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	verifier </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">make</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, length)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> index </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> verifier {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		randomIndex, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> rand.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Int</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(rand.Reader, alphabetLength)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Errorf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;generate verifier entropy: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%w</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		verifier[index] </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> alphabet[randomIndex.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Int64</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// ComputeChallengeS256 derives BASE64URL(SHA-256(ASCII(code_verifier))).</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ComputeChallengeS256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">verifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, errors.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">New</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;code_verifier does not satisfy RFC 7636 syntax&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	sum </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sha256.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Sum256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> base64.RawURLEncoding.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">EncodeToString</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(sum[:]), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isValidS256Challenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">challenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	decoded, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> base64.RawURLEncoding.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Strict</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">().</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DecodeString</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(challenge)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(decoded) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sha256.Size</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// ValidatePKCES256 validates one token request against its stored authorization</span></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// transaction. It rejects method downgrade and malformed inputs before performing a</span></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// constant-time comparison of equal-length S256 challenges.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">codeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">storedChallenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">method</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> method </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(codeVerifier) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isValidS256Challenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(storedChallenge) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	computedChallenge, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ComputeChallengeS256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(codeVerifier)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> subtle.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ConstantTimeCompare</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		[]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(computedChallenge),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		[]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(storedChallenge),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+</code></pre>
+    </div><div role="tabpanel" id="source-oauth-pkce-verifier-panel-1" aria-labelledby="source-oauth-pkce-verifier-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" data-source-filename="pkce_test.go" data-source-language="Go" data-source-path="appsec/scripts/oauth-pkce/pkce_test.go" data-source-lines="56" data-source-highlighter="shiki" hidden>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="pkce_test.go source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-go"><span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">package</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">oauthpkce_test</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	oauthpkce </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">github.com/jasonachkar/cybersecurity-writeups/appsec/scripts/oauth-pkce</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">vectorVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">vectorChallenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">wrongVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXa&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">invalidCharacterVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjX!&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	tests </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">struct</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		name      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		verifier  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		challenge </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		method    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		want      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;RFC 7636 S256 vector is accepted&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;wrong verifier is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, wrongVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;plain method downgrade is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, vectorVerifier, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;plain&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;method names are not normalized&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;s256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;short verifier is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;too-short&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;non-unreserved character is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, invalidCharacterVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;malformed stored challenge is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;not-base64url!&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, tt </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tests {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Run</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tt.name, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			got </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tt.verifier, tt.challenge, tt.method)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> got </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tt.want {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ValidatePKCES256() = </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">, want </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, got, tt.want)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		})</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestGeneratedVerifierRoundTrip</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	verifier, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">GenerateRandomVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">64</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;GenerateRandomVerifier: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;generated verifier failed syntax validation&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	challenge, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ComputeChallengeS256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ComputeChallengeS256: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier, challenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;generated verifier round trip was rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+</code></pre>
     </div>
 </section>
 <h3>What it does</h3><p>A small, dependency-free implementation of RFC 7636&#39;s S256 PKCE flow: generating a valid random verifier, deriving its challenge, and validating a verifier against a stored challenge using a constant-time comparison.</p>

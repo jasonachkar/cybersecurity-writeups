@@ -225,545 +225,550 @@
 <!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
               
               <article class="md-content__inner md-typeset">
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/scripts/">Scripts</a></li><li aria-current="page">Threat Intelligence</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="threat-intelligence-scripts">Threat Intelligence scripts</h1><p>The threat intelligence scripts and packages I've written, with their source shown directly below &mdash; no need to open GitHub to read them.</p><section id="cloudtrail-analyzer" aria-labelledby="cloudtrail-analyzer-heading">
+<!-- docs-article-header:start --><header class="docs-article-header"><!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/scripts/">Scripts</a></li><li aria-current="page">Threat Intelligence</li></ol></nav><!-- docs-breadcrumbs:end -->
+<h1 id="threat-intelligence-scripts">Threat Intelligence scripts</h1></header><!-- docs-article-header:end --><p>The threat intelligence scripts and packages I've written, with their source shown directly below &mdash; no need to open GitHub to read them.</p><section id="cloudtrail-analyzer" aria-labelledby="cloudtrail-analyzer-heading">
 <h2 id="cloudtrail-analyzer-heading">CloudTrail suspicious-activity analyzer</h2>
 <p class="docs-script-badges"><span class="docs-badge">Go</span><span class="docs-badge">Read-only</span><span class="docs-badge">Go test suite (9 cases)</span></p>
 <section class="docs-source-viewer" data-source-viewer id="source-cloudtrail-analyzer" aria-label="Source code: analyze.go">
   <header class="docs-source-viewer__toolbar">
-    <span class="docs-source-viewer__toolbar-title">analyze.go</span>
-    <div class="docs-source-viewer__actions">
-      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
-      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    <div class="docs-source-viewer__identity">
+      <div class="docs-source-viewer__title-row"><strong class="docs-source-viewer__toolbar-title" data-source-active-filename>analyze.go</strong><span class="docs-source-viewer__summary"><span data-source-active-language>Go</span><span aria-hidden="true"> · </span><span data-source-active-lines>276 lines</span></span></div>
+      <code class="docs-source-viewer__path" data-source-active-path title="threat-intel/scripts/cloudtrail/analyze.go">threat-intel/scripts/cloudtrail/analyze.go</code>
     </div>
+    <div class="docs-source-viewer__actions" data-source-actions>
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-pressed="false" data-wrap-source>Wrap</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand</button>
+    </div>
+    <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
   </header>
   <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-cloudtrail-analyzer-tab-0" aria-controls="source-cloudtrail-analyzer-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Implementation</button><button type="button" role="tab" id="source-cloudtrail-analyzer-tab-1" aria-controls="source-cloudtrail-analyzer-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Tests</button></div>
-  <div role="tabpanel" id="source-cloudtrail-analyzer-panel-0" tabindex="0" aria-labelledby="source-cloudtrail-analyzer-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">analyze.go</span><code class="docs-source-viewer__path">threat-intel/scripts/cloudtrail/analyze.go</code><span class="docs-source-viewer__lines">276 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="analyze.go source code" class="language-go"><span class="tok-comment">// Package cloudtrail is a bounded educational analyzer for AWS CloudTrail</span>
-<span class="tok-comment">// event fixtures. It is not a production detection product and does not</span>
-<span class="tok-comment">// claim AWS-equivalent evaluation.</span>
-<span class="tok-keyword">package</span> cloudtrail
-
-<span class="tok-keyword">import</span> (
-	<span class="tok-string">&quot;encoding/json&quot;</span>
-	<span class="tok-string">&quot;fmt&quot;</span>
-	<span class="tok-string">&quot;sort&quot;</span>
-	<span class="tok-string">&quot;strings&quot;</span>
-	<span class="tok-string">&quot;time&quot;</span>
-)
-
-<span class="tok-comment">// Event is a subset of a CloudTrail management event used by this teaching analyzer.</span>
-<span class="tok-keyword">type</span> Event <span class="tok-keyword">struct</span> {
-	EventTime           time.Time      <span class="tok-string">`json:&quot;-&quot;`</span>
-	EventTimeRaw        string         <span class="tok-string">`json:&quot;eventTime&quot;`</span>
-	EventName           string         <span class="tok-string">`json:&quot;eventName&quot;`</span>
-	EventSource         string         <span class="tok-string">`json:&quot;eventSource&quot;`</span>
-	AWSRegion           string         <span class="tok-string">`json:&quot;awsRegion&quot;`</span>
-	SourceIPAddress     string         <span class="tok-string">`json:&quot;sourceIPAddress&quot;`</span>
-	ErrorCode           string         <span class="tok-string">`json:&quot;errorCode,omitempty&quot;`</span>
-	ErrorMessage        string         <span class="tok-string">`json:&quot;errorMessage,omitempty&quot;`</span>
-	UserIdentity        UserIdentity   <span class="tok-string">`json:&quot;userIdentity&quot;`</span>
-	ResponseElements    <span class="tok-keyword">map</span>[string]any <span class="tok-string">`json:&quot;responseElements&quot;`</span>
-	AdditionalEventData <span class="tok-keyword">map</span>[string]any <span class="tok-string">`json:&quot;additionalEventData&quot;`</span>
-}
-
-<span class="tok-comment">// UserIdentity identifies the caller.</span>
-<span class="tok-keyword">type</span> UserIdentity <span class="tok-keyword">struct</span> {
-	Type        string <span class="tok-string">`json:&quot;type&quot;`</span>
-	PrincipalID string <span class="tok-string">`json:&quot;principalId&quot;`</span>
-	ARN         string <span class="tok-string">`json:&quot;arn&quot;`</span>
-	AccountID   string <span class="tok-string">`json:&quot;accountId&quot;`</span>
-}
-
-<span class="tok-comment">// Finding is a high-signal observation that requires investigation.</span>
-<span class="tok-keyword">type</span> Finding <span class="tok-keyword">struct</span> {
-	Type        string
-	Description string
-	ActorARN    string
-	SourceIP    string
-	EventName   string
-	Time        string
-}
-
-<span class="tok-comment">// Options configures sequence and threshold detection.</span>
-<span class="tok-keyword">type</span> Options <span class="tok-keyword">struct</span> {
-	PrivilegeEscalationWindow time.Duration
-	KMSDecryptDenyThreshold   int
-}
-
-<span class="tok-comment">// DefaultOptions returns conservative teaching defaults.</span>
-<span class="tok-keyword">func</span> DefaultOptions() Options {
-	<span class="tok-keyword">return</span> Options{
-		PrivilegeEscalationWindow: <span class="tok-number">15</span> * time.Minute,
-		KMSDecryptDenyThreshold:   <span class="tok-number">3</span>,
-	}
-}
-
-<span class="tok-comment">// ParseEvents unmarshals CloudTrail JSON and rejects malformed timestamps.</span>
-<span class="tok-keyword">func</span> ParseEvents(raw []byte) ([]Event, error) {
-	<span class="tok-keyword">var</span> events []Event
-	<span class="tok-keyword">if</span> err := json.Unmarshal(raw, &amp;events); err != <span class="tok-keyword">nil</span> {
-		<span class="tok-keyword">return</span> <span class="tok-keyword">nil</span>, fmt.Errorf(<span class="tok-string">&quot;decode cloudtrail events: %w&quot;</span>, err)
-	}
-	<span class="tok-keyword">for</span> i := <span class="tok-keyword">range</span> events {
-		<span class="tok-keyword">if</span> strings.TrimSpace(events[i].EventTimeRaw) == <span class="tok-string">&quot;&quot;</span> {
-			<span class="tok-keyword">return</span> <span class="tok-keyword">nil</span>, fmt.Errorf(<span class="tok-string">&quot;event %d: missing eventTime&quot;</span>, i)
-		}
-		parsed, err := time.Parse(time.RFC3339, events[i].EventTimeRaw)
-		<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-			<span class="tok-keyword">return</span> <span class="tok-keyword">nil</span>, fmt.Errorf(<span class="tok-string">&quot;event %d: malformed eventTime %q: %w&quot;</span>, i, events[i].EventTimeRaw, err)
-		}
-		events[i].EventTime = parsed
-		<span class="tok-keyword">if</span> events[i].ResponseElements == <span class="tok-keyword">nil</span> {
-			events[i].ResponseElements = <span class="tok-keyword">map</span>[string]any{}
-		}
-		<span class="tok-keyword">if</span> events[i].AdditionalEventData == <span class="tok-keyword">nil</span> {
-			events[i].AdditionalEventData = <span class="tok-keyword">map</span>[string]any{}
-		}
-	}
-	<span class="tok-keyword">return</span> events, <span class="tok-keyword">nil</span>
-}
-
-<span class="tok-comment">// Analyze returns findings for the supplied events.</span>
-<span class="tok-keyword">func</span> Analyze(events []Event, opts Options) []Finding {
-	<span class="tok-keyword">if</span> opts.PrivilegeEscalationWindow &lt;= <span class="tok-number">0</span> {
-		opts.PrivilegeEscalationWindow = DefaultOptions().PrivilegeEscalationWindow
-	}
-	<span class="tok-keyword">if</span> opts.KMSDecryptDenyThreshold &lt;= <span class="tok-number">0</span> {
-		opts.KMSDecryptDenyThreshold = DefaultOptions().KMSDecryptDenyThreshold
-	}
-
-	<span class="tok-keyword">var</span> findings []Finding
-	findings = append(findings, analyzeConsoleLogins(events)...)
-	findings = append(findings, analyzePrivilegeChains(events, opts.PrivilegeEscalationWindow)...)
-	findings = append(findings, analyzeKMSDecryptDenies(events, opts.KMSDecryptDenyThreshold)...)
-	findings = append(findings, analyzeLogTampering(events)...)
-	<span class="tok-keyword">return</span> findings
-}
-
-<span class="tok-keyword">func</span> actorARN(event Event) string {
-	<span class="tok-keyword">return</span> strings.TrimSpace(event.UserIdentity.ARN)
-}
-
-<span class="tok-keyword">func</span> analyzeConsoleLogins(events []Event) []Finding {
-	<span class="tok-keyword">var</span> findings []Finding
-	<span class="tok-keyword">for</span> _, event := <span class="tok-keyword">range</span> events {
-		<span class="tok-keyword">if</span> event.EventName != <span class="tok-string">&quot;ConsoleLogin&quot;</span> {
-			<span class="tok-keyword">continue</span>
-		}
-		actor := actorARN(event)
-		<span class="tok-keyword">if</span> actor == <span class="tok-string">&quot;&quot;</span> {
-			findings = append(findings, Finding{
-				Type:        <span class="tok-string">&quot;malformed-actor&quot;</span>,
-				Description: <span class="tok-string">&quot;ConsoleLogin event is missing a usable userIdentity.arn&quot;</span>,
-				EventName:   event.EventName,
-				SourceIP:    event.SourceIPAddress,
-				Time:        event.EventTimeRaw,
-			})
-			<span class="tok-keyword">continue</span>
-		}
-
-		loginResult, ok := event.ResponseElements[<span class="tok-string">&quot;ConsoleLogin&quot;</span>].(string)
-		<span class="tok-keyword">if</span> !ok || loginResult != <span class="tok-string">&quot;Success&quot;</span> {
-			<span class="tok-comment">// Failed or incomplete login is not a successful non-MFA login.</span>
-			<span class="tok-keyword">continue</span>
-		}
-
-		mfaRaw, hasMFA := event.AdditionalEventData[<span class="tok-string">&quot;MFAUsed&quot;</span>]
-		mfa, mfaIsString := mfaRaw.(string)
-		<span class="tok-keyword">switch</span> {
-		<span class="tok-keyword">case</span> !hasMFA || !mfaIsString:
-			findings = append(findings, Finding{
-				Type:        <span class="tok-string">&quot;console-login-mfa-metadata-missing&quot;</span>,
-				Description: <span class="tok-string">&quot;Successful ConsoleLogin lacks explicit MFAUsed metadata; investigate session assurance separately&quot;</span>,
-				ActorARN:    actor,
-				SourceIP:    event.SourceIPAddress,
-				EventName:   event.EventName,
-				Time:        event.EventTimeRaw,
-			})
-		<span class="tok-keyword">case</span> strings.EqualFold(mfa, <span class="tok-string">&quot;No&quot;</span>) || strings.EqualFold(mfa, <span class="tok-string">&quot;false&quot;</span>):
-			findings = append(findings, Finding{
-				Type:        <span class="tok-string">&quot;console-login-without-mfa&quot;</span>,
-				Description: <span class="tok-string">&quot;Successful ConsoleLogin reported MFAUsed=No&quot;</span>,
-				ActorARN:    actor,
-				SourceIP:    event.SourceIPAddress,
-				EventName:   event.EventName,
-				Time:        event.EventTimeRaw,
-			})
-		}
-	}
-	<span class="tok-keyword">return</span> findings
-}
-
-<span class="tok-keyword">func</span> analyzePrivilegeChains(events []Event, window time.Duration) []Finding {
-	byActor := <span class="tok-keyword">map</span>[string][]Event{}
-	<span class="tok-keyword">for</span> _, event := <span class="tok-keyword">range</span> events {
-		actor := actorARN(event)
-		<span class="tok-keyword">if</span> actor == <span class="tok-string">&quot;&quot;</span> {
-			<span class="tok-keyword">continue</span>
-		}
-		byActor[actor] = append(byActor[actor], event)
-	}
-
-	<span class="tok-keyword">var</span> findings []Finding
-	<span class="tok-keyword">for</span> actor, actorEvents := <span class="tok-keyword">range</span> byActor {
-		sorted := append([]Event(<span class="tok-keyword">nil</span>), actorEvents...)
-		sort.SliceStable(sorted, <span class="tok-keyword">func</span>(i, j int) bool {
-			<span class="tok-keyword">return</span> sorted[i].EventTime.Before(sorted[j].EventTime)
-		})
-
-		<span class="tok-keyword">for</span> i := <span class="tok-number">0</span>; i &lt; len(sorted); i++ {
-			<span class="tok-keyword">if</span> sorted[i].EventName != <span class="tok-string">&quot;CreateUser&quot;</span> {
-				<span class="tok-keyword">continue</span>
-			}
-			<span class="tok-keyword">for</span> j := i + <span class="tok-number">1</span>; j &lt; len(sorted); j++ {
-				diff := sorted[j].EventTime.Sub(sorted[i].EventTime)
-				<span class="tok-keyword">if</span> diff &lt; <span class="tok-number">0</span> {
-					<span class="tok-comment">// Chronological sort makes this unreachable; guard anyway.</span>
-					<span class="tok-keyword">continue</span>
-				}
-				<span class="tok-keyword">if</span> diff &gt; window {
-					<span class="tok-keyword">break</span>
-				}
-				<span class="tok-keyword">if</span> sorted[j].EventName == <span class="tok-string">&quot;AttachUserPolicy&quot;</span> || sorted[j].EventName == <span class="tok-string">&quot;PutUserPolicy&quot;</span> {
-					findings = append(findings, Finding{
-						Type: <span class="tok-string">&quot;privilege-escalation-sequence&quot;</span>,
-						Description: fmt.Sprintf(
-							<span class="tok-string">&quot;CreateUser followed by %s within %s for the same actor; investigate for unauthorized privilege growth&quot;</span>,
-							sorted[j].EventName,
-							window,
-						),
-						ActorARN:  actor,
-						SourceIP:  sorted[j].SourceIPAddress,
-						EventName: sorted[j].EventName,
-						Time:      sorted[j].EventTimeRaw,
-					})
-					<span class="tok-keyword">break</span>
-				}
-			}
-		}
-	}
-	<span class="tok-keyword">return</span> findings
-}
-
-<span class="tok-keyword">func</span> analyzeKMSDecryptDenies(events []Event, threshold int) []Finding {
-	counts := <span class="tok-keyword">map</span>[string][]Event{}
-	<span class="tok-keyword">for</span> _, event := <span class="tok-keyword">range</span> events {
-		<span class="tok-keyword">if</span> event.EventSource != <span class="tok-string">&quot;kms.amazonaws.com&quot;</span> || event.EventName != <span class="tok-string">&quot;Decrypt&quot;</span> {
-			<span class="tok-keyword">continue</span>
-		}
-		<span class="tok-keyword">if</span> event.ErrorCode != <span class="tok-string">&quot;AccessDenied&quot;</span> &amp;&amp; event.ErrorCode != <span class="tok-string">&quot;AccessDeniedException&quot;</span> {
-			<span class="tok-keyword">continue</span>
-		}
-		actor := actorARN(event)
-		<span class="tok-keyword">if</span> actor == <span class="tok-string">&quot;&quot;</span> {
-			<span class="tok-keyword">continue</span>
-		}
-		counts[actor] = append(counts[actor], event)
-	}
-
-	<span class="tok-keyword">var</span> findings []Finding
-	<span class="tok-keyword">for</span> actor, denied := <span class="tok-keyword">range</span> counts {
-		<span class="tok-keyword">if</span> len(denied) &lt; threshold {
-			<span class="tok-comment">// A single denied decrypt is not &quot;multiple attempts&quot;.</span>
-			<span class="tok-keyword">continue</span>
-		}
-		last := denied[len(denied)-<span class="tok-number">1</span>]
-		findings = append(findings, Finding{
-			Type: <span class="tok-string">&quot;kms-decrypt-denied-threshold&quot;</span>,
-			Description: fmt.Sprintf(
-				<span class="tok-string">&quot;%d AccessDenied Decrypt attempts for the same actor met the configured threshold of %d&quot;</span>,
-				len(denied),
-				threshold,
-			),
-			ActorARN:  actor,
-			SourceIP:  last.SourceIPAddress,
-			EventName: <span class="tok-string">&quot;Decrypt&quot;</span>,
-			Time:      last.EventTimeRaw,
-		})
-	}
-	<span class="tok-keyword">return</span> findings
-}
-
-<span class="tok-keyword">func</span> analyzeLogTampering(events []Event) []Finding {
-	interesting := <span class="tok-keyword">map</span>[string]<span class="tok-keyword">struct</span>{}{
-		<span class="tok-string">&quot;StopLogging&quot;</span>:                 {},
-		<span class="tok-string">&quot;DeleteTrail&quot;</span>:                 {},
-		<span class="tok-string">&quot;UpdateTrail&quot;</span>:                 {},
-		<span class="tok-string">&quot;PutEventSelectors&quot;</span>:           {},
-		<span class="tok-string">&quot;DeleteEventDataStore&quot;</span>:        {},
-		<span class="tok-string">&quot;StopEventDataStoreIngestion&quot;</span>: {},
-	}
-
-	<span class="tok-keyword">var</span> findings []Finding
-	<span class="tok-keyword">for</span> _, event := <span class="tok-keyword">range</span> events {
-		<span class="tok-keyword">if</span> _, ok := interesting[event.EventName]; !ok {
-			<span class="tok-keyword">continue</span>
-		}
-		actor := actorARN(event)
-		findings = append(findings, Finding{
-			Type: <span class="tok-string">&quot;cloudtrail-admin-event&quot;</span>,
-			Description: fmt.Sprintf(
-				<span class="tok-string">&quot;High-signal CloudTrail administrative event %s observed; investigate intent and change authorization. This analyzer does not assert the event is malicious by itself.&quot;</span>,
-				event.EventName,
-			),
-			ActorARN:  actor,
-			SourceIP:  event.SourceIPAddress,
-			EventName: event.EventName,
-			Time:      event.EventTimeRaw,
-		})
-	}
-	<span class="tok-keyword">return</span> findings
-}</code></pre>
-    </div><div role="tabpanel" id="source-cloudtrail-analyzer-panel-1" tabindex="0" aria-labelledby="source-cloudtrail-analyzer-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">analyze_test.go</span><code class="docs-source-viewer__path">threat-intel/scripts/cloudtrail/analyze_test.go</code><span class="docs-source-viewer__lines">246 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="analyze_test.go source code" class="language-go"><span class="tok-keyword">package</span> cloudtrail_test
-
-<span class="tok-keyword">import</span> (
-	<span class="tok-string">&quot;strings&quot;</span>
-	<span class="tok-string">&quot;testing&quot;</span>
-	<span class="tok-string">&quot;time&quot;</span>
-
-	cloudtrail <span class="tok-string">&quot;github.com/jasonachkar/cybersecurity-writeups/threat-intel/scripts/cloudtrail&quot;</span>
-)
-
-<span class="tok-keyword">func</span> findingTypes(findings []cloudtrail.Finding) []string {
-	out := make([]string, <span class="tok-number">0</span>, len(findings))
-	<span class="tok-keyword">for</span> _, finding := <span class="tok-keyword">range</span> findings {
-		out = append(out, finding.Type)
-	}
-	<span class="tok-keyword">return</span> out
-}
-
-<span class="tok-keyword">func</span> hasType(findings []cloudtrail.Finding, want string) bool {
-	<span class="tok-keyword">for</span> _, finding := <span class="tok-keyword">range</span> findings {
-		<span class="tok-keyword">if</span> finding.Type == want {
-			<span class="tok-keyword">return</span> <span class="tok-keyword">true</span>
-		}
-	}
-	<span class="tok-keyword">return</span> <span class="tok-keyword">false</span>
-}
-
-<span class="tok-keyword">func</span> TestParseEventsRejectsMalformedTimestamp(t *testing.T) {
-	_, err := cloudtrail.ParseEvents([]byte(<span class="tok-string">`[
-		{&quot;eventTime&quot;:&quot;not-a-time&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111:user/a&quot;}}
-	]`</span>))
-	<span class="tok-keyword">if</span> err == <span class="tok-keyword">nil</span> {
-		t.Fatal(<span class="tok-string">&quot;expected malformed eventTime to fail&quot;</span>)
-	}
-}
-
-<span class="tok-keyword">func</span> TestAnalyzeConsoleLoginCases(t *testing.T) {
-	tests := []<span class="tok-keyword">struct</span> {
-		name    string
-		raw     string
-		want    string
-		notWant string
-	}{
-		{
-			name: <span class="tok-string">&quot;successful login with MFA&quot;</span>,
-			raw: <span class="tok-string">`[
-			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
-			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},
-			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},
-			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:&quot;Yes&quot;}}
-			]`</span>,
-			notWant: <span class="tok-string">&quot;console-login-without-mfa&quot;</span>,
-		},
-		{
-			name: <span class="tok-string">&quot;successful login without MFA&quot;</span>,
-			raw: <span class="tok-string">`[
-			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
-			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},
-			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},
-			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:&quot;No&quot;}}
-			]`</span>,
-			want: <span class="tok-string">&quot;console-login-without-mfa&quot;</span>,
-		},
-		{
-			name: <span class="tok-string">&quot;failed login without MFA metadata is not treated as success&quot;</span>,
-			raw: <span class="tok-string">`[
-			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
-			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},
-			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Failure&quot;},
-			   &quot;errorCode&quot;:&quot;FailedAuthentication&quot;}
-			]`</span>,
-			notWant: <span class="tok-string">&quot;console-login-without-mfa&quot;</span>,
-		},
-		{
-			name: <span class="tok-string">&quot;missing MFA metadata on success&quot;</span>,
-			raw: <span class="tok-string">`[
-			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
-			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},
-			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},
-			   &quot;additionalEventData&quot;:{}}
-			]`</span>,
-			want: <span class="tok-string">&quot;console-login-mfa-metadata-missing&quot;</span>,
-		},
-		{
-			name: <span class="tok-string">&quot;malformed additional data type&quot;</span>,
-			raw: <span class="tok-string">`[
-			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
-			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},
-			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},
-			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:true}}
-			]`</span>,
-			want: <span class="tok-string">&quot;console-login-mfa-metadata-missing&quot;</span>,
-		},
-		{
-			name: <span class="tok-string">&quot;empty ARN&quot;</span>,
-			raw: <span class="tok-string">`[
-			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,
-			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;&quot;},
-			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},
-			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:&quot;No&quot;}}
-			]`</span>,
-			want: <span class="tok-string">&quot;malformed-actor&quot;</span>,
-		},
-	}
-
-	<span class="tok-keyword">for</span> _, tt := <span class="tok-keyword">range</span> tests {
-		t.Run(tt.name, <span class="tok-keyword">func</span>(t *testing.T) {
-			events, err := cloudtrail.ParseEvents([]byte(tt.raw))
-			<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-				t.Fatalf(<span class="tok-string">&quot;ParseEvents: %v&quot;</span>, err)
-			}
-			findings := cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
-			<span class="tok-keyword">if</span> tt.want != <span class="tok-string">&quot;&quot;</span> &amp;&amp; !hasType(findings, tt.want) {
-				t.Fatalf(<span class="tok-string">&quot;missing %s in %v&quot;</span>, tt.want, findingTypes(findings))
-			}
-			<span class="tok-keyword">if</span> tt.notWant != <span class="tok-string">&quot;&quot;</span> &amp;&amp; hasType(findings, tt.notWant) {
-				t.Fatalf(<span class="tok-string">&quot;unexpected %s in %v&quot;</span>, tt.notWant, findingTypes(findings))
-			}
-		})
-	}
-}
-
-<span class="tok-keyword">func</span> TestPrivilegeEscalationSequence(t *testing.T) {
-	raw := <span class="tok-string">`[
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:05:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
-	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,
-	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
-	]`</span>
-	events, err := cloudtrail.ParseEvents([]byte(raw))
-	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-		t.Fatal(err)
-	}
-	findings := cloudtrail.Analyze(events, cloudtrail.Options{
-		PrivilegeEscalationWindow: <span class="tok-number">15</span> * time.Minute,
-		KMSDecryptDenyThreshold:   <span class="tok-number">3</span>,
-	})
-	<span class="tok-keyword">if</span> !hasType(findings, <span class="tok-string">&quot;privilege-escalation-sequence&quot;</span>) {
-		t.Fatalf(<span class="tok-string">&quot;expected sorted CreateUser→AttachUserPolicy chain, got %v&quot;</span>, findingTypes(findings))
-	}
-}
-
-<span class="tok-keyword">func</span> TestPrivilegeEscalationOutsideWindow(t *testing.T) {
-	raw := <span class="tok-string">`[
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,
-	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
-	  {&quot;eventTime&quot;:&quot;2026-07-01T13:00:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,
-	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
-	]`</span>
-	events, err := cloudtrail.ParseEvents([]byte(raw))
-	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-		t.Fatal(err)
-	}
-	findings := cloudtrail.Analyze(events, cloudtrail.Options{
-		PrivilegeEscalationWindow: <span class="tok-number">15</span> * time.Minute,
-		KMSDecryptDenyThreshold:   <span class="tok-number">3</span>,
-	})
-	<span class="tok-keyword">if</span> hasType(findings, <span class="tok-string">&quot;privilege-escalation-sequence&quot;</span>) {
-		t.Fatal(<span class="tok-string">&quot;chain outside window should not match&quot;</span>)
-	}
-}
-
-<span class="tok-keyword">func</span> TestNegativeTimeDifferencePrevention(t *testing.T) {
-	<span class="tok-comment">// Same actor, Attach before Create chronologically after sort should not</span>
-	<span class="tok-comment">// create a reverse chain.</span>
-	raw := <span class="tok-string">`[
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,
-	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:10:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,
-	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
-	]`</span>
-	events, err := cloudtrail.ParseEvents([]byte(raw))
-	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-		t.Fatal(err)
-	}
-	findings := cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
-	<span class="tok-keyword">if</span> hasType(findings, <span class="tok-string">&quot;privilege-escalation-sequence&quot;</span>) {
-		t.Fatal(<span class="tok-string">&quot;reverse chronological Attach→Create must not correlate&quot;</span>)
-	}
-}
-
-<span class="tok-keyword">func</span> TestKMSDecryptThresholdAndSingleAttempt(t *testing.T) {
-	single := <span class="tok-string">`[
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,
-	   &quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
-	]`</span>
-	events, err := cloudtrail.ParseEvents([]byte(single))
-	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-		t.Fatal(err)
-	}
-	findings := cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
-	<span class="tok-keyword">if</span> hasType(findings, <span class="tok-string">&quot;kms-decrypt-denied-threshold&quot;</span>) {
-		t.Fatal(<span class="tok-string">&quot;single AccessDenied decrypt must not claim multiple attempts&quot;</span>)
-	}
-
-	repeated := <span class="tok-string">`[
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,&quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:01:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,&quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:02:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,&quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
-	]`</span>
-	events, err = cloudtrail.ParseEvents([]byte(repeated))
-	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-		t.Fatal(err)
-	}
-	findings = cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
-	<span class="tok-keyword">if</span> !hasType(findings, <span class="tok-string">&quot;kms-decrypt-denied-threshold&quot;</span>) {
-		t.Fatal(<span class="tok-string">&quot;expected thresholded decrypt findings&quot;</span>)
-	}
-}
-
-<span class="tok-keyword">func</span> TestActorSeparation(t *testing.T) {
-	raw := <span class="tok-string">`[
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:01:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/bob&quot;}}
-	]`</span>
-	events, err := cloudtrail.ParseEvents([]byte(raw))
-	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-		t.Fatal(err)
-	}
-	findings := cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
-	<span class="tok-keyword">if</span> hasType(findings, <span class="tok-string">&quot;privilege-escalation-sequence&quot;</span>) {
-		t.Fatal(<span class="tok-string">&quot;different actors must not form a chain&quot;</span>)
-	}
-}
-
-<span class="tok-keyword">func</span> TestLogTamperingClassification(t *testing.T) {
-	raw := <span class="tok-string">`[
-	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;UpdateTrail&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}
-	]`</span>
-	events, err := cloudtrail.ParseEvents([]byte(raw))
-	<span class="tok-keyword">if</span> err != <span class="tok-keyword">nil</span> {
-		t.Fatal(err)
-	}
-	findings := cloudtrail.Analyze(events, cloudtrail.DefaultOptions())
-	<span class="tok-keyword">if</span> !hasType(findings, <span class="tok-string">&quot;cloudtrail-admin-event&quot;</span>) {
-		t.Fatal(<span class="tok-string">&quot;expected high-signal admin classification&quot;</span>)
-	}
-	<span class="tok-keyword">for</span> _, finding := <span class="tok-keyword">range</span> findings {
-		<span class="tok-keyword">if</span> finding.Type == <span class="tok-string">&quot;cloudtrail-admin-event&quot;</span> &amp;&amp; finding.EventName != <span class="tok-string">&quot;UpdateTrail&quot;</span> {
-			t.Fatalf(<span class="tok-string">&quot;event name not preserved: %s&quot;</span>, finding.EventName)
-		}
-		<span class="tok-keyword">if</span> finding.Type == <span class="tok-string">&quot;cloudtrail-admin-event&quot;</span> &amp;&amp; !strings.Contains(finding.Description, <span class="tok-string">&quot;does not assert the event is malicious&quot;</span>) {
-			t.Fatalf(<span class="tok-string">&quot;description overclaims malice: %s&quot;</span>, finding.Description)
-		}
-	}
-}</code></pre>
+  <div role="tabpanel" id="source-cloudtrail-analyzer-panel-0" aria-labelledby="source-cloudtrail-analyzer-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0" data-source-filename="analyze.go" data-source-language="Go" data-source-path="threat-intel/scripts/cloudtrail/analyze.go" data-source-lines="276" data-source-highlighter="shiki" data-source-expandable>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="analyze.go source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-go"><span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// Package cloudtrail is a bounded educational analyzer for AWS CloudTrail</span></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// event fixtures. It is not a production detection product and does not</span></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// claim AWS-equivalent evaluation.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">package</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">cloudtrail</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">encoding/json</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">fmt</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">sort</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">strings</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">time</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// Event is a subset of a CloudTrail management event used by this teaching analyzer.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">type</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">struct</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	EventTime           </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">time</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Time</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;-&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	EventTimeRaw        </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">         </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;eventTime&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	EventName           </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">         </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;eventName&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	EventSource         </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">         </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;eventSource&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	AWSRegion           </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">         </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;awsRegion&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	SourceIPAddress     </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">         </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;sourceIPAddress&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	ErrorCode           </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">         </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;errorCode,omitempty&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	ErrorMessage        </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">         </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;errorMessage,omitempty&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	UserIdentity        </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">UserIdentity</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">   </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;userIdentity&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	ResponseElements    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">[</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">any</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;responseElements&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	AdditionalEventData </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">[</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">any</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;additionalEventData&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// UserIdentity identifies the caller.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">type</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">UserIdentity</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">struct</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	Type        </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;type&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	PrincipalID </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;principalId&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	ARN         </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;arn&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	AccountID   </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`json:&quot;accountId&quot;`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// Finding is a high-signal observation that requires investigation.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">type</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">struct</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	Type        </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	Description </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	ActorARN    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	SourceIP    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	EventName   </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	Time        </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// Options configures sequence and threshold detection.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">type</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Options</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">struct</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	PrivilegeEscalationWindow </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">time</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Duration</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	KMSDecryptDenyThreshold   </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">int</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// DefaultOptions returns conservative teaching defaults.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DefaultOptions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">() </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Options</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Options</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		PrivilegeEscalationWindow: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">15</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> time.Minute,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		KMSDecryptDenyThreshold:   </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">3</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// ParseEvents unmarshals CloudTrail JSON and rejects malformed timestamps.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ParseEvents</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">raw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) ([]</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">var</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> events []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Event</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> json.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Unmarshal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(raw, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">events); err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Errorf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;decode cloudtrail events: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%w</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> i </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> events {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> strings.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TrimSpace</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events[i].EventTimeRaw) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Errorf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;event </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%d</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">: missing eventTime&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, i)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		parsed, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> time.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Parse</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(time.RFC3339, events[i].EventTimeRaw)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Errorf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;event </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%d</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">: malformed eventTime </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%q</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%w</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, i, events[i].EventTimeRaw, err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		events[i].EventTime </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> parsed</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> events[i].ResponseElements </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			events[i].ResponseElements </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">[</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">any</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> events[i].AdditionalEventData </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			events[i].AdditionalEventData </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">[</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">any</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> events, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// Analyze returns findings for the supplied events.</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Analyze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">events</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">opts</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Options</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> opts.PrivilegeEscalationWindow </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		opts.PrivilegeEscalationWindow </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DefaultOptions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">().PrivilegeEscalationWindow</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> opts.KMSDecryptDenyThreshold </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		opts.KMSDecryptDenyThreshold </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DefaultOptions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">().KMSDecryptDenyThreshold</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">var</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">analyzeConsoleLogins</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events)</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">...</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">analyzePrivilegeChains</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events, opts.PrivilegeEscalationWindow)</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">...</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">analyzeKMSDecryptDenies</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events, opts.KMSDecryptDenyThreshold)</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">...</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">analyzeLogTampering</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events)</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">...</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">actorARN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> strings.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TrimSpace</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(event.UserIdentity.ARN)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">analyzeConsoleLogins</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">events</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">var</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, event </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> events {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> event.EventName </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ConsoleLogin&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">continue</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		actor </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">actorARN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(event)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> actor </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				Type:        </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;malformed-actor&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				Description: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ConsoleLogin event is missing a usable userIdentity.arn&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				EventName:   event.EventName,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				SourceIP:    event.SourceIPAddress,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				Time:        event.EventTimeRaw,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			})</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">continue</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		loginResult, ok </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> event.ResponseElements[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ConsoleLogin&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">].(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">ok </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> loginResult </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Success&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// Failed or incomplete login is not a successful non-MFA login.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">continue</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		mfaRaw, hasMFA </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> event.AdditionalEventData[</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;MFAUsed&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		mfa, mfaIsString </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> mfaRaw.(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">switch</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">case</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">hasMFA </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">mfaIsString:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				Type:        </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;console-login-mfa-metadata-missing&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				Description: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Successful ConsoleLogin lacks explicit MFAUsed metadata; investigate session assurance separately&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				ActorARN:    actor,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				SourceIP:    event.SourceIPAddress,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				EventName:   event.EventName,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				Time:        event.EventTimeRaw,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			})</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">case</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> strings.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">EqualFold</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(mfa, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;No&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> strings.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">EqualFold</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(mfa, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;false&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">):</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				Type:        </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;console-login-without-mfa&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				Description: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Successful ConsoleLogin reported MFAUsed=No&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				ActorARN:    actor,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				SourceIP:    event.SourceIPAddress,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				EventName:   event.EventName,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				Time:        event.EventTimeRaw,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			})</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">analyzePrivilegeChains</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">events</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">window</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">time</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Duration</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	byActor </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">[</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">][]</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, event </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> events {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		actor </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">actorARN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(event)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> actor </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">continue</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		byActor[actor] </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(byActor[actor], event)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">var</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> actor, actorEvents </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> byActor {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		sorted </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">), actorEvents</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">...</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		sort.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">SliceStable</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(sorted, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">i</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">j</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">int</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sorted[i].EventTime.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Before</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(sorted[j].EventTime)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		})</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> i </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">; i </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(sorted); i</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">++</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sorted[i].EventName </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;CreateUser&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">continue</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> j </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> i </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">+</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">; j </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(sorted); j</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">++</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				diff </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sorted[j].EventTime.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Sub</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(sorted[i].EventTime)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> diff </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">					</span><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// Chronological sort makes this unreachable; guard anyway.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">					</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">continue</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> diff </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> window {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">					</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">break</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sorted[j].EventName </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;AttachUserPolicy&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sorted[j].EventName </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;PutUserPolicy&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">					findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">						Type: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;privilege-escalation-sequence&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">						Description: fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Sprintf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">							</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;CreateUser followed by </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%s</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> within </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%s</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> for the same actor; investigate for unauthorized privilege growth&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">							sorted[j].EventName,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">							window,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">						),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">						ActorARN:  actor,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">						SourceIP:  sorted[j].SourceIPAddress,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">						EventName: sorted[j].EventName,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">						Time:      sorted[j].EventTimeRaw,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">					})</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">					</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">break</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">analyzeKMSDecryptDenies</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">events</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">threshold</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">int</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	counts </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">[</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">][]</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, event </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> events {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> event.EventSource </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;kms.amazonaws.com&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> event.EventName </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Decrypt&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">continue</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> event.ErrorCode </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;AccessDenied&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> event.ErrorCode </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;AccessDeniedException&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">continue</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		actor </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">actorARN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(event)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> actor </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">continue</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		counts[actor] </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(counts[actor], event)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">var</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> actor, denied </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> counts {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(denied) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> threshold {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// A single denied decrypt is not &quot;multiple attempts&quot;.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">continue</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		last </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> denied[</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(denied)</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">-</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			Type: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;kms-decrypt-denied-threshold&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			Description: fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Sprintf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%d</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> AccessDenied Decrypt attempts for the same actor met the configured threshold of </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%d</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(denied),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				threshold,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			ActorARN:  actor,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			SourceIP:  last.SourceIPAddress,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			EventName: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Decrypt&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			Time:      last.EventTimeRaw,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		})</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">analyzeLogTampering</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">events</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Event</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	interesting </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">[</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">struct</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{}{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;StopLogging&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:                 {},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;DeleteTrail&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:                 {},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;UpdateTrail&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:                 {},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;PutEventSelectors&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:           {},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;DeleteEventDataStore&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:        {},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;StopEventDataStoreIngestion&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: {},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">var</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, event </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> events {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, ok </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> interesting[event.EventName]; </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">ok {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">continue</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		actor </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">actorARN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(event)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			Type: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;cloudtrail-admin-event&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			Description: fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Sprintf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;High-signal CloudTrail administrative event </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%s</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> observed; investigate intent and change authorization. This analyzer does not assert the event is malicious by itself.&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				event.EventName,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			ActorARN:  actor,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			SourceIP:  event.SourceIPAddress,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			EventName: event.EventName,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			Time:      event.EventTimeRaw,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		})</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+</code></pre>
+    </div><div role="tabpanel" id="source-cloudtrail-analyzer-panel-1" aria-labelledby="source-cloudtrail-analyzer-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" data-source-filename="analyze_test.go" data-source-language="Go" data-source-path="threat-intel/scripts/cloudtrail/analyze_test.go" data-source-lines="246" data-source-highlighter="shiki" data-source-expandable hidden>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="analyze_test.go source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-go"><span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">package</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">cloudtrail_test</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">strings</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">time</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	cloudtrail </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">github.com/jasonachkar/cybersecurity-writeups/threat-intel/scripts/cloudtrail</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">findingTypes</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">findings</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">cloudtrail</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) []</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	out </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">make</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, finding </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		out </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">append</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(out, finding.Type)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> out</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">hasType</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">findings</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">cloudtrail</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Finding</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">want</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, finding </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> finding.Type </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> want {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestParseEventsRejectsMalformedTimestamp</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	_, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ParseEvents</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">		{&quot;eventTime&quot;:&quot;not-a-time&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111:user/a&quot;}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	]`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;expected malformed eventTime to fail&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestAnalyzeConsoleLoginCases</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	tests </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">struct</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		name    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		raw     </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		want    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		notWant </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;successful login with MFA&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			raw: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:&quot;Yes&quot;}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			]`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			notWant: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;console-login-without-mfa&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;successful login without MFA&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			raw: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:&quot;No&quot;}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			]`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			want: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;console-login-without-mfa&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;failed login without MFA metadata is not treated as success&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			raw: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Failure&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;errorCode&quot;:&quot;FailedAuthentication&quot;}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			]`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			notWant: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;console-login-without-mfa&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;missing MFA metadata on success&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			raw: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;additionalEventData&quot;:{}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			]`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			want: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;console-login-mfa-metadata-missing&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;malformed additional data type&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			raw: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:true}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			]`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			want: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;console-login-mfa-metadata-missing&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;empty ARN&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			raw: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;ConsoleLogin&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;responseElements&quot;:{&quot;ConsoleLogin&quot;:&quot;Success&quot;},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			   &quot;additionalEventData&quot;:{&quot;MFAUsed&quot;:&quot;No&quot;}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">			]`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			want: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;malformed-actor&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, tt </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tests {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Run</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tt.name, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			events, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ParseEvents</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tt.raw))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ParseEvents: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Analyze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events, cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DefaultOptions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">())</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tt.want </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">hasType</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, tt.want) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;missing </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%s</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> in </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, tt.want, </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">findingTypes</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tt.notWant </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">hasType</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, tt.notWant) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;unexpected </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%s</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> in </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, tt.notWant, </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">findingTypes</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		})</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestPrivilegeEscalationSequence</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	raw </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:05:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,&quot;sourceIPAddress&quot;:&quot;203.0.113.10&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	]`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	events, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ParseEvents</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(raw))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Analyze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">cloudtrail</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Options</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		PrivilegeEscalationWindow: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">15</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> time.Minute,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		KMSDecryptDenyThreshold:   </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">3</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	})</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">hasType</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;privilege-escalation-sequence&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;expected sorted CreateUser→AttachUserPolicy chain, got </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">findingTypes</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestPrivilegeEscalationOutsideWindow</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	raw </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T13:00:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	]`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	events, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ParseEvents</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(raw))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Analyze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">cloudtrail</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Options</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">{</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		PrivilegeEscalationWindow: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">15</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> time.Minute,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		KMSDecryptDenyThreshold:   </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">3</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	})</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">hasType</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;privilege-escalation-sequence&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;chain outside window should not match&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestNegativeTimeDifferencePrevention</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// Same actor, Attach before Create chronologically after sort should not</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// create a reverse chain.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	raw </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:10:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	   &quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	]`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	events, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ParseEvents</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(raw))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Analyze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events, cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DefaultOptions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">())</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">hasType</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;privilege-escalation-sequence&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;reverse chronological Attach→Create must not correlate&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestKMSDecryptThresholdAndSingleAttempt</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	single </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	   &quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	]`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	events, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ParseEvents</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(single))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Analyze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events, cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DefaultOptions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">())</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">hasType</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;kms-decrypt-denied-threshold&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;single AccessDenied decrypt must not claim multiple attempts&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	repeated </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,&quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:01:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,&quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:02:00Z&quot;,&quot;eventName&quot;:&quot;Decrypt&quot;,&quot;eventSource&quot;:&quot;kms.amazonaws.com&quot;,&quot;errorCode&quot;:&quot;AccessDenied&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	]`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	events, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ParseEvents</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(repeated))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Analyze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events, cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DefaultOptions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">())</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">hasType</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;kms-decrypt-denied-threshold&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;expected thresholded decrypt findings&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestActorSeparation</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	raw </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;CreateUser&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}},</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:01:00Z&quot;,&quot;eventName&quot;:&quot;AttachUserPolicy&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/bob&quot;}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	]`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	events, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ParseEvents</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(raw))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Analyze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events, cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DefaultOptions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">())</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">hasType</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;privilege-escalation-sequence&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;different actors must not form a chain&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestLogTamperingClassification</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	raw </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`[</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	  {&quot;eventTime&quot;:&quot;2026-07-01T12:00:00Z&quot;,&quot;eventName&quot;:&quot;UpdateTrail&quot;,&quot;userIdentity&quot;:{&quot;arn&quot;:&quot;arn:aws:iam::111122223333:user/alice&quot;}}</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">	]`</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	events, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ParseEvents</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(raw))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(err)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	findings </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Analyze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(events, cloudtrail.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DefaultOptions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">())</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">hasType</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(findings, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;cloudtrail-admin-event&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;expected high-signal admin classification&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, finding </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> findings {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> finding.Type </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;cloudtrail-admin-event&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> finding.EventName </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;UpdateTrail&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;event name not preserved: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%s</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, finding.EventName)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> finding.Type </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;cloudtrail-admin-event&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">strings.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Contains</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(finding.Description, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;does not assert the event is malicious&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;description overclaims malice: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%s</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, finding.Description)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+</code></pre>
     </div>
 </section>
 <h3>What it does</h3><p>It turns a batch of exported AWS CloudTrail events into a short list of findings worth a human look: console logins without MFA, privilege-escalation chains within a time window, repeated KMS Decrypt denies, and signs of log tampering (StopLogging / DeleteTrail).</p>

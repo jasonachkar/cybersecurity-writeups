@@ -233,8 +233,8 @@
   
 
 
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">PostgreSQL RLS</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="postgresql-row-level-security-isolation-lab">PostgreSQL row-level security isolation lab</h1>
+<!-- docs-article-header:start --><header class="docs-article-header"><!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">PostgreSQL RLS</li></ol></nav><!-- docs-breadcrumbs:end -->
+<h1 id="postgresql-row-level-security-isolation-lab">PostgreSQL row-level security isolation lab</h1></header><!-- docs-article-header:end -->
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
   <summary>On this page</summary>
@@ -249,356 +249,361 @@ application identities from bypassing the boundary.</p>
 <h2 id="implementation">Implementation</h2>
 <section class="docs-source-viewer" data-source-viewer id="source-postgresql-rls" aria-label="Source code: 001-schema.sql">
   <header class="docs-source-viewer__toolbar">
-    <span class="docs-source-viewer__toolbar-title">001-schema.sql</span>
-    <div class="docs-source-viewer__actions">
-      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
-      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    <div class="docs-source-viewer__identity">
+      <div class="docs-source-viewer__title-row"><strong class="docs-source-viewer__toolbar-title" data-source-active-filename>001-schema.sql</strong><span class="docs-source-viewer__summary"><span data-source-active-language>SQL</span><span aria-hidden="true"> · </span><span data-source-active-lines>40 lines</span></span></div>
+      <code class="docs-source-viewer__path" data-source-active-path title="labs/postgresql-rls/init/001-schema.sql">labs/postgresql-rls/init/001-schema.sql</code>
     </div>
+    <div class="docs-source-viewer__actions" data-source-actions>
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-pressed="false" data-wrap-source>Wrap</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source hidden>Expand</button>
+    </div>
+    <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
   </header>
   <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-postgresql-rls-tab-0" aria-controls="source-postgresql-rls-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Schema + RLS policies</button><button type="button" role="tab" id="source-postgresql-rls-tab-1" aria-controls="source-postgresql-rls-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">RLS tests</button><button type="button" role="tab" id="source-postgresql-rls-tab-2" aria-controls="source-postgresql-rls-panel-2" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="2">Pool lifecycle tests</button></div>
-  <div role="tabpanel" id="source-postgresql-rls-panel-0" tabindex="0" aria-labelledby="source-postgresql-rls-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">001-schema.sql</span><code class="docs-source-viewer__path">labs/postgresql-rls/init/001-schema.sql</code><span class="docs-source-viewer__lines">40 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="001-schema.sql source code" class="language-sql">\set ON_ERROR_STOP on
-
-CREATE ROLE tenant_migrator NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
-CREATE ROLE tenant_runtime NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;
-\getenv tenant_app_password POSTGRES_PASSWORD
-CREATE ROLE tenant_app LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS
-    PASSWORD :&#39;tenant_app_password&#39;;
-GRANT tenant_runtime TO tenant_app;
-\unset tenant_app_password
-
-CREATE SCHEMA app AUTHORIZATION tenant_migrator;
-GRANT USAGE ON SCHEMA app TO tenant_runtime;
-
-SET ROLE tenant_migrator;
-
-CREATE TABLE app.customer_record (
-    id uuid PRIMARY KEY,
-    tenant_id uuid NOT NULL,
-    display_name text NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT clock_timestamp()
-);
-
-ALTER TABLE app.customer_record ENABLE ROW LEVEL SECURITY;
-ALTER TABLE app.customer_record FORCE ROW LEVEL SECURITY;
-
-CREATE POLICY tenant_isolation ON app.customer_record
-    FOR ALL
-    TO tenant_runtime, tenant_migrator
-    USING (
-        tenant_id = NULLIF(current_setting(&#39;app.tenant_id&#39;, true), &#39;&#39;)::uuid
-    )
-    WITH CHECK (
-        tenant_id = NULLIF(current_setting(&#39;app.tenant_id&#39;, true), &#39;&#39;)::uuid
-    );
-
-GRANT SELECT, INSERT, UPDATE, DELETE ON app.customer_record TO tenant_runtime;
-RESET ROLE;
-
-COMMENT ON POLICY tenant_isolation ON app.customer_record IS
-    &#39;Fail-closed tenant context: absent context sees no rows; malformed UUID raises an error; writes require the active tenant.&#39;;</code></pre>
-    </div><div role="tabpanel" id="source-postgresql-rls-panel-1" tabindex="0" aria-labelledby="source-postgresql-rls-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">rls-tests.sql</span><code class="docs-source-viewer__path">labs/postgresql-rls/tests/rls-tests.sql</code><span class="docs-source-viewer__lines">99 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="rls-tests.sql source code" class="language-sql">\set ON_ERROR_STOP on
-\pset pager off
-
-CREATE OR REPLACE FUNCTION pg_temp.assert_equal(actual bigint, expected bigint, message text)
-RETURNS void LANGUAGE plpgsql AS $$
-BEGIN
-  IF actual IS DISTINCT FROM expected THEN
-    RAISE EXCEPTION &#39;assertion failed: % (actual %, expected %)&#39;, message, actual, expected;
-  END IF;
-END;
-$$;
-
-SET ROLE tenant_runtime;
-
-BEGIN;
-SELECT set_config(&#39;app.tenant_id&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, true);
-INSERT INTO app.customer_record (id, tenant_id, display_name)
-VALUES (&#39;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, &#39;Tenant A record&#39;);
-COMMIT;
-
-BEGIN;
-SELECT set_config(&#39;app.tenant_id&#39;, &#39;22222222-2222-2222-2222-222222222222&#39;, true);
-INSERT INTO app.customer_record (id, tenant_id, display_name)
-VALUES (&#39;bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb&#39;, &#39;22222222-2222-2222-2222-222222222222&#39;, &#39;Tenant B record&#39;);
-COMMIT;
-
-BEGIN;
-SELECT set_config(&#39;app.tenant_id&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, true);
-SELECT pg_temp.assert_equal((SELECT count(*) FROM app.customer_record), 1, &#39;tenant A sees only its row&#39;);
-SELECT pg_temp.assert_equal((SELECT count(*) FROM app.customer_record WHERE tenant_id = &#39;22222222-2222-2222-2222-222222222222&#39;), 0, &#39;cross-tenant select returns no row&#39;);
-DO $$
-DECLARE affected bigint;
-BEGIN
-  UPDATE app.customer_record SET display_name = &#39;blocked update&#39;
-  WHERE id = &#39;bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb&#39;;
-  GET DIAGNOSTICS affected = ROW_COUNT;
-  PERFORM pg_temp.assert_equal(affected, 0, &#39;cross-tenant update affects no row&#39;);
-END;
-$$;
-ROLLBACK;
-
-BEGIN;
-SELECT set_config(&#39;app.tenant_id&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, true);
-DO $$
-BEGIN
-  BEGIN
-    INSERT INTO app.customer_record (id, tenant_id, display_name)
-    VALUES (&#39;cccccccc-cccc-cccc-cccc-cccccccccccc&#39;, &#39;22222222-2222-2222-2222-222222222222&#39;, &#39;must fail&#39;);
-    RAISE EXCEPTION &#39;cross-tenant insert unexpectedly succeeded&#39;;
-  EXCEPTION
-    WHEN insufficient_privilege THEN
-      RAISE NOTICE &#39;PASS: cross-tenant insert rejected by WITH CHECK&#39;;
-  END;
-END;
-$$;
-ROLLBACK;
-
-BEGIN;
-RESET app.tenant_id;
-SELECT pg_temp.assert_equal((SELECT count(*) FROM app.customer_record), 0, &#39;missing tenant context sees no rows&#39;);
-DO $$
-BEGIN
-  BEGIN
-    INSERT INTO app.customer_record (id, tenant_id, display_name)
-    VALUES (&#39;dddddddd-dddd-dddd-dddd-dddddddddddd&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, &#39;must fail&#39;);
-    RAISE EXCEPTION &#39;insert without context unexpectedly succeeded&#39;;
-  EXCEPTION
-    WHEN insufficient_privilege THEN
-      RAISE NOTICE &#39;PASS: write without tenant context rejected&#39;;
-  END;
-END;
-$$;
-ROLLBACK;
-
-BEGIN;
-DO $$
-BEGIN
-  PERFORM set_config(&#39;app.tenant_id&#39;, &#39;not-a-uuid&#39;, true);
-  BEGIN
-    PERFORM count(*) FROM app.customer_record;
-    RAISE EXCEPTION &#39;malformed tenant context unexpectedly succeeded&#39;;
-  EXCEPTION
-    WHEN invalid_text_representation THEN
-      RAISE NOTICE &#39;PASS: malformed tenant context failed closed&#39;;
-  END;
-END;
-$$;
-ROLLBACK;
-
-BEGIN;
-SELECT set_config(&#39;app.tenant_id&#39;, &#39;11111111-1111-1111-1111-111111111111&#39;, true);
-SELECT pg_temp.assert_equal((SELECT count(*) FROM app.customer_record), 1, &#39;connection reuse transaction A&#39;);
-COMMIT;
-BEGIN;
-SELECT pg_temp.assert_equal((SELECT count(*) FROM app.customer_record), 0, &#39;SET LOCAL context cleared before reused transaction&#39;);
-ROLLBACK;
-
-RESET ROLE;
-\echo &#39;PASS: runtime RLS negative tests completed&#39;</code></pre>
-    </div><div role="tabpanel" id="source-postgresql-rls-panel-2" tabindex="0" aria-labelledby="source-postgresql-rls-tab-2" class="docs-source-viewer__panel" data-source-panel data-index="2" hidden>
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">pool-tests.js</span><code class="docs-source-viewer__path">labs/postgresql-rls/tests/pool-tests.js</code><span class="docs-source-viewer__lines">198 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="pool-tests.js source code" class="language-javascript">&quot;use strict&quot;;
-
-const assert = require(&quot;node:assert/strict&quot;);
-const { Pool } = require(&quot;pg&quot;);
-
-const password = process.env.POSTGRES_PASSWORD;
-assert.ok(password, &quot;POSTGRES_PASSWORD is required for the disposable pooled-client test&quot;);
-
-const tenantA = &quot;11111111-1111-1111-1111-111111111111&quot;;
-const tenantB = &quot;22222222-2222-2222-2222-222222222222&quot;;
-const recordA = &quot;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&quot;;
-const recordB = &quot;bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb&quot;;
-
-const connection = {
-  host: &quot;127.0.0.1&quot;,
-  port: Number(process.env.POSTGRES_PORT || &quot;55432&quot;),
-  database: &quot;tenant_lab&quot;,
-  user: &quot;tenant_app&quot;,
-  password,
-  application_name: &quot;postgresql-rls-pool-boundary-test&quot;,
-  connectionTimeoutMillis: 5000,
-  idleTimeoutMillis: 1000,
-};
-
-async function backendPid(client) {
-  const result = await client.query(&quot;SELECT pg_backend_pid() AS pid&quot;);
-  return Number(result.rows[0].pid);
-}
-
-async function beginTenant(client, tenantId) {
-  await client.query(&quot;BEGIN&quot;);
-  await client.query(&quot;SET LOCAL ROLE tenant_runtime&quot;);
-  if (tenantId !== null) {
-    await client.query(&quot;SELECT set_config(&#39;app.tenant_id&#39;, $1, true)&quot;, [tenantId]);
-  }
-}
-
-async function rollback(client) {
-  await client.query(&quot;ROLLBACK&quot;);
-}
-
-async function assertMissingContext(client, label) {
-  const context = await client.query(
-    &quot;SELECT current_setting(&#39;app.tenant_id&#39;, true) AS tenant_id&quot;,
-  );
-  assert.ok(
-    context.rows[0].tenant_id === null || context.rows[0].tenant_id === &quot;&quot;,
-    `${label}: previous transaction-local tenant context leaked`,
-  );
-  const visible = await client.query(&quot;SELECT id FROM app.customer_record ORDER BY id&quot;);
-  assert.deepEqual(visible.rows, [], `${label}: missing context must expose no rows`);
-}
-
-async function verifySinglePhysicalSessionReuse() {
-  const pool = new Pool({ ...connection, max: 1 });
-  try {
-    const first = await pool.connect();
-    let firstPid;
-    try {
-      firstPid = await backendPid(first);
-      await beginTenant(first, tenantA);
-      const visible = await first.query(&quot;SELECT id FROM app.customer_record ORDER BY id&quot;);
-      assert.deepEqual(visible.rows.map((row) =&gt; row.id), [recordA]);
-      await first.query(&quot;COMMIT&quot;);
-    } finally {
-      first.release();
-    }
-
-    const reused = await pool.connect();
-    try {
-      assert.equal(await backendPid(reused), firstPid, &quot;max=1 pool should reuse its physical session&quot;);
-      await beginTenant(reused, null);
-      await assertMissingContext(reused, &quot;reacquired physical session&quot;);
-      await rollback(reused);
-    } finally {
-      reused.release();
-    }
-
-    const errored = await pool.connect();
-    try {
-      assert.equal(await backendPid(errored), firstPid);
-      await beginTenant(errored, tenantA);
-      await assert.rejects(
-        errored.query(&quot;SELECT 1 / 0&quot;),
-        (error) =&gt; error &amp;&amp; error.code === &quot;22012&quot;,
-        &quot;division error should abort the tenant transaction&quot;,
-      );
-      await rollback(errored);
-    } finally {
-      errored.release();
-    }
-
-    const afterError = await pool.connect();
-    try {
-      assert.equal(await backendPid(afterError), firstPid);
-      await beginTenant(afterError, null);
-      await assertMissingContext(afterError, &quot;session after query error&quot;);
-      await rollback(afterError);
-    } finally {
-      afterError.release();
-    }
-
-    const cancelled = await pool.connect();
-    try {
-      assert.equal(await backendPid(cancelled), firstPid);
-      await beginTenant(cancelled, tenantB);
-      await cancelled.query(&quot;SET LOCAL statement_timeout = &#39;50ms&#39;&quot;);
-      await assert.rejects(
-        cancelled.query(&quot;SELECT pg_sleep(2)&quot;),
-        (error) =&gt; error &amp;&amp; error.code === &quot;57014&quot;,
-        &quot;statement timeout should cancel the tenant query&quot;,
-      );
-      await rollback(cancelled);
-    } finally {
-      cancelled.release();
-    }
-
-    const afterCancellation = await pool.connect();
-    try {
-      assert.equal(await backendPid(afterCancellation), firstPid);
-      await beginTenant(afterCancellation, null);
-      await assertMissingContext(afterCancellation, &quot;session after cancellation&quot;);
-      await rollback(afterCancellation);
-    } finally {
-      afterCancellation.release();
-    }
-  } finally {
-    await pool.end();
-  }
-}
-
-async function verifyConcurrentTenants() {
-  const pool = new Pool({ ...connection, max: 2 });
-  let readyCount = 0;
-  let releaseReady;
-  const bothReady = new Promise((resolve) =&gt; {
-    releaseReady = resolve;
-  });
-
-  async function queryAsTenant(tenantId, expectedRecord) {
-    const client = await pool.connect();
-    try {
-      await beginTenant(client, tenantId);
-      const pid = await backendPid(client);
-      readyCount += 1;
-      if (readyCount === 2) {
-        releaseReady();
-      }
-      await bothReady;
-      const visible = await client.query(&quot;SELECT id FROM app.customer_record ORDER BY id&quot;);
-      assert.deepEqual(visible.rows.map((row) =&gt; row.id), [expectedRecord]);
-      await client.query(&quot;COMMIT&quot;);
-      return pid;
-    } catch (error) {
-      await rollback(client).catch(() =&gt; {});
-      throw error;
-    } finally {
-      client.release();
-    }
-  }
-
-  try {
-    const pids = await Promise.all([
-      queryAsTenant(tenantA, recordA),
-      queryAsTenant(tenantB, recordB),
-    ]);
-    assert.notEqual(pids[0], pids[1], &quot;concurrent tenants must use independent sessions&quot;);
-
-    const clients = await Promise.all([pool.connect(), pool.connect()]);
-    try {
-      await Promise.all(
-        clients.map(async (client, index) =&gt; {
-          await beginTenant(client, null);
-          await assertMissingContext(client, `concurrent pooled session ${index + 1}`);
-          await rollback(client);
-        }),
-      );
-    } finally {
-      clients.forEach((client) =&gt; client.release());
-    }
-  } finally {
-    await pool.end();
-  }
-}
-
-async function main() {
-  await verifySinglePhysicalSessionReuse();
-  await verifyConcurrentTenants();
-  console.log(
-    &quot;PASS: pg 8.22.0 pool tests covered physical-session reuse, missing context, &quot; +
-      &quot;errors, cancellation, and concurrent tenants.&quot;,
-  );
-}
-
-main().catch((error) =&gt; {
-  console.error(error &amp;&amp; error.stack ? error.stack : error);
-  process.exitCode = 1;
-});</code></pre>
+  <div role="tabpanel" id="source-postgresql-rls-panel-0" aria-labelledby="source-postgresql-rls-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0" data-source-filename="001-schema.sql" data-source-language="SQL" data-source-path="labs/postgresql-rls/init/001-schema.sql" data-source-lines="40" data-source-highlighter="shiki">
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="001-schema.sql source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-sql"><span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">\</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">set</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> ON_ERROR_STOP </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">on</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">CREATE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_migrator NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">CREATE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_runtime NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">\getenv tenant_app_password POSTGRES_PASSWORD</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">CREATE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_app </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">LOGIN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> NOSUPERUSER NOCREATEDB NOCREATEROLE NOINHERIT NOBYPASSRLS</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">PASSWORD</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> :</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;tenant_app_password&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">GRANT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_runtime </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">TO</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_app;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">\unset tenant_app_password</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">CREATE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SCHEMA</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> AUTHORIZATION tenant_migrator;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">GRANT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> USAGE </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ON</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SCHEMA</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> app </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">TO</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_runtime;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SET</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_migrator;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">CREATE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">TABLE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.customer_record (</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    id uuid </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">PRIMARY KEY</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    tenant_id uuid </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">NOT NULL</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    display_name </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">text</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">NOT NULL</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    created_at </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">timestamptz</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">NOT NULL</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">DEFAULT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> clock_timestamp()</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ALTER</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">TABLE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ENABLE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">LEVEL</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SECURITY</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ALTER</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">TABLE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">FORCE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">LEVEL</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SECURITY</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">CREATE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">POLICY</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_isolation </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ON</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">FOR</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> ALL</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">TO</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_runtime, tenant_migrator</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">USING</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        tenant_id </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">NULLIF</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(current_setting(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;app.tenant_id&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, true), </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)::uuid</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    )</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">WITH</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">CHECK</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        tenant_id </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">NULLIF</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(current_setting(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;app.tenant_id&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, true), </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)::uuid</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    );</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">GRANT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">INSERT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">UPDATE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">DELETE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ON</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">TO</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_runtime;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">RESET</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">COMMENT </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ON</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">POLICY</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_isolation </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ON</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">IS</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Fail-closed tenant context: absent context sees no rows; malformed UUID raises an error; writes require the active tenant.&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+</code></pre>
+    </div><div role="tabpanel" id="source-postgresql-rls-panel-1" aria-labelledby="source-postgresql-rls-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" data-source-filename="rls-tests.sql" data-source-language="SQL" data-source-path="labs/postgresql-rls/tests/rls-tests.sql" data-source-lines="99" data-source-highlighter="shiki" hidden>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="rls-tests.sql source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-sql"><span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">\</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">set</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> ON_ERROR_STOP </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">on</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">\pset pager </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">off</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">CREATE OR REPLACE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">FUNCTION</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">pg_temp</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.assert_equal(actual </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bigint</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, expected </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bigint</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">text</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">RETURNS</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> void </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">LANGUAGE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> plpgsql </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">AS</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> $$</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">IF</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> actual </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">IS</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">DISTINCT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">FROM</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> expected </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">THEN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    RAISE EXCEPTION </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;assertion failed: % (actual %, expected %)&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, actual, expected;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">END</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">IF</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">END</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">$$;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SET</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_runtime;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> set_config(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;app.tenant_id&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;11111111-1111-1111-1111-111111111111&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, true);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">INSERT INTO</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (id, tenant_id, display_name)</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">VALUES</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;11111111-1111-1111-1111-111111111111&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Tenant A record&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">COMMIT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> set_config(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;app.tenant_id&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;22222222-2222-2222-2222-222222222222&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, true);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">INSERT INTO</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (id, tenant_id, display_name)</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">VALUES</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;22222222-2222-2222-2222-222222222222&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;Tenant B record&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">COMMIT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> set_config(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;app.tenant_id&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;11111111-1111-1111-1111-111111111111&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, true);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">pg_temp</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">assert_equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">count</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">FROM</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;tenant A sees only its row&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">pg_temp</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">assert_equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">count</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">FROM</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">WHERE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant_id </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;22222222-2222-2222-2222-222222222222&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;cross-tenant select returns no row&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">DO $$</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">DECLARE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> affected </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bigint</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">UPDATE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SET</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> display_name </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;blocked update&#39;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">WHERE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> id </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">GET</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> DIAGNOSTICS affected </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> ROW_COUNT;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  PERFORM </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">pg_temp</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">assert_equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(affected, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;cross-tenant update affects no row&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">END</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">$$;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLLBACK</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> set_config(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;app.tenant_id&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;11111111-1111-1111-1111-111111111111&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, true);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">DO $$</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">INSERT INTO</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (id, tenant_id, display_name)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">VALUES</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;cccccccc-cccc-cccc-cccc-cccccccccccc&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;22222222-2222-2222-2222-222222222222&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;must fail&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    RAISE EXCEPTION </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;cross-tenant insert unexpectedly succeeded&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  EXCEPTION</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">WHEN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> insufficient_privilege </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">THEN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      RAISE NOTICE </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;PASS: cross-tenant insert rejected by WITH CHECK&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">END</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">END</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">$$;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLLBACK</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">RESET</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">tenant_id</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">pg_temp</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">assert_equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">count</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">FROM</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;missing tenant context sees no rows&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">DO $$</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">INSERT INTO</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (id, tenant_id, display_name)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">VALUES</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;dddddddd-dddd-dddd-dddd-dddddddddddd&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;11111111-1111-1111-1111-111111111111&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;must fail&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    RAISE EXCEPTION </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;insert without context unexpectedly succeeded&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  EXCEPTION</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">WHEN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> insufficient_privilege </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">THEN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      RAISE NOTICE </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;PASS: write without tenant context rejected&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">END</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">END</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">$$;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLLBACK</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">DO $$</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  PERFORM set_config(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;app.tenant_id&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;not-a-uuid&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, true);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    PERFORM </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">count</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">FROM</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    RAISE EXCEPTION </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;malformed tenant context unexpectedly succeeded&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  EXCEPTION</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">WHEN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> invalid_text_representation </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">THEN</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      RAISE NOTICE </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;PASS: malformed tenant context failed closed&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">END</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">END</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">$$;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLLBACK</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> set_config(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;app.tenant_id&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;11111111-1111-1111-1111-111111111111&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, true);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">pg_temp</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">assert_equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">count</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">FROM</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;connection reuse transaction A&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">COMMIT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">BEGIN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">pg_temp</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">assert_equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">SELECT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">count</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">FROM</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">app</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">customer_record</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;SET LOCAL context cleared before reused transaction&#39;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLLBACK</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">RESET</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">ROLE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">\echo </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&#39;PASS: runtime RLS negative tests completed&#39;</span></span>
+</code></pre>
+    </div><div role="tabpanel" id="source-postgresql-rls-panel-2" aria-labelledby="source-postgresql-rls-tab-2" class="docs-source-viewer__panel" data-source-panel data-index="2" data-source-filename="pool-tests.js" data-source-language="JavaScript" data-source-path="labs/postgresql-rls/tests/pool-tests.js" data-source-lines="198" data-source-highlighter="shiki" data-source-expandable hidden>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="pool-tests.js source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-javascript"><span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;use strict&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">assert</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;node:assert/strict&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> { </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">Pool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;pg&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">password</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> process.env.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">POSTGRES_PASSWORD</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ok</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(password, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;POSTGRES_PASSWORD is required for the disposable pooled-client test&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">tenantA</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;11111111-1111-1111-1111-111111111111&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">tenantB</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;22222222-2222-2222-2222-222222222222&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">recordA</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">recordB</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">connection</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  host: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;127.0.0.1&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  port: </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Number</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(process.env.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">POSTGRES_PORT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;55432&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  database: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;tenant_lab&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  user: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;tenant_app&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  password,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  application_name: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;postgresql-rls-pool-boundary-test&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  connectionTimeoutMillis: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">5000</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  idleTimeoutMillis: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1000</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">};</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">async</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">backendPid</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">client</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">result</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> client.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;SELECT pg_backend_pid() AS pid&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Number</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(result.rows[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">].pid);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">async</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">beginTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">client</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">tenantId</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> client.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;BEGIN&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> client.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;SET LOCAL ROLE tenant_runtime&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (tenantId </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">null</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> client.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;SELECT set_config(&#39;app.tenant_id&#39;, $1, true)&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, [tenantId]);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">async</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">rollback</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">client</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> client.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ROLLBACK&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">async</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">assertMissingContext</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">client</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">label</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">context</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> client.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;SELECT current_setting(&#39;app.tenant_id&#39;, true) AS tenant_id&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ok</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    context.rows[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">].tenant_id </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">null</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> context.rows[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">].tenant_id </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">label</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}: previous transaction-local tenant context leaked`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">visible</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> client.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;SELECT id FROM app.customer_record ORDER BY id&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(visible.rows, [], </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">label</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}: missing context must expose no rows`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">async</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">verifySinglePhysicalSessionReuse</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">() {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">pool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Pool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">...</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">connection, max: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> });</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">first</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> pool.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">connect</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">let</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> firstPid;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      firstPid </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">backendPid</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(first);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">beginTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(first, tenantA);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">visible</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> first.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;SELECT id FROM app.customer_record ORDER BY id&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(visible.rows.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">row</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> row.id), [recordA]);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> first.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;COMMIT&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">finally</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      first.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">release</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">reused</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> pool.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">connect</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">backendPid</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(reused), firstPid, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;max=1 pool should reuse its physical session&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">beginTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(reused, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">null</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">assertMissingContext</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(reused, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;reacquired physical session&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">rollback</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(reused);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">finally</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      reused.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">release</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">errored</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> pool.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">connect</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">backendPid</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(errored), firstPid);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">beginTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(errored, tenantA);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">rejects</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        errored.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;SELECT 1 / 0&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        (</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> error </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> error.code </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;22012&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;division error should abort the tenant transaction&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">rollback</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(errored);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">finally</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      errored.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">release</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">afterError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> pool.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">connect</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">backendPid</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(afterError), firstPid);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">beginTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(afterError, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">null</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">assertMissingContext</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(afterError, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;session after query error&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">rollback</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(afterError);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">finally</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      afterError.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">release</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">cancelled</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> pool.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">connect</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">backendPid</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(cancelled), firstPid);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">beginTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(cancelled, tenantB);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> cancelled.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;SET LOCAL statement_timeout = &#39;50ms&#39;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">rejects</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        cancelled.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;SELECT pg_sleep(2)&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        (</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> error </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> error.code </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;57014&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;statement timeout should cancel the tenant query&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">rollback</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(cancelled);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">finally</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      cancelled.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">release</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">afterCancellation</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> pool.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">connect</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">backendPid</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(afterCancellation), firstPid);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">beginTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(afterCancellation, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">null</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">assertMissingContext</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(afterCancellation, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;session after cancellation&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">rollback</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(afterCancellation);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">finally</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      afterCancellation.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">release</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">finally</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> pool.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">end</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">async</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">verifyConcurrentTenants</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">() {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">pool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Pool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">...</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">connection, max: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">2</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> });</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">let</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> readyCount </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">let</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> releaseReady;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">bothReady</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">Promise</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">resolve</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    releaseReady </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> resolve;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  });</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">async</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">queryAsTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">tenantId</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">expectedRecord</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">client</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> pool.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">connect</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">beginTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(client, tenantId);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">pid</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">backendPid</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(client);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      readyCount </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">+=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (readyCount </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">2</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">releaseReady</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> bothReady;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">visible</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> client.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;SELECT id FROM app.customer_record ORDER BY id&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(visible.rows.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">row</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> row.id), [expectedRecord]);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> client.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">query</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;COMMIT&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> pid;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">catch</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (error) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">rollback</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(client).</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">catch</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(() </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {});</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> error;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">finally</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      client.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">release</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">pids</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">Promise</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">all</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">queryAsTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tenantA, recordA),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">queryAsTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tenantB, recordB),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    ]);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">notEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(pids[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">], pids[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">], </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;concurrent tenants must use independent sessions&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">clients</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">Promise</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">all</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([pool.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">connect</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(), pool.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">connect</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()]);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">Promise</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">all</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        clients.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">async</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">client</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">index</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">beginTenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(client, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">null</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">assertMissingContext</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(client, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`concurrent pooled session ${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">index</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">+</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">rollback</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(client);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        }),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">finally</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      clients.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">forEach</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">client</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> client.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">release</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">());</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">finally</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> pool.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">end</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">async</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">main</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">() {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">verifySinglePhysicalSessionReuse</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">await</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">verifyConcurrentTenants</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  console.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">log</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;PASS: pg 8.22.0 pool tests covered physical-session reuse, missing context, &quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">+</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;errors, cancellation, and concurrent tenants.&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">main</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">().</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">catch</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  console.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(error </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> error.stack </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">?</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> error.stack </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> error);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  process.exitCode </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+</code></pre>
     </div>
 </section>
 <h3 id="run-it">Run it</h3>

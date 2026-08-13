@@ -8,10 +8,49 @@ import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {SCRIPTS, SCRIPT_CATEGORIES} from "./catalog.mjs";
 import {LABS} from "../labs/catalog.mjs";
+import {highlightSource} from "./highlight.mjs";
+import {resolveSourceLanguage} from "./source-languages.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
 const fail = message => errors.push(message);
+
+function validateSourceFiles(owner, sourceFiles) {
+  if (!Array.isArray(sourceFiles) || sourceFiles.length === 0) {
+    fail(`${owner} has no sourceFiles`);
+    return;
+  }
+  const primaryCount = sourceFiles.filter(file => file.primary === true).length;
+  if (primaryCount !== 1) fail(`${owner} must have exactly one primary source file (found ${primaryCount})`);
+  const seen = new Set();
+  for (const file of sourceFiles) {
+    if (!file.path || typeof file.path !== "string") { fail(`${owner} has a source file without a path`); continue; }
+    if (seen.has(file.path)) fail(`${owner} contains duplicate source path: ${file.path}`);
+    seen.add(file.path);
+    const resolved = path.resolve(root, file.path);
+    if (resolved !== root && !resolved.startsWith(`${root}${path.sep}`)) {
+      fail(`${owner} source path escapes repository root: ${file.path}`);
+      continue;
+    }
+    if (!fs.existsSync(resolved)) { fail(`${owner} source file does not exist: ${file.path}`); continue; }
+    const stat = fs.statSync(resolved);
+    if (!stat.isFile()) { fail(`${owner} source path is not a regular file: ${file.path}`); continue; }
+    const real = fs.realpathSync(resolved);
+    if (real !== root && !real.startsWith(`${root}${path.sep}`)) {
+      fail(`${owner} source path resolves outside repository root: ${file.path}`);
+      continue;
+    }
+    try {
+      const language = resolveSourceLanguage(file.language);
+      const source = fs.readFileSync(real, "utf8").replace(/\r\n/g, "\n");
+      const rendered = highlightSource(source, language.id);
+      if (!rendered.html.includes('class="line"')) fail(`${owner} highlighting generated no line structure for ${file.path}`);
+      if (rendered.language.id !== language.id) fail(`${owner} language normalization drifted for ${file.path}`);
+    } catch (error) {
+      fail(`${owner} cannot highlight ${file.path}: ${error.message}`);
+    }
+  }
+}
 
 // --- Scripts catalogue -------------------------------------------------
 const scriptSlugs = new Set();
@@ -22,13 +61,7 @@ for (const script of SCRIPTS) {
   const dupeKey = `${script.category}/${script.slug}`;
   if (scriptSlugs.has(dupeKey)) fail(`scripts/catalog.mjs: duplicate script slug "${dupeKey}"`);
   scriptSlugs.add(dupeKey);
-  if (!script.sourceFiles || !script.sourceFiles.length) fail(`scripts/catalog.mjs: "${script.slug}" has no sourceFiles`);
-  if (!script.sourceFiles.some(file => file.primary)) fail(`scripts/catalog.mjs: "${script.slug}" has no primary source file`);
-  for (const file of script.sourceFiles || []) {
-    const resolved = path.resolve(root, file.path);
-    if (!resolved.startsWith(root)) fail(`scripts/catalog.mjs: "${script.slug}" source path escapes repository root: ${file.path}`);
-    if (!fs.existsSync(path.join(root, file.path))) fail(`scripts/catalog.mjs: "${script.slug}" source file does not exist: ${file.path}`);
-  }
+  validateSourceFiles(`scripts/catalog.mjs: "${script.slug}"`, script.sourceFiles);
 }
 
 // --- Labs catalogue ------------------------------------------------------
@@ -37,13 +70,7 @@ for (const lab of LABS) {
   if (labPages.has(lab.page)) fail(`labs/catalog.mjs: duplicate lab page "${lab.page}"`);
   labPages.add(lab.page);
   if (!fs.existsSync(path.join(root, lab.page))) fail(`labs/catalog.mjs: "${lab.slug}" page does not exist: ${lab.page}`);
-  if (!lab.sourceFiles || !lab.sourceFiles.length) fail(`labs/catalog.mjs: "${lab.slug}" has no sourceFiles`);
-  if (!lab.sourceFiles.some(file => file.primary)) fail(`labs/catalog.mjs: "${lab.slug}" has no primary source file`);
-  for (const file of lab.sourceFiles || []) {
-    const resolved = path.resolve(root, file.path);
-    if (!resolved.startsWith(root)) fail(`labs/catalog.mjs: "${lab.slug}" source path escapes repository root: ${file.path}`);
-    if (!fs.existsSync(path.join(root, file.path))) fail(`labs/catalog.mjs: "${lab.slug}" source file does not exist: ${file.path}`);
-  }
+  validateSourceFiles(`labs/catalog.mjs: "${lab.slug}"`, lab.sourceFiles);
   if (!lab.runCommands || !lab.runCommands.length) fail(`labs/catalog.mjs: "${lab.slug}" has no runCommands`);
 }
 
@@ -78,6 +105,31 @@ function extractSection(html, anchorId) {
   return null;
 }
 
+function decodeGeneratedSource(value) {
+  return value.replace(/<[^>]+>/g, "")
+    .replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"').replace(/&#39;|&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)));
+}
+
+function validateGeneratedSources(page, sourceFiles, owner) {
+  const html = fs.readFileSync(path.join(root, page), "utf8");
+  for (const file of sourceFiles) {
+    const escapedPath = file.path.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const match = html.match(new RegExp(`data-source-path="${escapedPath}"[\\s\\S]*?<code class="language-[^"]+">([\\s\\S]*?)<\\/code>`));
+    if (!match) { fail(`${owner}: generated panel missing for ${file.path}`); continue; }
+    const rendered = decodeGeneratedSource(match[1]);
+    const tracked = fs.readFileSync(path.join(root, file.path), "utf8").replace(/\r\n/g, "\n");
+    if (rendered !== tracked) fail(`${owner}: generated source text differs from tracked file ${file.path}`);
+    const language = resolveSourceLanguage(file.language);
+    const expected = language.mode === "shiki" ? "shiki" : "plaintext";
+    if (!match[0].includes(`data-source-highlighter="${expected}"`)) {
+      fail(`${owner}: ${file.path} should declare ${expected} output`);
+    }
+  }
+}
+
 // --- Generated page structure: source viewer must precede explanation ---
 for (const category of SCRIPT_CATEGORIES) {
   const file = path.join(root, "scripts", category.slug, "index.html");
@@ -98,6 +150,7 @@ for (const category of SCRIPT_CATEGORIES) {
     if (section.includes("github.com/jasonachkar/cybersecurity-writeups/blob")) {
       fail(`scripts/${category.slug}/#${script.slug}: still links to GitHub to view source instead of embedding it`);
     }
+    validateGeneratedSources(`scripts/${category.slug}/index.html`, script.sourceFiles, `scripts/${category.slug}/#${script.slug}`);
   }
 }
 
@@ -113,6 +166,7 @@ for (const lab of LABS) {
   const implementationHeadingIndex = headingMatches.findIndex(match => match[1] === "implementation");
   if (implementationHeadingIndex === -1) fail(`${lab.page}: no "Implementation" heading found`);
   else if (implementationHeadingIndex > 1) fail(`${lab.page}: "Implementation" heading is not near the top (position ${implementationHeadingIndex})`);
+  validateGeneratedSources(lab.page, lab.sourceFiles, lab.page);
 }
 
 // --- Search index must never carry a source-code body ---
@@ -128,6 +182,10 @@ if (fs.existsSync(searchIndexPath)) {
   const allText = (search.docs || []).map(doc => doc.text || "").join("\n");
   for (const doc of search.docs || []) {
     if ((doc.text || "").length > 1200) fail(`search index: "${doc.location}" teaser exceeds 1200 characters (${doc.text.length})`);
+    if (!Array.isArray(doc.tags) || doc.tags.length !== 1 || !doc.tags[0].includes(" · ")) {
+      fail(`search index: "${doc.location}" is missing category/content-type metadata`);
+    }
+    if (!Array.isArray(doc.keywords)) fail(`search index: "${doc.location}" is missing indexed keywords`);
   }
   const distinctiveLine = source => {
     const lines = source.split("\n").map(line => line.trim());

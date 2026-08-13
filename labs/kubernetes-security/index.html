@@ -233,8 +233,8 @@
   
 
 
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">Kubernetes security</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="kubernetes-admission-network-and-image-policy-lab">Kubernetes admission, network, and image-policy lab</h1>
+<!-- docs-article-header:start --><header class="docs-article-header"><!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">Kubernetes security</li></ol></nav><!-- docs-breadcrumbs:end -->
+<h1 id="kubernetes-admission-network-and-image-policy-lab">Kubernetes admission, network, and image-policy lab</h1></header><!-- docs-article-header:end -->
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
   <summary>On this page</summary>
@@ -249,295 +249,300 @@ signature, certificate, registry, transparency, mutation, and live admission wer
 <h2 id="implementation">Implementation</h2>
 <section class="docs-source-viewer" data-source-viewer id="source-kubernetes-security" aria-label="Source code: hardened-pods.yaml">
   <header class="docs-source-viewer__toolbar">
-    <span class="docs-source-viewer__toolbar-title">hardened-pods.yaml</span>
-    <div class="docs-source-viewer__actions">
-      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
-      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    <div class="docs-source-viewer__identity">
+      <div class="docs-source-viewer__title-row"><strong class="docs-source-viewer__toolbar-title" data-source-active-filename>hardened-pods.yaml</strong><span class="docs-source-viewer__summary"><span data-source-active-language>YAML</span><span aria-hidden="true"> · </span><span data-source-active-lines>78 lines</span></span></div>
+      <code class="docs-source-viewer__path" data-source-active-path title="labs/kubernetes-security/policies/hardened-pods.yaml">labs/kubernetes-security/policies/hardened-pods.yaml</code>
     </div>
+    <div class="docs-source-viewer__actions" data-source-actions>
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-pressed="false" data-wrap-source>Wrap</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source hidden>Expand</button>
+    </div>
+    <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
   </header>
   <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-kubernetes-security-tab-0" aria-controls="source-kubernetes-security-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Kyverno policy</button><button type="button" role="tab" id="source-kubernetes-security-tab-1" aria-controls="source-kubernetes-security-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Image-verification policy</button><button type="button" role="tab" id="source-kubernetes-security-tab-2" aria-controls="source-kubernetes-security-panel-2" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="2">Decision-model tests</button></div>
-  <div role="tabpanel" id="source-kubernetes-security-panel-0" tabindex="0" aria-labelledby="source-kubernetes-security-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">hardened-pods.yaml</span><code class="docs-source-viewer__path">labs/kubernetes-security/policies/hardened-pods.yaml</code><span class="docs-source-viewer__lines">78 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="hardened-pods.yaml source code" class="language-yaml">apiVersion: policies.kyverno.io/v1
-kind: ValidatingPolicy
-metadata:
-  name: hardened-pods
-  annotations:
-    policies.kyverno.io/title: Hardened Pod baseline
-    policies.kyverno.io/category: Pod Security
-    policies.kyverno.io/severity: high
-spec:
-  validationActions:
-    - Deny
-  failurePolicy: Fail
-  evaluation:
-    admission:
-      enabled: true
-    background:
-      enabled: true
-    mode: Kubernetes
-  webhookConfiguration:
-    timeoutSeconds: 10
-  matchConstraints:
-    resourceRules:
-      - apiGroups:
-          - &quot;&quot;
-        apiVersions:
-          - v1
-        operations:
-          - CREATE
-          - UPDATE
-        resources:
-          - pods
-  variables:
-    - name: allContainers
-      expression: &gt;-
-        object.spec.containers
-        + object.spec.?initContainers.orValue([])
-        + object.spec.?ephemeralContainers.orValue([])
-  validations:
-    - message: Host PID, IPC, and network namespaces are not allowed.
-      expression: &gt;-
-        !object.spec.?hostPID.orValue(false)
-        &amp;&amp; !object.spec.?hostIPC.orValue(false)
-        &amp;&amp; !object.spec.?hostNetwork.orValue(false)
-    - message: hostPath volumes are not allowed by this workload baseline.
-      expression: &gt;-
-        !has(object.spec.volumes)
-        || object.spec.volumes.all(volume, !has(volume.hostPath))
-    - message: Service-account token automount must be explicitly disabled.
-      expression: object.spec.?automountServiceAccountToken.orValue(true) == false
-    - message: Containers must run as non-root without privileged mode or privilege escalation.
-      expression: &gt;-
-        variables.allContainers.all(container,
-          has(container.securityContext)
-          &amp;&amp; container.securityContext.?runAsNonRoot.orValue(false) == true
-          &amp;&amp; container.securityContext.?privileged.orValue(false) == false
-          &amp;&amp; container.securityContext.?allowPrivilegeEscalation.orValue(true) == false)
-    - message: Containers must use a read-only root filesystem and drop all capabilities.
-      expression: &gt;-
-        variables.allContainers.all(container,
-          container.securityContext.?readOnlyRootFilesystem.orValue(false) == true
-          &amp;&amp; has(container.securityContext.capabilities)
-          &amp;&amp; container.securityContext.capabilities.?drop.orValue([]).exists(capability, capability == &quot;ALL&quot;)
-          &amp;&amp; size(container.securityContext.capabilities.?add.orValue([])) == 0)
-    - message: A RuntimeDefault or Localhost seccomp profile is required.
-      expression: &gt;-
-        has(object.spec.securityContext)
-        &amp;&amp; has(object.spec.securityContext.seccompProfile)
-        &amp;&amp; object.spec.securityContext.seccompProfile.type in [&quot;RuntimeDefault&quot;, &quot;Localhost&quot;]
-    - message: CPU and memory requests and limits are required for every container.
-      expression: &gt;-
-        variables.allContainers.all(container,
-          has(container.resources)
-          &amp;&amp; has(container.resources.requests)
-          &amp;&amp; has(container.resources.requests.cpu)
-          &amp;&amp; has(container.resources.requests.memory)
-          &amp;&amp; has(container.resources.limits)
-          &amp;&amp; has(container.resources.limits.cpu)
-          &amp;&amp; has(container.resources.limits.memory))</code></pre>
-    </div><div role="tabpanel" id="source-kubernetes-security-panel-1" tabindex="0" aria-labelledby="source-kubernetes-security-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">verify-release-images.yaml</span><code class="docs-source-viewer__path">labs/kubernetes-security/policies/verify-release-images.yaml</code><span class="docs-source-viewer__lines">65 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="verify-release-images.yaml source code" class="language-yaml">apiVersion: policies.kyverno.io/v1
-kind: ImageValidatingPolicy
-metadata:
-  name: verify-secureobs-release
-  annotations:
-    policies.kyverno.io/title: Verify SecureObs release identity and provenance
-    policies.kyverno.io/category: Software Supply Chain
-    policies.kyverno.io/severity: high
-spec:
-  validationActions:
-    - Deny
-  failurePolicy: Fail
-  evaluation:
-    admission:
-      enabled: true
-    background:
-      enabled: true
-    mode: Kubernetes
-  webhookConfiguration:
-    timeoutSeconds: 15
-  matchConstraints:
-    resourceRules:
-      - apiGroups:
-          - &quot;&quot;
-        apiVersions:
-          - v1
-        operations:
-          - CREATE
-          - UPDATE
-        resources:
-          - pods
-  matchImageReferences:
-    - glob: &quot;ghcr.io/jasonachkar/secureobs:*&quot;
-    - glob: &quot;ghcr.io/jasonachkar/secureobs@sha256:*&quot;
-  attestors:
-    - name: releaseIdentity
-      cosign:
-        keyless:
-          identities:
-            - issuer: &quot;https://token.actions.githubusercontent.com&quot;
-              subject: &quot;https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main&quot;
-        ctlog:
-          url: &quot;https://rekor.sigstore.dev&quot;
-  attestations:
-    - name: slsaProvenance
-      intoto:
-        type: &quot;https://slsa.dev/provenance/v1&quot;
-  validationConfigurations:
-    mutateDigest: true
-    required: true
-    verifyDigest: true
-  validations:
-    - message: Image signature is missing or the keyless workflow identity is not authorized.
-      expression: &gt;-
-        images.containers
-          .map(image, verifyImageSignatures(image, [attestors.releaseIdentity]))
-          .all(result, result &gt; 0)
-    - message: SLSA provenance is missing or is not signed by the authorized workflow identity.
-      expression: &gt;-
-        images.containers
-          .map(image, verifyAttestationSignatures(
-            image,
-            attestations.slsaProvenance,
-            [attestors.releaseIdentity]))
-          .all(result, result &gt; 0)</code></pre>
-    </div><div role="tabpanel" id="source-kubernetes-security-panel-2" tabindex="0" aria-labelledby="source-kubernetes-security-tab-2" class="docs-source-viewer__panel" data-source-panel data-index="2" hidden>
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">run-tests.js</span><code class="docs-source-viewer__path">labs/kubernetes-security/tests/run-tests.js</code><span class="docs-source-viewer__lines">133 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="run-tests.js source code" class="language-javascript">&quot;use strict&quot;;
-
-const assert = require(&quot;node:assert/strict&quot;);
-const fs = require(&quot;node:fs&quot;);
-const path = require(&quot;node:path&quot;);
-const YAML = require(&quot;yaml&quot;);
-
-const lab = path.resolve(__dirname, &quot;..&quot;);
-const read = (relative) =&gt; fs.readFileSync(path.join(lab, relative), &quot;utf8&quot;);
-
-const podPolicy = YAML.parse(read(&quot;policies/hardened-pods.yaml&quot;));
-assert.equal(podPolicy.apiVersion, &quot;policies.kyverno.io/v1&quot;);
-assert.equal(podPolicy.kind, &quot;ValidatingPolicy&quot;);
-assert.deepEqual(podPolicy.spec.validationActions, [&quot;Deny&quot;]);
-assert.equal(podPolicy.spec.failurePolicy, &quot;Fail&quot;);
-assert.equal(podPolicy.spec.evaluation.admission.enabled, true);
-assert.equal(podPolicy.spec.evaluation.background.enabled, true);
-
-const validationText = JSON.stringify(podPolicy.spec.validations);
-for (const required of [
-  &quot;hostPID&quot;,
-  &quot;hostIPC&quot;,
-  &quot;hostNetwork&quot;,
-  &quot;hostPath&quot;,
-  &quot;automountServiceAccountToken&quot;,
-  &quot;runAsNonRoot&quot;,
-  &quot;privileged&quot;,
-  &quot;allowPrivilegeEscalation&quot;,
-  &quot;readOnlyRootFilesystem&quot;,
-  &quot;capabilities&quot;,
-  &quot;seccomp&quot;,
-  &quot;requests&quot;,
-  &quot;limits&quot;,
-]) {
-  assert.match(validationText, new RegExp(required));
-}
-
-const imagePolicy = YAML.parse(read(&quot;policies/verify-release-images.yaml&quot;));
-assert.equal(imagePolicy.apiVersion, &quot;policies.kyverno.io/v1&quot;);
-assert.equal(imagePolicy.kind, &quot;ImageValidatingPolicy&quot;);
-assert.equal(imagePolicy.spec.failurePolicy, &quot;Fail&quot;);
-assert.deepEqual(imagePolicy.spec.validationActions, [&quot;Deny&quot;]);
-assert.equal(imagePolicy.spec.validationConfigurations.required, true);
-assert.equal(imagePolicy.spec.validationConfigurations.verifyDigest, true);
-assert.equal(imagePolicy.spec.validationConfigurations.mutateDigest, true);
-
-const imageCases = JSON.parse(read(&quot;fixtures/image-cases.json&quot;));
-const expected = imageCases.expected;
-const identity = imagePolicy.spec.attestors[0].cosign.keyless.identities[0];
-assert.equal(identity.issuer, expected.issuer);
-assert.equal(identity.subject, expected.subject);
-assert.equal(imagePolicy.spec.attestations[0].intoto.type, expected.predicateType);
-assert.deepEqual(
-  imagePolicy.spec.matchImageReferences.map((reference) =&gt; reference.glob),
-  [`${expected.repository}:*`, `${expected.repository}@sha256:*`],
-);
-
-function matchesImageReference(reference) {
-  return imagePolicy.spec.matchImageReferences.some(({ glob }) =&gt; {
-    assert.match(glob, /\*$/, &quot;the offline matcher supports reviewed trailing-star globs only&quot;);
-    return reference.startsWith(glob.slice(0, -1));
-  });
-}
-
-assert.equal(matchesImageReference(`${expected.repository}:release-2026-07-23`), true);
-assert.equal(matchesImageReference(`${expected.repository}@${expected.digest}`), true);
-assert.equal(matchesImageReference(`ghcr.io/attacker/secureobs@${expected.digest}`), false);
-assert.equal(matchesImageReference(`ghcr.io/jasonachkar/secureobs-evil@${expected.digest}`), false);
-
-function evaluate(candidate) {
-  const imageDigest = candidate.image.includes(&quot;@&quot;) ? candidate.image.split(&quot;@&quot;)[1] : null;
-  const repository = candidate.image.split(/[@:]/)[0];
-  return (
-    candidate.verifierSucceeded !== false &amp;&amp;
-    candidate.signed === true &amp;&amp;
-    candidate.issuer === expected.issuer &amp;&amp;
-    candidate.subject === expected.subject &amp;&amp;
-    repository === expected.repository &amp;&amp;
-    candidate.predicateType === expected.predicateType &amp;&amp;
-    candidate.provenanceValid === true &amp;&amp;
-    imageDigest === expected.digest &amp;&amp;
-    candidate.subjectDigest === expected.digest
-  );
-}
-
-const evaluatedImageCases = imageCases.cases.filter((candidate) =&gt; candidate.accepted !== null);
-for (const candidate of evaluatedImageCases) {
-  assert.equal(evaluate(candidate), candidate.accepted, candidate.name);
-}
-
-const tagOnlyCase = imageCases.cases.find(
-  (candidate) =&gt; candidate.name === &quot;tag-only-reference-match&quot;,
-);
-assert.equal(matchesImageReference(tagOnlyCase.image), true);
-assert.equal(tagOnlyCase.accepted, null);
-assert.match(tagOnlyCase.matchOnlyReason, /not executed/i);
-
-assert.deepEqual(
-  evaluatedImageCases.filter((candidate) =&gt; !candidate.accepted).map((candidate) =&gt; candidate.name),
-  [
-    &quot;unsigned&quot;,
-    &quot;wrong-repository&quot;,
-    &quot;wrong-workflow&quot;,
-    &quot;wrong-branch&quot;,
-    &quot;wrong-issuer&quot;,
-    &quot;missing-attestation&quot;,
-    &quot;malformed-provenance&quot;,
-    &quot;wrong-predicate&quot;,
-    &quot;verifier-or-transparency-failure&quot;,
-    &quot;tag-substitution-digest-mismatch&quot;,
-  ],
-);
-
-const networkPolicies = YAML.parseAllDocuments(read(&quot;fixtures/network-policies.yaml&quot;))
-  .map((document) =&gt; document.toJSON());
-const defaultDeny = networkPolicies.find(
-  (policy) =&gt; policy.metadata.name === &quot;default-deny-ingress-and-egress&quot;,
-);
-assert.deepEqual(defaultDeny.spec.podSelector, {});
-assert.deepEqual(defaultDeny.spec.policyTypes.sort(), [&quot;Egress&quot;, &quot;Ingress&quot;]);
-assert.equal(defaultDeny.spec.ingress, undefined);
-assert.equal(defaultDeny.spec.egress, undefined);
-
-const dns = networkPolicies.find((policy) =&gt; policy.metadata.name === &quot;allow-cluster-dns&quot;);
-assert.deepEqual(
-  dns.spec.egress[0].ports.map((port) =&gt; `${port.protocol}/${port.port}`).sort(),
-  [&quot;TCP/53&quot;, &quot;UDP/53&quot;],
-);
-
-console.log(
-  `PASS: Kubernetes admission, image identity (${imageCases.cases.length} cases), ` +
-    &quot;and NetworkPolicy structural tests completed.&quot;,
-);</code></pre>
+  <div role="tabpanel" id="source-kubernetes-security-panel-0" aria-labelledby="source-kubernetes-security-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0" data-source-filename="hardened-pods.yaml" data-source-language="YAML" data-source-path="labs/kubernetes-security/policies/hardened-pods.yaml" data-source-lines="78" data-source-highlighter="shiki">
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="hardened-pods.yaml source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-yaml"><span class="line"><span style="--shiki-light:#116329;--shiki-dark:#7EE787">apiVersion</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">policies.kyverno.io/v1</span></span>
+<span class="line"><span style="--shiki-light:#116329;--shiki-dark:#7EE787">kind</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">ValidatingPolicy</span></span>
+<span class="line"><span style="--shiki-light:#116329;--shiki-dark:#7EE787">metadata</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">name</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">hardened-pods</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">annotations</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">policies.kyverno.io/title</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Hardened Pod baseline</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">policies.kyverno.io/category</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Pod Security</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">policies.kyverno.io/severity</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">high</span></span>
+<span class="line"><span style="--shiki-light:#116329;--shiki-dark:#7EE787">spec</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">validationActions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Deny</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">failurePolicy</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Fail</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">evaluation</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">admission</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">enabled</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">background</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">enabled</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">mode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Kubernetes</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">webhookConfiguration</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">timeoutSeconds</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">10</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">matchConstraints</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">resourceRules</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">apiGroups</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">apiVersions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">v1</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">operations</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">CREATE</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">UPDATE</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">resources</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">pods</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">variables</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">name</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">allContainers</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">expression</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;-</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        object.spec.containers</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        + object.spec.?initContainers.orValue([])</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        + object.spec.?ephemeralContainers.orValue([])</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">validations</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Host PID, IPC, and network namespaces are not allowed.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">expression</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;-</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        !object.spec.?hostPID.orValue(false)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        &amp;&amp; !object.spec.?hostIPC.orValue(false)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        &amp;&amp; !object.spec.?hostNetwork.orValue(false)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">hostPath volumes are not allowed by this workload baseline.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">expression</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;-</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        !has(object.spec.volumes)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        || object.spec.volumes.all(volume, !has(volume.hostPath))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Service-account token automount must be explicitly disabled.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">expression</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">object.spec.?automountServiceAccountToken.orValue(true) == false</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Containers must run as non-root without privileged mode or privilege escalation.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">expression</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;-</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        variables.allContainers.all(container,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          has(container.securityContext)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; container.securityContext.?runAsNonRoot.orValue(false) == true</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; container.securityContext.?privileged.orValue(false) == false</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; container.securityContext.?allowPrivilegeEscalation.orValue(true) == false)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Containers must use a read-only root filesystem and drop all capabilities.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">expression</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;-</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        variables.allContainers.all(container,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          container.securityContext.?readOnlyRootFilesystem.orValue(false) == true</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; has(container.securityContext.capabilities)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; container.securityContext.capabilities.?drop.orValue([]).exists(capability, capability == &quot;ALL&quot;)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; size(container.securityContext.capabilities.?add.orValue([])) == 0)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">A RuntimeDefault or Localhost seccomp profile is required.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">expression</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;-</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        has(object.spec.securityContext)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        &amp;&amp; has(object.spec.securityContext.seccompProfile)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        &amp;&amp; object.spec.securityContext.seccompProfile.type in [&quot;RuntimeDefault&quot;, &quot;Localhost&quot;]</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">CPU and memory requests and limits are required for every container.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">expression</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;-</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        variables.allContainers.all(container,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          has(container.resources)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; has(container.resources.requests)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; has(container.resources.requests.cpu)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; has(container.resources.requests.memory)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; has(container.resources.limits)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; has(container.resources.limits.cpu)</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          &amp;&amp; has(container.resources.limits.memory))</span></span>
+</code></pre>
+    </div><div role="tabpanel" id="source-kubernetes-security-panel-1" aria-labelledby="source-kubernetes-security-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" data-source-filename="verify-release-images.yaml" data-source-language="YAML" data-source-path="labs/kubernetes-security/policies/verify-release-images.yaml" data-source-lines="65" data-source-highlighter="shiki" hidden>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="verify-release-images.yaml source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-yaml"><span class="line"><span style="--shiki-light:#116329;--shiki-dark:#7EE787">apiVersion</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">policies.kyverno.io/v1</span></span>
+<span class="line"><span style="--shiki-light:#116329;--shiki-dark:#7EE787">kind</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">ImageValidatingPolicy</span></span>
+<span class="line"><span style="--shiki-light:#116329;--shiki-dark:#7EE787">metadata</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">name</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">verify-secureobs-release</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">annotations</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">policies.kyverno.io/title</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Verify SecureObs release identity and provenance</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">policies.kyverno.io/category</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Software Supply Chain</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">policies.kyverno.io/severity</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">high</span></span>
+<span class="line"><span style="--shiki-light:#116329;--shiki-dark:#7EE787">spec</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">validationActions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Deny</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">failurePolicy</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Fail</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">evaluation</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">admission</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">enabled</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">background</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">enabled</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">mode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Kubernetes</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">webhookConfiguration</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">timeoutSeconds</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">15</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">matchConstraints</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">resourceRules</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">apiGroups</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">apiVersions</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">v1</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">operations</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">CREATE</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">UPDATE</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">resources</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          - </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">pods</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">matchImageReferences</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">glob</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ghcr.io/jasonachkar/secureobs:*&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">glob</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ghcr.io/jasonachkar/secureobs@sha256:*&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">attestors</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">name</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">releaseIdentity</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">cosign</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">keyless</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">identities</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">            - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">issuer</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://token.actions.githubusercontent.com&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">              </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">subject</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://github.com/jasonachkar/secureobs/.github/workflows/release.yml@refs/heads/main&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">ctlog</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">          </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">url</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://rekor.sigstore.dev&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">attestations</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">name</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">slsaProvenance</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">intoto</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">type</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://slsa.dev/provenance/v1&quot;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">validationConfigurations</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">mutateDigest</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">required</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">verifyDigest</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">validations</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">:</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">Image signature is missing or the keyless workflow identity is not authorized.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">expression</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;-</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        images.containers</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          .map(image, verifyImageSignatures(image, [attestors.releaseIdentity]))</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          .all(result, result &gt; 0)</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    - </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">SLSA provenance is missing or is not signed by the authorized workflow identity.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#116329;--shiki-dark:#7EE787">expression</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;-</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">        images.containers</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          .map(image, verifyAttestationSignatures(</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">            image,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">            attestations.slsaProvenance,</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">            [attestors.releaseIdentity]))</span></span>
+<span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">          .all(result, result &gt; 0)</span></span>
+</code></pre>
+    </div><div role="tabpanel" id="source-kubernetes-security-panel-2" aria-labelledby="source-kubernetes-security-tab-2" class="docs-source-viewer__panel" data-source-panel data-index="2" data-source-filename="run-tests.js" data-source-language="JavaScript" data-source-path="labs/kubernetes-security/tests/run-tests.js" data-source-lines="133" data-source-highlighter="shiki" data-source-expandable hidden>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="run-tests.js source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-javascript"><span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;use strict&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">assert</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;node:assert/strict&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">fs</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;node:fs&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">path</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;node:path&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">YAML</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;yaml&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">lab</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> path.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">resolve</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(__dirname, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;..&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">read</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">relative</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> fs.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">readFileSync</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(path.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">join</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(lab, relative), </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;utf8&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">podPolicy</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">YAML</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">parse</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">read</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;policies/hardened-pods.yaml&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(podPolicy.apiVersion, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;policies.kyverno.io/v1&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(podPolicy.kind, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ValidatingPolicy&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(podPolicy.spec.validationActions, [</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Deny&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(podPolicy.spec.failurePolicy, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Fail&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(podPolicy.spec.evaluation.admission.enabled, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(podPolicy.spec.evaluation.background.enabled, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">validationText</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">JSON</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">stringify</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(podPolicy.spec.validations);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">required</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">of</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> [</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;hostPID&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;hostIPC&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;hostNetwork&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;hostPath&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;automountServiceAccountToken&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;runAsNonRoot&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;privileged&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;allowPrivilegeEscalation&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;readOnlyRootFilesystem&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;capabilities&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;seccomp&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;requests&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;limits&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">match</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(validationText, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">RegExp</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(required));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">imagePolicy</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">YAML</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">parse</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">read</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;policies/verify-release-images.yaml&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(imagePolicy.apiVersion, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;policies.kyverno.io/v1&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(imagePolicy.kind, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ImageValidatingPolicy&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(imagePolicy.spec.failurePolicy, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Fail&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(imagePolicy.spec.validationActions, [</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Deny&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(imagePolicy.spec.validationConfigurations.required, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(imagePolicy.spec.validationConfigurations.verifyDigest, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(imagePolicy.spec.validationConfigurations.mutateDigest, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">imageCases</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">JSON</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">parse</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">read</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;fixtures/image-cases.json&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">));</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">expected</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> imageCases.expected;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">identity</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> imagePolicy.spec.attestors[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">].cosign.keyless.identities[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">];</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(identity.issuer, expected.issuer);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(identity.subject, expected.subject);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(imagePolicy.spec.attestations[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">].intoto.type, expected.predicateType);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  imagePolicy.spec.matchImageReferences.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">reference</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> reference.glob),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  [</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">expected</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">repository</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}:*`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">expected</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">repository</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}@sha256:*`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">],</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">matchesImageReference</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">reference</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> imagePolicy.spec.matchImageReferences.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">some</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(({ </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">glob</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> }) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">match</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(glob,</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> /</span><span style="--shiki-light:#116329;--shiki-light-font-weight:bold;--shiki-dark:#7EE787;--shiki-dark-font-weight:bold">\*</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">$</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">/</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;the offline matcher supports reviewed trailing-star globs only&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> reference.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">startsWith</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(glob.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">slice</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">-</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  });</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">matchesImageReference</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">expected</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">repository</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}:release-2026-07-23`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">matchesImageReference</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">expected</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">repository</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}@${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">expected</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">digest</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">matchesImageReference</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`ghcr.io/attacker/secureobs@${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">expected</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">digest</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">matchesImageReference</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`ghcr.io/jasonachkar/secureobs-evil@${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">expected</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">digest</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">evaluate</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">candidate</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">imageDigest</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> candidate.image.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">includes</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;@&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">?</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> candidate.image.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">split</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;@&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">] </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">null</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">repository</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> candidate.image.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">split</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">/</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">[@:]</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">/</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">];</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    candidate.verifierSucceeded </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    candidate.signed </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    candidate.issuer </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> expected.issuer </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    candidate.subject </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> expected.subject </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    repository </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> expected.repository </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    candidate.predicateType </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> expected.predicateType </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    candidate.provenanceValid </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    imageDigest </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> expected.digest </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    candidate.subjectDigest </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> expected.digest</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">evaluatedImageCases</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> imageCases.cases.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">filter</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">candidate</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> candidate.accepted </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">null</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">candidate</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">of</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> evaluatedImageCases) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">evaluate</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(candidate), candidate.accepted, candidate.name);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">tagOnlyCase</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> imageCases.cases.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">find</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  (</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">candidate</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> candidate.name </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;tag-only-reference-match&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">matchesImageReference</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tagOnlyCase.image), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tagOnlyCase.accepted, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">null</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">match</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tagOnlyCase.matchOnlyReason,</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> /not executed/</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">i</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  evaluatedImageCases.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">filter</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">candidate</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">candidate.accepted).</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">candidate</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> candidate.name),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  [</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;unsigned&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;wrong-repository&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;wrong-workflow&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;wrong-branch&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;wrong-issuer&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;missing-attestation&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;malformed-provenance&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;wrong-predicate&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;verifier-or-transparency-failure&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;tag-substitution-digest-mismatch&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  ],</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">networkPolicies</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">YAML</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">parseAllDocuments</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">read</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;fixtures/network-policies.yaml&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">))</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  .</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">document</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> document.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">toJSON</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">());</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">defaultDeny</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> networkPolicies.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">find</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  (</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">policy</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> policy.metadata.name </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;default-deny-ingress-and-egress&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(defaultDeny.spec.podSelector, {});</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(defaultDeny.spec.policyTypes.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">sort</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(), [</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Egress&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;Ingress&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(defaultDeny.spec.ingress, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">undefined</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(defaultDeny.spec.egress, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">undefined</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">dns</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> networkPolicies.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">find</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">policy</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> policy.metadata.name </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;allow-cluster-dns&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  dns.spec.egress[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">].ports.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">port</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">port</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">protocol</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}/${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">port</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">port</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">).</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">sort</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  [</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;TCP/53&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;UDP/53&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">],</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">console.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">log</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`PASS: Kubernetes admission, image identity (${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">imageCases</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">cases</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">length</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">} cases), `</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">+</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;and NetworkPolicy structural tests completed.&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+</code></pre>
     </div>
 </section>
 <h3 id="run-it">Run it</h3>

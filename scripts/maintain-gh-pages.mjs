@@ -16,7 +16,7 @@ import {
 } from "./site-config.mjs";
 import {SCRIPTS, SCRIPT_CATEGORIES} from "./catalog.mjs";
 import {LABS} from "../labs/catalog.mjs";
-import {highlightCode} from "./highlight.mjs";
+import {highlightSource} from "./highlight.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const toPosix = value => value.split(path.sep).join("/");
@@ -175,6 +175,9 @@ function insertBeforeArticleClose(html, inner) {
 
 function stripGenerated(html) {
   return html
+    // The shared header contains the authored H1, so unwrap it before removing
+    // the generated breadcrumb/currency children below.
+    .replace(/<!-- docs-article-header:start --><header class="docs-article-header">([\s\S]*?)<\/header><!-- docs-article-header:end -->\s*/g, "$1")
     // Legacy markers from the previous single-bar portfolio chrome (one-time cleanup).
     .replace(/<!-- portfolio-nav:start -->[\s\S]*?<!-- portfolio-nav:end -->\s*/g, "")
     .replace(/<!-- portfolio-footer:start -->[\s\S]*?<!-- portfolio-footer:end -->\s*/g, "")
@@ -383,12 +386,15 @@ function inlineToc(headings) {
 // the per-lab implementation viewers so the two features share one component.
 function renderSourceViewer(sourceFiles, viewerId) {
   const files = sourceFiles.map((file) => {
-    const raw = read(file.path).replace(/\n$/, "");
-    const lineCount = raw.split("\n").length;
-    return {...file, raw, lineCount, highlighted: highlightCode(raw, file.language)};
+    const raw = read(file.path);
+    const lineCount = raw ? (raw.endsWith("\n") ? raw.slice(0, -1) : raw).split("\n").length : 0;
+    const highlighted = highlightSource(raw, file.language);
+    return {...file, raw, lineCount, highlighted};
   });
   const primaryIndex = Math.max(0, files.findIndex(file => file.primary));
   const filename = value => value.split("/").pop();
+  const expandable = file => file.lineCount > 100;
+  const languageLabel = file => file.highlighted.language.displayName;
 
   const tabs = files.length > 1
     ? `<div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files">${files.map((file, i) => `<button type="button" role="tab" id="${viewerId}-tab-${i}" aria-controls="${viewerId}-panel-${i}" aria-selected="${i === primaryIndex ? "true" : "false"}" tabindex="${i === primaryIndex ? "0" : "-1"}" class="docs-source-viewer__tab"${i === primaryIndex ? " data-current-tab" : ""} data-source-tab data-index="${i}">${escapeHtml(file.label)}</button>`).join("")}</div>`
@@ -397,19 +403,27 @@ function renderSourceViewer(sourceFiles, viewerId) {
   const panels = files.map((file, i) => {
     const hiddenAttr = i === primaryIndex ? "" : " hidden";
     const labelledBy = files.length > 1 ? ` aria-labelledby="${viewerId}-tab-${i}"` : "";
-    return `<div role="tabpanel" id="${viewerId}-panel-${i}" tabindex="0"${labelledBy} class="docs-source-viewer__panel" data-source-panel data-index="${i}"${hiddenAttr}>
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">${escapeHtml(filename(file.path))}</span><code class="docs-source-viewer__path">${escapeHtml(file.path)}</code><span class="docs-source-viewer__lines">${file.lineCount} line${file.lineCount === 1 ? "" : "s"}</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="${escapeHtml(filename(file.path))} source code" class="language-${escapeHtml(file.language)}">${file.highlighted}</code></pre>
+    const longAttr = expandable(file) ? " data-source-expandable" : "";
+    const styleAttr = file.highlighted.rootStyle ? ` style="${escapeHtml(file.highlighted.rootStyle)}"` : "";
+    return `<div role="tabpanel" id="${viewerId}-panel-${i}"${labelledBy} class="docs-source-viewer__panel" data-source-panel data-index="${i}" data-source-filename="${escapeHtml(filename(file.path))}" data-source-language="${escapeHtml(languageLabel(file))}" data-source-path="${escapeHtml(file.path)}" data-source-lines="${file.lineCount}" data-source-highlighter="${file.highlighted.highlighter}"${longAttr}${hiddenAttr}>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="${escapeHtml(filename(file.path))} source code"${styleAttr}><code class="language-${escapeHtml(file.highlighted.language.id)}">${file.highlighted.html}</code></pre>
     </div>`;
   }).join("");
 
+  const primary = files[primaryIndex];
+  const primaryLineLabel = `${primary.lineCount} line${primary.lineCount === 1 ? "" : "s"}`;
   return `<section class="docs-source-viewer" data-source-viewer id="${viewerId}" aria-label="Source code: ${escapeHtml(filename(files[primaryIndex].path))}">
   <header class="docs-source-viewer__toolbar">
-    <span class="docs-source-viewer__toolbar-title">${escapeHtml(filename(files[primaryIndex].path))}</span>
-    <div class="docs-source-viewer__actions">
-      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
-      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    <div class="docs-source-viewer__identity">
+      <div class="docs-source-viewer__title-row"><strong class="docs-source-viewer__toolbar-title" data-source-active-filename>${escapeHtml(filename(primary.path))}</strong><span class="docs-source-viewer__summary"><span data-source-active-language>${escapeHtml(languageLabel(primary))}</span><span aria-hidden="true"> · </span><span data-source-active-lines>${primaryLineLabel}</span></span></div>
+      <code class="docs-source-viewer__path" data-source-active-path title="${escapeHtml(primary.path)}">${escapeHtml(primary.path)}</code>
     </div>
+    <div class="docs-source-viewer__actions" data-source-actions>
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-pressed="false" data-wrap-source>Wrap</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source${expandable(primary) ? "" : " hidden"}>Expand</button>
+    </div>
+    <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
   </header>
   ${tabs}
   ${panels}
@@ -438,6 +452,10 @@ function injectLabSourceViewer(html, lab) {
   const h1Match = html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/i);
   if (!h1Match) throw new Error(`${lab.page}: H1 not found for lab source injection`);
   let cursor = h1Match.index + h1Match[0].length;
+  // normalizePage groups breadcrumb/H1/currency in a shared structural header.
+  // The implementation block belongs to the article body, never inside that header.
+  const articleHeaderEnd = html.indexOf("</header><!-- docs-article-header:end -->", cursor);
+  if (articleHeaderEnd !== -1) cursor = articleHeaderEnd + "</header><!-- docs-article-header:end -->".length;
   // Skip past the inline TOC (already inserted by normalizePage, which runs
   // before this) so the viewer lands after it, not wedged in front of it.
   const tocMatch = html.slice(cursor).match(/^\s*<!-- docs-inline-toc:start -->[\s\S]*?<!-- docs-inline-toc:end -->/);
@@ -733,25 +751,19 @@ function normalizePage(file, html, entry) {
   const currentUrl = pageUrl(file);
   if (entry.status !== "site-utility") {
     const crumbs = breadcrumbs(currentUrl);
-    // Tracks the literal string right after which the next front-matter block should
-    // be inserted, so the inline TOC lands after the H1 *and* the study-currency
-    // banner (when present) without a second, more fragile regex search for it.
-    let afterHeading = null;
-    html = html.replace(/<h1\b[^>]*>[\s\S]*?<\/h1>/i, match => {
-      afterHeading = match;
-      return `${crumbs ? `${crumbs}\n` : ""}${match}`;
-    });
-
+    const heading = html.match(/<h1\b[^>]*>[\s\S]*?<\/h1>/i)?.[0];
+    if (!heading) throw new Error(`${file}: H1 not found while generating article header`);
     const currency = CERTIFICATION_CURRENCY.find(([prefix]) => file.startsWith(prefix));
+    let currencyBanner = "";
     if (currency && entry.status === "study-notes") {
-      const banner = `<aside class="study-currency" aria-label="Official-owner check"><strong>Official-owner check</strong><p>${currency[1]}</p></aside>`;
-      html = html.replace(afterHeading, `${afterHeading}\n${banner}`);
-      afterHeading = banner;
+      currencyBanner = `<aside class="study-currency" aria-label="Official-owner check"><strong>Official-owner check</strong><p>${currency[1]}</p></aside>`;
     }
+    const articleHeader = `<!-- docs-article-header:start --><header class="docs-article-header">${crumbs ? `${crumbs}\n` : ""}${heading}${currencyBanner ? `\n${currencyBanner}` : ""}</header><!-- docs-article-header:end -->`;
+    html = html.replace(heading, articleHeader);
 
     const headings = articleHeadings(html);
     const includeToc = needsToc(entry, headings);
-    if (includeToc) html = html.replace(afterHeading, `${afterHeading}\n${inlineToc(headings)}`);
+    if (includeToc) html = html.replace(articleHeader, `${articleHeader}\n${inlineToc(headings)}`);
 
     html = wrapDivByClass(html, "md-content", leftNav(currentUrl), includeToc ? desktopToc(headings) : "");
 
@@ -857,6 +869,20 @@ for (const [file, record] of records) {
 write("content-status.json", `${JSON.stringify(manifest, null, 2)}\n`);
 
 const searchDocs = [];
+function searchMetadata(file, entry) {
+  const url = pageUrl(file);
+  const record = NAV_INDEX.get(url);
+  const top = record?.trail?.[0]?.title || record?.title || "Documentation";
+  let type = "Reference";
+  if (file === "index.html") type = "Knowledge base";
+  else if (file.startsWith("labs/")) type = "Lab";
+  else if (file.startsWith("scripts/")) type = "Script";
+  else if (entry.status === "study-notes") type = "Study notes";
+  else if (file === "about/index.html") type = "About";
+  else if (["verified", "partially-verified", "conceptual"].includes(entry.status)) type = "Research";
+  const category = type === "Research" && record?.trail?.[1]?.title ? record.trail[1].title : top;
+  return `${category} · ${type}`;
+}
 for (const [file, entry] of entries) {
   if (!entry.indexable) continue;
   const html = read(file);
@@ -877,14 +903,15 @@ for (const [file, entry] of entries) {
     // like "engineering investigation" was instead getting iterated character by
     // character (strings are iterable in JS), producing one single-letter chip per
     // character instead of one real tag chip.
-    tags: entry.tags
+    tags: [searchMetadata(file, entry)],
+    keywords: entry.tags
   });
   for (const section of articleSections(html)) {
-    searchDocs.push({location: `${location}#${section.id}`, title: section.title, text: section.text});
+    searchDocs.push({location: `${location}#${section.id}`, title: section.title, text: section.text, tags: [searchMetadata(file, entry)], keywords: entry.tags});
   }
 }
 const searchIndex = {
-  config: {lang: ["en"], separator: "[\\s\\-]+", pipeline: ["stopWordFilter"], fields: {title: {boost: 1000}, text: {boost: 1}, tags: {boost: 1000000}}},
+  config: {lang: ["en"], separator: "[\\s\\-]+", pipeline: ["stopWordFilter"], fields: {title: {boost: 1000}, text: {boost: 1}, tags: {boost: 10}, keywords: {boost: 1000000}}},
   docs: searchDocs
 };
 write("search/search_index.json", `${JSON.stringify(searchIndex)}\n`);

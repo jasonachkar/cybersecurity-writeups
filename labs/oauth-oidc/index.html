@@ -233,8 +233,8 @@
   
 
 
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">OAuth and OIDC</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="oauthoidc-token-boundary-lab">OAuth/OIDC token-boundary lab</h1>
+<!-- docs-article-header:start --><header class="docs-article-header"><!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">OAuth and OIDC</li></ol></nav><!-- docs-breadcrumbs:end -->
+<h1 id="oauthoidc-token-boundary-lab">OAuth/OIDC token-boundary lab</h1></header><!-- docs-article-header:end -->
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
   <summary>On this page</summary>
@@ -248,452 +248,457 @@ and Go 1.26.1. The JavaScript suite supports Node.js 22 or newer.</p>
 <h2 id="implementation">Implementation</h2>
 <section class="docs-source-viewer" data-source-viewer id="source-oauth-oidc" aria-label="Source code: oauth-security.js">
   <header class="docs-source-viewer__toolbar">
-    <span class="docs-source-viewer__toolbar-title">oauth-security.js</span>
-    <div class="docs-source-viewer__actions">
-      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
-      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    <div class="docs-source-viewer__identity">
+      <div class="docs-source-viewer__title-row"><strong class="docs-source-viewer__toolbar-title" data-source-active-filename>oauth-security.js</strong><span class="docs-source-viewer__summary"><span data-source-active-language>JavaScript</span><span aria-hidden="true"> · </span><span data-source-active-lines>205 lines</span></span></div>
+      <code class="docs-source-viewer__path" data-source-active-path title="labs/oauth-oidc/oauth-security.js">labs/oauth-oidc/oauth-security.js</code>
     </div>
+    <div class="docs-source-viewer__actions" data-source-actions>
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-pressed="false" data-wrap-source>Wrap</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand</button>
+    </div>
+    <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
   </header>
   <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-oauth-oidc-tab-0" aria-controls="source-oauth-oidc-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Boundary adapter</button><button type="button" role="tab" id="source-oauth-oidc-tab-1" aria-controls="source-oauth-oidc-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Tests</button></div>
-  <div role="tabpanel" id="source-oauth-oidc-panel-0" tabindex="0" aria-labelledby="source-oauth-oidc-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">oauth-security.js</span><code class="docs-source-viewer__path">labs/oauth-oidc/oauth-security.js</code><span class="docs-source-viewer__lines">205 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="oauth-security.js source code" class="language-javascript">&quot;use strict&quot;;
-
-const {
-  createSign,
-  createVerify,
-} = require(&quot;node:crypto&quot;);
-
-const BASE64URL_PATTERN = /^[A-Za-z0-9_-]+$/u;
-
-class TokenValidationError extends Error {
-  constructor(code, message) {
-    super(message);
-    this.name = &quot;TokenValidationError&quot;;
-    this.code = code;
-  }
-}
-
-function encodeJson(value) {
-  return Buffer.from(JSON.stringify(value), &quot;utf8&quot;).toString(&quot;base64url&quot;);
-}
-
-function decodeJsonSegment(segment, label) {
-  if (!segment || !BASE64URL_PATTERN.test(segment)) {
-    throw new TokenValidationError(&quot;MALFORMED_TOKEN&quot;, `${label} is not base64url`);
-  }
-
-  try {
-    const decoded = JSON.parse(Buffer.from(segment, &quot;base64url&quot;).toString(&quot;utf8&quot;));
-    if (!decoded || typeof decoded !== &quot;object&quot; || Array.isArray(decoded)) {
-      throw new Error(&quot;decoded value is not an object&quot;);
-    }
-    return decoded;
-  } catch {
-    throw new TokenValidationError(&quot;MALFORMED_TOKEN&quot;, `${label} is not a JSON object`);
-  }
-}
-
-function signJwt(claims, { privateKey, kid }) {
-  if (!privateKey || typeof kid !== &quot;string&quot; || kid.length === 0) {
-    throw new TypeError(&quot;privateKey and a nonempty kid are required&quot;);
-  }
-
-  const header = encodeJson({ alg: &quot;RS256&quot;, kid, typ: &quot;JWT&quot; });
-  const payload = encodeJson(claims);
-  const signingInput = `${header}.${payload}`;
-  const signer = createSign(&quot;RSA-SHA256&quot;);
-  signer.update(signingInput, &quot;ascii&quot;);
-  signer.end();
-  return `${signingInput}.${signer.sign(privateKey).toString(&quot;base64url&quot;)}`;
-}
-
-function parseScopeClaim(claims) {
-  const value = claims.scope ?? claims.scp;
-  if (typeof value !== &quot;string&quot;) {
-    throw new TokenValidationError(&quot;INVALID_SCOPE&quot;, &quot;scope/scp must be a string&quot;);
-  }
-  return new Set(value.split(&quot; &quot;).filter(Boolean));
-}
-
-function audienceContains(audience, expectedAudience) {
-  if (typeof audience === &quot;string&quot;) return audience === expectedAudience;
-  if (Array.isArray(audience)) {
-    return audience.length &gt; 0 &amp;&amp;
-      audience.every((entry) =&gt; typeof entry === &quot;string&quot;) &amp;&amp;
-      audience.includes(expectedAudience);
-  }
-  return false;
-}
-
-function validateAccessToken(token, config) {
-  const {
-    issuer,
-    audience,
-    tenant,
-    requiredScopes = [],
-    trustedKeys,
-    now = Math.floor(Date.now() / 1000),
-    clockSkewSeconds = 0,
-  } = config;
-
-  if (!(trustedKeys instanceof Map) || trustedKeys.size === 0) {
-    throw new TypeError(&quot;trustedKeys must be a nonempty Map&quot;);
-  }
-  if (!Number.isInteger(now) || !Number.isInteger(clockSkewSeconds) ||
-      clockSkewSeconds &lt; 0) {
-    throw new TypeError(&quot;time settings must be integer seconds&quot;);
-  }
-
-  const parts = typeof token === &quot;string&quot; ? token.split(&quot;.&quot;) : [];
-  if (parts.length !== 3 || !parts[2] || !BASE64URL_PATTERN.test(parts[2])) {
-    throw new TokenValidationError(&quot;MALFORMED_TOKEN&quot;, &quot;JWT must have three segments&quot;);
-  }
-
-  const header = decodeJsonSegment(parts[0], &quot;header&quot;);
-  const claims = decodeJsonSegment(parts[1], &quot;payload&quot;);
-  if (header.alg !== &quot;RS256&quot; || header.typ !== &quot;JWT&quot; ||
-      typeof header.kid !== &quot;string&quot; || header.kid.length === 0) {
-    throw new TokenValidationError(
-      &quot;UNSUPPORTED_HEADER&quot;,
-      &quot;alg=RS256, typ=JWT, and a trusted kid are required&quot;,
-    );
-  }
-  if (header.jku !== undefined || header.x5u !== undefined ||
-      header.crit !== undefined) {
-    throw new TokenValidationError(
-      &quot;UNSUPPORTED_HEADER&quot;,
-      &quot;remote key URLs and unconfigured critical headers are rejected&quot;,
-    );
-  }
-
-  const key = trustedKeys.get(header.kid);
-  if (!key) {
-    throw new TokenValidationError(&quot;UNKNOWN_KEY&quot;, &quot;kid is not in the trusted key set&quot;);
-  }
-
-  const verifier = createVerify(&quot;RSA-SHA256&quot;);
-  verifier.update(`${parts[0]}.${parts[1]}`, &quot;ascii&quot;);
-  verifier.end();
-  if (!verifier.verify(key, Buffer.from(parts[2], &quot;base64url&quot;))) {
-    throw new TokenValidationError(&quot;INVALID_SIGNATURE&quot;, &quot;signature verification failed&quot;);
-  }
-
-  if (claims.iss !== issuer) {
-    throw new TokenValidationError(&quot;INVALID_ISSUER&quot;, &quot;issuer does not match&quot;);
-  }
-  if (!audienceContains(claims.aud, audience)) {
-    throw new TokenValidationError(&quot;INVALID_AUDIENCE&quot;, &quot;audience does not match&quot;);
-  }
-  if (typeof claims.sub !== &quot;string&quot; || claims.sub.length === 0) {
-    throw new TokenValidationError(&quot;INVALID_SUBJECT&quot;, &quot;nonempty sub is required&quot;);
-  }
-  if (!Number.isInteger(claims.exp) || now &gt;= claims.exp + clockSkewSeconds) {
-    throw new TokenValidationError(&quot;TOKEN_EXPIRED&quot;, &quot;token is expired&quot;);
-  }
-  if (claims.nbf !== undefined &amp;&amp;
-      (!Number.isInteger(claims.nbf) || now + clockSkewSeconds &lt; claims.nbf)) {
-    throw new TokenValidationError(&quot;TOKEN_NOT_ACTIVE&quot;, &quot;token is not active&quot;);
-  }
-  if (claims.tid !== tenant) {
-    throw new TokenValidationError(&quot;INVALID_TENANT&quot;, &quot;tenant does not match&quot;);
-  }
-
-  const grantedScopes = parseScopeClaim(claims);
-  for (const requiredScope of requiredScopes) {
-    if (!grantedScopes.has(requiredScope)) {
-      throw new TokenValidationError(
-        &quot;INSUFFICIENT_SCOPE&quot;,
-        `required scope is absent: ${requiredScope}`,
-      );
-    }
-  }
-
-  return Object.freeze({
-    issuer: claims.iss,
-    subject: claims.sub,
-    tenant: claims.tid,
-    scopes: Object.freeze([...grantedScopes]),
-  });
-}
-
-function validateRegisteredRedirect(uri) {
-  if (typeof uri !== &quot;string&quot; || uri.length === 0) {
-    throw new TypeError(&quot;registered redirect URI must be a nonempty string&quot;);
-  }
-
-  let parsed;
-  try {
-    parsed = new URL(uri);
-  } catch {
-    throw new TypeError(&quot;registered redirect URI must be an absolute URI&quot;);
-  }
-  if (parsed.protocol !== &quot;https:&quot; || parsed.username || parsed.password ||
-      parsed.hash) {
-    throw new TypeError(
-      &quot;this web-client lab requires HTTPS without userinfo or a fragment&quot;,
-    );
-  }
-
-  // URL serialization can normalize meaningful syntax. Registration is accepted
-  // only when it is already in canonical serialized form; authorization requests
-  // are still compared to the original string, without normalization.
-  if (parsed.href !== uri) {
-    throw new TypeError(&quot;registered redirect URI must use canonical URL syntax&quot;);
-  }
-}
-
-function createExactRedirectMatcher(registeredUris) {
-  if (!Array.isArray(registeredUris) || registeredUris.length === 0) {
-    throw new TypeError(&quot;registeredUris must be a nonempty array&quot;);
-  }
-  for (const uri of registeredUris) validateRegisteredRedirect(uri);
-  const exactValues = new Set(registeredUris);
-  if (exactValues.size !== registeredUris.length) {
-    throw new TypeError(&quot;registered redirect URIs must be unique&quot;);
-  }
-  return (requestedUri) =&gt;
-    typeof requestedUri === &quot;string&quot; &amp;&amp; exactValues.has(requestedUri);
-}
-
-module.exports = {
-  TokenValidationError,
-  createExactRedirectMatcher,
-  signJwt,
-  validateAccessToken,
-};</code></pre>
-    </div><div role="tabpanel" id="source-oauth-oidc-panel-1" tabindex="0" aria-labelledby="source-oauth-oidc-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">oauth-security.test.js</span><code class="docs-source-viewer__path">labs/oauth-oidc/tests/oauth-security.test.js</code><span class="docs-source-viewer__lines">230 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="oauth-security.test.js source code" class="language-javascript">&quot;use strict&quot;;
-
-const assert = require(&quot;node:assert/strict&quot;);
-const { generateKeyPairSync } = require(&quot;node:crypto&quot;);
-const {
-  TokenValidationError,
-  createExactRedirectMatcher,
-  signJwt,
-  validateAccessToken,
-} = require(&quot;../oauth-security&quot;);
-
-const NOW = 2_000_000_000;
-const ISSUER = &quot;https://issuer.example.test&quot;;
-const AUDIENCE = &quot;api://payments&quot;;
-const TENANT = &quot;tenant-blue&quot;;
-const KID_OLD = &quot;issuer-key-2026-01&quot;;
-const KID_NEW = &quot;issuer-key-2026-07&quot;;
-
-const oldKeys = generateKeyPairSync(&quot;rsa&quot;, { modulusLength: 2048 });
-const newKeys = generateKeyPairSync(&quot;rsa&quot;, { modulusLength: 2048 });
-const attackerKeys = generateKeyPairSync(&quot;rsa&quot;, { modulusLength: 2048 });
-
-const baselineClaims = Object.freeze({
-  aud: AUDIENCE,
-  exp: NOW + 300,
-  iss: ISSUER,
-  nbf: NOW - 30,
-  scope: &quot;payments.read payments.refund&quot;,
-  sub: &quot;user-42&quot;,
-  tid: TENANT,
-});
-
-function token(overrides = {}, signing = {}) {
-  return signJwt(
-    { ...baselineClaims, ...overrides },
-    {
-      privateKey: signing.privateKey ?? oldKeys.privateKey,
-      kid: signing.kid ?? KID_OLD,
-    },
-  );
-}
-
-function config(overrides = {}) {
-  return {
-    audience: AUDIENCE,
-    clockSkewSeconds: 0,
-    issuer: ISSUER,
-    now: NOW,
-    requiredScopes: [&quot;payments.read&quot;],
-    tenant: TENANT,
-    trustedKeys: new Map([[KID_OLD, oldKeys.publicKey]]),
-    ...overrides,
-  };
-}
-
-function expectCode(expectedCode, operation) {
-  assert.throws(
-    operation,
-    (error) =&gt;
-      error instanceof TokenValidationError &amp;&amp; error.code === expectedCode,
-    `expected ${expectedCode}`,
-  );
-}
-
-const tests = [];
-function test(name, operation) {
-  tests.push({ name, operation });
-}
-
-test(&quot;accepts a correctly signed token with the configured security context&quot;, () =&gt; {
-  const principal = validateAccessToken(token(), config());
-  assert.deepEqual(
-    principal,
-    {
-      issuer: ISSUER,
-      scopes: [&quot;payments.read&quot;, &quot;payments.refund&quot;],
-      subject: &quot;user-42&quot;,
-      tenant: TENANT,
-    },
-  );
-});
-
-test(&quot;rejects a token signed by an attacker under a trusted kid&quot;, () =&gt; {
-  const forged = token({}, { privateKey: attackerKeys.privateKey, kid: KID_OLD });
-  expectCode(&quot;INVALID_SIGNATURE&quot;, () =&gt; validateAccessToken(forged, config()));
-});
-
-test(&quot;rejects the wrong issuer even when the signature is trusted&quot;, () =&gt; {
-  expectCode(
-    &quot;INVALID_ISSUER&quot;,
-    () =&gt; validateAccessToken(token({ iss: &quot;https://other.example.test&quot; }), config()),
-  );
-});
-
-test(&quot;rejects the wrong audience&quot;, () =&gt; {
-  expectCode(
-    &quot;INVALID_AUDIENCE&quot;,
-    () =&gt; validateAccessToken(token({ aud: &quot;api://inventory&quot; }), config()),
-  );
-});
-
-test(&quot;accepts the configured audience in an audience array&quot;, () =&gt; {
-  const principal = validateAccessToken(
-    token({ aud: [&quot;api://reports&quot;, AUDIENCE] }),
-    config(),
-  );
-  assert.equal(principal.subject, &quot;user-42&quot;);
-});
-
-test(&quot;rejects an expired token at the exp boundary&quot;, () =&gt; {
-  expectCode(
-    &quot;TOKEN_EXPIRED&quot;,
-    () =&gt; validateAccessToken(token({ exp: NOW }), config()),
-  );
-});
-
-test(&quot;rejects a token whose not-before time is in the future&quot;, () =&gt; {
-  expectCode(
-    &quot;TOKEN_NOT_ACTIVE&quot;,
-    () =&gt; validateAccessToken(token({ nbf: NOW + 1 }), config()),
-  );
-});
-
-test(&quot;rejects a token from the wrong tenant&quot;, () =&gt; {
-  expectCode(
-    &quot;INVALID_TENANT&quot;,
-    () =&gt; validateAccessToken(token({ tid: &quot;tenant-red&quot; }), config()),
-  );
-});
-
-test(&quot;rejects a token missing a required scope&quot;, () =&gt; {
-  expectCode(
-    &quot;INSUFFICIENT_SCOPE&quot;,
-    () =&gt; validateAccessToken(token({ scope: &quot;payments.write&quot; }), config()),
-  );
-});
-
-test(&quot;accepts old and new keys during a bounded rotation overlap&quot;, () =&gt; {
-  const overlap = config({
-    trustedKeys: new Map([
-      [KID_OLD, oldKeys.publicKey],
-      [KID_NEW, newKeys.publicKey],
-    ]),
-  });
-  assert.equal(validateAccessToken(token(), overlap).subject, &quot;user-42&quot;);
-  assert.equal(
-    validateAccessToken(
-      token({}, { privateKey: newKeys.privateKey, kid: KID_NEW }),
-      overlap,
-    ).subject,
-    &quot;user-42&quot;,
-  );
-});
-
-test(&quot;rejects the retired key after the overlap window&quot;, () =&gt; {
-  const afterRotation = config({
-    trustedKeys: new Map([[KID_NEW, newKeys.publicKey]]),
-  });
-  expectCode(
-    &quot;UNKNOWN_KEY&quot;,
-    () =&gt; validateAccessToken(token(), afterRotation),
-  );
-  assert.equal(
-    validateAccessToken(
-      token({}, { privateKey: newKeys.privateKey, kid: KID_NEW }),
-      afterRotation,
-    ).subject,
-    &quot;user-42&quot;,
-  );
-});
-
-test(&quot;does not fetch or accept an unknown kid&quot;, () =&gt; {
-  const unknownKey = token(
-    {},
-    { privateKey: attackerKeys.privateKey, kid: &quot;https://attacker.test/key&quot; },
-  );
-  expectCode(&quot;UNKNOWN_KEY&quot;, () =&gt; validateAccessToken(unknownKey, config()));
-});
-
-test(&quot;accepts only the exact registered redirect string&quot;, () =&gt; {
-  const isAllowed = createExactRedirectMatcher([
-    &quot;https://app.example.test/oauth/callback?channel=web&quot;,
-  ]);
-  assert.equal(
-    isAllowed(&quot;https://app.example.test/oauth/callback?channel=web&quot;),
-    true,
-  );
-
-  const nearMatches = [
-    &quot;https://APP.example.test/oauth/callback?channel=web&quot;,
-    &quot;https://app.example.test:443/oauth/callback?channel=web&quot;,
-    &quot;https://app.example.test/oauth/callback/?channel=web&quot;,
-    &quot;https://app.example.test/oauth/callback?CHANNEL=web&quot;,
-    &quot;https://app.example.test/oauth/callback?channel=web#fragment&quot;,
-    &quot;https://app.example.test@attacker.test/oauth/callback?channel=web&quot;,
-    &quot;https://evil.app.example.test/oauth/callback?channel=web&quot;,
-  ];
-  for (const nearMatch of nearMatches) {
-    assert.equal(isAllowed(nearMatch), false, nearMatch);
-  }
-});
-
-test(&quot;rejects unsafe values at redirect registration time&quot;, () =&gt; {
-  assert.throws(
-    () =&gt; createExactRedirectMatcher([&quot;http://app.example.test/callback&quot;]),
-    /HTTPS/u,
-  );
-  assert.throws(
-    () =&gt; createExactRedirectMatcher([&quot;https://user@app.example.test/callback&quot;]),
-    /userinfo/u,
-  );
-});
-
-let failures = 0;
-for (const item of tests) {
-  try {
-    item.operation();
-    console.log(`PASS: ${item.name}`);
-  } catch (error) {
-    failures += 1;
-    console.error(`FAIL: ${item.name}`);
-    console.error(error.stack || error.message);
-  }
-}
-
-if (failures &gt; 0) {
-  console.error(`OAuth/OIDC lab failed: ${failures} of ${tests.length} checks failed.`);
-  process.exit(1);
-}
-console.log(`OAuth/OIDC lab passed: ${tests.length} positive and negative checks.`);</code></pre>
+  <div role="tabpanel" id="source-oauth-oidc-panel-0" aria-labelledby="source-oauth-oidc-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0" data-source-filename="oauth-security.js" data-source-language="JavaScript" data-source-path="labs/oauth-oidc/oauth-security.js" data-source-lines="205" data-source-highlighter="shiki" data-source-expandable>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="oauth-security.js source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-javascript"><span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;use strict&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">createSign</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">createVerify</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">} </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;node:crypto&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">BASE64URL_PATTERN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> /</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">^</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">[A-Za-z0-9_-]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">+$</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">/</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">u</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">class</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">extends</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">Error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">constructor</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">code</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">message</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">super</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(message);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">this</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.name </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;TokenValidationError&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">this</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.code </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> code;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">encodeJson</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">value</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> Buffer.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">from</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">JSON</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">stringify</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(value), </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;utf8&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">).</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">toString</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;base64url&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">decodeJsonSegment</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">segment</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">label</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">segment </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">BASE64URL_PATTERN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(segment)) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;MALFORMED_TOKEN&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">label</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">} is not base64url`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">decoded</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">JSON</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">parse</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(Buffer.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">from</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(segment, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;base64url&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">).</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">toString</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;utf8&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">decoded </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">typeof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> decoded </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;object&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> Array.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isArray</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(decoded)) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;decoded value is not an object&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> decoded;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">catch</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;MALFORMED_TOKEN&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">label</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">} is not a JSON object`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">signJwt</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">claims</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, { </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">privateKey</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">kid</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> }) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">privateKey </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">typeof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> kid </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> kid.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">length</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TypeError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;privateKey and a nonempty kid are required&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">header</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">encodeJson</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ alg: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;RS256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, kid, typ: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;JWT&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> });</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">payload</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">encodeJson</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(claims);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">signingInput</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">header</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}.${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">payload</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">signer</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">createSign</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;RSA-SHA256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  signer.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">update</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(signingInput, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ascii&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  signer.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">end</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">signingInput</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}.${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">signer</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">sign</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">(</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">privateKey</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">).</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">toString</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;base64url&quot;</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">)</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">parseScopeClaim</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">claims</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">value</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> claims.scope </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">??</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> claims.scp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">typeof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> value </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INVALID_SCOPE&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;scope/scp must be a string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Set</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(value.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">split</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot; &quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">).</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">filter</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(Boolean));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">audienceContains</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">audience</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">expectedAudience</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">typeof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> audience </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> audience </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> expectedAudience;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (Array.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isArray</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(audience)) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> audience.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">length</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      audience.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">every</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">entry</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">typeof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> entry </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      audience.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">includes</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(expectedAudience);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">issuer</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">audience</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">tenant</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">requiredScopes</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> [],</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">trustedKeys</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">now</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> Math.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">floor</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(Date.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">now</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">() </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">/</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1000</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">clockSkewSeconds</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> config;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(trustedKeys </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">instanceof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">Map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> trustedKeys.size </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TypeError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;trustedKeys must be a nonempty Map&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">Number.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isInteger</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(now) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">Number.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isInteger</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(clockSkewSeconds) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      clockSkewSeconds </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TypeError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;time settings must be integer seconds&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">parts</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">typeof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> token </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">?</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> token.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">split</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;.&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> [];</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (parts.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">length</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">3</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">parts[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">2</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">] </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">BASE64URL_PATTERN</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(parts[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">2</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">])) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;MALFORMED_TOKEN&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;JWT must have three segments&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">header</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">decodeJsonSegment</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(parts[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">], </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;header&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">claims</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">decodeJsonSegment</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(parts[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">], </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;payload&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (header.alg </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;RS256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> header.typ </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;JWT&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">typeof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> header.kid </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> header.kid.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">length</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;UNSUPPORTED_HEADER&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;alg=RS256, typ=JWT, and a trusted kid are required&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (header.jku </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">undefined</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> header.x5u </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">undefined</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      header.crit </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">undefined</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;UNSUPPORTED_HEADER&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;remote key URLs and unconfigured critical headers are rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">key</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> trustedKeys.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">get</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(header.kid);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">key) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;UNKNOWN_KEY&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;kid is not in the trusted key set&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">verifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">createVerify</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;RSA-SHA256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  verifier.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">update</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">parts</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">]</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}.${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">parts</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">]</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ascii&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  verifier.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">end</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">verifier.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">verify</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(key, Buffer.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">from</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(parts[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">2</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">], </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;base64url&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">))) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INVALID_SIGNATURE&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;signature verification failed&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (claims.iss </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> issuer) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INVALID_ISSUER&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;issuer does not match&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">audienceContains</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(claims.aud, audience)) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INVALID_AUDIENCE&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;audience does not match&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">typeof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> claims.sub </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> claims.sub.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">length</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INVALID_SUBJECT&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;nonempty sub is required&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">Number.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isInteger</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(claims.exp) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> now </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> claims.exp </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">+</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> clockSkewSeconds) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;TOKEN_EXPIRED&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;token is expired&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (claims.nbf </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">undefined</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">Number.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isInteger</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(claims.nbf) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> now </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">+</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> clockSkewSeconds </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> claims.nbf)) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;TOKEN_NOT_ACTIVE&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;token is not active&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (claims.tid </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tenant) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INVALID_TENANT&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;tenant does not match&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">grantedScopes</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">parseScopeClaim</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(claims);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">requiredScope</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">of</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> requiredScopes) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">grantedScopes.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">has</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(requiredScope)) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INSUFFICIENT_SCOPE&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">        </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`required scope is absent: ${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">requiredScope</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> Object.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">freeze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    issuer: claims.iss,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    subject: claims.sub,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    tenant: claims.tid,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    scopes: Object.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">freeze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">...</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">grantedScopes]),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  });</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateRegisteredRedirect</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">uri</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">typeof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> uri </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> uri.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">length</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TypeError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;registered redirect URI must be a nonempty string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">let</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> parsed;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    parsed </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">URL</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(uri);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">catch</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TypeError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;registered redirect URI must be an absolute URI&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (parsed.protocol </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https:&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> parsed.username </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> parsed.password </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      parsed.hash) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TypeError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;this web-client lab requires HTTPS without userinfo or a fragment&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// URL serialization can normalize meaningful syntax. Registration is accepted</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// only when it is already in canonical serialized form; authorization requests</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// are still compared to the original string, without normalization.</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (parsed.href </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> uri) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TypeError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;registered redirect URI must use canonical URL syntax&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">createExactRedirectMatcher</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">registeredUris</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">Array.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isArray</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(registeredUris) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> registeredUris.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">length</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TypeError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;registeredUris must be a nonempty array&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">uri</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">of</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> registeredUris) </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateRegisteredRedirect</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(uri);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">exactValues</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Set</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(registeredUris);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (exactValues.size </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> registeredUris.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">length</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">throw</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TypeError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;registered redirect URIs must be unique&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">requestedUri</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">typeof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> requestedUri </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> exactValues.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">has</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(requestedUri);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">module</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">exports</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  TokenValidationError,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  createExactRedirectMatcher,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  signJwt,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  validateAccessToken,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">};</span></span>
+</code></pre>
+    </div><div role="tabpanel" id="source-oauth-oidc-panel-1" aria-labelledby="source-oauth-oidc-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" data-source-filename="oauth-security.test.js" data-source-language="JavaScript" data-source-path="labs/oauth-oidc/tests/oauth-security.test.js" data-source-lines="230" data-source-highlighter="shiki" data-source-expandable hidden>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="oauth-security.test.js source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-javascript"><span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;use strict&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">assert</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;node:assert/strict&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> { </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">generateKeyPairSync</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;node:crypto&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">createExactRedirectMatcher</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">signJwt</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">} </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;../oauth-security&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">NOW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">2_000_000_000</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">ISSUER</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://issuer.example.test&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">AUDIENCE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;api://payments&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">TENANT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;tenant-blue&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">KID_OLD</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;issuer-key-2026-01&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">KID_NEW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;issuer-key-2026-07&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">oldKeys</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">generateKeyPairSync</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rsa&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, { modulusLength: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">2048</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> });</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">newKeys</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">generateKeyPairSync</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rsa&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, { modulusLength: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">2048</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> });</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">attackerKeys</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">generateKeyPairSync</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rsa&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, { modulusLength: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">2048</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> });</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">baselineClaims</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> Object.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">freeze</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  aud: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">AUDIENCE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  exp: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">NOW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">+</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">300</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  iss: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">ISSUER</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  nbf: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">NOW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">-</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">30</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  scope: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;payments.read payments.refund&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  sub: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;user-42&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  tid: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">TENANT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">overrides</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {}, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">signing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {}) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">signJwt</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    { </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">...</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">baselineClaims, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">...</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">overrides },</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      privateKey: signing.privateKey </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">??</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> oldKeys.privateKey,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      kid: signing.kid </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">??</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">KID_OLD</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    },</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">overrides</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {}) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    audience: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">AUDIENCE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    clockSkewSeconds: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    issuer: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">ISSUER</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    now: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">NOW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    requiredScopes: [</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;payments.read&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">],</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    tenant: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">TENANT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    trustedKeys: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">KID_OLD</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, oldKeys.publicKey]]),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">...</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">overrides,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  };</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">expectCode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">expectedCode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">operation</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">throws</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    operation,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    (</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      error </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">instanceof</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">TokenValidationError</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> error.code </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> expectedCode,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`expected ${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">expectedCode</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">tests</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> [];</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">function</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">name</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">operation</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  tests.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">push</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ name, operation });</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;accepts a correctly signed token with the configured security context&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">principal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(), </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">());</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    principal,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      issuer: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">ISSUER</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      scopes: [</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;payments.read&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;payments.refund&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">],</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      subject: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;user-42&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      tenant: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">TENANT</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    },</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rejects a token signed by an attacker under a trusted kid&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">forged</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({}, { privateKey: attackerKeys.privateKey, kid: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">KID_OLD</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> });</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">expectCode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INVALID_SIGNATURE&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(forged, </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rejects the wrong issuer even when the signature is trusted&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">expectCode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INVALID_ISSUER&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ iss: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://other.example.test&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> }), </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rejects the wrong audience&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">expectCode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INVALID_AUDIENCE&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ aud: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;api://inventory&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> }), </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;accepts the configured audience in an audience array&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">principal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ aud: [</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;api://reports&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">AUDIENCE</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">] }),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(principal.subject, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;user-42&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rejects an expired token at the exp boundary&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">expectCode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;TOKEN_EXPIRED&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ exp: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">NOW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> }), </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rejects a token whose not-before time is in the future&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">expectCode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;TOKEN_NOT_ACTIVE&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ nbf: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">NOW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">+</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> }), </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rejects a token from the wrong tenant&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">expectCode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INVALID_TENANT&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ tid: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;tenant-red&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> }), </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rejects a token missing a required scope&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">expectCode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;INSUFFICIENT_SCOPE&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ scope: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;payments.write&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> }), </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;accepts old and new keys during a bounded rotation overlap&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">overlap</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    trustedKeys: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      [</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">KID_OLD</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, oldKeys.publicKey],</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      [</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">KID_NEW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, newKeys.publicKey],</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    ]),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  });</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(), overlap).subject, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;user-42&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({}, { privateKey: newKeys.privateKey, kid: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">KID_NEW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> }),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      overlap,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    ).subject,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;user-42&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rejects the retired key after the overlap window&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">afterRotation</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    trustedKeys: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">KID_NEW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, newKeys.publicKey]]),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  });</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">expectCode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;UNKNOWN_KEY&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(), afterRotation),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({}, { privateKey: newKeys.privateKey, kid: </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">KID_NEW</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> }),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">      afterRotation,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    ).subject,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;user-42&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;does not fetch or accept an unknown kid&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">unknownKey</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">token</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    {},</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    { privateKey: attackerKeys.privateKey, kid: </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://attacker.test/key&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> },</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">expectCode</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;UNKNOWN_KEY&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">validateAccessToken</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(unknownKey, </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">config</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;accepts only the exact registered redirect string&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">isAllowed</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">createExactRedirectMatcher</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://app.example.test/oauth/callback?channel=web&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  ]);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isAllowed</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://app.example.test/oauth/callback?channel=web&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nearMatches</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> [</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://APP.example.test/oauth/callback?channel=web&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://app.example.test:443/oauth/callback?channel=web&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://app.example.test/oauth/callback/?channel=web&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://app.example.test/oauth/callback?CHANNEL=web&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://app.example.test/oauth/callback?channel=web#fragment&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://app.example.test@attacker.test/oauth/callback?channel=web&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://evil.app.example.test/oauth/callback?channel=web&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  ];</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nearMatch</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">of</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> nearMatches) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isAllowed</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(nearMatch), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, nearMatch);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">test</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;rejects unsafe values at redirect registration time&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">throws</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">createExactRedirectMatcher</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;http://app.example.test/callback&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">/HTTPS/</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">u</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">throws</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    () </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">createExactRedirectMatcher</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;https://user@app.example.test/callback&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]),</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">/userinfo/</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">u</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  );</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">});</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">let</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> failures </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">item</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">of</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tests) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">try</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    item.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">operation</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">();</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    console.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">log</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`PASS: ${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">item</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">name</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  } </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">catch</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (error) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    failures </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">+=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    console.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`FAIL: ${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">item</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">name</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">    console.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(error.stack </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> error.message);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  }</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (failures </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  console.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`OAuth/OIDC lab failed: ${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">failures</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">} of ${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">tests</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">length</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">} checks failed.`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  process.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">exit</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">console.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">log</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`OAuth/OIDC lab passed: ${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">tests</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">.</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">length</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">} positive and negative checks.`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+</code></pre>
     </div>
 </section>
 <h3 id="run-it">Run it</h3>

@@ -233,8 +233,8 @@
   
 
 
-<!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">IaC policy</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="terraform-plan-and-rego-policy-lab">Terraform plan and Rego policy lab</h1>
+<!-- docs-article-header:start --><header class="docs-article-header"><!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/labs/">Labs</a></li><li aria-current="page">IaC policy</li></ol></nav><!-- docs-breadcrumbs:end -->
+<h1 id="terraform-plan-and-rego-policy-lab">Terraform plan and Rego policy lab</h1></header><!-- docs-article-header:end -->
 <!-- docs-inline-toc:start -->
 <details class="docs-inline-toc">
   <summary>On this page</summary>
@@ -248,250 +248,255 @@ and drift monitoring are separate layers. It does not deploy infrastructure.</p>
 <h2 id="implementation">Implementation</h2>
 <section class="docs-source-viewer" data-source-viewer id="source-iac-policy" aria-label="Source code: terraform.rego">
   <header class="docs-source-viewer__toolbar">
-    <span class="docs-source-viewer__toolbar-title">terraform.rego</span>
-    <div class="docs-source-viewer__actions">
-      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
-      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand full source</button>
+    <div class="docs-source-viewer__identity">
+      <div class="docs-source-viewer__title-row"><strong class="docs-source-viewer__toolbar-title" data-source-active-filename>terraform.rego</strong><span class="docs-source-viewer__summary"><span data-source-active-language>Rego</span><span aria-hidden="true"> · </span><span data-source-active-lines>157 lines</span></span></div>
+      <code class="docs-source-viewer__path" data-source-active-path title="labs/iac-policy/policy/terraform.rego">labs/iac-policy/policy/terraform.rego</code>
     </div>
+    <div class="docs-source-viewer__actions" data-source-actions>
+      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
+      <button type="button" class="docs-source-viewer__button" aria-pressed="false" data-wrap-source>Wrap</button>
+      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source>Expand</button>
+    </div>
+    <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
   </header>
   <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-iac-policy-tab-0" aria-controls="source-iac-policy-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Rego policy</button><button type="button" role="tab" id="source-iac-policy-tab-1" aria-controls="source-iac-policy-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Rego tests</button><button type="button" role="tab" id="source-iac-policy-tab-2" aria-controls="source-iac-policy-panel-2" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="2">Harness tests</button></div>
-  <div role="tabpanel" id="source-iac-policy-panel-0" tabindex="0" aria-labelledby="source-iac-policy-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0">
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">terraform.rego</span><code class="docs-source-viewer__path">labs/iac-policy/policy/terraform.rego</code><span class="docs-source-viewer__lines">157 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="terraform.rego source code" class="language-rego">package terraform.security
-
-import rego.v1
-
-active(resource) if {
-	not &quot;delete&quot; in resource.change.actions
-}
-
-deleted(resource) if {
-	&quot;delete&quot; in resource.change.actions
-}
-
-has_bucket_control(resource_type, bucket) if {
-	some control in input.resource_changes
-	control.type == resource_type
-	active(control)
-	control.change.after.bucket == bucket
-}
-
-has_required_tags(resource) if {
-	is_object(resource.change.after.tags)
-	is_string(resource.change.after.tags.Environment)
-	resource.change.after.tags.Environment != &quot;&quot;
-	is_string(resource.change.after.tags.Owner)
-	resource.change.after.tags.Owner != &quot;&quot;
-}
-
-wildcard(value) if {
-	is_string(value)
-	value == &quot;*&quot;
-}
-
-wildcard(value) if {
-	is_array(value)
-	&quot;*&quot; in value
-}
-
-deny contains {
-	&quot;address&quot;: resource.address,
-	&quot;reason&quot;: &quot;S3 bucket has a public ACL&quot;,
-} if {
-	some resource in input.resource_changes
-	resource.type == &quot;aws_s3_bucket_acl&quot;
-	active(resource)
-	resource.change.after.acl in {&quot;public-read&quot;, &quot;public-read-write&quot;, &quot;authenticated-read&quot;}
-}
-
-deny contains {
-	&quot;address&quot;: resource.address,
-	&quot;reason&quot;: &quot;S3 bucket is missing a complete public-access block&quot;,
-} if {
-	some resource in input.resource_changes
-	resource.type == &quot;aws_s3_bucket&quot;
-	active(resource)
-	not has_bucket_control(&quot;aws_s3_bucket_public_access_block&quot;, resource.change.after.bucket)
-}
-
-deny contains {
-	&quot;address&quot;: resource.address,
-	&quot;reason&quot;: &quot;S3 bucket is missing server-side encryption configuration&quot;,
-} if {
-	some resource in input.resource_changes
-	resource.type == &quot;aws_s3_bucket&quot;
-	active(resource)
-	not has_bucket_control(&quot;aws_s3_bucket_server_side_encryption_configuration&quot;, resource.change.after.bucket)
-}
-
-deny contains {
-	&quot;address&quot;: resource.address,
-	&quot;reason&quot;: &quot;S3 bucket is missing access logging configuration&quot;,
-} if {
-	some resource in input.resource_changes
-	resource.type == &quot;aws_s3_bucket&quot;
-	active(resource)
-	not has_bucket_control(&quot;aws_s3_bucket_logging&quot;, resource.change.after.bucket)
-}
-
-deny contains {
-	&quot;address&quot;: resource.address,
-	&quot;reason&quot;: &quot;security group exposes ingress to the public internet&quot;,
-} if {
-	some resource in input.resource_changes
-	resource.type == &quot;aws_security_group&quot;
-	active(resource)
-	some ingress in resource.change.after.ingress
-	some cidr in ingress.cidr_blocks
-	cidr in {&quot;0.0.0.0/0&quot;, &quot;::/0&quot;}
-}
-
-deny contains {
-	&quot;address&quot;: resource.address,
-	&quot;reason&quot;: &quot;database is publicly accessible&quot;,
-} if {
-	some resource in input.resource_changes
-	resource.type == &quot;aws_db_instance&quot;
-	active(resource)
-	resource.change.after.publicly_accessible == true
-}
-
-deny contains {
-	&quot;address&quot;: resource.address,
-	&quot;reason&quot;: &quot;database storage encryption is disabled&quot;,
-} if {
-	some resource in input.resource_changes
-	resource.type == &quot;aws_db_instance&quot;
-	active(resource)
-	resource.change.after.storage_encrypted != true
-	not resource.change.after_unknown.storage_encrypted
-}
-
-deny contains {
-	&quot;address&quot;: resource.address,
-	&quot;reason&quot;: &quot;security-relevant database value is unknown at policy evaluation&quot;,
-} if {
-	some resource in input.resource_changes
-	resource.type == &quot;aws_db_instance&quot;
-	active(resource)
-	some field in {&quot;publicly_accessible&quot;, &quot;storage_encrypted&quot;}
-	resource.change.after_unknown[field] == true
-}
-
-deny contains {
-	&quot;address&quot;: resource.address,
-	&quot;reason&quot;: &quot;IAM policy allows wildcard action and resource&quot;,
-} if {
-	some resource in input.resource_changes
-	resource.type == &quot;aws_iam_policy&quot;
-	active(resource)
-	document := json.unmarshal(resource.change.after.policy)
-	some statement in document.Statement
-	statement.Effect == &quot;Allow&quot;
-	wildcard(statement.Action)
-	wildcard(statement.Resource)
-}
-
-deny contains {
-	&quot;address&quot;: resource.address,
-	&quot;reason&quot;: &quot;authorization-driving Environment and Owner tags are required&quot;,
-} if {
-	some resource in input.resource_changes
-	resource.type in {&quot;aws_s3_bucket&quot;, &quot;aws_security_group&quot;, &quot;aws_db_instance&quot;, &quot;aws_iam_policy&quot;}
-	active(resource)
-	not has_required_tags(resource)
-}
-
-deny contains {
-	&quot;address&quot;: resource.address,
-	&quot;reason&quot;: &quot;plan deletes a modeled security control&quot;,
-} if {
-	some resource in input.resource_changes
-	resource.type in {
-		&quot;aws_s3_bucket_public_access_block&quot;,
-		&quot;aws_s3_bucket_server_side_encryption_configuration&quot;,
-		&quot;aws_s3_bucket_logging&quot;,
-	}
-	deleted(resource)
-}</code></pre>
-    </div><div role="tabpanel" id="source-iac-policy-panel-1" tabindex="0" aria-labelledby="source-iac-policy-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" hidden>
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">secure_fixture_test.rego</span><code class="docs-source-viewer__path">labs/iac-policy/policy/secure_fixture_test.rego</code><span class="docs-source-viewer__lines">13 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="secure_fixture_test.rego source code" class="language-rego">package terraform.security
-
-import rego.v1
-
-test_secure_plan_is_accepted if {
-	plan := {
-		&quot;format_version&quot;: data.format_version,
-		&quot;terraform_version&quot;: data.terraform_version,
-		&quot;resource_changes&quot;: data.resource_changes,
-	}
-	results := deny with input as plan
-	count(results) == 0
-}</code></pre>
-    </div><div role="tabpanel" id="source-iac-policy-panel-2" tabindex="0" aria-labelledby="source-iac-policy-tab-2" class="docs-source-viewer__panel" data-source-panel data-index="2" hidden>
-      <p class="docs-source-viewer__meta"><span class="docs-source-viewer__filename">run-tests.js</span><code class="docs-source-viewer__path">labs/iac-policy/tests/run-tests.js</code><span class="docs-source-viewer__lines">61 lines</span></p>
-      <pre class="docs-source-viewer__code" data-source-code><code tabindex="0" aria-label="run-tests.js source code" class="language-javascript">&quot;use strict&quot;;
-
-const assert = require(&quot;node:assert/strict&quot;);
-const fs = require(&quot;node:fs&quot;);
-const path = require(&quot;node:path&quot;);
-
-const lab = path.resolve(__dirname, &quot;..&quot;);
-const read = (relative) =&gt; fs.readFileSync(path.join(lab, relative), &quot;utf8&quot;);
-const readJson = (relative) =&gt; JSON.parse(read(relative));
-
-const secure = readJson(&quot;fixtures/secure_plan.json&quot;);
-const insecure = readJson(&quot;fixtures/insecure_plan.json&quot;);
-const unknown = readJson(&quot;fixtures/unknown_plan.json&quot;);
-const deleted = readJson(&quot;fixtures/deleted_control_plan.json&quot;);
-
-for (const [name, plan] of Object.entries({ secure, insecure, unknown, deleted })) {
-  assert.equal(plan.format_version, &quot;1.2&quot;, `${name}: unexpected plan format`);
-  assert.ok(Array.isArray(plan.resource_changes), `${name}: resource_changes missing`);
-}
-
-const insecureTypes = new Set(insecure.resource_changes.map((item) =&gt; item.type));
-assert.ok(insecureTypes.has(&quot;aws_s3_bucket_acl&quot;));
-assert.ok(insecureTypes.has(&quot;aws_security_group&quot;));
-assert.ok(insecureTypes.has(&quot;aws_db_instance&quot;));
-assert.match(
-  insecure.resource_changes.find((item) =&gt; item.type === &quot;aws_iam_policy&quot;).change.after.policy,
-  /&quot;Action&quot;:&quot;\*&quot;,&quot;Resource&quot;:&quot;\*&quot;/,
-);
-
-const unknownDatabase = unknown.resource_changes[0];
-assert.equal(unknownDatabase.change.after_unknown.publicly_accessible, true);
-assert.equal(unknownDatabase.change.after_unknown.storage_encrypted, true);
-assert.deepEqual(deleted.resource_changes[0].change.actions, [&quot;delete&quot;]);
-
-const insecureBackend = read(&quot;terraform/insecure/backend.tf&quot;);
-assert.match(insecureBackend, /dynamodb_table\s*=/);
-assert.match(insecureBackend, /encrypt\s*=\s*false/);
-assert.doesNotMatch(insecureBackend, /use_lockfile\s*=\s*true/);
-
-const hardenedBackend = read(&quot;terraform/hardened/backend.tf&quot;);
-assert.match(hardenedBackend, /use_lockfile\s*=\s*true/);
-assert.match(hardenedBackend, /encrypt\s*=\s*true/);
-assert.match(hardenedBackend, /kms_key_id\s*=/);
-assert.doesNotMatch(hardenedBackend, /dynamodb_table\s*=/);
-
-const policy = read(&quot;policy/terraform.rego&quot;);
-for (const requiredReason of [
-  &quot;public ACL&quot;,
-  &quot;public-access block&quot;,
-  &quot;server-side encryption&quot;,
-  &quot;access logging&quot;,
-  &quot;public internet&quot;,
-  &quot;publicly accessible&quot;,
-  &quot;wildcard action and resource&quot;,
-  &quot;unknown at policy evaluation&quot;,
-  &quot;deletes a modeled security control&quot;,
-]) {
-  assert.match(policy, new RegExp(requiredReason.replace(/[.*+?^${}()|[\]\\]/g, &quot;\\$&amp;&quot;)));
-}
-
-console.log(&quot;PASS: Terraform backend and plan-policy structural fixtures completed.&quot;);</code></pre>
+  <div role="tabpanel" id="source-iac-policy-panel-0" aria-labelledby="source-iac-policy-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0" data-source-filename="terraform.rego" data-source-language="Rego" data-source-path="labs/iac-policy/policy/terraform.rego" data-source-lines="157" data-source-highlighter="plaintext" data-source-expandable>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="terraform.rego source code"><code class="language-rego"><span class="line">package terraform.security</span>
+<span class="line"></span>
+<span class="line">import rego.v1</span>
+<span class="line"></span>
+<span class="line">active(resource) if {</span>
+<span class="line">	not &quot;delete&quot; in resource.change.actions</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deleted(resource) if {</span>
+<span class="line">	&quot;delete&quot; in resource.change.actions</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">has_bucket_control(resource_type, bucket) if {</span>
+<span class="line">	some control in input.resource_changes</span>
+<span class="line">	control.type == resource_type</span>
+<span class="line">	active(control)</span>
+<span class="line">	control.change.after.bucket == bucket</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">has_required_tags(resource) if {</span>
+<span class="line">	is_object(resource.change.after.tags)</span>
+<span class="line">	is_string(resource.change.after.tags.Environment)</span>
+<span class="line">	resource.change.after.tags.Environment != &quot;&quot;</span>
+<span class="line">	is_string(resource.change.after.tags.Owner)</span>
+<span class="line">	resource.change.after.tags.Owner != &quot;&quot;</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">wildcard(value) if {</span>
+<span class="line">	is_string(value)</span>
+<span class="line">	value == &quot;*&quot;</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">wildcard(value) if {</span>
+<span class="line">	is_array(value)</span>
+<span class="line">	&quot;*&quot; in value</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deny contains {</span>
+<span class="line">	&quot;address&quot;: resource.address,</span>
+<span class="line">	&quot;reason&quot;: &quot;S3 bucket has a public ACL&quot;,</span>
+<span class="line">} if {</span>
+<span class="line">	some resource in input.resource_changes</span>
+<span class="line">	resource.type == &quot;aws_s3_bucket_acl&quot;</span>
+<span class="line">	active(resource)</span>
+<span class="line">	resource.change.after.acl in {&quot;public-read&quot;, &quot;public-read-write&quot;, &quot;authenticated-read&quot;}</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deny contains {</span>
+<span class="line">	&quot;address&quot;: resource.address,</span>
+<span class="line">	&quot;reason&quot;: &quot;S3 bucket is missing a complete public-access block&quot;,</span>
+<span class="line">} if {</span>
+<span class="line">	some resource in input.resource_changes</span>
+<span class="line">	resource.type == &quot;aws_s3_bucket&quot;</span>
+<span class="line">	active(resource)</span>
+<span class="line">	not has_bucket_control(&quot;aws_s3_bucket_public_access_block&quot;, resource.change.after.bucket)</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deny contains {</span>
+<span class="line">	&quot;address&quot;: resource.address,</span>
+<span class="line">	&quot;reason&quot;: &quot;S3 bucket is missing server-side encryption configuration&quot;,</span>
+<span class="line">} if {</span>
+<span class="line">	some resource in input.resource_changes</span>
+<span class="line">	resource.type == &quot;aws_s3_bucket&quot;</span>
+<span class="line">	active(resource)</span>
+<span class="line">	not has_bucket_control(&quot;aws_s3_bucket_server_side_encryption_configuration&quot;, resource.change.after.bucket)</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deny contains {</span>
+<span class="line">	&quot;address&quot;: resource.address,</span>
+<span class="line">	&quot;reason&quot;: &quot;S3 bucket is missing access logging configuration&quot;,</span>
+<span class="line">} if {</span>
+<span class="line">	some resource in input.resource_changes</span>
+<span class="line">	resource.type == &quot;aws_s3_bucket&quot;</span>
+<span class="line">	active(resource)</span>
+<span class="line">	not has_bucket_control(&quot;aws_s3_bucket_logging&quot;, resource.change.after.bucket)</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deny contains {</span>
+<span class="line">	&quot;address&quot;: resource.address,</span>
+<span class="line">	&quot;reason&quot;: &quot;security group exposes ingress to the public internet&quot;,</span>
+<span class="line">} if {</span>
+<span class="line">	some resource in input.resource_changes</span>
+<span class="line">	resource.type == &quot;aws_security_group&quot;</span>
+<span class="line">	active(resource)</span>
+<span class="line">	some ingress in resource.change.after.ingress</span>
+<span class="line">	some cidr in ingress.cidr_blocks</span>
+<span class="line">	cidr in {&quot;0.0.0.0/0&quot;, &quot;::/0&quot;}</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deny contains {</span>
+<span class="line">	&quot;address&quot;: resource.address,</span>
+<span class="line">	&quot;reason&quot;: &quot;database is publicly accessible&quot;,</span>
+<span class="line">} if {</span>
+<span class="line">	some resource in input.resource_changes</span>
+<span class="line">	resource.type == &quot;aws_db_instance&quot;</span>
+<span class="line">	active(resource)</span>
+<span class="line">	resource.change.after.publicly_accessible == true</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deny contains {</span>
+<span class="line">	&quot;address&quot;: resource.address,</span>
+<span class="line">	&quot;reason&quot;: &quot;database storage encryption is disabled&quot;,</span>
+<span class="line">} if {</span>
+<span class="line">	some resource in input.resource_changes</span>
+<span class="line">	resource.type == &quot;aws_db_instance&quot;</span>
+<span class="line">	active(resource)</span>
+<span class="line">	resource.change.after.storage_encrypted != true</span>
+<span class="line">	not resource.change.after_unknown.storage_encrypted</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deny contains {</span>
+<span class="line">	&quot;address&quot;: resource.address,</span>
+<span class="line">	&quot;reason&quot;: &quot;security-relevant database value is unknown at policy evaluation&quot;,</span>
+<span class="line">} if {</span>
+<span class="line">	some resource in input.resource_changes</span>
+<span class="line">	resource.type == &quot;aws_db_instance&quot;</span>
+<span class="line">	active(resource)</span>
+<span class="line">	some field in {&quot;publicly_accessible&quot;, &quot;storage_encrypted&quot;}</span>
+<span class="line">	resource.change.after_unknown[field] == true</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deny contains {</span>
+<span class="line">	&quot;address&quot;: resource.address,</span>
+<span class="line">	&quot;reason&quot;: &quot;IAM policy allows wildcard action and resource&quot;,</span>
+<span class="line">} if {</span>
+<span class="line">	some resource in input.resource_changes</span>
+<span class="line">	resource.type == &quot;aws_iam_policy&quot;</span>
+<span class="line">	active(resource)</span>
+<span class="line">	document := json.unmarshal(resource.change.after.policy)</span>
+<span class="line">	some statement in document.Statement</span>
+<span class="line">	statement.Effect == &quot;Allow&quot;</span>
+<span class="line">	wildcard(statement.Action)</span>
+<span class="line">	wildcard(statement.Resource)</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deny contains {</span>
+<span class="line">	&quot;address&quot;: resource.address,</span>
+<span class="line">	&quot;reason&quot;: &quot;authorization-driving Environment and Owner tags are required&quot;,</span>
+<span class="line">} if {</span>
+<span class="line">	some resource in input.resource_changes</span>
+<span class="line">	resource.type in {&quot;aws_s3_bucket&quot;, &quot;aws_security_group&quot;, &quot;aws_db_instance&quot;, &quot;aws_iam_policy&quot;}</span>
+<span class="line">	active(resource)</span>
+<span class="line">	not has_required_tags(resource)</span>
+<span class="line">}</span>
+<span class="line"></span>
+<span class="line">deny contains {</span>
+<span class="line">	&quot;address&quot;: resource.address,</span>
+<span class="line">	&quot;reason&quot;: &quot;plan deletes a modeled security control&quot;,</span>
+<span class="line">} if {</span>
+<span class="line">	some resource in input.resource_changes</span>
+<span class="line">	resource.type in {</span>
+<span class="line">		&quot;aws_s3_bucket_public_access_block&quot;,</span>
+<span class="line">		&quot;aws_s3_bucket_server_side_encryption_configuration&quot;,</span>
+<span class="line">		&quot;aws_s3_bucket_logging&quot;,</span>
+<span class="line">	}</span>
+<span class="line">	deleted(resource)</span>
+<span class="line">}</span>
+</code></pre>
+    </div><div role="tabpanel" id="source-iac-policy-panel-1" aria-labelledby="source-iac-policy-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" data-source-filename="secure_fixture_test.rego" data-source-language="Rego" data-source-path="labs/iac-policy/policy/secure_fixture_test.rego" data-source-lines="13" data-source-highlighter="plaintext" hidden>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="secure_fixture_test.rego source code"><code class="language-rego"><span class="line">package terraform.security</span>
+<span class="line"></span>
+<span class="line">import rego.v1</span>
+<span class="line"></span>
+<span class="line">test_secure_plan_is_accepted if {</span>
+<span class="line">	plan := {</span>
+<span class="line">		&quot;format_version&quot;: data.format_version,</span>
+<span class="line">		&quot;terraform_version&quot;: data.terraform_version,</span>
+<span class="line">		&quot;resource_changes&quot;: data.resource_changes,</span>
+<span class="line">	}</span>
+<span class="line">	results := deny with input as plan</span>
+<span class="line">	count(results) == 0</span>
+<span class="line">}</span>
+</code></pre>
+    </div><div role="tabpanel" id="source-iac-policy-panel-2" aria-labelledby="source-iac-policy-tab-2" class="docs-source-viewer__panel" data-source-panel data-index="2" data-source-filename="run-tests.js" data-source-language="JavaScript" data-source-path="labs/iac-policy/tests/run-tests.js" data-source-lines="61" data-source-highlighter="shiki" hidden>
+      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="run-tests.js source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-javascript"><span class="line"><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;use strict&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">;</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">assert</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;node:assert/strict&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">fs</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;node:fs&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">path</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">require</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;node:path&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">lab</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> path.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">resolve</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(__dirname, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;..&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">read</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">relative</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> fs.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">readFileSync</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(path.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">join</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(lab, relative), </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;utf8&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">readJson</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">relative</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">JSON</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">parse</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">read</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(relative));</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">secure</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">readJson</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;fixtures/secure_plan.json&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">insecure</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">readJson</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;fixtures/insecure_plan.json&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">unknown</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">readJson</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;fixtures/unknown_plan.json&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">deleted</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">readJson</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;fixtures/deleted_control_plan.json&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> [</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">name</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">plan</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">] </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">of</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> Object.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">entries</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">({ secure, insecure, unknown, deleted })) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(plan.format_version, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;1.2&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">name</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}: unexpected plan format`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ok</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(Array.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isArray</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(plan.resource_changes), </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`${</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">name</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">}: resource_changes missing`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">insecureTypes</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Set</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(insecure.resource_changes.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">map</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">item</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> item.type));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ok</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(insecureTypes.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">has</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;aws_s3_bucket_acl&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ok</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(insecureTypes.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">has</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;aws_security_group&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ok</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(insecureTypes.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">has</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;aws_db_instance&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">match</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  insecure.resource_changes.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">find</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">((</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">item</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> item.type </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">===</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;aws_iam_policy&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">).change.after.policy,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">/&quot;Action&quot;:&quot;</span><span style="--shiki-light:#116329;--shiki-light-font-weight:bold;--shiki-dark:#7EE787;--shiki-dark-font-weight:bold">\*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;,&quot;Resource&quot;:&quot;</span><span style="--shiki-light:#116329;--shiki-light-font-weight:bold;--shiki-dark:#7EE787;--shiki-dark-font-weight:bold">\*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;/</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">unknownDatabase</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> unknown.resource_changes[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">];</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(unknownDatabase.change.after_unknown.publicly_accessible, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">equal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(unknownDatabase.change.after_unknown.storage_encrypted, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">deepEqual</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(deleted.resource_changes[</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">0</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">].change.actions, [</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;delete&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">insecureBackend</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">read</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;terraform/insecure/backend.tf&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">match</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(insecureBackend,</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> /dynamodb_table</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">\s</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">=/</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">match</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(insecureBackend,</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> /encrypt</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">\s</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">=</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">\s</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">false/</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">doesNotMatch</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(insecureBackend,</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> /use_lockfile</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">\s</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">=</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">\s</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">true/</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">hardenedBackend</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">read</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;terraform/hardened/backend.tf&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">match</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(hardenedBackend,</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> /use_lockfile</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">\s</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">=</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">\s</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">true/</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">match</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(hardenedBackend,</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> /encrypt</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">\s</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">=</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">\s</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">true/</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">match</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(hardenedBackend,</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> /kms_key_id</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">\s</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">=/</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">doesNotMatch</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(hardenedBackend,</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> /dynamodb_table</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">\s</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">=/</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">policy</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">read</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;policy/terraform.rego&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">requiredReason</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">of</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> [</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;public ACL&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;public-access block&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;server-side encryption&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;access logging&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;public internet&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;publicly accessible&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;wildcard action and resource&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;unknown at policy evaluation&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;deletes a modeled security control&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">]) {</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">  assert.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">match</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(policy, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">new</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">RegExp</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(requiredReason.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">replace</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">/</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">[.*+?^${}()|[</span><span style="--shiki-light:#116329;--shiki-light-font-weight:bold;--shiki-dark:#7EE787;--shiki-dark-font-weight:bold">\]\\</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">]</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">/</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">g</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">\\</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">$&amp;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)));</span></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
+<span class="line"></span>
+<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">console.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">log</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;PASS: Terraform backend and plan-policy structural fixtures completed.&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">);</span></span>
+</code></pre>
     </div>
 </section>
 <h3 id="run-it">Run it</h3>
