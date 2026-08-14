@@ -51,8 +51,23 @@
    tint, meant for a colored/dark header. Against this site's white light-mode
    header it reads as barely-there, so hovering makes the whole search box look
    like it disappeared. Use a solid, theme-adapted color instead. */
-.md-search__form:hover {
-  background-color: var(--docs-surface);
+body[data-md-color-scheme="default"] .md-search .md-search__form:hover,
+body[data-md-color-scheme="default"] .md-search .md-search__form:focus-within {
+  /* Material applies a later background shorthand while the search control is
+     active, so this scoped light-palette override must win that declaration. */
+  background: #edf2f7 !important;
+  box-shadow: inset 0 0 0 1px var(--docs-border);
+}
+
+body[data-md-color-scheme="default"] .md-search .md-search__input,
+body[data-md-color-scheme="default"] .md-search .md-search__input:hover,
+body[data-md-color-scheme="default"] .md-search .md-search__input:focus {
+  color: var(--docs-text);
+}
+
+body[data-md-color-scheme="default"] .md-search .md-search__input::placeholder {
+  color: var(--docs-text-muted);
+  opacity: 1;
 }
 
 .md-search__scrollwrap {
@@ -69,12 +84,12 @@
 .md-search-result__article,
 .md-search-result__article.md-typeset {
   position: relative;
-  max-height: 6.2rem;
+  max-height: 5.4rem;
   padding-top: .5rem;
   padding-bottom: .5rem;
   overflow: hidden;
-  font-size: .8rem;
-  line-height: 1.5;
+  font-size: .7rem;
+  line-height: 1.45;
   color: var(--docs-text-muted);
 }
 
@@ -89,10 +104,9 @@
   pointer-events: none;
 }
 
-.md-search-result__article .md-typeset h1,
-.md-search-result__article h1 {
-  font-size: .95rem !important;
-  line-height: 1.35;
+.md-search-result article.md-search-result__article.md-typeset > :is(h1, h2, h3, h4, h5, h6) {
+  font-size: .78rem !important;
+  line-height: 1.3;
   font-weight: 700 !important;
   margin: 0 0 .2rem !important;
   border: 0 !important;
@@ -116,7 +130,7 @@
   border: 0;
   border-radius: 0;
   background: transparent;
-  font-size: .7rem;
+  font-size: .62rem;
   font-weight: 600;
   color: var(--docs-text-muted);
 }
@@ -438,10 +452,10 @@
 }
 
 .docs-breadcrumbs {
-  margin: 0 0 var(--docs-space-3);
+  margin: 0 0 var(--docs-space-2);
   overflow-x: auto;
   white-space: nowrap;
-  font-size: .78rem;
+  font-size: .72rem;
 }
 
 .docs-breadcrumbs ol {
@@ -450,20 +464,21 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  gap: .4rem;
+  gap: .25rem;
   color: var(--docs-text-muted);
 }
 
-.docs-breadcrumbs li {
+.md-typeset nav.docs-breadcrumbs li {
   display: flex;
   align-items: center;
-  gap: .4rem;
+  gap: .3rem;
+  margin: 0;
 }
 
 .docs-breadcrumbs li:not(:last-child)::after {
   content: "";
-  width: .38rem;
-  height: .38rem;
+  width: .32rem;
+  height: .32rem;
   border-top: 1px solid var(--docs-text-muted);
   border-right: 1px solid var(--docs-text-muted);
   transform: rotate(45deg);
@@ -1404,14 +1419,17 @@ body[data-md-color-scheme="slate"] .md-copyright__highlight {
   overflow: auto;
   overscroll-behavior: contain;
   scrollbar-gutter: stable;
+  max-height: min(20rem, 44vh);
+  touch-action: pan-x pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 
 .docs-source-viewer__panel[data-source-expandable]:not([data-source-expanded="true"]) .docs-source-viewer__code {
-  max-height: calc((40 * 1.55em) + (2 * var(--docs-space-3)));
+  max-height: min(18rem, 38vh);
 }
 
 .docs-source-viewer__panel[data-source-expanded="true"] .docs-source-viewer__code {
-  max-height: none;
+  max-height: min(30rem, 62vh);
 }
 
 .docs-source-viewer__code code {
@@ -1421,7 +1439,7 @@ body[data-md-color-scheme="slate"] .md-copyright__highlight {
   padding: var(--docs-space-3) 0 !important;
   font-size: .82rem;
   line-height: 1.55;
-  white-space: pre;
+  white-space: normal;
   tab-size: 2;
   counter-reset: docs-source-line;
   color: var(--docs-code-text);
@@ -1439,8 +1457,11 @@ body[data-md-color-scheme="slate"] .md-copyright__highlight {
 .docs-source-viewer__code .line {
   position: relative;
   display: block;
+  width: max-content;
+  min-width: 100%;
   min-height: 1.55em;
   padding: 0 var(--docs-space-4) 0 4.6rem;
+  white-space: pre;
   counter-increment: docs-source-line;
 }
 
@@ -1476,6 +1497,7 @@ body[data-md-color-scheme="slate"] .docs-source-viewer__code span {
 }
 
 .docs-source-viewer[data-source-wrapped="true"] .docs-source-viewer__code .line {
+  width: 100%;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }

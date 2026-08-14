@@ -247,6 +247,22 @@ for (const url of FOOTER_URLS) {
   const {context, page} = await newPage({width: 1440, height: 900}, "light");
   await gotoPage(page, "/", "light");
   const input = page.locator('[data-md-component="search-query"]');
+  await page.locator(".md-search__form").hover();
+  await page.waitForTimeout(300);
+  const lightHover = await page.evaluate(() => {
+    const form = document.querySelector(".md-search__form");
+    const query = document.querySelector('[data-md-component="search-query"]');
+    const formStyle = getComputedStyle(form);
+    const inputStyle = getComputedStyle(query);
+    return {
+      background: formStyle.backgroundColor,
+      color: inputStyle.color,
+      shadow: formStyle.boxShadow
+    };
+  });
+  record("search light hover: input remains visible with a bounded surface",
+    lightHover.background !== "rgb(255, 255, 255)" && lightHover.color !== lightHover.background && lightHover.shadow !== "none",
+    JSON.stringify(lightHover));
   await input.click();
   await input.pressSequentially("secure cicd", {delay: 20});
   await page.locator(".md-search-result__article").first().waitFor({state: "visible", timeout: 10000});
@@ -260,12 +276,19 @@ for (const url of FOOTER_URLS) {
       metadata: metadata?.textContent.trim(),
       metadataAfterTitle: Boolean(title && metadata && title.nextElementSibling === metadata),
       articleHeight: article?.getBoundingClientRect().height,
-      articleMaxHeight: article ? parseFloat(getComputedStyle(article).maxHeight) : null
+      articleMaxHeight: article ? parseFloat(getComputedStyle(article).maxHeight) : null,
+      articleFontSize: article ? parseFloat(getComputedStyle(article).fontSize) : null,
+      titleFontSize: title ? parseFloat(getComputedStyle(title).fontSize) : null,
+      maxHeadingFontSize: Math.max(...[...document.querySelectorAll(".md-search-result__article :is(h1, h2, h3, h4, h5, h6)")]
+        .map(heading => parseFloat(getComputedStyle(heading).fontSize)))
     };
   });
   record("search results: relevant results render", state.count > 0 && /secure|ci\/cd/i.test(state.title || ""), JSON.stringify(state));
   record("search results: category/type metadata follows title", state.metadataAfterTitle && / · /.test(state.metadata || ""), JSON.stringify(state));
   record("search results: teaser remains visually bounded", state.articleHeight <= state.articleMaxHeight + 1, JSON.stringify(state));
+  record("search results: page and section typography remains compact",
+    state.articleFontSize <= 14 && state.titleFontSize <= 16 && state.maxHeadingFontSize <= 16,
+    JSON.stringify(state));
   const readKeyboardTarget = () => page.evaluate(() => {
     const active = document.activeElement;
     return {
@@ -346,7 +369,8 @@ for (const owner of [
       language: viewer.querySelector("[data-source-active-language]").textContent,
       lines: viewer.querySelector("[data-source-active-lines]").textContent,
       path: viewer.querySelector("[data-source-active-path]").textContent,
-      noVerticalScroll: pre.scrollHeight <= pre.clientHeight + 1,
+      hasVerticalScroll: pre.scrollHeight > pre.clientHeight + 1,
+      boundedHeight: pre.clientHeight <= Math.min(20 * parseFloat(getComputedStyle(document.documentElement).fontSize), innerHeight * .44) + 2,
       expandHidden: viewer.querySelector("[data-expand-source]").hidden,
       lineNumber: getComputedStyle(firstLine, "::before").content,
       lineNumberSelectable: getComputedStyle(firstLine, "::before").userSelect
@@ -354,8 +378,14 @@ for (const owner of [
   });
   record(`${label}: primary rendered text exactly matches tracked source`, initial.source === primarySource);
   record(`${label}: compact metadata is source-derived`, initial.filename === "gate.js" && initial.language === "JavaScript" && initial.lines === "46 lines" && initial.path === "labs/secure-cicd/gate.js");
-  record(`${label}: short source has no internal vertical scrollbar`, initial.noVerticalScroll);
+  record(`${label}: short source uses a bounded internal vertical scrollbar`, initial.hasVerticalScroll && initial.boundedHeight);
   record(`${label}: short source has no Expand action`, initial.expandHidden);
+  const shortScrolls = await page.evaluate(() => {
+    const pre = document.querySelector('#source-secure-cicd [data-source-panel]:not([hidden]) .docs-source-viewer__code');
+    pre.scrollTop = 80;
+    return pre.scrollTop > 0;
+  });
+  record(`${label}: short source accepts vertical scrolling`, shortScrolls);
   record(`${label}: line numbers render through non-selectable generated content`, /counter\(docs-source-line\)|"1"/.test(initial.lineNumber) && initial.lineNumberSelectable === "none",
     `content=${initial.lineNumber} userSelect=${initial.lineNumberSelectable}`);
 
@@ -409,7 +439,8 @@ for (const owner of [
     return {aria: button.getAttribute("aria-expanded"), collapsed, expanded, hiddenOnShort, restored: button.textContent};
   });
   record(`${label}: long source is capped initially`, expandState.collapsed.scrollHeight > expandState.collapsed.clientHeight + 1);
-  record(`${label}: expand removes the cap and sets aria-expanded`, expandState.aria === "true" && expandState.expanded.clientHeight >= expandState.expanded.scrollHeight - 1);
+  record(`${label}: expand increases the bounded viewport and sets aria-expanded`, expandState.aria === "true" && expandState.expanded.clientHeight > expandState.collapsed.clientHeight);
+  record(`${label}: expanded long source remains vertically scrollable`, expandState.expanded.scrollHeight > expandState.expanded.clientHeight + 1);
   record(`${label}: expand state is active-file aware and restored`, expandState.hiddenOnShort && expandState.restored === "Collapse");
 
   const wrapState = await page.evaluate(() => {
@@ -598,6 +629,9 @@ for (const width of [375, 768, 1024, 1280, 1440]) {
         const h1Rect = h1?.getBoundingClientRect();
         const currentRect = current?.getBoundingClientRect();
         const separator = first ? getComputedStyle(first, "::after") : null;
+        const crumbItems = [...(breadcrumbs?.querySelectorAll("li") || [])];
+        const crumbRects = crumbItems.map(item => item.getBoundingClientRect());
+        const interCrumbGaps = crumbRects.slice(1).map((rect, index) => rect.left - crumbRects[index].right);
         return {
           headerContainsBoth: Boolean(header && breadcrumbs && h1),
           delta: breadcrumbRect && h1Rect ? Math.abs(breadcrumbRect.left - h1Rect.left) : null,
@@ -606,7 +640,9 @@ for (const width of [375, 768, 1024, 1280, 1440]) {
           currentIsLink: Boolean(current?.querySelector("a")),
           currentVisible: Boolean(currentRect && breadcrumbRect && currentRect.right <= breadcrumbRect.right + 1 && currentRect.left >= breadcrumbRect.left - 1),
           separatorContent: separator?.content,
-          separatorTransform: separator?.transform
+          separatorTransform: separator?.transform,
+          compactSpacing: crumbItems.every(item => parseFloat(getComputedStyle(item).marginLeft) === 0) && interCrumbGaps.every(gap => gap <= 8),
+          interCrumbGaps
         };
       });
       const label = `breadcrumb geometry ${width}px ${scheme} ${url}`;
@@ -616,6 +652,7 @@ for (const width of [375, 768, 1024, 1280, 1440]) {
       record(`${label}: no document overflow`, state.noOverflow);
       record(`${label}: current crumb is non-clickable and visible`, !state.currentIsLink && state.currentVisible, JSON.stringify(state));
       record(`${label}: separator is a presentational chevron`, state.separatorContent === '""' && state.separatorTransform !== "none", JSON.stringify(state));
+      record(`${label}: breadcrumb spacing stays compact`, state.compactSpacing, JSON.stringify(state));
     }
     await context.close();
   }
