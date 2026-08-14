@@ -1,200 +1,165 @@
 ---
-title: "Serverless Security: Function-Level IAM, Ephemeral Lifecycles, and Runtime Isolation"
-type: cloud-security
-tags: [Serverless, AWS Lambda, API Gateway, IAM, Application Security]
-date: 2026-06
-readingTime: 16
+title: "Serverless Security Engineering: Event Trust, Function Identity and Runtime Reuse"
+type: "cloud-security"
+tags:
+  - cloud-security
+  - serverless
+  - security
+date: "2026-07-25"
+lastReviewed: "2026-07-25"
+readingTime: 9
+reviewStatus: "partially-verified"
+validatedAgainst:
+  - "API Gateway Lambda proxy integration — https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html"
+  - "API Gateway private HTTP integrations and VPC links — https://docs.aws.amazon.com/apigateway/latest/developerguide/private-integration.html"
+  - "API Gateway API keys and usage plans — https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html"
+  - "AWS Lambda execution roles and role sharing — https://docs.aws.amazon.com/lambda/latest/dg/concepts-basics.html"
+  - "AWS Lambda execution-environment lifecycle and `/tmp` reuse — https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html"
+  - "AWS Lambda security and execution-environment best practices — https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
+sourceQuality: "primary-sources-reviewed"
+implementationStatus: "illustrative"
+reviewIntervalDays: 90
 ---
 
-# Serverless Security: Function-Level IAM, Ephemeral Lifecycles, and Runtime Isolation
+# Serverless Security Engineering: Event Trust, Function Identity and Runtime Reuse
 
-## Executive Summary
+Serverless removes server administration from the application team; it does not remove trust boundaries. Authenticate the event source, authorize invocation, validate event content and replay behavior, give the function only the downstream permissions it needs, and assume an execution environment can be reused.
 
-Serverless computing shifts the responsibility of server management, patch compliance, and operating system hardening to the cloud provider. However, this transfer of operational overhead does not eliminate application-level security risks. In fact, serverless introduces new attack vectors. Traditional security tools like host-based firewalls, network intrusion detection systems, and host agents cannot run in serverless environments. Security must therefore be implemented at the function level, focusing on identity, input validation, and runtime behavior.
+## The core decision
 
-A major failure mode in serverless architectures is overly broad IAM roles. Teams often reuse a single "catch-all" IAM execution role across hundreds of functions. This violates least privilege and allows an attacker who compromises one low-value function to pivot and access databases or secrets throughout the platform. Furthermore, developers often misunderstand the ephemeral lifecycle of functions, leading to security issues like the persistence of sensitive data in shared execution environments. This whitepaper explains the design patterns, execution lifecycles, and security controls needed to build secure serverless applications.
+For each function, document the accepted event producers, invocation policy, event schema, replay/idempotency contract, execution role, downstream resources, secret-delivery path, network path, failure destination, and data retained in memory or `/tmp`. Separate roles when functions cross materially different ownership, data classification, or permission boundaries. Shared roles are acceptable only for functions with genuinely identical trust and required permissions and with a controlled change process.
 
----
+## Scope, assets and actors
 
-## Threat Model and Attack Surface
+The reference architecture includes synchronous API Gateway invocation and asynchronous AWS event sources. Assets include customer data, event payloads, function code and layers, environment configuration, execution roles, resource policies, authorizer context, secrets, downstream data stores, queues, logs, and deployment artifacts.
 
-The serverless attack surface is characterized by highly distributed, event-driven entry points. The threat model assumes the adversary targets weak function permissions or exploits code vulnerabilities to compromise downstream services.
+| Actor | Credential or capability | Decision |
+|----|----|----|
+| API client or event producer | User token, IAM signature, service principal, resource ownership | May this producer invoke this route/function? |
+| API Gateway / event service | AWS service identity plus configured integration/source | Is the service constrained to the expected API, queue, bucket, topic or rule? |
+| Function | Execution role and runtime code | Which downstream actions/resources/conditions are allowed? |
+| Deployment principal | Code/config/role update authority and `iam:PassRole` | May it change both code and the function's authority? |
 
-```
-       [ Malicious Event Payload (e.g. S3 Metadata) ]
-                            │
-                            ▼
-               [ Triggers Serverless Function ]
-                            │
-                ( Code Injection / Deserialization )
-                            │
-                            ▼
-             [ Compromises Function Runtime ]
-                            │
-               ┌────────────┴────────────┐
-               ▼                         ▼
-      [ Queries local /tmp ]     [ Steals Execution IAM Role ]
-               │                         │
-               ▼                         ▼
-      [ Extracts cached tokens ] [ Escalates via AWS API calls ]
-```
+## Event trust boundaries
 
-### Threat Vectors and Kill-Chains
+Receiving an AWS-shaped JSON object does not prove its source. Establish trust at the integration:
 
-1. **Execution Context Reuse and /tmp Data Leakage**:
-   - *Adversary Goal*: Extract secrets or PII cached from previous executions.
-   - *Attack Vector*: AWS Lambda and Google Cloud Functions reuse execution environments (containers) across consecutive invocations to minimize cold starts. Files written to the `/tmp` directory persist between these invocations. An attacker exploits an input validation vulnerability (e.g. Local File Inclusion) in a function and reads files from `/tmp`, harvesting sensitive session keys or user data written by previous transactions.
-2. **Privilege Escalation via Wildcard Function Execution Roles**:
-   - *Adversary Goal*: Access backend databases or modify security configurations.
-   - *Attack Vector*: A function responsible for converting images is compromised via a remote code execution vulnerability in an image parsing library. Because the function shares a broad IAM role with a database administration function, the attacker invokes AWS APIs (e.g., `dynamodb:Scan` or `secretsmanager:GetSecretValue`) directly from the function container to exfiltrate database records.
-3. **Event Source Injection**:
-   - *Adversary Goal*: Bypass API Gateway validation and execute unauthorized commands.
-   - *Attack Vector*: An application trusts upstream event payloads (e.g., messages from SQS, SNS, or S3 bucket notifications) without validation. An attacker injects malicious commands into a filename in an S3 bucket. When the bucket notification triggers the function, the code passes the unvalidated filename to a shell command (e.g. `exec`), resulting in command injection.
+- Constrain the function resource policy to the expected service principal and source ARN/account where supported.
+- For queues, topics, buckets and event buses, constrain who may write to the source as well as who may invoke the function.
+- Validate event type/version, required fields, size, identifiers and resource ownership. Treat free-form metadata as untrusted input.
+- Design for duplicate and out-of-order delivery. Use an operation-specific idempotency key and durable state when side effects must occur once.
+- Bound recursion, fan-out, batch size, retries, event age and concurrency. Configure a dead-letter queue or failure destination with ownership and replay controls.
 
----
+Authentication of the producer does not authorize the requested business action. A valid user, bucket, topic or partner can still submit an object identifier belonging to another tenant.
 
-## Deep Technical Body
+## API Gateway to Lambda integration
 
-### The Ephemeral Runtime Environment and Execution Context
+    Client
+      → API Gateway
+      → IAM / JWT, Lambda authorizer, or Cognito authorizer as appropriate
+      → Lambda proxy integration
+      → narrowly authorized downstream services
 
-To properly secure serverless functions, engineers must understand how cloud providers manage execution environments. When a function is first invoked, the provider initializes the runtime (the "cold start"). Subsequent invocations reuse this environment to avoid start-up latency (the "warm start").
+A direct Lambda integration uses an AWS/Lambda integration; the common proxy form is `AWS_PROXY`. A VPC link is for a private HTTP integration to VPC resources such as a load balancer and ECS-backed service. It is not the hop between API Gateway and a directly integrated Lambda function.
 
-#### The /tmp Directory Persistence Trap
-Each execution environment includes a writable `/tmp` directory (typically up to 10GB in AWS Lambda). While this directory is useful for processing files, developers often treat it as private to a single execution. This is a critical security misunderstanding. If a function writes a temporary file containing decrypted data or a session token, that file remains in `/tmp` until the execution container is destroyed (which can take hours). 
+    Separate private HTTP example:
+    Client → API Gateway → VPC link → ALB/NLB → ECS or private HTTP service
 
-#### Memory Scavenging
-If the runtime process does not explicitly overwrite or clear variables in memory, sensitive data can persist in memory across invocations. An attacker who compromises the runtime can read the process memory of subsequent executions, leaking data from other users.
+Validate authorization at the gateway and again at the function/resource layer where business context is available. The function must not trust authorizer context merely because a test event contains similarly named fields; it should rely on the configured integration and validate the expected claim contract.
 
-### Function-Level IAM and the Principle of Micro-Roles
-In microservices architectures, each function must have its own dedicated IAM role. This limits the blast radius of a compromise. 
+### API keys are not authentication
 
-#### Unsafe: Shared Catch-All Role
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject",
-        "dynamodb:PutItem",
-        "secretsmanager:GetSecretValue"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-```
-If an attacker compromises a function using this policy, they gain broad access to all S3 buckets, DynamoDB tables, and secrets.
+AWS explicitly says not to use API Gateway API keys for authentication or authorization. They identify usage-plan clients for metering and best-effort throttling; values can appear in headers and logs, and usage-plan quotas are not hard limits. Use IAM, a Lambda authorizer, or a Cognito user pool as appropriate for access control, then use API keys only when their metering purpose is required.
 
-#### Safe: Dedicated Micro-Role
-This policy restricts the function to a single S3 bucket and a specific DynamoDB table, strictly limiting the potential damage from a compromise.
+## Function identity and permission boundaries
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:GetObject"
-      ],
-      "Resource": "arn:aws:s3:::my-application-raw-uploads-prod/*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "dynamodb:PutItem"
-      ],
-      "Resource": "arn:aws:dynamodb:us-west-2:123456789012:table/UserRegistrations"
-    }
-  ]
-}
-```
+Every Lambda function has an execution role, and AWS permits one role to be used by more than one function. The engineering rule is:
 
----
+> Use separate roles for materially different trust and permission boundaries. Functions with identical ownership, data classification and required permissions may share a carefully scoped role, but broad catch-all roles create unnecessary blast radius.
 
-## Defensive Architecture
+Scope actions, resources and conditions; constrain KMS encryption context or service-specific attributes where useful; and separately constrain who can update function code/configuration, attach layers, add event sources, edit resource policies, and pass the role. A least-privilege execution role does not help if an attacker can replace the function or pass it a stronger role.
 
-A secure serverless architecture relies on strict gateway validation, function-level isolation, and secure configuration management.
+Use IAM Access Analyzer and CloudTrail activity as inputs to refinement, not proof that unused permissions are safe. Negative-test explicit denies, cross-account resource policies, and the exact function alias/version used by production.
 
-### Architecture Topology: Secure API Gateway to Serverless Integration
+## Runtime reuse and data lifetime
 
-```
-[ HTTP Request ] -> [ API Gateway (OIDC / JWT Auth Authorizer) ]
-                          │
-                          ▼
-            [ Private VPC Link Integration ]
-                          │
-                          ▼
-          [ AWS Lambda (Micro-IAM Execution Role) ]
-                          │
-      ┌───────────────────┼───────────────────┐
-      ▼                   ▼                   ▼
-[ S3 Uploads Bucket ]  [ DynamoDB Table ]  [ KMS (Decrypt Configs) ]
-```
+A Lambda execution environment may be frozen and reused for later invocations of the same function environment, but reuse is not guaranteed. Global objects and connections can persist when reuse occurs. AWS documents `/tmp` as storage unique to an execution environment whose contents remain across warm reuse and even some reset paths.
 
-### Secure Configuration and Secrets Access Patterns
-Do not store API keys or passwords directly in function environment variables, as these are visible in the AWS Management Console and via basic API queries (`lambda:GetFunctionConfiguration`). Instead, retrieve configuration settings from SSM Parameter Store or Secrets Manager dynamically, and decrypt them using customer-managed KMS keys.
+- Use reuse for immutable clients, connections and non-sensitive caches with freshness/error checks.
+- Do not retain user data, events, authorization results, bearer tokens, or other security-sensitive state across invocations.
+- Namespace and delete temporary files defensively, apply restrictive permissions, bound size, and handle cleanup failure.
+- Clear per-request variables and asynchronous callbacks before returning. Do not assume a new invocation means a new process.
 
-#### Dynamic Retrieval Pattern (Go Example)
-```go
-package main
+Do not claim predictable “memory scavenging” of a prior invocation. A compromised process can read data and credentials available in its current process and execution environment; arbitrary cross-function or future-invocation memory reads are not established by the reuse model.
 
-import (
-	"context"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/ssm"
-)
+## Secrets retrieval, caching and rotation
 
-func GetSecureConfig(ctx context.Context, paramName string) (string, error) {
-	cfg, err := config.LoadDefaultConfig(ctx)
-	if err != nil {
-		return "", err
-	}
-	client := ssm.NewFromConfig(cfg)
+AWS recommends Secrets Manager instead of environment variables for database credentials and similar sensitive values. Dynamic retrieval changes the risk rather than eliminating it:
 
-	// Fetch parameter with decryption enabled
-	input := &ssm.GetParameterInput{
-		Name:           &paramName,
-		WithDecryption: true,
-	}
+- Grant the exact secret ARN and `secretsmanager:GetSecretValue`; include only the required KMS decrypt permission.
+- Choose a cache TTL that balances availability/cost/latency against rotation freshness. AWS's extension and Powertools support local caches; stale cache behavior must be tested.
+- Define behavior for throttling, timeout, regional outage, access denial, malformed secret, and rotation overlap. Fail closed for privileged actions; do not fall back to a hard-coded secret.
+- Never place secret values in request parameters, logs, exceptions, traces, metrics dimensions, dead-letter events, or returned errors.
+- Secrets remain plaintext in process memory while used. Rotation does not remove already copied values or necessarily terminate existing database sessions.
+- Protect the rotation function as a privileged deputy and verify it changes the intended target.
 
-	result, err := client.GetParameter(ctx, input)
-	if err != nil {
-		return "", err
-	}
-	return *result.Parameter.Value, nil
-}
-```
+## Network attachment and egress
 
----
+A Lambda function does not need attachment to a customer VPC merely to be “secure.” By default, Lambda runs functions in a service VPC with connectivity to AWS services and the internet. Attach a function to the customer's VPC when it needs private VPC resources or the design requires customer-controlled network paths.
 
-## Tooling and Implementation
+When attached, the function follows the selected subnet route tables and security groups. Placing it in a subnet called “private” does not create internet access; intended outbound internet connectivity needs a route through a NAT gateway (or another designed egress path), while supported AWS services may use appropriate VPC endpoints. Test DNS, IPv4/IPv6, endpoint policies, NAT failure, security groups, IP/ENI capacity and downstream timeouts.
 
-Deploy specialized serverless auditing and protection tools to monitor function behavior and code dependencies:
+Network controls do not replace execution-role or resource authorization. Conversely, IAM allow does not create a network route.
 
-1. **Snyk / Aqua Security (tfsec/checkov)**: Use these static analysis tools to verify that Infrastructure-as-Code (IaC) templates (Terraform, Serverless Framework, AWS SAM) enforce least privilege IAM policies and restrict API Gateway endpoints.
-2. **AWS Lambda Layers / Runtime Security Agents**: Integrate application security tools directly into the function runtime using AWS Lambda Layers. These tools monitor system calls and network traffic in real time, detecting anomalies like unauthorized network requests or attempts to run processes in `/tmp`.
-3. **API Gateway WAF Integration**: Always configure a Web Application Firewall (WAF) in front of API Gateway. This blocks common application-layer attacks (SQL injection, cross-site scripting) before they reach the backend functions.
+## Threat-based WAF decision
 
----
+Do not require a WAF for every serverless API. Consider AWS WAF for exposed HTTP APIs that benefit from managed exploit rules, IP/geo/rate controls, bot controls or emergency virtual patches. Assess parser alignment, inspection limits, cost, latency, false positives, alternate routes and operational ownership.
 
-## Serverless Security Audit Checklist
+APIs with private access, non-HTTP events, tightly controlled machine clients, or a low-value/simple request surface may prioritize other controls. Even when WAF is present, preserve application authorization, input validation, quotas/concurrency, abuse detection and patching.
 
-| Item | Focus Area | Verification Step / Command | Target State |
-| :--- | :--- | :--- | :--- |
-| 1 | IAM Role Isolation | Check if multiple functions share the same IAM execution role. | Each function has a unique IAM role tailored to its specific requirements. |
-| 2 | Environment Secrets | Audit function configuration files for hardcoded passwords or API keys. | All secrets are stored in Secrets Manager or SSM Parameter Store and retrieved dynamically. |
-| 3 | Execution Environment | Verify that functions clean up sensitive data write operations. | Functions explicitly delete files in the `/tmp` directory before returning. |
-| 4 | API Authorization | Inspect API Gateway configurations to ensure endpoints require authorization. | All public APIs route through Cognito, OIDC Authorizers, or API Key validators. |
-| 5 | Egress VPC Isolation | Verify that functions requiring internal database access run within a private VPC subnet. | Functions run inside private subnets and use VPC endpoints for AWS service communications. |
-| 6 | Timeout Policies | Check function timeout settings. | Timeout values are set to the minimum time required for successful execution, preventing denial-of-service bill inflation. |
+## Failure cases and what should get denied
 
----
+**This is the test plan I'd run against a real deployment — I haven't executed it for this write-up.**
+
+| Case | Expected result |
+|----|----|
+| Direct function invoke by an unapproved principal/source ARN | Resource-policy denial |
+| Valid API key without valid authentication | Authentication denial; API key alone grants no access |
+| Valid user requests another tenant's object | Business authorization denial |
+| Duplicate asynchronous event | Idempotent side effect and recorded duplicate decision |
+| Poison event exhausts retries | Bounded retry then controlled failure destination; no infinite recursion |
+| Warm invocation after sensitive request | No prior user/event state in globals or `/tmp` |
+| Secret rotates while cache is warm | Documented overlap/retry; cache refreshes within policy |
+| Secrets Manager or KMS unavailable | Bounded timeout and fail-closed behavior without secret leakage |
+| Function assumes shared role after another function gains permission | Change review detects shared blast-radius increase |
+| VPC-attached function needs internet without NAT | Fast bounded failure; network alarm identifies route dependency |
+| WAF rule false positive | Canary/count evidence and scoped rollback, not global bypass |
+
+## Observability, rollout and rollback
+
+Correlate API request ID or event ID, authenticated principal, source ARN/account, function ARN/version/alias, cold/warm indicator where available, execution-role session, authorization result, downstream resource, idempotency decision, retry/age, secret version label (never value), network error class, duration, concurrency and failure destination.
+
+1. Inventory producers, invocation/resource policies, roles, role-sharing, downstream resources, secrets, routes and failure paths.
+2. Add contract tests for event schema, producer binding, tenant/object authorization and duplicate delivery.
+3. Canary role and networking changes using aliases or staged traffic; monitor denies, timeouts, concurrency and downstream saturation.
+4. Load-test timeouts, retries and reserved concurrency against dependency capacity.
+5. Rehearse rollback of code/configuration, role policy, event-source mapping, secret version and WAF rule independently.
+
+Rollback to a previously reviewed version and permission set. Do not restore availability by attaching a broad managed policy, disabling authorizers, exposing a private backend, or logging secret values.
+
+## What's still not solved
+
+Compromised deployment principals, a dependency or layer supply-chain issue, confused-deputy resource policies, a producer that's valid but malicious, cross-tenant bugs in the app itself, replay inside the idempotency window, stale secret caches, warm-state leakage, a service or region outage, downstream saturation, event loss past the retention window, and telemetry gaps — all still possible. Managed isolation and short-lived execution environments cut down some exposure, but they don't prove tenant isolation or that the application logic is correct.
 
 ## References
 
-* *AWS Lambda Security Guidelines*: [AWS Documentation](https://docs.aws.amazon.com/lambda/latest/dg/security-best-practices.html)
-* *OWASP Serverless Top 10 Project*: [OWASP Website](https://owasp.org/www-project-serverless-top-10/)
-* *NIST Special Publication 800-204D (Functional Security in Microservices)*: [NIST SP 800-204D](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-204D.pdf)
+- [API Gateway Lambda proxy integration](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html)
+- [API Gateway private HTTP integrations and VPC links](https://docs.aws.amazon.com/apigateway/latest/developerguide/private-integration.html)
+- [API Gateway API keys and usage plans](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html)
+- [AWS Lambda execution roles and role sharing](https://docs.aws.amazon.com/lambda/latest/dg/concepts-basics.html)
+- [AWS Lambda execution-environment lifecycle and `/tmp` reuse](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html)
+- [AWS Lambda security and execution-environment best practices](https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html)
+- [Using Secrets Manager with Lambda, caching and rotation freshness](https://docs.aws.amazon.com/lambda/latest/dg/with-secrets-manager.html)
+- [AWS Secrets Manager `GetSecretValue` permissions and caching guidance](https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html)
+- [AWS Lambda VPC and internet connectivity](https://docs.aws.amazon.com/lambda/latest/dg/troubleshooting-networking.html)
+- [AWS WAF web ACL controls](https://docs.aws.amazon.com/waf/latest/developerguide/web-acl.html)

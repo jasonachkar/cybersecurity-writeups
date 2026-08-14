@@ -1,0 +1,1675 @@
+{
+  "/404.html": {
+    "title": "Page not found",
+    "status": "site-utility",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [],
+    "limitations": [
+      "Utility missing-page response; not security guidance."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/about/": {
+    "title": "About this site",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Describes how the site is organized and how it's kept current; both are checkable against the repository itself."
+    ],
+    "limitations": [
+      "A simple about page; not a claim that every linked page has been through the same review."
+    ],
+    "reviewIntervalDays": 180
+  },
+  "/about/quality-methodology/": {
+    "title": "Old page: How I validate what's on this site",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/about/site-provenance/": {
+    "title": "Old page: About this site",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/appsec/ai-agent-security/": {
+    "title": "Threat-Driven Security Architecture for AI Agents",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Local broker fixtures cover authorized low-impact calls, missing/expired/mismatched approvals, sequential and concurrent replay, kill-switch, and unknown-argument denial.",
+      "ApprovalStore.consumeIfUnused enforces one successful consumption under concurrent tests via an in-memory compare-and-set that models a durable conditional write."
+    ],
+    "limitations": [
+      "In-memory ApprovalStore is a teaching model, not a distributed durable store.",
+      "No production identity validation, MCP enforcement, network sandboxing, or real payment execution is proven.",
+      "No model provider or production agent runtime is exercised."
+    ],
+    "reviewIntervalDays": 30
+  },
+  "/appsec/api-microservices-threat-modeling/": {
+    "title": "API and Microservice Trust Boundaries: Workload Identity, User Context and Downstream Authorization",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Workload identity, end-user context, token audience, direct-service bypass, and authorization failure cases are explicitly modeled."
+    ],
+    "limitations": [
+      "No service mesh, token service, or production resource server is deployed."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/appsec/": {
+    "title": "Application Security",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on application security is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/appsec/oauth2-oidc-deep-dive/": {
+    "title": "OAuth 2.0 and OpenID Connect Security Engineering",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Issuer, audience, time, nonce, state, PKCE, redirect, and key-rotation cases have local fixtures."
+    ],
+    "limitations": [
+      "No commercial identity provider conformance suite or production authorization server is exercised."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/appsec/runtime-protection-rasp-waf/": {
+    "title": "Layered Runtime Application Protection: WAF, In-Process Controls and eBPF Enforcement",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "WAF, in-process, and eBPF controls are compared by enforcement point, context, bypass, and failure behavior.",
+      "The TracingPolicyNamespaced manifest was validated against the pinned Tetragon v1.7.0 CRD structural schema in this review."
+    ],
+    "limitations": [
+      "No live cluster enforcement test was run; the Tetragon example is schema-validated only."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/appsec/saas-multitenancy-isolation/": {
+    "title": "Engineering Tenant Isolation for a Multi-tenant SaaS Platform",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "PostgreSQL RLS boundary cases, role attributes, and pooled-client session lifecycle are exercised in a disposable database lab."
+    ],
+    "limitations": [
+      "API authorization, queues, caches, object storage, and telemetry boundaries are not exercised by the database lab."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/cloud-security/cloud-detection-and-response/": {
+    "title": "Cloud Detection Engineering: Durable Telemetry, High-Signal Analytics and Safe Response",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Sentinel KQL columns are mapped to the documented AWSCloudTrail schema and response controls are bounded."
+    ],
+    "limitations": [
+      "No live Sentinel workspace executed the query; data delivery and connector health remain environment-specific."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/cloud-security/cloud-network-segmentation/": {
+    "title": "Cloud Network Segmentation and Egress Control: Routing, Private Endpoints and Failure Domains",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Routing, endpoint-policy, centralized/distributed egress, IPv6, DNS, and inspection failure modes are explicitly separated."
+    ],
+    "limitations": [
+      "Illustrative network configurations are not applied to AWS accounts."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/cloud-security/iam-at-scale/": {
+    "title": "AWS IAM at Scale: Federation, Delegation, and Guardrails",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Federation, delegation, PassRole, external-ID, and boundary decisions have runnable local policy cases."
+    ],
+    "limitations": [
+      "The evaluator is not AWS IAM's production authorization engine and no cloud resources are deployed."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/cloud-security/": {
+    "title": "Cloud Security",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on cloud security is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/cloud-security/kubernetes-multi-tenancy/": {
+    "title": "Kubernetes Multi-tenancy: Boundaries, Isolation, and Operations",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Pod, network-policy, and image-decision fixtures exercise positive and negative cases."
+    ],
+    "limitations": [
+      "Image signature, certificate, registry, transparency, and live admission verification were not executed end to end."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/cloud-security/multi-account-landing-zones/": {
+    "title": "AWS Multi-Account Landing Zones: Guardrails and Control-Plane Isolation",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Organization, account-vending, guardrail, identity, logging, and recovery boundaries are primary-source reviewed."
+    ],
+    "limitations": [
+      "No AWS organization or Control Tower landing zone is deployed."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/cloud-security/serverless-security/": {
+    "title": "Serverless Security Engineering: Event Trust, Function Identity and Runtime Reuse",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Event identity, authorizers, Lambda integration, execution reuse, IAM roles, secrets, networking, and WAF decisions are separated."
+    ],
+    "limitations": [
+      "No Lambda function, API Gateway, VPC path, or WAF policy is deployed."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/devsecops/iac-security-and-policy-as-code/": {
+    "title": "Infrastructure as Code Security and Policy Engineering",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Terraform plan fixtures cover secure, insecure, unknown, and deleted-control states."
+    ],
+    "limitations": [
+      "No cloud deployment is authorized; provider-side behavior is not exercised."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/devsecops/": {
+    "title": "DevSecOps",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on devsecops is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/devsecops/secrets-management/": {
+    "title": "Secrets Management Engineering: Identity, Delivery, Rotation and Runtime Exposure",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Identity, delivery, rotation, runtime exposure, revocation, and failure semantics are threat-modelled separately."
+    ],
+    "limitations": [
+      "No Vault cluster, Secrets Store CSI provider, or production rotation workflow is executed."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/devsecops/secure-cicd-pipeline-design/": {
+    "title": "Secure CI/CD Pipeline Architecture and Trust Boundaries",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Trust boundaries and fail-closed gate fixtures are documented and locally exercised."
+    ],
+    "limitations": [
+      "The fixture does not deploy; attestation verification depends on GitHub's service and expected signer workflow."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/devsecops/secureobs-multitenant-security-scanner/": {
+    "title": "SecureObs: Customer-side CI Security Scanning with a Multi-tenant Findings Platform",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Owner-confirmed architecture is separated from repository-reproduced patterns and recommendations."
+    ],
+    "limitations": [
+      "Sanitized design does not disclose proprietary detail or claim customer use, uptime, compliance, or complete isolation."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/devsecops/supply-chain-sbom-signing/": {
+    "title": "Software Supply-chain Evidence: SBOMs, Provenance, Signing, and Verification",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Artifact digest, SBOM linkage, provenance fields, and verifier-adapter contract have offline tests."
+    ],
+    "limitations": [
+      "No production DSSE envelope, certificate chain, Rekor/transparency, or cryptographic signature verification is executed."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/AUTHORING_GUIDE/": {
+    "title": "Old page: Security write-up authoring guide",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/CONTRIBUTING_SECURITY_CONTENT/": {
+    "title": "Old page: Contributing security content",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/METADATA/": {
+    "title": "Old page: Content metadata contract",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/METADATA_MIGRATION/": {
+    "title": "Old page: Legacy metadata migration registry",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/RESEARCH_POLICY/": {
+    "title": "Old page: Research and source policy",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/certification-notes/az-900/domain-1-concepts/": {
+    "title": "AZ-900 Domain 1: Describe Cloud Concepts",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Microsoft study guide last updated 2026-06-22; skills measured from 2026-07-20."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/az-900/domain-2-architecture-services/": {
+    "title": "AZ-900 Domain 2: Describe Azure Architecture & Services",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Microsoft study guide last updated 2026-06-22; skills measured from 2026-07-20."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/az-900/domain-3-management-governance/": {
+    "title": "AZ-900 Domain 3: Describe Azure Management & Governance",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Microsoft study guide last updated 2026-06-22; skills measured from 2026-07-20."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/az-900/": {
+    "title": "Microsoft AZ-900: Azure Fundamentals Overview",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Microsoft study guide last updated 2026-06-22; skills measured from 2026-07-20."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/google-cybersecurity/": {
+    "title": "Google Cybersecurity Professional Certificate",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Google's official curriculum was checked 2026-07-23; Google does not publish a dated exam study guide for this course certificate."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/sc-500/domain-1-identity/": {
+    "title": "SC-500 Domain 1: Manage Identity, Access, and Governance",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/sc-500/domain-2-storage-networking/": {
+    "title": "SC-500 Domain 2: Secure Storage, Databases, and Networking",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/sc-500/domain-3-compute-posture/": {
+    "title": "Old page: Superseded study-note path",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/certification-notes/sc-500/domain-3-secure-compute/": {
+    "title": "Study Notes: Secure compute",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/sc-500/domain-4-ai-security/": {
+    "title": "Old page: Superseded study-note path",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/": {
+    "title": "Study Notes: Manage and monitor security posture",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/sc-500/": {
+    "title": "Microsoft SC-500 study notes",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/security-plus/domain-1-threats/": {
+    "title": "Old page: Domain 2: Threats, Vulnerabilities, and Mitigations (SY0-701)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/certification-notes/security-plus/domain-2-architecture/": {
+    "title": "Old page: Domain 3: Security Architecture (SY0-701)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/certification-notes/security-plus/domain-3-operations/": {
+    "title": "Old page: Domain 4: Security Operations (SY0-701)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/certification-notes/security-plus/": {
+    "title": "CompTIA Security+ SY0-701 study notes",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "CompTIA's official Security+ page and SY0-701 objectives were checked 2026-07-23; no page-level update date is invented."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/security-plus/labs/lab-iam/": {
+    "title": "Old page: Security+ Lab: Identity & Access Management (IAM) - Enterprise-Style (Local Lab)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/certification-notes/security-plus/labs/lab-network-security/": {
+    "title": "Old page: Security+ Lab: Network Security & Segmentation - Firewall + Packet Capture + Mini-IDS (Local Lab)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/certification-notes/security-plus/practice-questions/": {
+    "title": "Old page: Security+ SY0-701 Practice Questions",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/certification-notes/security-plus/quick-reference/": {
+    "title": "Old page: Security+ SY0-701 Quick Reference",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research-audit/content-inventory/": {
+    "title": "Old page: Research index",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research-audit/modernization-completion-report/": {
+    "title": "Old page: Security Content Modernization Report",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research-audit/security-content-audit/": {
+    "title": "Old page: Security Content Audit",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research-audit/strong-claim-review/": {
+    "title": "Old page: Strong security claim review queue",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/appsec/api-microservices-oauth-saas-multitenancy/": {
+    "title": "Old page: API and Microservices Threat Modeling",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/devsecops/iac-security-and-policy-as-code/": {
+    "title": "Old page: IaC Security and Policy-as-Code",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/devsecops/secure-cicd-pipelines-and-environments/": {
+    "title": "Old page: Secure CI/CD Pipelines and Environments",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/enterprise-cloud-security-engineering/cloud-security-architecture/": {
+    "title": "Old page: 3. Cloud Security Architecture & Enterprise Infrastructure",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/enterprise-cloud-security-engineering/detection-engineering/": {
+    "title": "Old page: 4. Detection Engineering & Threat Hunting",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/enterprise-cloud-security-engineering/devsecops-pipeline-hardening/": {
+    "title": "Old page: DevSecOps pipeline hardening",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/enterprise-cloud-security-engineering/iam-workload-identity/": {
+    "title": "Old page: 1. Identity & Access Management (IAM)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/enterprise-cloud-security-engineering/": {
+    "title": "Old page: Advanced Cloud Security Engineering",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security/": {
+    "title": "Old page: Kubernetes Multi-Tenancy and Platform Security",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/enterprise-cloud-security-engineering/multi-account-landing-zones-and-iam/": {
+    "title": "Old page: Multi-Account Landing Zones and IAM at Scale",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/oauth-misconfigurations/attack-scenarios/": {
+    "title": "Old page: OAuth & OpenID Connect Misconfigurations: Real-World Attack Scenarios",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/oauth-misconfigurations/code-examples/": {
+    "title": "Old page: OAuth 2.0 security code examples (superseded)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/oauth-misconfigurations/": {
+    "title": "Old page: Common OAuth 2.0 Misconfigurations and Exploits",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/oauth-misconfigurations/mitigations/": {
+    "title": "Old page: OAuth/OIDC Misconfiguration Mitigations",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/threat-modeling-saas/data-flow-diagrams/": {
+    "title": "Old page: Data Flow Diagrams (DFDs) for SaaS Applications",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/threat-modeling-saas/": {
+    "title": "Old page: Threat Modeling for Multi-Tenant SaaS Applications",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/threat-modeling-saas/mitigations/": {
+    "title": "Old page: Threat Modeling Mitigations for SaaS",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/threat-modeling-saas/stride-analysis/": {
+    "title": "Old page: STRIDE Analysis for SaaS Multi-Tenancy",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/threat-modeling-saas/templates/": {
+    "title": "Old page: Threat Modeling Templates & Worksheets",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/scripts/app-security/": {
+    "title": "Old page: Application Security Automation Scripts",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/scripts/cloud-security/": {
+    "title": "Old page: Cloud Security Automation Scripts",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/scripts/devsecops/": {
+    "title": "Old page: DevSecOps Automation Scripts",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/scripts/threat-intel/": {
+    "title": "Old page: Threat Intelligence Analysis Scripts",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/standards/security-standards-review/": {
+    "title": "Old page: Security standards and platform currency review",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/templates/security-writeup-template/": {
+    "title": "Old page: Replace with a precise, decision-oriented title",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/azure-firewall-walkthrough/": {
+    "title": "Old page: Configuring Azure Firewall with UDR-Based Traffic Control",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/azure-landing-zone/architecture/": {
+    "title": "Old page: Azure Landing Zone: Architecture Overview",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/azure-landing-zone/iam/": {
+    "title": "Old page: Azure Landing Zone: Identity and Access Management (IAM)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/azure-landing-zone/implementation-templates/": {
+    "title": "Old page: Azure Landing Zone - Implementation Templates",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/azure-landing-zone/": {
+    "title": "Old page: Azure Landing Zone Security Engineering Guide",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/azure-landing-zone/networking/": {
+    "title": "Old page: Azure Landing Zone: Networking and Connectivity",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/azure-landing-zone/policy-governance/": {
+    "title": "Old page: Azure Landing Zone: Policy and Governance",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/ci-cd-gates/azure-devops/": {
+    "title": "Old page: Azure DevOps Security Scanning Configuration",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/ci-cd-gates/github-actions/": {
+    "title": "Old page: GitHub Actions Security Scanning Configuration",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/ci-cd-gates/": {
+    "title": "Old page: Implementing Security Gates in CI/CD Pipelines",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/ci-cd-gates/tools/": {
+    "title": "Old page: Security Tools Reference",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/detection-engineering-sentinel/detection-templates/": {
+    "title": "Old page: KQL Detection Templates & Playbook Examples",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/detection-engineering-sentinel/": {
+    "title": "Old page: Detection Engineering with Microsoft Sentinel",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/owasp-api-security-top-10/code-examples/": {
+    "title": "Old page: OWASP API Security - Code Examples & Mitigations",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/owasp-api-security-top-10/examples/insecure-example/": {
+    "title": "Old page: Insecure API Example (Python / Flask)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/owasp-api-security-top-10/examples/secure-example/": {
+    "title": "Old page: API authorization example: bounded design checklist",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/owasp-api-security-top-10/": {
+    "title": "Old page: OWASP API Security Top 10 (2023)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/owasp-api-security-top-10/mitigation-node/": {
+    "title": "Old page: Mitigating API Vulnerabilities in Node.js (Express)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/owasp-api-security-top-10/mitigations-dotnet/": {
+    "title": "Old page: Mitigating API Vulnerabilities in .NET (C#)",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/owasp-api-security-top-10/vulnerabilities/": {
+    "title": "Old page: OWASP API Security Top 10 (2023) - Core Vulnerabilities",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/securing-entra-id/conditional-access-policies/": {
+    "title": "Old page: Conditional Access Policy Reference",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/securing-entra-id/identity-protection/": {
+    "title": "Old page: Identity Protection Configuration Guide",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/securing-entra-id/": {
+    "title": "Old page: Securing Azure Entra ID (formerly Azure AD): A Zero Trust Approach",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/securing-entra-id/monitoring-alerts/": {
+    "title": "Old page: Monitoring and Alerting Guide",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/securing-entra-id/pim-configuration/": {
+    "title": "Old page: Privileged Identity Management Configuration Guide",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/": {
+    "title": "Cybersecurity research, labs, and scripts.",
+    "status": "conceptual",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Curated entry points map to page-level evidence disclosures."
+    ],
+    "limitations": [
+      "The landing page summarizes evidence; each investigation defines its own trust and test boundaries."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/ai-agent-security/": {
+    "title": "AI Agent External Tool-Broker Lab",
+    "status": "validated-lab",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Broker fixtures include concurrent replay: exactly one executor invocation and APPROVAL_REPLAYED for the loser.",
+      "Action-bound approval, expiry, kill-switch, and unknown-argument cases execute locally."
+    ],
+    "limitations": [
+      "In-memory atomic consumption models a durable CAS; it does not prove Redis/PostgreSQL/DynamoDB durability.",
+      "No model provider, MCP server, or real payment path is integrated."
+    ],
+    "reviewIntervalDays": 30
+  },
+  "/labs/azure-landing-zone/": {
+    "title": "Azure landing-zone hierarchy and policy lab",
+    "status": "partially-tested",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Bicep and policy artifacts model hierarchy, guardrails, and a federated deployment boundary.",
+      "CI compiles labs/azure-landing-zone/main.bicep with Azure CLI Bicep and discards the generated JSON."
+    ],
+    "limitations": [
+      "No Azure authentication or resource deployment occurs."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/iac-policy/": {
+    "title": "Terraform plan and Rego policy lab",
+    "status": "partially-tested",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Plan-decision fixtures cover secure, insecure, unknown, and deleted-control cases.",
+      "CI runs Terraform 1.14.6 fmt/init/validate and OPA 1.17.0 native Rego tests against the published fixtures."
+    ],
+    "limitations": [
+      "No cloud plan is applied; provider-side behavior is not exercised."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/iam-oidc/": {
+    "title": "IAM and workload-identity decision lab",
+    "status": "validated-lab",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Issuer, audience, subject, environment, external-ID, permission-boundary, and PassRole cases execute locally."
+    ],
+    "limitations": [
+      "The evaluator is intentionally smaller than AWS or Azure production authorization engines."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/": {
+    "title": "Labs",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on labs is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/kubernetes-security/": {
+    "title": "Kubernetes admission, network, and image-policy lab",
+    "status": "partially-tested",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Local pod, network, and image-decision cases include accepted and denied inputs.",
+      "Native Kyverno CLI 1.18.2 tests exercise the hardened-pod policy.",
+      "The ImageValidatingPolicy manifest was validated against the pinned Kyverno v1.18.2 CRD structural schema in this review."
+    ],
+    "limitations": [
+      "Image-signature policy remains schema/offline only; signature, certificate, registry, transparency, digest resolution, and live admission are not executed end to end."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/oauth-oidc/": {
+    "title": "OAuth/OIDC token-boundary lab",
+    "status": "validated-lab",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Token, redirect, PKCE, state, nonce, time, audience, issuer, and key-rotation tests execute locally."
+    ],
+    "limitations": [
+      "No provider conformance suite or browser authorization flow is run."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/postgresql-rls/": {
+    "title": "PostgreSQL row-level security isolation lab",
+    "status": "validated-lab",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "RLS runtime, boundary, and catalog SQL suites executed against a disposable postgres:18.4-alpine3.24 container in this review.",
+      "Pooled-client lifecycle tests (pg 8.22.0) executed physical-session reuse, missing context, error, cancellation, and concurrent-tenant cases."
+    ],
+    "limitations": [
+      "The lab validates database-layer policies only; it is not an application, cache, queue, or object-storage isolation test."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/secure-cicd/": {
+    "title": "Secure CI/CD boundary and fail-closed gate lab",
+    "status": "validated-lab",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Positive, negative, malformed, scanner-failure, and secret-result fixtures run through the fail-closed gate."
+    ],
+    "limitations": [
+      "No release or cloud deployment occurs; GitHub-hosted attestation verification is a separate external boundary."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/supply-chain/": {
+    "title": "Artifact provenance and SBOM verification lab",
+    "status": "partially-tested",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Offline digest, builder, source, build-type, and SBOM linkage decisions execute locally."
+    ],
+    "limitations": [
+      "DSSE, signing certificates, transparency, and production cryptographic verification are not performed."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/research/": {
+    "title": "Research",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on research is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/scripts/application-security/": {
+    "title": "Application Security scripts",
+    "status": "tool",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Lists exactly the Application Security scripts catalogued in scripts/catalog.mjs."
+    ],
+    "limitations": [
+      "Lists only the scripts catalogued under this category."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/scripts/application-security/oauth-pkce-verifier/": {
+    "title": "Old page: OAuth PKCE (S256) verifier and generator",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/scripts/cloud-security/": {
+    "title": "Cloud Security scripts",
+    "status": "tool",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Lists exactly the Cloud Security scripts catalogued in scripts/catalog.mjs."
+    ],
+    "limitations": [
+      "Lists only the scripts catalogued under this category."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/scripts/cloud-security/k8s-rbac-auditor/": {
+    "title": "Old page: Kubernetes RBAC privilege-escalation auditor",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/scripts/devsecops/": {
+    "title": "DevSecOps scripts",
+    "status": "tool",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Lists exactly the DevSecOps scripts catalogued in scripts/catalog.mjs."
+    ],
+    "limitations": [
+      "Lists only the scripts catalogued under this category."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/scripts/devsecops/kyverno-policy-schema-check/": {
+    "title": "Old page: Kyverno policy schema validator",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/scripts/devsecops/tetragon-policy-schema-check/": {
+    "title": "Old page: Tetragon policy schema validator",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/scripts/": {
+    "title": "Security scripts, packages, and small utilities",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Lists exactly the scripts catalogued in scripts/catalog.mjs; nothing here is inferred from a directory listing."
+    ],
+    "limitations": [
+      "A script not listed in the catalogue is not yet documented, even if it exists in the repository."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/scripts/threat-intelligence/cloudtrail-analyzer/": {
+    "title": "Old page: CloudTrail suspicious-activity analyzer",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/scripts/threat-intelligence/": {
+    "title": "Threat Intelligence scripts",
+    "status": "tool",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Lists exactly the Threat Intelligence scripts catalogued in scripts/catalog.mjs."
+    ],
+    "limitations": [
+      "Lists only the scripts catalogued under this category."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/study-notes/": {
+    "title": "Study notes",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on study notes is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/threat-intel/attack-path-analysis/": {
+    "title": "Attack Path Analysis: Preconditions, Reachability and Evidence-Backed Control Breaks",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Three scenarios enumerate foothold, preconditions, edges, evidence, break points, negative tests, and residual risk."
+    ],
+    "limitations": [
+      "Graph reachability is not asserted as exploitability; live tenant graph data is not ingested."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/threat-intel/cloud-breach-case-studies/": {
+    "title": "Cloud Incident Case Studies: Evidence, Chronology, and Control Lessons",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Chronologies distinguish incident-owner disclosure from inference and control lessons."
+    ],
+    "limitations": [
+      "Public reporting cannot establish undisclosed facts or complete root cause."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/threat-intel/": {
+    "title": "Threat Intelligence",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on threat intelligence is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  }
+}

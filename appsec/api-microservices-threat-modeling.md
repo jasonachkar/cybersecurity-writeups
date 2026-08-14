@@ -1,180 +1,188 @@
 ---
-title: "API and Microservices Threat Modeling: STRIDE, Trust Boundaries, and Header Propagation Security"
-type: appsec
-tags: [API Security, Threat Modeling, STRIDE, Microservices, Service Mesh]
-date: 2026-06
-readingTime: 16
+title: "API and Microservice Trust Boundaries: Workload Identity, User Context and Downstream Authorization"
+type: "appsec"
+tags:
+  - appsec
+  - api
+  - microservices
+  - threat
+  - modeling
+date: "2026-07-25"
+lastReviewed: "2026-07-25"
+readingTime: 9
+reviewStatus: "partially-verified"
+validatedAgainst:
+  - "NIST SP 800-204 - Security Strategies for Microservices-based Application Systems — https://csrc.nist.gov/pubs/sp/800/204/final"
+  - "NIST SP 800-204A - Building Secure Microservices-based Applications Using Service-Mesh Architecture — https://csrc.nist.gov/pubs/sp/800/204/a/final"
+  - "RFC 9700 - Best Current Practice for OAuth 2.0 Security — https://www.rfc-editor.org/rfc/rfc9700.html"
+  - "RFC 8693 - OAuth 2.0 Token Exchange — https://www.rfc-editor.org/rfc/rfc8693.html"
+  - "OpenID Connect Core 1.0 incorporating errata set 2 — https://openid.net/specs/openid-connect-core-1_0.html"
+  - "Kubernetes Network Policies — https://kubernetes.io/docs/concepts/services-networking/network-policies/"
+sourceQuality: "primary-sources-reviewed"
+implementationStatus: "illustrative"
+reviewIntervalDays: 90
 ---
 
-# API and Microservices Threat Modeling: STRIDE, Trust Boundaries, and Header Propagation Security
+# API and Microservice Trust Boundaries: Workload Identity, User Context and Downstream Authorization
 
-## Executive Summary
+This is a design and review guide based on how I'd threat-model this myself — not a claim that I've got a specific platform running somewhere with these exact controls. Authentication only answers who presented a credential. Authorization still has to decide whether that principal can do this particular thing, to this tenant-bound object, right now.
 
-Microservices architectures replace monolithic applications with highly distributed networks of specialized services. This design improves scalability and agility but significantly increases the attack surface. In monolithic systems, security controls like user authentication are enforced once at the outer boundary. In contrast, microservices require continuous authorization checks at multiple internal boundaries. A common and dangerous mistake is assuming that internal networks are implicitly secure, leading teams to omit authentication checks between services.
+## The core decision
 
-At scale, the failure to secure the edge-to-internal transition and protect internal trust propagation headers creates major security holes. Attackers exploit these gaps by bypassing edge API Gateways and connecting directly to internal services, or by spoofing identity headers (e.g. `X-Forwarded-User`) to escalate privileges. This whitepaper explains how to threat-model microservices using the STRIDE framework, establish cryptographic trust boundaries, implement mutual TLS (mTLS), and secure user identity propagation.
+Use two independent identity planes. Authenticate each calling workload at the service boundary, and carry the end-user's delegation in an audience-constrained token that the receiving resource server validates itself. Reject unsigned identity headers outright. The resource-owning service should enforce tenant, object, state-transition, and business-policy authorization even when a gateway or mesh has already let the call through.
 
----
+Pick one user-context pattern on purpose, rather than drifting into a mix: either validate the original audience-appropriate access token at each resource server, or use a trusted token service to exchange or mint a short-lived internal token for the exact downstream audience. Neither pattern turns mTLS, a NetworkPolicy, or a gateway into an application authorization boundary by itself.
 
-## Threat Model and Attack Surface
+## Scope and non-goals
 
-The microservices attack surface includes the outer ingress API Gateway, internal service-to-service communication paths, and backend data access points.
+The scope is an HTTP API behind an ingress or gateway, with downstream services that may run on Kubernetes. The protected assets are tenant data, high-impact operations, access tokens, signing keys, workload credentials, authorization policy, and audit evidence.
 
-```
-       [ Public Client Request ] -> [ API Gateway (Edge Auth) ]
-                                          │
-                  ( Gateways strips invalid user headers )
-                                          │
-                                          ▼
-                      [ Internal Ingress: Service A ]
-                                          │
-                    ( Propagates user ID: X-User-Id )
-                                          │
-                                          ▼
-                      [ Internal Target: Service B ]
-                                          │
-               ┌──────────────────────────┴──────────────────────────┐
-               ▼ (Attack Path: Intercepted Service Mesh)             ▼ (Normal Authorized Path)
-      [ Attacker Pod / Container ]                           [ Service B processes request ]
-               │
-               ▼
-      [ Spoofs X-User-Id: admin ]
-               │
-               ▼
-      [ Bypasses database constraints ]
-```
+Where an external OAuth flow creates the user grant, RFC 9700 is the current OAuth Security Best Current Practice: use exact redirect-URI matching and do not revive deprecated insecure modes. Those client/authorization-server controls complement, but do not replace, the resource-server checks modeled here.
 
-### Threat Vectors and Kill-Chains
+- **In scope:** direct reachability, caller authentication, delegated user context, replay, token confusion, and downstream authorization.
+- **Out of scope:** selecting a service-mesh product, implementing JWT cryptography, or asserting that one topology fits every trust model.
 
-1. **Identity Header Spoofing (Elevation of Privilege)**:
-   - *Adversary Goal*: Impersonate another user or acquire administrative access.
-   - *Attack Vector*: Internal services trust identity headers (e.g., `X-User-Id` or `X-User-Roles`) passed from upstream services without validation. An attacker compromises a frontend container. They bypass the API Gateway and send requests directly to the internal Billing service, attaching a custom header `X-User-Id: admin-user`. The Billing service processes the request without checking signatures, executing administrative tasks on behalf of the attacker.
-2. **Gateway Bypass via Service Mesh Exposure**:
-   - *Adversary Goal*: Bypass public-facing authentication checks.
-   - *Attack Vector*: An application is hosted in a Kubernetes cluster without network segmentation. While public traffic must route through the API Gateway (which enforces OAuth/JWT validation), internal ports of backend pods are left exposed. An attacker compromises an unsegmented staging pod and connects directly to a backend production service's internal port, bypassing all authentication gates.
-3. **mTLS Cryptographic Identity Spoofing**:
-   - *Adversary Goal*: Eavesdrop on or spoof service-to-service traffic.
-   - *Attack Vector*: Services communicate over plaintext HTTP inside the cluster, trusting IP addresses for authorization. An attacker deploys a malicious container in the same network namespace and performs ARP poisoning or DNS spoofing. This allows them to intercept and read sensitive traffic or masquerade as a trusted database server.
+## Actors and assets
 
----
+| Actor | Credential or capability | Security question |
+|----|----|----|
+| End user | Access token and session context | Was the user authenticated, and what delegation was granted? |
+| OAuth client | Client identity, redirect flow, proof key or sender constraint | Is this the client for which the grant was issued? |
+| Gateway or token service | Workload identity and, if authorized, token-minting key | May it transform user context for this audience? |
+| Calling workload | mTLS certificate, SPIFFE identity, cloud identity, or bound service-account token | Which deployed workload made this hop? |
+| Resource service | Audience identity plus data-plane permissions | Does it own and enforce the final authorization decision? |
 
-## Deep Technical Body
+## Trust boundaries
 
-### The STRIDE Threat Modeling Methodology for Microservices
+    user / OAuth client
+      → public authorization and API boundary
+      → gateway or token service
+      → workload-authenticated service boundary
+      → resource-owning service
+      → tenant-aware data boundary
 
-Threat modeling must be performed on every service integration using the STRIDE framework:
+Record actual listeners, routes, identities, and alternate paths for every arrow. A Kubernetes Service, pod IP, debug port, job, sidecar, batch worker, or peered network can create a path that does not traverse the public gateway. A compromised pod and a deliberate service-mesh bypass are different scenarios: test network reachability and accepted identity for each.
 
-| Threat | Description | Microservices Attack Vector | Mitigation Strategy |
-| :--- | :--- | :--- | :--- |
-| **S**poofing | Pretending to be an authorized service or user. | Spoofing DNS records to redirect service-to-service traffic. | Enforce mutual TLS (mTLS) with strict SAN validation. |
-| **T**ampering | Modifying data in transit or at rest. | Intercepting and altering plaintext HTTP calls inside the cluster. | Encrypt all service communication in transit. |
-| **R**epudiation | Claiming actions were not taken. | Incomplete logs that fail to correlate user IDs with internal API calls. | Implement tracing headers (e.g. `X-Request-ID`) across all services. |
-| **I**nformation Disclosure | Exposing sensitive data. | Reading unencrypted API responses or accessing trace details in logs. | Enforce encryption in transit (mTLS) and dynamic logging policies. |
-| **D**enial of Service | Exhausting resources to block users. | Flooding a single backend service to crash the entire application chain. | Implement rate limiting, circuit breakers, and thread limits. |
-| **E**levation of Privilege | Acquiring unauthorized access. | Spoofing identity propagation headers to act as an administrator. | Cryptographically sign user context tokens (e.g., nesting JWTs). |
+## Threat model
 
-### Trust Propagation Vulnerabilities and mitigations
+| Threat | Required precondition | What stops it |
+|----|----|----|
+| Direct backend invocation | Backend listener is reachable and accepts the caller | Network policy plus workload authentication and resource-server authentication |
+| Identity-header spoofing | Service treats a mutable header as authoritative | Remove untrusted headers and derive identity only from validated credentials |
+| Token substitution | Issuer or audience validation is missing or ambiguous | Maintained token-validation library with fixed issuer and exact intended audience |
+| Cross-tenant access | Tenant claim is accepted without binding it to subject and object | Tenant-aware object query and business authorization |
+| Replay | Bearer token or high-impact request can be reused within its validity window | Short lifetime, sender constraint where appropriate, idempotency, nonce or replay store for the operation |
 
-A critical vulnerability in microservices is the insecure propagation of user context. When the API Gateway validates a user's OAuth access token, it must pass the user's identity to downstream services.
+## Direct-service bypass
 
-#### Insecure Pattern: Plaintext Headers
-The gateway passes the user identity via a plaintext header:
-`X-User-Id: 994218`
-This pattern is highly vulnerable. Any compromised service along the request chain can modify or spoof this header before forwarding the request to downstream services.
+A gateway is not a choke point merely because the intended client path uses it. Inventory every route to each backend and test from untrusted namespaces, compromised workload identities, administration networks, and asynchronous workers. Kubernetes NetworkPolicy is an L3/L4 reachability control implemented by the network plugin; it does not validate the requested object or business action, and a policy object has no effect when the selected plugin does not enforce it.
 
-#### Secure Pattern: Signed Context Tokens (JSON Web Tokens)
-Instead of plaintext headers, the gateway wraps the user identity in a short-lived, cryptographically signed JSON Web Token (JWT). Downstream services must validate the signature of this token before processing the request.
+The backend must fail closed when the expected workload identity or user token is absent. NetworkPolicy and mesh authorization reduce reachable callers, but the service still validates its application credential and authorizes the operation.
 
-```json
-{
-  "alg": "RS256",
-  "typ": "JWT",
-  "kid": "gateway-signing-key"
-}
-...
-{
-  "sub": "994218",
-  "roles": ["developer"],
-  "exp": 1801234567,
-  "iss": "internal-gateway"
-}
-```
+## Header spoofing
 
-Every backend service verifies the `iss` and the signature of this token using the gateway's public signing key, preventing internal header spoofing.
+Never authorize from `X-User-Id`, `X-User-Roles`, `X-Tenant-ID`, or equivalent headers merely because they arrived from an internal address. Stripping client-supplied copies at the gateway prevents one path of confusion, but it is insufficient when a backend is directly reachable or another workload can mint the same headers.
 
----
+If a proxy adds convenience headers, treat them as derived, non-authoritative context. Bind the request to the validated token and authenticated proxy workload, prevent bypass paths, and ensure the receiving service rejects conflicting or duplicated identity representations.
 
-## Defensive Architecture
+## Workload identity versus user identity
 
-A secure microservices architecture requires establishing cryptographic identities for all services and validating access rights at every internal boundary.
+| Identity | What it can establish | What it does not establish |
+|----|----|----|
+| mTLS or workload credential | The peer controlling the private key or credential accepted for this channel | End-user identity, tenant membership, resource ownership, or permission for a business action |
+| End-user access token | Delegation represented by validated claims for the intended resource server | That the calling workload is trusted, or that the requested object belongs to the subject |
+| Application authorization result | A decision over principal, tenant, object, action, and current state | Future requests or a different resource |
 
-### Reference Service Mesh Topology (Envoy Proxy / Istio)
+Kubernetes service accounts are non-human workload identities. Bound service-account tokens can include an audience, expiry, and not-before time. Their successful authentication must still be followed by authorization.
 
-```
-[ Inbound HTTP ] -> [ Ingress Gateway ]
-                          │
-                  ( Establishes mTLS Tunnel )
-                          │
-                          ▼
-            [ Service A Envoy Sidecar Proxy ]
-                          │
-               ( Enforces mTLS / JWT Auth )
-                          │
-                          ▼
-            [ Service B Envoy Sidecar Proxy ]
-```
+## Token propagation versus token exchange
 
-* **mTLS (Mutual TLS)**: Envoy sidecar proxies manage all network traffic. Communication between proxies is encrypted using mutual TLS, validating the identity of both the client and server services.
-* **Envoy AuthorizationPolicy**: Enforce access controls at the sidecar proxy level. The policy below permits only the `frontend` service to invoke the `/billing/checkout` endpoint on the `billing` service:
+### Pattern 1: resource-server validation
 
-```yaml
-apiVersion: security.istio.io/v1beta1
-kind: AuthorizationPolicy
-metadata:
-  name: billing-access-policy
-  namespace: prod
-spec:
-  selector:
-    matchLabels:
-      app: billing
-  action: ALLOW
-  rules:
-  - from:
-    - source:
-        principals: ["cluster.local/ns/prod/sa/frontend-service-account"]
-    to:
-    - operation:
-        methods: ["POST"]
-        paths: ["/billing/checkout"]
-```
+Each resource server receives an access token intended for it, validates the token with a maintained library, and performs its own authorization. This preserves end-user delegation but can expose the original bearer token to more workloads and fails when one broad token is accepted by unrelated services.
 
----
+### Pattern 2: constrained internal token
 
-## Tooling and Implementation
+A trusted gateway or token service uses a defined exchange such as RFC 8693, or an equivalent reviewed minting flow, to issue a short-lived internal token. The token contains only required context and has an exact downstream audience. The minting service must authenticate the caller, verify the incoming grant, constrain delegation, protect its signing key, and log the exchange without logging tokens.
 
-Utilize service mesh and tracing infrastructure to automate security controls:
+Do not prescribe nested JWTs as a generic solution. Token format does not fix an over-broad audience, confused deputy, missing tenant binding, or absent object authorization.
 
-1. **Istio / Linkerd**: Implement a service mesh to manage mutual TLS, traffic encryption, and authorization policies across all services without requiring code modifications.
-2. **OpenTelemetry / Jaeger**: Deploy distributed tracing to monitor requests as they traverse your services. Trace IDs allow security teams to audit the full path of a transaction, identifying anomalous routing patterns.
-3. **SPIFFE/SPIRE**: Use SPIFFE (Secure Production Identity Framework for Enterprise) to issue cryptographically signed, short-lived identities (SVIDs) to workloads automatically, facilitating secure service-to-service communication.
+### Validation contract for either pattern
 
----
+- Verify the signature with an allowed algorithm and trusted, bounded key set.
+- Require the configured issuer and the exact intended audience.
+- Validate expiry and not-before with a documented clock-skew allowance.
+- Validate the expected subject and client or authorized-party semantics.
+- Bind tenant context to the authenticated subject and requested object.
+- Validate purpose, scope, authorization details, or another operation context where required.
+- Perform downstream object and business authorization after token validation.
 
-## Microservices Threat Modeling Checklist
+## Downstream authorization
 
-| Item | Focus Area | Verification Step / Command | Target State |
-| :--- | :--- | :--- | :--- |
-| 1 | Service Identity | Verify if services use mutual TLS (mTLS) for all internal communication. | Plaintext HTTP communication between service pods is disabled. |
-| 2 | Ingress Controls | Confirm if internal services accept traffic from outside the API Gateway. | Network policies restrict ingress to the API Gateway or designated sidecars. |
-| 3 | User Context Security | Check how user identity is propagated between internal services. | Identities are passed via signed internal JWTs, not plaintext headers. |
-| 4 | Data Rate Limiting | Audit rate limiting and circuit breaker configurations. | Services limit request rates to prevent denial-of-service cascades. |
-| 5 | Request Tracking | Check if all microservice requests include tracing headers. | Logs contain unique transaction trace IDs to facilitate security auditing. |
-| 6 | Authorization Scope | Verify if services validate access permissions locally. | Services verify that the user identity has explicit authorization to perform the requested action. |
+The service that owns the resource should authorize using server-derived object attributes. A safe decision resembles:
 
----
+    allow when
+      token is valid for this service
+      AND authenticated workload may call this operation
+      AND token tenant equals route tenant and object tenant
+      AND subject has the required relationship or permission
+      AND object state permits the transition
+      AND request satisfies replay and risk controls
+
+Query by both object identifier and tenant boundary where possible. Do not fetch an object globally and compare only a user-supplied tenant header afterward. Administrative and support paths need explicit, separately audited policy rather than a magic role string.
+
+## Failure modes
+
+- **Identity provider or JWKS unavailable:** use bounded key caching and fail closed for unknown keys; do not disable validation.
+- **Clock drift:** alert before time validation begins rejecting legitimate traffic; keep skew small and explicit.
+- **Token service unavailable:** define which operations fail, queue, or use an already valid token; never mint unsigned fallback context.
+- **Mesh or policy outage:** the application continues to reject missing or invalid credentials.
+- **Authorization dependency unavailable:** deny high-impact operations; narrowly scope any documented read-only degradation.
+- **Key compromise:** stop minting, rotate, revoke or shorten acceptance, and search by issuer, key ID, audience, and token identifier.
+
+## Cases that should fail
+
+**This is the test plan I'd run against a real implementation — I haven't executed it for this write-up.**
+
+| Case | Expected result | Evidence to retain |
+|----|----|----|
+| Spoofed user or tenant header | Ignored or rejected; never changes the authorization principal | Gateway and service decision with redacted headers |
+| Missing workload identity | Connection or request denied | mTLS or workload-authentication denial |
+| Wrong issuer | 401 before handler execution | Reason code, not token contents |
+| Wrong audience | 401 at the receiving service | Expected and observed audience classification |
+| Expired token | 401 outside documented skew | Time-validation reason |
+| Not-before violation | 401 until valid time | Time-validation reason |
+| Wrong client or authorized party | 401 or policy denial | Client-validation reason |
+| Wrong tenant | 403 or non-enumerating 404 | Tenant-policy decision |
+| Valid identity without resource authorization | 403 or non-enumerating 404 | Object-policy decision |
+| Direct backend call bypassing gateway | Network or application authentication denial | Reachability test and backend denial |
+| Gateway token used at the wrong service | 401 for audience mismatch | Wrong-service test result |
+| Replayed high-impact request | Duplicate suppressed or denied according to operation design | Idempotency or replay-store decision |
+
+## Observability
+
+Correlate a generated request ID with authenticated workload identity, token issuer, subject pseudonym, client ID, audience, tenant identifier, authorization policy/version, resource class, decision, reason code, and latency. Do not log raw access tokens, signing keys, or unrestricted personal data. Alert on direct backend attempts, repeated audience failures, cross-tenant denials, unexpected minting clients, signing-key changes, and replay decisions.
+
+## Rollout and rollback
+
+1. Inventory listeners, routes, credentials, audiences, and current header dependencies.
+2. Add decision telemetry and shadow validation without treating shadow success as authorization.
+3. Issue service-specific audiences and migrate one receiving service at a time.
+4. Enforce workload identity, then remove direct routes and legacy header trust.
+5. Run the negative matrix in each environment and rehearse signing-key and issuer outage response.
+
+Rollback should restore the previous validated token path, not plaintext identity headers or a shared all-services audience. Keep old signing keys only for the minimum overlap needed for already-issued tokens, and retain an emergency deny capability.
+
+## What's still not solved
+
+Even with this in place: a compromised gateway or token service, a stolen bearer token used within its validity window, plain old authorization bugs in the app, stale relationship data, a compromised signing key or identity provider, policy exceptions people forgot to clean up, side channels, and asynchronous paths I haven't modeled here all remain open problems. Sender-constrained tokens cut down on replay by a different client, but they don't prove business authorization on their own.
 
 ## References
 
-* *Istio Authorization Policy Architecture*: [Istio Documentation](https://istio.io/latest/docs/concepts/security/)
-* *SPIFFE Production Identity Framework Specification*: [SPIFFE Specification](https://spiffe.io/docs/latest/spiffe-about/overview/)
-* *NIST Special Publication 800-204B (Security for Microservices)*: [NIST SP 800-204B](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-204B.pdf)
+- [NIST SP 800-204 - Security Strategies for Microservices-based Application Systems](https://csrc.nist.gov/pubs/sp/800/204/final)
+- [NIST SP 800-204A - Building Secure Microservices-based Applications Using Service-Mesh Architecture](https://csrc.nist.gov/pubs/sp/800/204/a/final)
+- [RFC 9700 - Best Current Practice for OAuth 2.0 Security](https://www.rfc-editor.org/rfc/rfc9700.html)
+- [RFC 8693 - OAuth 2.0 Token Exchange](https://www.rfc-editor.org/rfc/rfc8693.html)
+- [OpenID Connect Core 1.0 incorporating errata set 2](https://openid.net/specs/openid-connect-core-1_0.html)
+- [Kubernetes Network Policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
+- [Kubernetes Service Accounts](https://kubernetes.io/docs/concepts/security/service-accounts/)

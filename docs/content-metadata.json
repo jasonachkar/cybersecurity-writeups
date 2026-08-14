@@ -1,60 +1,4 @@
 {
-  "appsec/api-microservices-threat-modeling.md": {
-    "lastReviewed": "2026-07-21",
-    "reviewStatus": "requires-review",
-    "validatedAgainst": [],
-    "sourceQuality": "requires-review",
-    "implementationStatus": "illustrative",
-    "reviewIntervalDays": 180
-  },
-  "appsec/runtime-protection-rasp-waf.md": {
-    "lastReviewed": "2026-07-21",
-    "reviewStatus": "requires-review",
-    "validatedAgainst": [],
-    "sourceQuality": "requires-review",
-    "implementationStatus": "illustrative",
-    "reviewIntervalDays": 180
-  },
-  "cloud-security/cloud-detection-and-response.md": {
-    "lastReviewed": "2026-07-21",
-    "reviewStatus": "requires-review",
-    "validatedAgainst": [],
-    "sourceQuality": "requires-review",
-    "implementationStatus": "illustrative",
-    "reviewIntervalDays": 180
-  },
-  "cloud-security/cloud-network-segmentation.md": {
-    "lastReviewed": "2026-07-21",
-    "reviewStatus": "requires-review",
-    "validatedAgainst": [],
-    "sourceQuality": "requires-review",
-    "implementationStatus": "illustrative",
-    "reviewIntervalDays": 180
-  },
-  "cloud-security/multi-account-landing-zones.md": {
-    "lastReviewed": "2026-07-21",
-    "reviewStatus": "requires-review",
-    "validatedAgainst": [],
-    "sourceQuality": "requires-review",
-    "implementationStatus": "illustrative",
-    "reviewIntervalDays": 180
-  },
-  "cloud-security/serverless-security.md": {
-    "lastReviewed": "2026-07-21",
-    "reviewStatus": "requires-review",
-    "validatedAgainst": [],
-    "sourceQuality": "requires-review",
-    "implementationStatus": "illustrative",
-    "reviewIntervalDays": 180
-  },
-  "devsecops/secrets-management.md": {
-    "lastReviewed": "2026-07-21",
-    "reviewStatus": "requires-review",
-    "validatedAgainst": [],
-    "sourceQuality": "requires-review",
-    "implementationStatus": "illustrative",
-    "reviewIntervalDays": 180
-  },
   "docs/certification-notes/az-900/README.md": {
     "lastReviewed": "2026-07-21",
     "reviewStatus": "requires-review",
@@ -64,22 +8,6 @@
     "reviewIntervalDays": 365
   },
   "docs/certification-notes/google-cybersecurity/README.md": {
-    "lastReviewed": "2026-07-21",
-    "reviewStatus": "requires-review",
-    "validatedAgainst": [],
-    "sourceQuality": "requires-review",
-    "implementationStatus": "illustrative",
-    "reviewIntervalDays": 365
-  },
-  "docs/certification-notes/sc-500/README.md": {
-    "lastReviewed": "2026-07-21",
-    "reviewStatus": "requires-review",
-    "validatedAgainst": [],
-    "sourceQuality": "requires-review",
-    "implementationStatus": "illustrative",
-    "reviewIntervalDays": 365
-  },
-  "docs/certification-notes/security-plus/README.md": {
     "lastReviewed": "2026-07-21",
     "reviewStatus": "requires-review",
     "validatedAgainst": [],
@@ -144,14 +72,6 @@
     "reviewIntervalDays": 180
   },
   "docs/tutorials/securing-entra-id/README.md": {
-    "lastReviewed": "2026-07-21",
-    "reviewStatus": "requires-review",
-    "validatedAgainst": [],
-    "sourceQuality": "requires-review",
-    "implementationStatus": "illustrative",
-    "reviewIntervalDays": 180
-  },
-  "threat-intel/attack-path-analysis.md": {
     "lastReviewed": "2026-07-21",
     "reviewStatus": "requires-review",
     "validatedAgainst": [],

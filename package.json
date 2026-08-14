@@ -16,8 +16,13 @@
     "actions:check": "node scripts/check-action-pins.js",
     "links:check": "node scripts/check-links.js",
     "links:external": "node scripts/check-links.js --external",
-    "markdown:check": "markdownlint-cli2 \"**/*.md\" \"#node_modules\"",
+    "markdown:check": "markdownlint-cli2 \"**/*.md\" \"#**/node_modules\" \"#mkdocs-project/docs\" \"#qa\" \"#qa-artifacts\" \"#.artifacts\"",
     "labs:test": "node labs/secure-cicd/tests/run-tests.js && node labs/supply-chain/tests/run-tests.js",
+    "docs:pipeline:test": "cd tools/docs-pipeline && go test ./...",
+    "docs:inventory": "go run ./tools/docs-pipeline/main.go inventory",
+    "docs:audit": "go run ./tools/docs-pipeline/main.go audit -published-ref origin/gh-pages",
+    "docs:build": "go run ./tools/docs-pipeline/main.go build -python python3",
+    "docs:verify": "go run ./tools/docs-pipeline/main.go verify -site .artifacts/site",
     "validate": "npm run markdown:check && npm run generated:check && npm run metadata:check && npm run freshness:check && npm run research:check && npm run actions:check && npm run code:check && npm run links:check && npm run labs:test"
   },
   "devDependencies": {

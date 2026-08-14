@@ -1,4 +1,7 @@
 .venv/
+.artifacts/
+qa/
+qa-artifacts/
 site/
 mkdocs-project/site/
 node_modules/

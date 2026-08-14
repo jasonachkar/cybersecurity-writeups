@@ -1,190 +1,184 @@
 ---
-title: "Enterprise Secrets Management: HashiCorp Vault, Dynamic Provisioning, and Memory Protection"
-type: devsecops
-tags: [Secrets Management, HashiCorp Vault, Cloud Security, Encryption, Key Rotation]
-date: 2026-06
-readingTime: 18
+title: "Secrets Management Engineering: Identity, Delivery, Rotation and Runtime Exposure"
+type: "devsecops"
+tags:
+  - devsecops
+  - secrets
+  - management
+date: "2026-07-25"
+lastReviewed: "2026-07-25"
+readingTime: 9
+reviewStatus: "partially-verified"
+validatedAgainst:
+  - "Kubernetes Secrets — https://kubernetes.io/docs/concepts/configuration/secret/"
+  - "Kubernetes Secret volumes and tmpfs behavior — https://kubernetes.io/docs/concepts/storage/volumes/#secret"
+  - "Kubernetes `emptyDir` and `medium: Memory` — https://kubernetes.io/docs/concepts/storage/volumes/#emptydir"
+  - "Kubernetes Linux-node protection for memory-backed secret data — https://kubernetes.io/docs/concepts/security/linux-security/#protection-for-secret-data-on-nodes"
+  - "Secrets Store CSI Driver architecture and security boundary — https://secrets-store-csi-driver.sigs.k8s.io/concepts.html"
+  - "HashiCorp Vault lease, renewal and revocation — https://developer.hashicorp.com/vault/docs/concepts/lease"
+sourceQuality: "primary-sources-reviewed"
+implementationStatus: "illustrative"
+reviewIntervalDays: 90
 ---
 
-# Enterprise Secrets Management: HashiCorp Vault, Dynamic Provisioning, and Memory Protection
+# Secrets Management Engineering: Identity, Delivery, Rotation and Runtime Exposure
 
-## Executive Summary
+A secrets manager is a control plane, not a guarantee of least privilege. The security boundary is the complete path from workload identity through authorization and delivery to runtime use, rotation, revocation, audit, and recovery.
 
-Hardcoded credentials, API keys, and passwords are a leading cause of data breaches. When developers hardcode secrets in source files or check configuration templates containing credentials into version control systems, they expose their organization to immediate risk. Standard static analysis scanning helps identify these leaks, but it does not address the underlying problem: static, long-lived credentials are fundamentally insecure. If a static key is compromised, it remains valid until an administrator rotates it manually.
+## The core decision
 
-At scale, organizations must replace static credentials with dynamic, short-lived secrets. This requires implementing dedicated secrets management platforms like HashiCorp Vault or AWS Secrets Manager. Furthermore, teams often misconfigure secrets injection patterns. Injecting secrets as environment variables makes them visible in diagnostic logs, process trees, and container memory dumps. This whitepaper explains the design patterns needed to manage secrets securely, configure dynamic credentials, prevent memory-based extraction, and automate rotation.
+Prefer workload identity and short-lived, audience-bound access where the target supports it. When a third-party system still requires a long-lived reusable credential, treat it as a governed exception: narrow its permissions and allowed source, protect storage and delivery, rotate on a tested schedule, monitor use, and maintain an emergency revocation path.
 
----
+Short lifetime reduces replay duration; it does not repair excessive privilege. Dynamic credentials reduce sharing and improve attribution; they can still be stolen, overprivileged, orphaned, or left active when revocation fails.
 
-## Threat Model and Attack Surface
+## Scope, assets and threats
 
-The secrets management threat model covers version control repositories, build pipelines, process environment spaces, host memory segments, and secret storage API endpoints.
+Assets include secret-manager root/control credentials, workload identities, policies, secret values and versions, encryption keys, lease metadata, database plugin root credentials, mounted files, environment variables, process memory, audit logs, backups, and emergency access.
 
-```
-       [ Malicious Actor Gains Access to Host Node ]
-                             │
-                             ▼
-                [ Attempts to Read Secrets ]
-                             │
-         ┌───────────────────┴───────────────────┐
-         ▼ (Injection: Environment Variable)     ▼ (Injection: In-Memory / Decoupled)
-  [ Inspects /proc/1/environ ]            [ Attempts to Read Memory / File ]
-         │                                       │
-         ▼                                       ▼
-  [ Plaintext Secrets Leaked ]            [ Blocked: Ephemeral mount / RAM protected ]
-       │                                         ( Secure )
-  ( Compromise Successful )
-```
+| Threat | Required precondition | Primary control |
+|----|----|----|
+| Unauthorized retrieval | Over-broad identity/policy or compromised authorized workload | Bound workload identity, least-privilege path/resource policy, tenant separation |
+| Delivery interception | Compromised node, sidecar, agent, transport or writable mount | Authenticated channel, read-only mount, node hardening, narrow delivery component |
+| Runtime disclosure | Process inspection, debug/exec, child process, logs, crash dump or code compromise | Minimize value lifetime/copies, restrict debug access, redact and isolate |
+| Stale credential | Cache/connection survives rotation or consumer misses refresh | Version-aware refresh, overlap/retry strategy, observable cutover |
+| Failed revocation | Plugin/target/control-plane failure | Reconciliation, target-side inventory, emergency native revocation |
 
-### Threat Vectors and Kill-Chains
+## Identity and delivery patterns
 
-1. **Secrets Leakage via Environment Variables**:
-   - *Adversary Goal*: Extract API keys or database passwords from a running container.
-   - *Attack Vector*: An application is configured to retrieve secrets from a storage engine and inject them as environment variables inside a Docker container. An attacker exploits an application vulnerability (e.g. Remote Code Execution or Local File Inclusion) or gains local read access to the host. They run `cat /proc/1/environ` or invoke `env` to print the environment variables in plaintext, compromising the secrets.
-2. **Container Memory Dump Extraction**:
-   - *Adversary Goal*: Harvest credentials stored in application memory.
-   - *Attack Vector*: An application retrieves a database password, decrypts it, and stores it in a global string variable. An attacker gains root access to the node hosting the application pod and executes a memory core dump (e.g., using `gcore` or reading `/proc/self/mem`). They parse the memory dump file using `strings` to identify the plaintext database password.
-3. **Static Secret Lifetime Exploitation**:
-   - *Adversary Goal*: Retain access to a compromised database.
-   - *Attack Vector*: An attacker extracts database credentials from a developer's local configuration file. Because the database uses static credentials and does not enforce rotation policies, the credentials remain valid for months, allowing the attacker to establish a persistent connection.
+| Pattern | Who retrieves/writes | Authorization identity | Trade-offs |
+|----|----|----|----|
+| Application retrieval | Application client calls external manager | Workload identity bound to exact secret path | Clear ownership; application handles cache, outage, rotation and memory |
+| Kubernetes Secret volume | Kubelet projects an authorized Secret object into the pod | Control-plane/node authorization plus pod reference | Simple and read-only; Secret exists in Kubernetes API and node boundary |
+| Secrets Store CSI Driver | Privileged node driver calls a provider and mounts returned content | Provider-specific pod/workload identity and `SecretProviderClass` | External source; privileged driver/provider and forwarded identity expand node trust |
+| Reviewed sidecar/init agent | Agent authenticates, writes/renews file or shared memory-backed volume | Agent/workload identity and manager policy | Separates client logic but introduces shared process/volume, lifecycle and agent trust |
 
----
+An `emptyDir` with `medium: Memory` only creates a writable memory-backed volume. It does not retrieve, authorize, or inject a secret. A separate component must write the value, and every container that can mount/read that volume joins the exposure boundary.
 
-## Deep Technical Body
+## Kubernetes Secret semantics and exposure
 
-### Dynamic Secrets and Vault Engine Mechanics
+Ordinary `kubectl get` and `kubectl describe` output does not normally print Secret values. An authorized principal can explicitly retrieve the Secret's base64-encoded `data`, which is encoding, not encryption. Risk therefore centers on real permissions and runtime access, not a universal claim that describing a pod reveals values.
 
-HashiCorp Vault supports **Dynamic Secrets**, which are generated on-demand and exist only for a specific duration. This pattern prevents long-lived credential compromises.
+**Illustrative Kubernetes Secret-volume pattern; YAML syntax only, no cluster test:**
 
-```
-       [ Client Application ]                                [ HashiCorp Vault ]
-                 │                                                    │
-                 ├─── Step 1: Request DB Credentials (Read role) ────>│
-                 │                                                    │ (Queries Database)
-                 │                                                    ▼
-                 │                                           [ Creates Temporary User ]
-                 │                                                    │
-                 │<── Step 2: Returns Username & Password ────────────┤
-                 │                                                    │
-                 ├─── Step 3: Connects directly using temporary credentials
-                 │
-                 ▼
-          [ Database Engine ]
-```
-
-#### The Dynamic Database Flow
-1. **Access Request**: The application authenticates to Vault using its identity credentials (e.g. AWS IAM role or Kubernetes Service Account).
-2. **Credentials Generation**: The application requests credentials for a specific database role. Vault communicates directly with the database engine (e.g. PostgreSQL) and creates a temporary user account with a random password:
-   ```sql
-   CREATE USER "v-token-app-189ad..." WITH PASSWORD "random-pw-xyz..." VALID UNTIL '2026-06-28 20:00:00';
-   ```
-3. **Lease Allocation**: Vault returns the temporary username and password to the client, along with a lease ID and duration (e.g. 1 hour).
-4. **Revocation**: When the lease expires, Vault deletes the database user automatically, ensuring the credentials cannot be reused.
-
-### Secure Secrets Injection and Memory Isolation
-
-To protect secrets from process inspections and memory leaks, avoid using environment variables for injection.
-
-#### Insecure Pattern: Environment Variable Injection
-```yaml
-# Insecure Kubernetes Pod definition
-env:
-  - name: DATABASE_PASSWORD
-    valueFrom:
-      secretKeyRef:
-        name: db-credentials
-        key: password
-```
-This pattern exposes the secret to anyone who can query `kubectl describe pod` or run `env` inside the container.
-
-#### Secure Pattern: Ephemeral In-Memory Volumes
-Store secrets inside a temporary in-memory volume (e.g. `tmpfs` or Kubernetes `emptyDir` with `medium: Memory`). Configure the application to read the secret file dynamically on startup and overwrite the variable in memory immediately after parsing.
-
-```yaml
-# Secure Kubernetes configuration
+``` yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: secure-app
+  name: payments-api
 spec:
+  serviceAccountName: payments-api
   containers:
-  - name: web
-    image: node-app
-    volumeMounts:
-    - name: secrets-volume
-      mountPath: /var/run/secrets/app
-      readOnly: true
+    - name: app
+      image: registry.example.invalid/payments@sha256:<digest>
+      volumeMounts:
+        - name: database-credential
+          mountPath: /run/secrets/database
+          readOnly: true
   volumes:
-  - name: secrets-volume
-    emptyDir:
-      medium: Memory # Volume mounts directly in RAM, not on disk
+    - name: database-credential
+      secret:
+        secretName: <database-secret-name>
+        defaultMode: 0400
 ```
 
----
+Here the kubelet projects an existing Kubernetes Secret into a read-only Secret volume. This example does not show creation, encryption at rest, authorization policy, rotation, image verification, node hardening, or application reload behavior. On Linux, Kubernetes documents Secret volumes as tmpfs-backed, subject to node/kernel swap considerations; tmpfs does not protect against root, kubelet, node, privileged pod, or process compromise.
 
-## Defensive Architecture
+Relevant exposure paths include:
 
-A secure secrets management architecture requires dynamic provisioning, central audit logging, and secure injection patterns.
+- principals authorized to read Secret objects or impersonate such principals;
+- `exec`, ephemeral-container/debug, process-memory or filesystem access;
+- application diagnostics, logs, traces, crash dumps and error responses;
+- child processes and inherited descriptors/environment;
+- compromised workloads, overly broad/shared mounts, sidecars and init containers;
+- node, kubelet, privileged daemonset, service-account or control-plane compromise; and
+- backups, etcd access, GitOps/rendered manifests and CI artifacts.
 
-### Architecture Topology: Vault-to-Kubernetes Integration Flow
+## Environment variables and memory exposure
 
-```
-[ App Pod (Authenticates via K8s Token) ] -> [ HashiCorp Vault Service ]
-                                                     │
-                                            ( Validates Token )
-                                                     │
-                                                     ▼
-                                          [ Vault Secrets Engine ]
-                                                     │
-                                            ( Mounts in Memory )
-                                                     │
-                                                     ▼
-                                     [ Vault Agent Injector Container ]
-                                                     │
-                                                     ▼
-                                    [ App Container reads /vault/secrets ]
-```
+Environment variables can be acceptable under some threat models, but they can flow to child processes and may be exposed through process-environment inspection under applicable OS/container permissions, diagnostics, crash reports, support bundles, application logs, template rendering, or compromised code. Do not imply that an arbitrary host user can always read `/proc/1/environ`; Linux permissions, namespaces, ptrace settings, container policy and runtime matter.
 
-### Vault AppRole Authentication and Policies
-Configure Vault policies to enforce strict path access restrictions. This policy grants read-only access to a specific application secret path:
+Files on a memory-backed volume avoid ordinary persistent-volume writes but remain plaintext to authorized readers and privileged node actors. Application retrieval avoids a shared file but places plaintext in the process. Secret zeroization is not reliable in garbage-collected languages because copies, immutable strings, compiler/runtime behavior, crash dumps and allocator reuse may persist beyond the application's intent.
 
-```hcl
-path "secret/data/production/payment-service" {
-  capabilities = ["read"]
-}
+Minimize secret size, scope, copies and lifetime; avoid string formatting; restrict debug/dump capability; use dedicated processes or hardware-backed operations when the threat model requires stronger key isolation; and test actual exposure rather than asserting “memory-only” safety.
 
-path "sys/leases/renew" {
-  capabilities = ["update"]
-}
-```
+## Vault dynamic credentials and workload binding
 
----
+Vault dynamic secrets have leases. A consumer receives a lease ID, duration and renewability information; renewal requests are advisory and the resulting TTL must be inspected. Expiry means the consumer can no longer assume the credential remains valid while Vault attempts the backend-specific revocation.
 
-## Tooling and Implementation
+A production design must cover:
 
-Utilize enterprise secrets managers and automated validators to maintain credential security:
+- **Identity binding:** for Kubernetes auth, bind service-account names/namespaces and audience; prefer UID-based aliases when compatible.
+- **Policy:** authorize only the required database role/secret path and capabilities; avoid default broad policies.
+- **Database plugin:** protect and rotate the plugin's root/admin credential; restrict network access and database grants used to create users.
+- **Lease lifecycle:** issue, renew before expiry, reacquire after failed renewal, revoke on shutdown where useful, and reconcile target users.
+- **Audit devices:** enable and monitor at least one appropriate audit destination, protect it from the Vault operator path as required, and alert on audit failure.
+- **Tenant separation:** separate mounts, policies, auth roles and administrative ownership; use Vault Enterprise namespaces only when licensed/required and understand parent administration.
+- **Emergency access:** protect unseal/recovery and root-generation material, use multi-person procedures, log use, and revoke generated root tokens immediately after the emergency.
 
-1. **HashiCorp Vault / AWS Secrets Manager**: Deploy centralized secrets managers to handle key generation, encryption, dynamic credential rotation, and access auditing.
-2. **External Secrets Operator (ESO)**: Deploy ESO in Kubernetes to synchronize secrets from external managers (like Vault or GCP Secrets Manager) into native Kubernetes Secrets, simplifying application integrations.
-3. **Banzai Cloud Vault Secrets Webhook**: Integrate mutating webhooks to inject Vault secrets directly into container memory during startup, preventing credentials from being saved to disk or environment files.
+Orphan tokens have no parent and therefore do not inherit parent-token revocation behavior. Use them only with a deliberate lifecycle and monitoring model.
 
----
+## Rotation and revocation semantics
 
-## Secrets Management Audit Checklist
+Rotation has at least four states: create pending credential, make it valid at the target, move consumers, and retire the old credential. Define overlap, cache TTL, connection-pool behavior, retry, rollback and the evidence that every consumer moved.
 
-| Item | Focus Area | Verification Step / Command | Target State |
-| :--- | :--- | :--- | :--- |
-| 1 | Secret Location | Check code repositories for hardcoded credentials. | All secrets are stored in dedicated managers; no passwords or keys exist in version control. |
-| 2 | Injection Strategy | Inspect application deployment manifests to verify how secrets are injected. | Secrets are read from local files in memory volumes, not environment variables. |
-| 3 | Access Logs | Verify if secrets manager audit logging is active. | All reads, updates, and token authentication requests generate audit logs in the SIEM. |
-| 4 | Lease Lifetime | Check token and lease durations in your secrets manager. | Leases are set to the minimum practical duration, requiring regular renewals. |
-| 5 | Rotation Schedules | Review rotation policies for static keys. | Static credentials (like third-party API tokens) are rotated automatically on a regular schedule. |
-| 6 | Transit Encryption | Ensure all connections to the secrets manager use TLS. | Plaintext HTTP endpoints are blocked, and client requests require HTTPS connections. |
+Do not guarantee that every expired lease instantaneously removes a database user. Revocation depends on Vault availability, the expiration manager, plugin health, network reachability, valid administrative credentials, and the target database. A failed revoke can leave an orphaned user or credential. Reconcile Vault leases against native database/cloud identity inventory and alert on users past their intended lease.
 
----
+Native target revocation is the fallback when the manager or plugin cannot act. Document who can invoke it, how to preserve evidence, how to avoid deleting shared identities, and how applications recover.
+
+## Failure modes
+
+| Failure | Security/availability effect | Required behavior |
+|----|----|----|
+| Secret manager unavailable | New retrieval/renewal fails | Bounded cache policy, fail closed for privileged actions, no hard-coded fallback |
+| Identity provider unavailable | Workloads cannot authenticate or renew | Existing-token TTL policy, alerting and recovery without a shared emergency token |
+| Rotation partially completes | Old/new values disagree across store, target and clients | Idempotent stages, version labels, target verification and rollback |
+| Database revoke fails | Expired lease may leave active user | Queue/retry, target inventory reconciliation and native emergency revoke |
+| CSI/agent fails or is compromised | Pod startup outage, stale data or node-wide exposure | Health monitoring, pinned/supported versions, node isolation and tested fallback |
+| Audit destination unavailable | Loss of accountability or service refusal depending on product behavior | Independent health, protected capacity and documented fail behavior |
+| Root/control credential exposed | Manager-wide compromise | Rotate/revoke, seal/recover where applicable, audit and downstream credential response |
+
+## Cases that should fail
+
+**This is the test plan I'd run against a real Vault/Kubernetes setup — I haven't executed it for this write-up.**
+
+| Case | Expected result |
+|----|----|
+| Wrong service account, namespace or token audience | Vault/provider authentication denied |
+| Authorized identity requests another secret path/tenant | Policy denial |
+| Principal can describe pod but cannot read Secret | No Secret value disclosed by ordinary describe output |
+| Debug/exec principal attempts mounted-file or process access | Denied by RBAC/admission/runtime policy according to design |
+| Application logs/throws secret-bearing value | Redaction/test fails build; no value reaches log sink |
+| Rotation during warm cache/pooled connection | Old connection behavior and refresh match documented overlap |
+| Renewal rejected or response TTL shortened | Client inspects result and reacquires before loss of service |
+| Plugin cannot reach database during revoke | Failure alert plus retry/reconciliation; native user remains visible |
+| Orphaned target user | Reconciliation detects and safely revokes it |
+| Manager and identity service outage | Bounded degradation; no broad static fallback |
+
+## Observability, rollout and rollback
+
+Log workload identity, auth method, policy/role, requested path (not value), lease ID/accessor where safe, version/stage, issue/renew/revoke result, TTL, target role, cache hit/age, reload result and request correlation. Protect audit data because path names and metadata can still be sensitive. Alert on root/emergency operations, policy/auth changes, broad list/read, repeated denies, renewal failure, expired-but-active target users and audit-device failure.
+
+1. Inventory every secret, owner, consumer, source, delivery path, permission, rotation method and emergency revocation.
+2. Migrate one low-risk consumer; test initial retrieval, restart, renewal, rotation, manager outage and rollback.
+3. Canary rotation with dual/overlap credentials where the target supports it; verify every consumer before retirement.
+4. Restrict debug/exec and node access after confirming operational alternatives.
+5. Exercise native target revocation and break-glass under dual control.
+
+Rollback should select a known valid secret version and restore the corresponding target credential/policy. Do not copy a secret into source control, broaden a shared role, disable audit, or distribute a permanent emergency token to recover availability.
+
+## What's still not solved
+
+A compromised authorized workload, a compromised secret manager or identity control plane, privileged node/debug access, plaintext sitting in process memory, stale caches and sessions, target systems that don't support modern federation or rotation, revocation that silently fails, backups and crash dumps, operator abuse, cross-tenant policy mistakes, and incomplete audit trails — none of that is solved by this design. Good secret management cuts down uncontrolled distribution; it doesn't make a compromised consumer safe.
 
 ## References
 
-* *HashiCorp Vault Production Hardening Guide*: [HashiCorp Documentation](https://developer.hashicorp.com/vault/docs/concepts/production-hardening)
-* *AWS Secrets Manager Rotation Guidelines*: [AWS Documentation](https://docs.aws.amazon.com/secretsmanager/latest/userguide/rotating-secrets.html)
-* *NIST Special Publication 800-57 (Recommendation for Key Management)*: [NIST SP 800-57](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-57Pt1r5.pdf)
+- [Kubernetes Secrets](https://kubernetes.io/docs/concepts/configuration/secret/)
+- [Kubernetes Secret volumes and tmpfs behavior](https://kubernetes.io/docs/concepts/storage/volumes/#secret)
+- [Kubernetes `emptyDir` and `medium: Memory`](https://kubernetes.io/docs/concepts/storage/volumes/#emptydir)
+- [Kubernetes Linux-node protection for memory-backed secret data](https://kubernetes.io/docs/concepts/security/linux-security/#protection-for-secret-data-on-nodes)
+- [Secrets Store CSI Driver architecture and security boundary](https://secrets-store-csi-driver.sigs.k8s.io/concepts.html)
+- [HashiCorp Vault lease, renewal and revocation](https://developer.hashicorp.com/vault/docs/concepts/lease)
+- [HashiCorp Vault token hierarchy and orphan tokens](https://developer.hashicorp.com/vault/docs/concepts/tokens)
+- [HashiCorp Vault Kubernetes auth role binding](https://developer.hashicorp.com/vault/api-docs/auth/kubernetes)
+- [HashiCorp Vault audit devices](https://developer.hashicorp.com/vault/docs/audit)
+- [HashiCorp Vault database secrets engine](https://developer.hashicorp.com/vault/docs/secrets/databases)

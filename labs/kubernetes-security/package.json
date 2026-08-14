@@ -1,0 +1,8 @@
+{
+  "name": "kubernetes-security-lab",
+  "private": true,
+  "type": "commonjs",
+  "dependencies": {
+    "yaml": "2.8.0"
+  }
+}

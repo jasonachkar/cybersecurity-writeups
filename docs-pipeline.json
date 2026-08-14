@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "canonicalBranch": "main",
+  "publishedBranch": "gh-pages",
+  "mkdocsConfig": "mkdocs-project/mkdocs.yml",
+  "requirementsFile": "requirements-docs.txt",
+  "lifecycleRegistry": "publishing/content-status.json",
+  "docsDirectory": "mkdocs-project/docs",
+  "artifactDirectory": ".artifacts",
+  "migrationMode": false,
+  "buildInputs": [
+    "mkdocs-project/docs/CNAME",
+    "mkdocs-project/docs/css",
+    "mkdocs-project/hooks",
+    "mkdocs-project/overrides",
+    "tools/docs-pipeline/go.mod",
+    "tools/docs-pipeline/main.go"
+  ],
+  "mounts": [
+    {
+      "source": "appsec",
+      "destination": "appsec"
+    },
+    {
+      "source": "cloud-security",
+      "destination": "cloud-security"
+    },
+    {
+      "source": "devsecops",
+      "destination": "devsecops"
+    },
+    {
+      "source": "docs",
+      "destination": "docs"
+    },
+    {
+      "source": "threat-intel",
+      "destination": "threat-intel"
+    },
+    {
+      "source": "labs",
+      "destination": "labs",
+      "virtual": true
+    },
+    {
+      "source": "site-pages",
+      "destination": ".",
+      "virtual": true
+    }
+  ]
+}

