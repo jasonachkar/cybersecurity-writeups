@@ -12,6 +12,8 @@ from mkdocs.structure.files import File, Files
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
 LIFECYCLE_PATH = REPOSITORY_ROOT / "publishing" / "content-status.json"
+MERMAID_RUNTIME_PATH = REPOSITORY_ROOT / "node_modules" / "mermaid" / "dist" / "mermaid.min.js"
+MERMAID_RUNTIME_DESTINATION = "js/vendor/mermaid.min.js"
 VIRTUAL_MOUNTS = (
     (REPOSITORY_ROOT / "labs", Path("labs")),
     (REPOSITORY_ROOT / "site-pages", Path(".")),
@@ -92,6 +94,18 @@ def on_files(files: Files, config) -> Files:
     """Add Markdown from virtual mounts without duplicating source files."""
 
     existing = {file.src_uri for file in files}
+    if not MERMAID_RUNTIME_PATH.is_file():
+        raise RuntimeError("Mermaid runtime is missing; run npm ci before building documentation")
+    if MERMAID_RUNTIME_DESTINATION in existing:
+        raise RuntimeError(f"generated documentation path collides: {MERMAID_RUNTIME_DESTINATION}")
+    files.append(
+        File.generated(
+            config,
+            MERMAID_RUNTIME_DESTINATION,
+            content=MERMAID_RUNTIME_PATH.read_text(encoding="utf-8"),
+        )
+    )
+    existing.add(MERMAID_RUNTIME_DESTINATION)
     for source_root, destination_root in VIRTUAL_MOUNTS:
         for source in sorted(source_root.rglob("*.md")):
             if any(part in {"node_modules", ".venv", ".terraform"} for part in source.parts):

@@ -81,4 +81,11 @@ test("the static artifact is self-contained and publishable", () => {
   assert.ok(fs.existsSync(path.join(SITE, ".nojekyll")));
   assert.equal(fs.readFileSync(path.join(SITE, "CNAME"), "utf8").trim(), "docs.jasonachkardiab.com");
   assert.doesNotMatch(readPage("/"), /fonts\.(?:googleapis|gstatic)\.com/);
+  assert.ok(fs.existsSync(path.join(SITE, "js/vendor/mermaid.min.js")));
+  const about = readPage("/about/");
+  assert.match(about, /class="mermaid"/);
+  assert.match(about, /data-diagram-label="Canonical documentation publishing flow"/);
+  assert.match(about, /js\/vendor\/mermaid\.min\.js/);
+  assert.doesNotMatch(about, /(?:cdn\.jsdelivr\.net|cdnjs\.cloudflare\.com).*mermaid/i);
+  assert.doesNotMatch(readPage("/"), /js\/vendor\/mermaid\.min\.js/);
 });

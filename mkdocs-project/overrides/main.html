@@ -9,4 +9,7 @@
     <meta property="og:description" content="{{ page.meta.description }}">
     <meta name="twitter:description" content="{{ page.meta.description }}">
   {% endif %}
+  {% if page and page.content and 'class="mermaid"' in page.content %}
+    <script src="{{ 'js/vendor/mermaid.min.js' | url }}"></script>
+  {% endif %}
 {% endblock %}

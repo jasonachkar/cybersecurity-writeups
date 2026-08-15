@@ -58,6 +58,8 @@ test("homepage ordering, search trigger, and navigation are data-driven", async 
   assert.equal(await page.locator(".docs-card-grid--featured > .docs-card").count(), 4);
   const primaryAction = page.locator(".docs-hero__actions a").first();
   assert.equal(await primaryAction.locator(".docs-link-arrow").isVisible(), true);
+  assert.equal(await primaryAction.evaluate(link => getComputedStyle(link).textDecorationLine), "none");
+  await primaryAction.hover();
   assert.equal(await primaryAction.evaluate(link => getComputedStyle(link).textDecorationLine.includes("underline")), true);
   const recentTitles = (await page.locator(".docs-recent strong").allTextContents()).map(title => title.replace(/\s+→$/, ""));
   assert.deepEqual(recentTitles, catalog.recent.map(item => item.navTitle));
@@ -75,6 +77,8 @@ test("source viewer switches files, wraps, expands, and updates canonical links"
   assert.equal(await viewer.locator("[role=tab]").count(), 2);
   const sourceLink = viewer.locator("a[data-source-github]");
   assert.equal(await sourceLink.locator(".docs-link-arrow").isVisible(), true);
+  assert.equal(await sourceLink.evaluate(link => getComputedStyle(link).textDecorationLine), "none");
+  await sourceLink.hover();
   assert.equal(await sourceLink.evaluate(link => getComputedStyle(link).textDecorationLine.includes("underline")), true);
   const lightTokenColors = await viewer.locator(".docs-source-viewer__line-content span[style*='--shiki-light']").evaluateAll(tokens => [...new Set(tokens.map(token => getComputedStyle(token).color))]);
   assert.ok(lightTokenColors.length >= 3, `expected a light syntax palette, received ${lightTokenColors.join(", ")}`);
@@ -95,6 +99,25 @@ test("source viewer switches files, wraps, expands, and updates canonical links"
     await expand.click();
     assert.equal(await expand.getAttribute("aria-expanded"), "true");
   }
+  assert.equal(errors.length, 0, errors.join("\n"));
+  await context.close();
+});
+
+test("Mermaid diagrams render locally and follow the selected theme", async () => {
+  const {context, page, errors} = await pageAt("/about/");
+  const diagram = page.locator("div.mermaid");
+  await diagram.waitFor({state: "visible"});
+  assert.equal(await page.locator("pre.mermaid").count(), 0);
+  assert.equal(await page.evaluate(() => typeof window.mermaid), "object");
+  assert.equal(await page.evaluate(() => performance.getEntriesByType("resource").some(entry => entry.name.includes("unpkg.com/mermaid"))), false);
+  const lightLabelColor = await diagram.evaluate(element => getComputedStyle(element).getPropertyValue("--md-mermaid-label-fg-color"));
+  await page.locator("label.md-header__button[for^='__palette']").first().click();
+  await page.waitForFunction(previous => {
+    const current = document.querySelector("div.mermaid");
+    return document.body.dataset.mdColorScheme === "slate" && current
+      && getComputedStyle(current).getPropertyValue("--md-mermaid-label-fg-color") !== previous;
+  }, lightLabelColor);
+  assert.equal(await diagram.isVisible(), true);
   assert.equal(errors.length, 0, errors.join("\n"));
   await context.close();
 });

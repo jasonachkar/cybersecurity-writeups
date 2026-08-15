@@ -31,6 +31,18 @@ itself proof that the guidance is correct: material remains marked
 Passing repository checks means the documented local tests behaved as expected.
 It does not claim that every design was deployed to a live environment.
 
+The publishing flow is deliberately one-way: canonical inputs are validated on
+`main`, and only the resulting verified static artifact is written to
+`gh-pages`.
+
+```mermaid { data-diagram-label="Canonical documentation publishing flow" }
+flowchart TD
+    SOURCE["Canonical Markdown, metadata, and source"] --> CATALOG["Catalog and deterministic build"]
+    CATALOG --> QA["Content, security, UI, visual, and accessibility checks"]
+    QA --> SITE["Verified static artifact"]
+    SITE --> PAGES["Generated gh-pages branch"]
+```
+
 ## Source
 
 The source for this site is public in the
