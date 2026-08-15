@@ -1075,7 +1075,7 @@
     {
       "path": "mkdocs-project/docs/css/custom.css",
       "destination": "mkdocs-project/docs/css/custom.css",
-      "sha256": "93e5eb26f0543da2e7718508084a63cb436d67f5154d858d6dbd5805a27320a6"
+      "sha256": "729139964460160d689ec821327ff82d8bf0fa7638dc0457f2ee33e300ddda72"
     },
     {
       "path": "mkdocs-project/docs/js/docs-ui.js",
@@ -1095,7 +1095,7 @@
     {
       "path": "mkdocs-project/mkdocs.yml",
       "destination": "mkdocs-project/mkdocs.yml",
-      "sha256": "26d3714eca34aedf5f950816ee895d4d4faacc251dbb152d620892d004a60c92"
+      "sha256": "aa16960d76877f97218245bbf9fe7fbce3340cc9496e1faa7050e16d4116489a"
     },
     {
       "path": "mkdocs-project/overrides/main.html",
@@ -1105,12 +1105,12 @@
     {
       "path": "mkdocs-project/overrides/partials/article-actions.html",
       "destination": "mkdocs-project/overrides/partials/article-actions.html",
-      "sha256": "602ce4a0471bb38ac2cf7f3f3088580f1cb336f1c661b2b732c572a1426f9fd4"
+      "sha256": "4c41f98adb29893b911c121e43f6eba22ffd15e1ae2091db28e30250ddc349a1"
     },
     {
       "path": "mkdocs-project/overrides/partials/article-contribute.html",
       "destination": "mkdocs-project/overrides/partials/article-contribute.html",
-      "sha256": "ae5a8f954bc7e909147e0fc4652bf61e3350a9cec9bc71c34908713f65f85bc1"
+      "sha256": "408d1ec1fc2124b14a21a076f388446963015805f6af1d9dc1281c55742a13dc"
     },
     {
       "path": "mkdocs-project/overrides/partials/article-meta.html",
@@ -1135,7 +1135,7 @@
     {
       "path": "mkdocs-project/overrides/partials/home.html",
       "destination": "mkdocs-project/overrides/partials/home.html",
-      "sha256": "2ff99b012c6cfadebdcda4eb8ec8437b2cec057cee04fac600b88db16d0a56b5"
+      "sha256": "e81a24251f382a91bef36d94915e0779e9c5f71d5b529a1b124fc638a1af7561"
     },
     {
       "path": "mkdocs-project/overrides/partials/key-takeaway.html",
@@ -1145,7 +1145,7 @@
     {
       "path": "mkdocs-project/overrides/partials/related-content.html",
       "destination": "mkdocs-project/overrides/partials/related-content.html",
-      "sha256": "b7fa94821a6c23c357c49b4b5c991733db6cbf698b6ce8653a4d434c000524e8"
+      "sha256": "f725f1d99b41277e49fcab7a95af9a214d804b562b883f4dec90a1f4e5114895"
     },
     {
       "path": "mkdocs-project/overrides/partials/scripts-category.html",
@@ -1155,7 +1155,7 @@
     {
       "path": "mkdocs-project/overrides/partials/source-viewer.html",
       "destination": "mkdocs-project/overrides/partials/source-viewer.html",
-      "sha256": "a55a3498b9d52631c7c7e9608eb832090c7335428d45cbb74861ae10681154d4"
+      "sha256": "c49e7eb9a86e32bcd9b6560ed6e55afb8285229697d22138413752612cc9278c"
     },
     {
       "path": "mkdocs-project/overrides/partials/source.html",
@@ -1215,7 +1215,7 @@
     {
       "path": "scripts/docs-catalog-lib.js",
       "destination": "scripts/docs-catalog-lib.js",
-      "sha256": "0eb7fe23a994d74adce58d97f24f7495e2b2969fbb51a677dfd34c1bff8a97c2"
+      "sha256": "096209f64f08840b346e749b2b5644aac29603bd94626a1d8eab9eb1a5da3256"
     },
     {
       "path": "scripts/docs-catalog-lib.test.js",
@@ -2321,27 +2321,27 @@
     },
     {
       "path": "appsec/ai-agent-security/index.html",
-      "sha256": "07b6455f09a74bddfcdcb43464a6a5acb3885a887e7e46bd99c02a961a298998"
+      "sha256": "8fb60901bfce57ec85cd213071a15641b0cb2172824a6d535f654a8b07392f4a"
     },
     {
       "path": "appsec/api-microservices-threat-modeling/index.html",
-      "sha256": "b1193b80071e3859953cbde21503cbeeb82c0b6a6bc75e5fe253e88266509404"
+      "sha256": "f48e50ba299988c87e4f4d01fa6e5f263740ad5de0b0e9f8686d4272143751bc"
     },
     {
       "path": "appsec/index.html",
-      "sha256": "cd60b43531fb1b0301b444526a0596c3701a773c011ed99050cb6ecdab171a84"
+      "sha256": "8358d13edbd17d9b3ccec6412d6e100ce1a461af8e565dc58fe91820a6ee66fb"
     },
     {
       "path": "appsec/oauth2-oidc-deep-dive/index.html",
-      "sha256": "a0c7fba358eb5ef09604a50a3312d6b600125d672be04ab153975db431176f4e"
+      "sha256": "c8dd72e16006e707ca668043220dec41e08e63ff151ec0029769e62cddcab9fd"
     },
     {
       "path": "appsec/runtime-protection-rasp-waf/index.html",
-      "sha256": "82043bc526410ff4bb8dc3fe0f5bc6a9ce1a3e96c3e4d9d2f8f7508eaf15be30"
+      "sha256": "b48a8b9eea2f549839b832e499749683dfecbda0ef341d1f1217da705774a30f"
     },
     {
       "path": "appsec/saas-multitenancy-isolation/index.html",
-      "sha256": "7f2393e3e6cf9e5819ace3bae59b1a8e93134b185300c4d9f952bab940ee03ee"
+      "sha256": "df1d43bbf38ebee122f296e50bdcd0d5a986c7f192a665095813591edf505ccb"
     },
     {
       "path": "appsec/scripts/oauth-pkce/go.mod",
@@ -2529,27 +2529,27 @@
     },
     {
       "path": "cloud-security/cloud-detection-and-response/index.html",
-      "sha256": "1982057851b62ec4bf6283b9e9ea80bb96c490d2cd075190a596d2cbdd07c707"
+      "sha256": "aede81e4090e59962031ed13dc55abeaaefb9094030446e9ead578e0b458324c"
     },
     {
       "path": "cloud-security/cloud-network-segmentation/index.html",
-      "sha256": "c9226cd62b56ceba3be0641305c7e37ee7b0b9fdc6868569a9060a77bce4c09e"
+      "sha256": "3149f84aec0b22174d1a2d55bbb383251eb99bf548af2c2c34541fb32ec83f5e"
     },
     {
       "path": "cloud-security/iam-at-scale/index.html",
-      "sha256": "936fef901e91116c3a74a814e3ea3c20f144074facb72b18de8be5969558468d"
+      "sha256": "b3682ad0c4b2db867d5707261b3e179f8d540c18d35b3acf402ede1d9956fbcb"
     },
     {
       "path": "cloud-security/index.html",
-      "sha256": "c2d91a4bc1dca876095c0a2c9537be01d1eaf0b423a2cf01fd0d6656f5387059"
+      "sha256": "b44c079ed91da0d3c5ea8de3abfc092b0d1f09ed7765b77805266f5be227391b"
     },
     {
       "path": "cloud-security/kubernetes-multi-tenancy/index.html",
-      "sha256": "87408eacc67ea0811616c08e5a3c9e12f81a6921164a985103fd0c9fe5a1da14"
+      "sha256": "65b36240d6f1ad0b965cb095f20f9d863fd335212286202a2067327e924268f9"
     },
     {
       "path": "cloud-security/multi-account-landing-zones/index.html",
-      "sha256": "55a9f3c177e8e79f30d36dd9470734f0753000a1d8bb92907c296d7f5a8629c8"
+      "sha256": "cd995281e0c97eef12fb58c60d9192ebf714f91c31449c8afb2e10667a3e04aa"
     },
     {
       "path": "cloud-security/scripts/k8s-rbac/auditor.go",
@@ -2565,19 +2565,19 @@
     },
     {
       "path": "cloud-security/serverless-security/index.html",
-      "sha256": "303f2e1690983c2abd69245eec82cc8b67d45a6b3fbcf83621183df4e3dd1386"
+      "sha256": "6c664921167f62fef1b4b0c5bb561f5b65e1c9b2728207ba5171b1eadeabfc33"
     },
     {
       "path": "css/custom.css",
-      "sha256": "93e5eb26f0543da2e7718508084a63cb436d67f5154d858d6dbd5805a27320a6"
+      "sha256": "729139964460160d689ec821327ff82d8bf0fa7638dc0457f2ee33e300ddda72"
     },
     {
       "path": "devsecops/iac-security-and-policy-as-code/index.html",
-      "sha256": "e136bf8145b9bb17be52d35453bd4f9941bf41a1b6ecffeb176119effbf92263"
+      "sha256": "d41c27bacc3493a015a774efcb978b82986b7bd8b5de43a3be5ddc9f9366e4b3"
     },
     {
       "path": "devsecops/index.html",
-      "sha256": "c114a1759cfb5bce78916873d735cdfb4575655396fe4732a112fa29869ce868"
+      "sha256": "7c0be94568e729f835343f517e6db9ff776477ca041cfe3e7221f001250b3690"
     },
     {
       "path": "devsecops/scripts/pipeline-gate.go",
@@ -2593,19 +2593,19 @@
     },
     {
       "path": "devsecops/secrets-management/index.html",
-      "sha256": "a7d1e6d737fb49f231a5087451381946195bed07da0588e73d0910431a92b865"
+      "sha256": "a5c65ef03e0f3cd5e012c110b925d87f6d2630429233c50c1227c568fdabac01"
     },
     {
       "path": "devsecops/secure-cicd-pipeline-design/index.html",
-      "sha256": "51a3efd8ac9b372805273834329c77749e72e51a8a76dc0e68e5fee299a4eaf4"
+      "sha256": "d5651e7dd84d89d25099feb809b8b933c134477e72c006088f21247ca4e45e59"
     },
     {
       "path": "devsecops/secureobs-multitenant-security-scanner/index.html",
-      "sha256": "185dcdff2082e54fc3cff06779387ecf0009e612b5924720278c5a2c204c9cfa"
+      "sha256": "530604f133e0c017c21d991884a79962dd2109c20c5c4c05739c68f9e9d54a0f"
     },
     {
       "path": "devsecops/supply-chain-sbom-signing/index.html",
-      "sha256": "247bdbcabc172fa79be3cd16cc8dc4d87803b600d9e39afd3fa80689a9c905b0"
+      "sha256": "8ac808bf4a29e240645c68ebf8f1107f8f5171d4f428d7a2255c085c78483d1e"
     },
     {
       "path": "docs/AUTHORING_GUIDE/index.html",
@@ -2641,31 +2641,31 @@
     },
     {
       "path": "docs/certification-notes/az-900/domain-1-concepts/index.html",
-      "sha256": "9eab79818a7ddbd16429bc61a666d2b3e86c9b9d06fc90b779d08892267e50a5"
+      "sha256": "c1db162114d1ac41042c86388cddb1f17ef04fcb5b7f9fafc9d5dd40eebb1ab4"
     },
     {
       "path": "docs/certification-notes/az-900/domain-2-architecture-services/index.html",
-      "sha256": "65632efeed43dfc0693c711c4353f513a9e0957e1698cb0a9aba865cade7dd21"
+      "sha256": "075f3e4d7b4b4f3243a8ce15ad6a9826b7b629077a9c9ee41c7f5cbfa30c7483"
     },
     {
       "path": "docs/certification-notes/az-900/domain-3-management-governance/index.html",
-      "sha256": "752f35a3c2f3185ddbf6b528782ee35f6d514860f23aa6df8d1ce7fb751f8a43"
+      "sha256": "8848461a5b951b93f0211420e0b23350f8374b7f4a022336c1831fe523de779f"
     },
     {
       "path": "docs/certification-notes/az-900/index.html",
-      "sha256": "326faafd10b10c7f88f7b8d6cb53478f8f63247524dc2b6e1f107544836e087b"
+      "sha256": "8701fb2fa4bd5e921a2269fdb9c97c76732b0b26cff54e7f28ef983de29de82f"
     },
     {
       "path": "docs/certification-notes/google-cybersecurity/index.html",
-      "sha256": "abda3cc163f3d31e0250284f7f11280fde027434c04151e0b963d1a002db60e3"
+      "sha256": "c1ed7c61d5669d5fa003766244a2444fb27f98d6b12958449fa22431bb7f0590"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-1-identity/index.html",
-      "sha256": "99986d6eb7bc8f742cf7ea5e0e225070761e54c3f0ecd5d46acbc3c39150d845"
+      "sha256": "e625e4e81b00594029d755ef682e4eef5b38fd2a47c4bf0e135de898f08d45c8"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-2-storage-networking/index.html",
-      "sha256": "9d61ea0496308302486700512054447c8d1a71e836edf2a0b755a4446bd335e8"
+      "sha256": "024e26c05f17fa83659f8825425b325937536a11f2122cf7e5e3d39db0f68080"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-3-compute-posture/index.html",
@@ -2673,7 +2673,7 @@
     },
     {
       "path": "docs/certification-notes/sc-500/domain-3-secure-compute/index.html",
-      "sha256": "d39c2a83e4eca418a172776a7567632b7f154432958b30eb98044ed2ce3b0014"
+      "sha256": "dc5d5dbf2aae4b6a20cab31b248b395d739e9cc3fff9c5d70c908f4719b938d4"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-4-ai-security/index.html",
@@ -2681,11 +2681,11 @@
     },
     {
       "path": "docs/certification-notes/sc-500/domain-4-manage-monitor-posture/index.html",
-      "sha256": "82ffe675849af76959c9802b898a9ae76493480d079d0c7d37234fc63c29551b"
+      "sha256": "5f71ee58f34b83615700b4cc62d5839b88608888bacb6ac38ca31582226b51f3"
     },
     {
       "path": "docs/certification-notes/sc-500/index.html",
-      "sha256": "e3238cf810f10a6dd8babb59fe7d9015d778f6b039f3763a163b1b1a2d6e5b60"
+      "sha256": "597180fd42956ba1aa216e8bada2ce65aec6e4b9ab299ec370f125e599c6d6dc"
     },
     {
       "path": "docs/certification-notes/security-plus/domain-1-threats/index.html",
@@ -2701,7 +2701,7 @@
     },
     {
       "path": "docs/certification-notes/security-plus/index.html",
-      "sha256": "72f95c2fcdf8e49d8f587da9c4ba710b6b9bac059bd46fea38faf979acfb1aab"
+      "sha256": "ec700a15508644b4822548f0baa4a8b996923c5eede5d14724860217d167e951"
     },
     {
       "path": "docs/certification-notes/security-plus/labs/lab-iam/index.html",
@@ -2945,7 +2945,7 @@
     },
     {
       "path": "index.html",
-      "sha256": "0c8605b4f600e07ff6f02264d7d4b07782df0aa9c56b23194180284587ecda2b"
+      "sha256": "f5a117d23241a5ad72ea5b87f841f0d6bf774ca0be20e8b586626c42564c5b0b"
     },
     {
       "path": "js/docs-ui.js",
@@ -2957,19 +2957,19 @@
     },
     {
       "path": "labs/ai-agent-security/index.html",
-      "sha256": "6318dc9d019e04f3030d3e27a4f82235917177d9cb9e5860af86d15f19077a35"
+      "sha256": "39894c8c62e2f2bc5373dd91220b538a8cd5da70809d17cf34d3b2c68c9f8c30"
     },
     {
       "path": "labs/azure-landing-zone/index.html",
-      "sha256": "5edc9dc6b100acd4dc50e8719d0b64ba0f32ace5be5484815464468e027acedf"
+      "sha256": "95c22294b1b1528da8bdb3d73008c787b9d8fb910951d12fa5ece7cf7d9837e7"
     },
     {
       "path": "labs/iac-policy/index.html",
-      "sha256": "a0fcffe275a83931df1c6fb088dcb8c0442e51cc7746c5700d0b0ada25a75cbb"
+      "sha256": "593bf9529c02845960a90cea2448dd928686dfc66f5b75bb34546c5298cdce74"
     },
     {
       "path": "labs/iam-oidc/index.html",
-      "sha256": "3cbec0960f41bcc25b41c9e8355f6fbf02b7c40f07bb19aa9877f350ac040e7a"
+      "sha256": "c75e581e2cc672dd9d1af85e2737490d8bf57f29a864f441747f82cbac0c1bcd"
     },
     {
       "path": "labs/index.html",
@@ -2977,23 +2977,23 @@
     },
     {
       "path": "labs/kubernetes-security/index.html",
-      "sha256": "86a43021541c2e5e29f1c2db8b1ec47fb7b9dc300a713f4b3bde886445e75383"
+      "sha256": "e49ba28d99eae048bafafd0914e56f89e823e9c421eb0d908650baeace40a67d"
     },
     {
       "path": "labs/oauth-oidc/index.html",
-      "sha256": "b7d0b3bf961fa7bd7dcc47e4e0cc784fb4a4cf0481e729746eb6aa727dd723d2"
+      "sha256": "945a559106cb50f571be5119ac2ff417a5e0ffce142b733f9c98f3e9519c5b56"
     },
     {
       "path": "labs/postgresql-rls/index.html",
-      "sha256": "c43dc4bc785277fa70a94fb12daacfa39934c438874d142c9fbe7243ab2b7e81"
+      "sha256": "caff02d0e72dc569499c9e7a1f961f2a786c36bccf2a9edee1e3985b20d3639f"
     },
     {
       "path": "labs/secure-cicd/index.html",
-      "sha256": "75a927c9d37a5c57c6b7c940af9e92d970ce3a1a8235cffcc511a53885781936"
+      "sha256": "ab0538b168a98847f3be32f22aa76d4628d9bd7de7123faa2dbce347e18def9e"
     },
     {
       "path": "labs/supply-chain/index.html",
-      "sha256": "c65df1788817b2387e8d4db3d91dc0034ad1b0401a827934ca19d0ccf37cb154"
+      "sha256": "547a2ef91685c82dfb80ea8e51830a9bbeef2b4d8f7aaef4a6683bef1c79bc5b"
     },
     {
       "path": "research/index.html",
@@ -3001,7 +3001,7 @@
     },
     {
       "path": "scripts/application-security/index.html",
-      "sha256": "0e9150753a6b47f38c69279d066772487399d2099cbd419bf6aa7df3b1fc35c3"
+      "sha256": "84d9f25f78ff96591270aa18fd434da68085122438c6a38eb7e037138f62cc57"
     },
     {
       "path": "scripts/application-security/oauth-pkce-verifier/index.html",
@@ -3009,7 +3009,7 @@
     },
     {
       "path": "scripts/cloud-security/index.html",
-      "sha256": "6809d87e4976370713f57751685f64183a8541389b515b9486c69944f50f5e95"
+      "sha256": "f2aad00bb946c42fb3bfa6fb2a6d85c5df70f212d895020d521d79073e7c4a19"
     },
     {
       "path": "scripts/cloud-security/k8s-rbac-auditor/index.html",
@@ -3017,7 +3017,7 @@
     },
     {
       "path": "scripts/devsecops/index.html",
-      "sha256": "fc6fec2efa8153e76f898c7648ae2aba1ea3d217a7460fd2e4e53a9617301516"
+      "sha256": "a1cf7799e70822d6a4ba74862ae0b3b1b409e14de8354ee06e551248b011c1be"
     },
     {
       "path": "scripts/devsecops/kyverno-policy-schema-check/index.html",
@@ -3037,7 +3037,7 @@
     },
     {
       "path": "scripts/threat-intelligence/index.html",
-      "sha256": "89e624bf5a4aabcdeded2179db47c2925a45e5e15d01d224695e71f677ab60be"
+      "sha256": "953a6bda7b25d57ef9914c4f579cc2f04c6959ffb281b12e29b9c91ce195f7c0"
     },
     {
       "path": "search/search_index.json",
@@ -3057,15 +3057,15 @@
     },
     {
       "path": "threat-intel/attack-path-analysis/index.html",
-      "sha256": "7dcf6cb617167462686b7a511b3543a3403cdb43b250657f07d6bcb8cc5695cc"
+      "sha256": "fdaf918e08f2d85492b9076acfbfebaf07cd6196fe9c97d09767837971612274"
     },
     {
       "path": "threat-intel/cloud-breach-case-studies/index.html",
-      "sha256": "bcc74a6b5957b28b4593dfe22bd55b04223ad9e1cceb6065b298e1b4e9ec0997"
+      "sha256": "55d0f86a391c7dff8cde4d6b46d86c7fb3648addc97450714a4c7d094d696938"
     },
     {
       "path": "threat-intel/index.html",
-      "sha256": "4c9b7a752886f785470e789e9b0a5ac10a5f9166b7b5e09636f1df4f02ac8da4"
+      "sha256": "913e086075953e44135ffa670fd0dd444f12ff437902a74e9c35d86ac49e31d6"
     },
     {
       "path": "threat-intel/scripts/cloudtrail/analyze.go",
