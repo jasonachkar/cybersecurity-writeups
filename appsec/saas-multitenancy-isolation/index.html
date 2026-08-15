@@ -6,18 +6,30 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
+        <meta name="description" content="Authorization across API, database, pool, cache, queue, storage, and telemetry boundaries.">
       
       
         <meta name="author" content="Jason Achkar Diab">
       
       
-        <link rel="icon" href="../../assets/images/favicon.png">
+        <link rel="canonical" href="https://docs.jasonachkardiab.com/appsec/saas-multitenancy-isolation/">
+      
+      
+        <link rel="prev" href="../ai-agent-security/">
+      
+      
+        <link rel="next" href="../oauth2-oidc-deep-dive/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Engineering Tenant Isolation for a Multi-tenant SaaS Platform | Jason Achkar Diab</title>
+        <title>Engineering Tenant Isolation for a Multi-tenant SaaS Platform - Cloud Security Engineering</title>
       
     
     
@@ -35,19 +47,24 @@
     
     
       
-        
-        
-        <link rel="stylesheet" href="../../css/custom.css">
-<link rel="stylesheet" href="../../css/portfolio.css">
-<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+    
+      <link rel="stylesheet" href="../../css/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
     
     
-                    <link rel="canonical" href="https://docs.jasonachkardiab.com/appsec/saas-multitenancy-isolation/">
-  <meta name="robots" content="index, follow">
-</head>
+  
+  
+  
+    <meta property="og:description" content="Authorization across API, database, pool, cache, queue, storage, and telemetry boundaries.">
+    <meta name="twitter:description" content="Authorization across API, database, pool, cache, queue, storage, and telemetry boundaries.">
+  
+
+  </head>
   
   
     
@@ -66,7 +83,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#engineering-tenant-isolation-for-a-multi-tenant-saas-platform" class="md-skip">
+        <a href="#the-core-decision" class="md-skip">
           Skip to content
         </a>
       
@@ -80,15 +97,15 @@
 
   
 
-<header class="md-header" data-md-component="header">
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Security Engineering Docs" class="md-header__button md-logo" aria-label="Security Engineering Docs" data-md-component="logo">
+    <a href="../.." title="Cloud Security Engineering" class="md-header__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
+    <label class="md-header__button md-icon" for="__drawer">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -96,7 +113,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Security Engineering Docs
+            Cloud Security Engineering
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -142,11 +159,11 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
+        <label class="md-header__button md-icon" for="__search">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
-        <div class="md-search" data-md-component="search" role="dialog" aria-label="Site search">
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -184,21 +201,20 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/jasonachkar/cybersecurity-writeups" title="Go to repository" class="md-source" aria-label="GitHub repository: jasonachkar/cybersecurity-writeups">
-  <div class="md-source__icon md-icon">
+        <a href="https://github.com/jasonachkar/cybersecurity-writeups" title="Repository source" class="md-source">
+  <div class="md-source__icon md-icon" aria-hidden="true">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
   </div>
-  <div class="md-source__repository">
-    jasonachkar/cybersecurity-writeups
-  </div>
+  <div class="md-source__repository">jasonachkar/cybersecurity-writeups</div>
 </a>
       </div>
     
   </nav>
   
 </header>
-<div class="md-container" data-md-component="container">
+    
+    <div class="md-container" data-md-component="container">
       
       
         
@@ -210,96 +226,2784 @@
           
             
               
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Cloud Security Engineering" class="md-nav__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Cloud Security Engineering
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jasonachkar/cybersecurity-writeups" title="Repository source" class="md-source">
+  <div class="md-source__icon md-icon" aria-hidden="true">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">jasonachkar/cybersecurity-writeups</div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../research/" class="md-nav__link ">
               
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../cloud-security/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Security
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Cloud Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/iam-at-scale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IAM and workload federation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/cloud-network-segmentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network segmentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/multi-account-landing-zones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Landing zones
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/kubernetes-multi-tenancy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes isolation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/cloud-detection-and-response/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Detection and response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/serverless-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serverless security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Security
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Application Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ai-agent-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI-agent authorization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-tenant SaaS isolation
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-tenant SaaS isolation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The core decision
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope-and-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope and non-goals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assets-actors-and-trust-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets, actors, and trust boundaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threat-model-and-abuse-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat model and abuse cases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-decision-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture decision record
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture decision record">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#selected-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selected option
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alternatives-considered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternatives considered
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#control-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Control design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#establish-tenant-authority-server-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Establish tenant authority server-side
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-one-transaction-as-the-context-lifetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use one transaction as the context lifetime
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enforce-read-and-write-predicates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enforce read and write predicates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#separate-runtime-migration-and-break-glass-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Separate runtime, migration, and break-glass roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cover-every-data-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cover every data path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure modes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Failure modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#database-dependency-or-transaction-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database dependency or transaction failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing-or-invalid-tenant-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing or invalid tenant context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-or-migration-rollout-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy or migration rollout failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance regression
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-and-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Observability and operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-cost-and-whats-still-not-solved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The cost, and what's still not solved
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operational-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operational checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../oauth2-oidc-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 and OIDC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-microservices-threat-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API threat modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime-protection-rasp-waf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime protection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../devsecops/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DevSecOps
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DevSecOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/secure-cicd-pipeline-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secure CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/iac-security-and-policy-as-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IaC policy engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/supply-chain-sbom-signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supply-chain evidence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/secureobs-multitenant-security-scanner/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SecureObs architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../threat-intel/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Intelligence
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Threat Intelligence
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../threat-intel/attack-path-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attack-path analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../threat-intel/cloud-breach-case-studies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incident case studies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../labs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Labs
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Labs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/secure-cicd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secure CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/iam-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IAM and OIDC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/oauth-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth and OIDC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/ai-agent-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI-agent security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/postgresql-rls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL RLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/kubernetes-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/supply-chain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supply-chain policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/iac-policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IaC policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/azure-landing-zone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Azure landing zone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripts
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Scripts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scripts/cloud-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scripts/application-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scripts/devsecops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DevSecOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scripts/threat-intelligence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Intelligence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../study-notes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Study notes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Study notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/certification-notes/az-900/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AZ-900
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AZ-900
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/az-900/domain-1-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 1 - Cloud concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/az-900/domain-2-architecture-services/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 2 - Architecture and services
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/az-900/domain-3-management-governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 3 - Management and governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/certification-notes/sc-500/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SC-500
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SC-500
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-1-identity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 1 - Identity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-2-storage-networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 2 - Storage and networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-3-secure-compute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 3 - Secure compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-4-manage-monitor-posture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 4 - Manage and monitor posture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/security-plus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security+
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/google-cybersecurity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Google Cybersecurity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
             
             
               
-              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The core decision
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope-and-non-goals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope and non-goals
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assets-actors-and-trust-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets, actors, and trust boundaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threat-model-and-abuse-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat model and abuse cases
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-decision-record" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture decision record
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture decision record">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#selected-option" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Selected option
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alternatives-considered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alternatives considered
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#control-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Control design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#establish-tenant-authority-server-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Establish tenant authority server-side
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-one-transaction-as-the-context-lifetime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Use one transaction as the context lifetime
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enforce-read-and-write-predicates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Enforce read and write predicates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#separate-runtime-migration-and-break-glass-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Separate runtime, migration, and break-glass roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cover-every-data-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cover every data path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure modes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Failure modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#database-dependency-or-transaction-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database dependency or transaction failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#missing-or-invalid-tenant-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Missing or invalid tenant context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#policy-or-migration-rollout-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Policy or migration rollout failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-regression" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance regression
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validation-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-and-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Observability and operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-cost-and-whats-still-not-solved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The cost, and what's still not solved
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#operational-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Operational checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
             
           
           
-            <!-- docs-left-nav:start -->
-<aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group" open><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/" aria-current="page">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
-</aside>
-<!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../../research/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Research
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Application Security
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
               
               <article class="md-content__inner md-typeset">
                 
                   
-
-
+  <header class="docs-article-header">
+  <h1 id="engineering-tenant-isolation-for-a-multi-tenant-saas-platform">Engineering Tenant Isolation for a Multi-tenant SaaS Platform</h1>
+  <p class="docs-article-header__summary">Authorization across API, database, pool, cache, queue, storage, and telemetry boundaries.</p>
+  <p class="docs-article-header__orientation">
+    <span>Application Security</span>
+    <span aria-hidden="true">·</span><span>9 min read</span>
+  </p>
+  
+    <section class="docs-evidence" aria-labelledby="docs-evidence-heading">
+  <h2 id="docs-evidence-heading" class="docs-evidence__title">Evidence status</h2>
+  <dl class="docs-evidence__grid">
+    <div><dt>Implementation</dt><dd>Partially tested</dd></div>
+    <div><dt>Review</dt><dd>Partially verified</dd></div>
+    <div><dt>Sources</dt><dd>Primary sources reviewed</dd></div>
+    <div><dt>Last reviewed</dt><dd><time datetime="2026-07-25">2026-07-25</time></dd></div>
+  </dl>
+  <details class="docs-evidence__details">
+    <summary>What do these statuses mean?</summary>
+    <p><strong>Partially tested:</strong> Some controls are backed by executable tests, but the complete architecture is not production-validated.</p>
+    <p><strong>Partially verified:</strong> The article has reviewed evidence, but one or more documented validation gaps remain.</p>
+    <p><a href="../../about/#research-methodology">Read the research methodology</a></p>
+  </details>
+</section>
+    <nav class="docs-article-actions" aria-label="Article actions">
+  <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
+    <span data-focus-label>Focus</span>
+  </button>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/appsec/saas-multitenancy-isolation.md">View source</a>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/edit/main/appsec/saas-multitenancy-isolation.md">Edit on GitHub</a>
+</nav>
+  
+</header>
   
   
-
-
-<!-- docs-article-header:start --><header class="docs-article-header"><!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/research/">Research</a></li><li><a href="/appsec/">Application Security</a></li><li aria-current="page">Multi-tenant SaaS isolation</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="engineering-tenant-isolation-for-a-multi-tenant-saas-platform">Engineering Tenant Isolation for a Multi-tenant SaaS Platform</h1></header><!-- docs-article-header:end -->
-<!-- docs-inline-toc:start -->
-<details class="docs-inline-toc">
-  <summary>On this page</summary>
-  <nav aria-label="On this page (inline)">
-    <ol><li><a href="#executive-decision">The core decision</a></li><li><a href="#scope-and-non-goals">Scope and non-goals</a></li><li><a href="#assets-actors-and-trust-boundaries">Assets, actors, and trust boundaries</a></li><li><a href="#threat-model-and-abuse-cases">Threat model and abuse cases</a></li><li><a href="#architecture-decision-record">Architecture decision record</a></li><li><a href="#control-design">Control design</a></li><li><a href="#failure-modes">Failure modes</a></li><li><a href="#validation-evidence">Validation evidence</a></li><li><a href="#observability-and-operations">Observability and operations</a></li><li><a href="#residual-risk-cost-and-usability">The cost, and what&#39;s still not solved</a></li><li><a href="#limitations">Limitations</a></li><li><a href="#operational-checklist">Operational checklist</a></li><li><a href="#references">References</a></li></ol>
-  </nav>
-</details>
-<!-- docs-inline-toc:end -->
-<p>Tenant isolation is a layered authorization property, not a feature supplied by one
-SQL policy. The recommended design derives tenant context from authenticated server-
-side authorization, carries it through a transaction, enforces it again in the data
-plane, and continuously tests the identities that can bypass that boundary.</p>
-<p>The companion <a href="../../labs/postgresql-rls/"><code>labs/postgresql-rls</code></a> lab exercises
-the PostgreSQL mechanics. It does not claim that a database policy alone makes an
-entire SaaS product isolated.</p>
-<h2 id="executive-decision">The core decision</h2>
-<p>For the relational data path in scope, use shared tables with a non-null <code>tenant_id</code>,
-PostgreSQL row-level security (RLS), transaction-local tenant context, complete
-<code>USING</code> and <code>WITH CHECK</code> expressions, forced RLS for table owners, and application
-roles that are neither superusers nor <code>BYPASSRLS</code>.</p>
-<p>RLS is defense in depth behind application authorization. Authentication establishes
-the principal; server-side membership/entitlement data establishes the allowed
-tenant; application authorization establishes the action; RLS constrains rows. A
-client-provided header, route value, JWT claim, or GraphQL argument is an input to
-validate, never authority by itself.</p>
+  <p>Tenant isolation is a layered authorization property, not a feature supplied by one SQL policy. The recommended design derives tenant context from authenticated server- side authorization, carries it through a transaction, enforces it again in the data plane, and continuously tests the identities that can bypass that boundary.</p>
+<p>The companion <a href="../../labs/postgresql-rls/"><code>labs/postgresql-rls</code></a> lab exercises the PostgreSQL mechanics. It does not claim that a database policy alone makes an entire SaaS product isolated.</p>
+<h2 id="the-core-decision">The core decision</h2>
+<p>For the relational data path in scope, use shared tables with a non-null <code>tenant_id</code>, PostgreSQL row-level security (RLS), transaction-local tenant context, complete <code>USING</code> and <code>WITH CHECK</code> expressions, forced RLS for table owners, and application roles that are neither superusers nor <code>BYPASSRLS</code>.</p>
+<p>RLS is defense in depth behind application authorization. Authentication establishes the principal; server-side membership/entitlement data establishes the allowed tenant; application authorization establishes the action; RLS constrains rows. A client-provided header, route value, JWT claim, or GraphQL argument is an input to validate, never authority by itself.</p>
 <h2 id="scope-and-non-goals">Scope and non-goals</h2>
 <p>In scope:</p>
 <ul>
 <li>interactive and service API access to tenant-owned PostgreSQL rows;</li>
 <li>tenant context propagation through a pooled database connection;</li>
-<li>ordinary read and write isolation, administrative bypass governance, and schema
-  checks;</li>
+<li>ordinary read and write isolation, administrative bypass governance, and schema checks;</li>
 <li>rollout, testing what should be denied, logging, and incident hooks.</li>
 </ul>
 <p>Not established by this design:</p>
 <ul>
-<li>isolation of object storage, caches, queues, analytics, search indexes, backups,
-  logs, or observability systems;</li>
-<li>protection from a database superuser, compromised host, malicious database
-  extension, or exploitable database engine;</li>
+<li>isolation of object storage, caches, queues, analytics, search indexes, backups, logs, or observability systems;</li>
+<li>protection from a database superuser, compromised host, malicious database extension, or exploitable database engine;</li>
 <li>per-tenant cryptographic isolation or a hard multi-tenant kernel boundary;</li>
 <li>correct product entitlements or business authorization above the row boundary.</li>
 </ul>
 <h2 id="assets-actors-and-trust-boundaries">Assets, actors, and trust boundaries</h2>
-<p>Primary assets are tenant data, membership and entitlements, audit evidence,
-administrative credentials, export jobs, and tenant-scoped encryption references.
-Threat actors include a legitimate user selecting another tenant, a compromised API
-credential, a confused-deputy background job, an operator using a bypass identity,
-and a faulty migration or connection-pool integration.</p>
-<pre class="mermaid"><code>flowchart LR
-  C["Untrusted client input"] --&gt; I["Identity provider"]
-  I --&gt; A["API authentication"]
+<p>Primary assets are tenant data, membership and entitlements, audit evidence, administrative credentials, export jobs, and tenant-scoped encryption references. Threat actors include a legitimate user selecting another tenant, a compromised API credential, a confused-deputy background job, an operator using a bypass identity, and a faulty migration or connection-pool integration.</p>
+<div class="language-text highlight"><pre><span></span><code>flowchart LR
+  C[&quot;Untrusted client input&quot;] --&gt; I[&quot;Identity provider&quot;]
+  I --&gt; A[&quot;API authentication&quot;]
   C --&gt; A
-  A --&gt; Z["Server-side membership and authorization"]
-  Z --&gt; T["Transaction boundary sets tenant context"]
-  T --&gt; R["Non-bypass runtime role"]
-  R --&gt; P["PostgreSQL RLS USING and WITH CHECK"]
-  P --&gt; D[("Tenant rows")]
-  A --&gt; Q["Queue message with authenticated tenant binding"]
-  Q --&gt; W["Worker authorization and transaction"]
+  A --&gt; Z[&quot;Server-side membership and authorization&quot;]
+  Z --&gt; T[&quot;Transaction boundary sets tenant context&quot;]
+  T --&gt; R[&quot;Non-bypass runtime role&quot;]
+  R --&gt; P[&quot;PostgreSQL RLS USING and WITH CHECK&quot;]
+  P --&gt; D[(&quot;Tenant rows&quot;)]
+  A --&gt; Q[&quot;Queue message with authenticated tenant binding&quot;]
+  Q --&gt; W[&quot;Worker authorization and transaction&quot;]
   W --&gt; R
-  B["Break-glass or migration identity"] -. audited bypass .-&gt; D</code></pre>
-<p>The most important boundary is between untrusted tenant selectors and the
-server-established authorization result. Copying <code>X-Tenant-ID</code> directly into a
-database session setting is an insecure direct object reference with extra steps.</p>
+  B[&quot;Break-glass or migration identity&quot;] -. audited bypass .-&gt; D
+</code></pre></div>
+<p>The most important boundary is between untrusted tenant selectors and the server-established authorization result. Copying <code>X-Tenant-ID</code> directly into a database session setting is an insecure direct object reference with extra steps.</p>
 <h2 id="threat-model-and-abuse-cases">Threat model and abuse cases</h2>
 <table>
 <thead>
@@ -364,9 +3068,7 @@ database session setting is an insecure direct object reference with extra steps
 </table>
 <h2 id="architecture-decision-record">Architecture decision record</h2>
 <h3 id="selected-option">Selected option</h3>
-<p>Shared PostgreSQL tables with defense-in-depth RLS are selected for the baseline
-transactional workload. This keeps schema evolution and aggregate operations
-manageable while placing a consistent tenant filter below ordinary ORM/query code.</p>
+<p>Shared PostgreSQL tables with defense-in-depth RLS are selected for the baseline transactional workload. This keeps schema evolution and aggregate operations manageable while placing a consistent tenant filter below ordinary ORM/query code.</p>
 <h3 id="alternatives-considered">Alternatives considered</h3>
 <table>
 <thead>
@@ -399,80 +3101,52 @@ manageable while placing a consistent tenant filter below ordinary ORM/query cod
 </tr>
 </tbody>
 </table>
-<p>The choice is reversible only with deliberate data-migration tooling. A product may
-offer multiple isolation tiers rather than forcing every tenant onto one topology.</p>
+<p>The choice is reversible only with deliberate data-migration tooling. A product may offer multiple isolation tiers rather than forcing every tenant onto one topology.</p>
 <h2 id="control-design">Control design</h2>
 <h3 id="establish-tenant-authority-server-side">Establish tenant authority server-side</h3>
-<p>After validating token issuer, signature, time claims, and intended audience, resolve
-the subject to current server-side membership. If a request names a tenant, compare
-it to that authorized set. For service identities, bind workload identity to an
-explicit tenant/service entitlement. Cache membership carefully: revocation latency
-is part of the authorization design.</p>
-<p>Do not permit a general request header to select the database tenant without this
-check. An API gateway may propagate an internal signed identity context, but the
-receiving service still validates its origin, audience, freshness, and authorization.</p>
+<p>After validating token issuer, signature, time claims, and intended audience, resolve the subject to current server-side membership. If a request names a tenant, compare it to that authorized set. For service identities, bind workload identity to an explicit tenant/service entitlement. Cache membership carefully: revocation latency is part of the authorization design.</p>
+<p>Do not permit a general request header to select the database tenant without this check. An API gateway may propagate an internal signed identity context, but the receiving service still validates its origin, audience, freshness, and authorization.</p>
 <h3 id="use-one-transaction-as-the-context-lifetime">Use one transaction as the context lifetime</h3>
 <p>The tested SQL pattern is:</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-0-1"><span class="c1">-- Tested in labs/postgresql-rls.</span>
-</span><span id="__span-0-2"><span class="k">BEGIN</span><span class="p">;</span>
-</span><span id="__span-0-3"><span class="k">SELECT</span><span class="w"> </span><span class="n">set_config</span><span class="p">(</span><span class="s1">&#39;app.tenant_id&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">$</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">);</span>
-</span><span id="__span-0-4"><span class="c1">-- All tenant queries use this same transaction/connection.</span>
-</span><span id="__span-0-5"><span class="k">COMMIT</span><span class="p">;</span>
-</span></code></pre></div>
-<p>The third argument <code>true</code> makes <code>set_config</code> transaction-local. The application
-must not return a rows iterator whose transaction has already committed, and must not
-set context on one pooled connection before executing work on another. Use a helper
-that accepts a callback, sets context, executes all work, and commits only after the
-callback closes its rows/results.</p>
+<div class="language-sql highlight"><pre><span></span><code><span class="c1">-- Tested in labs/postgresql-rls.</span>
+<span class="k">BEGIN</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="n">set_config</span><span class="p">(</span><span class="s1">&#39;app.tenant_id&#39;</span><span class="p">,</span><span class="w"> </span><span class="err">$</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">);</span>
+<span class="c1">-- All tenant queries use this same transaction/connection.</span>
+<span class="k">COMMIT</span><span class="p">;</span>
+</code></pre></div>
+<p>The third argument <code>true</code> makes <code>set_config</code> transaction-local. The application must not return a rows iterator whose transaction has already committed, and must not set context on one pooled connection before executing work on another. Use a helper that accepts a callback, sets context, executes all work, and commits only after the callback closes its rows/results.</p>
 <h3 id="enforce-read-and-write-predicates">Enforce read and write predicates</h3>
 <p>The lab applies this expression:</p>
-<div class="language-sql highlight"><pre><span></span><code><span id="__span-1-1"><span class="c1">-- Tested in labs/postgresql-rls/init/001-schema.sql.</span>
-</span><span id="__span-1-2"><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">app</span><span class="p">.</span><span class="n">customer_record</span><span class="w"> </span><span class="n">ENABLE</span><span class="w"> </span><span class="k">ROW</span><span class="w"> </span><span class="k">LEVEL</span><span class="w"> </span><span class="k">SECURITY</span><span class="p">;</span>
-</span><span id="__span-1-3"><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">app</span><span class="p">.</span><span class="n">customer_record</span><span class="w"> </span><span class="k">FORCE</span><span class="w"> </span><span class="k">ROW</span><span class="w"> </span><span class="k">LEVEL</span><span class="w"> </span><span class="k">SECURITY</span><span class="p">;</span>
-</span><span id="__span-1-4">
-</span><span id="__span-1-5"><span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">tenant_isolation</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">app</span><span class="p">.</span><span class="n">customer_record</span>
-</span><span id="__span-1-6"><span class="w">  </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">tenant_runtime</span><span class="p">,</span><span class="w"> </span><span class="n">tenant_migrator</span>
-</span><span id="__span-1-7"><span class="w">  </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span>
-</span><span id="__span-1-8"><span class="w">    </span><span class="n">tenant_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">NULLIF</span><span class="p">(</span><span class="n">current_setting</span><span class="p">(</span><span class="s1">&#39;app.tenant_id&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">),</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)::</span><span class="n">uuid</span>
-</span><span id="__span-1-9"><span class="w">  </span><span class="p">)</span>
-</span><span id="__span-1-10"><span class="w">  </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span>
-</span><span id="__span-1-11"><span class="w">    </span><span class="n">tenant_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">NULLIF</span><span class="p">(</span><span class="n">current_setting</span><span class="p">(</span><span class="s1">&#39;app.tenant_id&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">),</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)::</span><span class="n">uuid</span>
-</span><span id="__span-1-12"><span class="w">  </span><span class="p">);</span>
-</span></code></pre></div>
-<p><code>current_setting(..., true)</code> returns null when the custom setting is absent. The
-comparison then matches no row. An empty setting becomes null; a malformed nonempty
-UUID raises an error. <code>USING</code> restricts visible/existing rows; <code>WITH CHECK</code> restricts
-new row values after an insert or update.</p>
+<div class="language-sql highlight"><pre><span></span><code><span class="c1">-- Tested in labs/postgresql-rls/init/001-schema.sql.</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">app</span><span class="p">.</span><span class="n">customer_record</span><span class="w"> </span><span class="n">ENABLE</span><span class="w"> </span><span class="k">ROW</span><span class="w"> </span><span class="k">LEVEL</span><span class="w"> </span><span class="k">SECURITY</span><span class="p">;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">app</span><span class="p">.</span><span class="n">customer_record</span><span class="w"> </span><span class="k">FORCE</span><span class="w"> </span><span class="k">ROW</span><span class="w"> </span><span class="k">LEVEL</span><span class="w"> </span><span class="k">SECURITY</span><span class="p">;</span>
+
+<span class="k">CREATE</span><span class="w"> </span><span class="n">POLICY</span><span class="w"> </span><span class="n">tenant_isolation</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">app</span><span class="p">.</span><span class="n">customer_record</span>
+<span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="n">tenant_runtime</span><span class="p">,</span><span class="w"> </span><span class="n">tenant_migrator</span>
+<span class="w"> </span><span class="k">USING</span><span class="w"> </span><span class="p">(</span>
+<span class="w"> </span><span class="n">tenant_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">NULLIF</span><span class="p">(</span><span class="n">current_setting</span><span class="p">(</span><span class="s1">&#39;app.tenant_id&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">),</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)::</span><span class="n">uuid</span>
+<span class="w"> </span><span class="p">)</span>
+<span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="k">CHECK</span><span class="w"> </span><span class="p">(</span>
+<span class="w"> </span><span class="n">tenant_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">NULLIF</span><span class="p">(</span><span class="n">current_setting</span><span class="p">(</span><span class="s1">&#39;app.tenant_id&#39;</span><span class="p">,</span><span class="w"> </span><span class="k">true</span><span class="p">),</span><span class="w"> </span><span class="s1">&#39;&#39;</span><span class="p">)::</span><span class="n">uuid</span>
+<span class="w"> </span><span class="p">);</span>
+</code></pre></div>
+<p><code>current_setting(..., true)</code> returns null when the custom setting is absent. The comparison then matches no row. An empty setting becomes null; a malformed nonempty UUID raises an error. <code>USING</code> restricts visible/existing rows; <code>WITH CHECK</code> restricts new row values after an insert or update.</p>
 <h3 id="separate-runtime-migration-and-break-glass-roles">Separate runtime, migration, and break-glass roles</h3>
 <ul>
-<li>Runtime role: only required DML/functions; <code>NOSUPERUSER NOBYPASSRLS</code>; does not own
-  tables or roles.</li>
-<li>Migration role: owns schema objects, is still forced through RLS for ordinary data
-  operations, and is unavailable to the application.</li>
-<li>Break-glass/managed administrator: may bypass by platform design; requires strong
-  authentication, just-in-time access, separate device/session controls, approval,
-  query/audit logging, and post-use review.</li>
+<li>Runtime role: only required DML/functions; <code>NOSUPERUSER NOBYPASSRLS</code>; does not own tables or roles.</li>
+<li>Migration role: owns schema objects, is still forced through RLS for ordinary data operations, and is unavailable to the application.</li>
+<li>Break-glass/managed administrator: may bypass by platform design; requires strong authentication, just-in-time access, separate device/session controls, approval, query/audit logging, and post-use review.</li>
 </ul>
-<p>PostgreSQL documents that superusers and <code>BYPASSRLS</code> roles always bypass RLS. Table
-owners normally bypass it unless <code>FORCE ROW LEVEL SECURITY</code> is enabled. These are
-design facts to govern, not edge cases to hide.</p>
+<p>PostgreSQL documents that superusers and <code>BYPASSRLS</code> roles always bypass RLS. Table owners normally bypass it unless <code>FORCE ROW LEVEL SECURITY</code> is enabled. These are design facts to govern, not edge cases to hide.</p>
 <h3 id="cover-every-data-path">Cover every data path</h3>
-<p>Maintain an ownership inventory for tables, partitions, views, functions, materialized
-views, logical replication, exports, background jobs, caches, object stores, search,
-analytics, and support tooling. Security-definer functions need explicit ownership,
-fixed <code>search_path</code>, minimal grants, and targeted review. Avoid exposing arbitrary SQL
-through administrative features.</p>
+<p>Maintain an ownership inventory for tables, partitions, views, functions, materialized views, logical replication, exports, background jobs, caches, object stores, search, analytics, and support tooling. Security-definer functions need explicit ownership, fixed <code>search_path</code>, minimal grants, and targeted review. Avoid exposing arbitrary SQL through administrative features.</p>
 <h2 id="failure-modes">Failure modes</h2>
 <h3 id="database-dependency-or-transaction-failure">Database dependency or transaction failure</h3>
-<p>Fail the request. Never retry outside the authorization/tenant wrapper. A retry must
-create a new transaction, re-establish context, and remain idempotent where required.</p>
+<p>Fail the request. Never retry outside the authorization/tenant wrapper. A retry must create a new transaction, re-establish context, and remain idempotent where required.</p>
 <h3 id="missing-or-invalid-tenant-context">Missing or invalid tenant context</h3>
-<p>Reads should return no tenant rows and writes should fail. Treat either as a security
-telemetry event because it indicates an integration or attack path. Do not substitute
-a default tenant.</p>
+<p>Reads should return no tenant rows and writes should fail. Treat either as a security telemetry event because it indicates an integration or attack path. Do not substitute a default tenant.</p>
 <h3 id="policy-or-migration-rollout-failure">Policy or migration rollout failure</h3>
-<p>Adding RLS before all code supplies context can create an availability incident;
-adding context before RLS can leave a security gap. Use a staged rollout:</p>
+<p>Adding RLS before all code supplies context can create an availability incident; adding context before RLS can leave a security gap. Use a staged rollout:</p>
 <ol>
 <li>inventory tables, roles, owners, policies, and bypass paths;</li>
 <li>add non-null tenant keys and validate backfill integrity;</li>
@@ -481,17 +3155,13 @@ adding context before RLS can leave a security gap. Use a staged rollout:</p>
 <li>enable and force RLS table by table with rollback rehearsed;</li>
 <li>remove broad grants and monitor catalog drift.</li>
 </ol>
-<p>Rollback must not mean silently disabling RLS in production. Prefer rolling back the
-offending application release or routing to a known-good version. Any emergency RLS
-disablement is a declared security incident with compensating isolation and review.</p>
+<p>Rollback must not mean silently disabling RLS in production. Prefer rolling back the offending application release or routing to a known-good version. Any emergency RLS disablement is a declared security incident with compensating isolation and review.</p>
 <h3 id="performance-regression">Performance regression</h3>
-<p>Index tenant keys with access patterns, inspect query plans under representative
-tenant cardinalities, and test partitions. Do not weaken the policy to repair a slow
-query. Resolve indexing/query design and watch plan changes across PostgreSQL updates.</p>
+<p>Index tenant keys with access patterns, inspect query plans under representative tenant cardinalities, and test partitions. Do not weaken the policy to repair a slow query. Resolve indexing/query design and watch plan changes across PostgreSQL updates.</p>
 <h2 id="validation-evidence">Validation evidence</h2>
 <p>Run the disposable PostgreSQL 18.4 lab:</p>
-<div class="language-powershell highlight"><pre><span></span><code><span id="__span-2-1"><span class="p">./</span><span class="n">labs</span><span class="p">/</span><span class="n">postgresql-rls</span><span class="p">/</span><span class="n">run-tests</span><span class="p">.</span><span class="n">ps1</span>
-</span></code></pre></div>
+<div class="language-powershell highlight"><pre><span></span><code><span class="p">./</span><span class="n">labs</span><span class="p">/</span><span class="n">postgresql-rls</span><span class="p">/</span><span class="n">run-tests</span><span class="p">.</span><span class="n">ps1</span>
+</code></pre></div>
 <p>It validates:</p>
 <ul>
 <li>own-tenant read and cross-tenant read/update denial;</li>
@@ -503,48 +3173,33 @@ query. Resolve indexing/query design and watch plan changes across PostgreSQL up
 <li><code>relrowsecurity</code> and <code>relforcerowsecurity</code> on in-scope tables;</li>
 <li>both policy expressions and non-bypass application roles.</li>
 </ul>
-<p>Application suites must extend this narrow <code>pg</code> proof across every endpoint and
-background job, each supported pool/ORM mode, route/body/header tenant selectors,
-errors, cancellations, concurrency, retries, and both response and database state.
-Equivalent tests are still required for queues, caches, object storage, search,
-analytics, exports, and telemetry. Run schema catalog checks after every migration.</p>
+<p>Application suites must extend this narrow <code>pg</code> proof across every endpoint and background job, each supported pool/ORM mode, route/body/header tenant selectors, errors, cancellations, concurrency, retries, and both response and database state. Equivalent tests are still required for queues, caches, object storage, search, analytics, exports, and telemetry. Run schema catalog checks after every migration.</p>
 <h2 id="observability-and-operations">Observability and operations</h2>
 <p>Collect without putting sensitive row contents in logs:</p>
 <ul>
-<li>authorization decision, principal ID, authoritative tenant ID, action, outcome,
-  policy version, request/trace ID, and service identity;</li>
+<li>authorization decision, principal ID, authoritative tenant ID, action, outcome, policy version, request/trace ID, and service identity;</li>
 <li>missing/malformed context counters and RLS-related database errors;</li>
 <li>cross-tenant test results in release evidence;</li>
-<li>role and schema drift (<code>rolsuper</code>, <code>rolbypassrls</code>, table owner, RLS flags, policy
-  expressions, grants, security-definer functions);</li>
+<li>role and schema drift (<code>rolsuper</code>, <code>rolbypassrls</code>, table owner, RLS flags, policy expressions, grants, security-definer functions);</li>
 <li>break-glass activation, queries, approvals, duration, and review outcome;</li>
 <li>exports, large result sets, support impersonation, and unusual tenant switching.</li>
 </ul>
-<p>Alert on any runtime role bypass, a new tenant table without forced RLS, sustained
-missing context, unexplained cross-tenant authorization denials, or break-glass use.
-Telemetry access is itself multi-tenant sensitive and needs least privilege.</p>
-<h2 id="residual-risk-cost-and-usability">The cost, and what's still not solved</h2>
+<p>Alert on any runtime role bypass, a new tenant table without forced RLS, sustained missing context, unexplained cross-tenant authorization denials, or break-glass use. Telemetry access is itself multi-tenant sensitive and needs least privilege.</p>
+<h2 id="the-cost-and-whats-still-not-solved">The cost, and what's still not solved</h2>
 <p>RLS isn't free: it adds real policy design, test, and query-planning work. Operators lose some convenience because admin access now has to be deliberate and audited rather than a raw connection. Support impersonation needs its own product controls instead of someone just hitting the database directly.</p>
 <p>What can still go wrong: compromised bypass credentials, bugs in the database engine itself, stores that don't fit the row model, side channels, application authorization that's too broad, stale membership data, unsafe functions, and migration mistakes. Tenants that need a harder failure boundary than this may need separate databases, separate accounts/subscriptions, or their own encryption keys on top of all this.</p>
 <h2 id="limitations">Limitations</h2>
-<p>The lab validates PostgreSQL behavior and the <code>pg</code> 8.22.0 pool lifecycle in one
-disposable version and topology. It does not validate another client, an ORM or
-framework transaction wrapper, a managed PostgreSQL service, API authorization,
-identity-provider integration, or a production dataset. Re-run on supported production
-versions and record provider-specific administrator/bypass behavior.</p>
+<p>The lab validates PostgreSQL behavior and the <code>pg</code> 8.22.0 pool lifecycle in one disposable version and topology. It does not validate another client, an ORM or framework transaction wrapper, a managed PostgreSQL service, API authorization, identity-provider integration, or a production dataset. Re-run on supported production versions and record provider-specific administrator/bypass behavior.</p>
 <h2 id="operational-checklist">Operational checklist</h2>
-<ul class="docs-checklist">
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Tenant authority is server-side and action-specific.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Every transaction sets context locally; no default tenant exists.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Every tenant table has a non-null tenant key, <code>ENABLE</code> and <code>FORCE</code> RLS, and
-      complete read/write policy expressions.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Runtime identities are non-owner, non-superuser, and <code>NOBYPASSRLS</code>.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Non-row stores and asynchronous jobs have equivalent isolation tests.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Tests confirming denied cases stay denied run after migrations and before releases.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Break-glass is just-in-time, approved, logged, and reviewed.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Catalog drift and missing context are alertable.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> What's still not solved, and any tenant-specific isolation tier, is written down.</label></li>
-</ul>
+<p>Tenant authority is server-side and action-specific.</p>
+<p>Every transaction sets context locally; no default tenant exists.</p>
+<p>Every tenant table has a non-null tenant key, <code>ENABLE</code> and <code>FORCE</code> RLS, and complete read/write policy expressions.</p>
+<p>Runtime identities are non-owner, non-superuser, and <code>NOBYPASSRLS</code>.</p>
+<p>Non-row stores and asynchronous jobs have equivalent isolation tests.</p>
+<p>Tests confirming denied cases stay denied run after migrations and before releases.</p>
+<p>Break-glass is just-in-time, approved, logged, and reviewed.</p>
+<p>Catalog drift and missing context are alertable.</p>
+<p>What's still not solved, and any tenant-specific isolation tier, is written down.</p>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://www.postgresql.org/docs/current/ddl-rowsecurity.html">PostgreSQL row security policies</a></li>
@@ -553,33 +3208,41 @@ versions and record provider-specific administrator/bypass behavior.</p>
 <li><a href="https://www.postgresql.org/docs/current/role-attributes.html">PostgreSQL role attributes</a></li>
 <li><a href="https://www.postgresql.org/support/versioning/">PostgreSQL supported versions</a></li>
 </ul>
-
-
-
-
-
-
-
   
   
+    
 
+<section class="docs-related" aria-labelledby="docs-related-heading">
+  <h2 id="docs-related-heading">Related content</h2>
+  <div class="docs-related__grid">
+    
+      
+    
+      
+      <a class="docs-related__item" href="/labs/postgresql-rls/">
+        <span class="docs-related__type">Lab</span>
+        <strong>PostgreSQL RLS</strong>
+        <span>Exercises row-level security, transaction-local tenant context, pooled connections, and negative cross-tenant cases.</span>
+      </a>
+      
+    
+      
+    
+  </div>
+</section>
 
-
-
-
+    <aside class="docs-contribute" aria-label="Contribute to this article">
+  <p><strong>Help improve this page</strong></p>
+  <div>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/edit/main/appsec/saas-multitenancy-isolation.md">Suggest an improvement</a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Engineering%20Tenant%20Isolation%20for%20a%20Multi-tenant%20SaaS%20Platform&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com//appsec/saas-multitenancy-isolation/%250ASource%3A%20appsec/saas-multitenancy-isolation.md%250A%250ADescribe%20the%20issue%20or%20suggested%20improvement%3A">Report an issue</a>
+  </div>
+</aside>
+  
 
                 
-
-<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/appsec/ai-agent-security/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Application Security</span><span class="docs-prevnext__title">AI-agent authorization</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/appsec/oauth2-oidc-deep-dive/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Application Security</span><span class="docs-prevnext__title">OAuth 2.0 and OIDC</span></a></nav><!-- docs-prevnext:end -->
-</article>
-            </div><!-- docs-desktop-toc:start -->
-<aside class="docs-right-toc" aria-label="On this page">
-  <strong class="docs-right-toc__title">On this page</strong>
-  <nav aria-label="On this page">
-    <ol><li><a href="#executive-decision">The core decision</a></li><li><a href="#scope-and-non-goals">Scope and non-goals</a></li><li><a href="#assets-actors-and-trust-boundaries">Assets, actors, and trust boundaries</a></li><li><a href="#threat-model-and-abuse-cases">Threat model and abuse cases</a></li><li><a href="#architecture-decision-record">Architecture decision record</a></li><li><a href="#control-design">Control design</a></li><li><a href="#failure-modes">Failure modes</a></li><li><a href="#validation-evidence">Validation evidence</a></li><li><a href="#observability-and-operations">Observability and operations</a></li><li><a href="#residual-risk-cost-and-usability">The cost, and what&#39;s still not solved</a></li><li><a href="#limitations">Limitations</a></li><li><a href="#operational-checklist">Operational checklist</a></li><li><a href="#references">References</a></li></ol>
-  </nav>
-</aside>
-<!-- docs-desktop-toc:end -->
+              </article>
+            </div>
           
           
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
@@ -594,20 +3257,55 @@ versions and record provider-specific administrator/bypass behavior.</p>
       </main>
       
         <footer class="md-footer">
-<!-- docs-footer:start -->
-<div class="docs-footer">
-  <p class="docs-footer__copyright">&copy; 2026 Jason Achkar Diab</p>
-  <ul class="docs-footer__links">
-    <li><a href="/#featured-research">Research</a></li>
-    <li><a href="/#validated-labs">Labs</a></li>
-    <li><a href="/scripts/">Scripts</a></li>
-    <li><a href="/#study-notes">Study notes</a></li>
-    <li><a href="/about/">About</a></li>
-    <li><a href="https://github.com/jasonachkar/cybersecurity-writeups">GitHub</a></li>
-  </ul>
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../ai-agent-security/" class="md-footer__link md-footer__link--prev" aria-label="Previous: AI-agent authorization">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                AI-agent authorization
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../oauth2-oidc-deep-dive/" class="md-footer__link md-footer__link--next" aria-label="Next: OAuth 2.0 and OIDC">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                OAuth 2.0 and OIDC
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  &copy; 2026 Jason Achkardiab. All rights reserved.
 </div>
-<!-- docs-footer:end -->
-
+      
+    </div>
+  </div>
 </footer>
       
     </div>
@@ -619,13 +3317,14 @@ versions and record provider-specific administrator/bypass behavior.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.breadcrumbs", "search.suggest", "search.highlight", "content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.path", "navigation.indexes", "navigation.footer", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
-<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
-<script src="../../assets/javascripts/docs-ui.js" defer></script>
-<script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
+      
+        <script src="../../js/docs-ui.js"></script>
+      
+        <script src="../../js/source-viewer.js"></script>
       
     
   </body>

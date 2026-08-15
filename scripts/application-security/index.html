@@ -12,12 +12,24 @@
         <meta name="author" content="Jason Achkar Diab">
       
       
-        <link rel="icon" href="../../assets/images/favicon.png">
+        <link rel="canonical" href="https://docs.jasonachkardiab.com/scripts/application-security/">
+      
+      
+        <link rel="prev" href="../cloud-security/">
+      
+      
+        <link rel="next" href="../devsecops/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Application Security scripts | Jason Achkar Diab</title>
+        <title>Application Security - Cloud Security Engineering</title>
       
     
     
@@ -35,19 +47,24 @@
     
     
       
-        
-        
-        <link rel="stylesheet" href="../../css/custom.css">
-<link rel="stylesheet" href="../../css/portfolio.css">
-<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+    
+      <link rel="stylesheet" href="../../css/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
     
     
-                    <link rel="canonical" href="https://docs.jasonachkardiab.com/scripts/application-security/">
-  <meta name="robots" content="index, follow">
-</head>
+  
+  
+  
+    <meta property="og:description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
+    <meta name="twitter:description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
+  
+
+  </head>
   
   
     
@@ -65,11 +82,6 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
-        
-        <a href="#application-security-scripts" class="md-skip">
-          Skip to content
-        </a>
-      
     </div>
     <div data-md-component="announce">
       
@@ -80,15 +92,15 @@
 
   
 
-<header class="md-header" data-md-component="header">
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Security Engineering Docs" class="md-header__button md-logo" aria-label="Security Engineering Docs" data-md-component="logo">
+    <a href="../.." title="Cloud Security Engineering" class="md-header__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
+    <label class="md-header__button md-icon" for="__drawer">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -96,13 +108,13 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Security Engineering Docs
+            Cloud Security Engineering
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Build provenance
+              Application Security
             
           </span>
         </div>
@@ -142,11 +154,11 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
+        <label class="md-header__button md-icon" for="__search">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
-        <div class="md-search" data-md-component="search" role="dialog" aria-label="Site search">
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -184,21 +196,20 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/jasonachkar/cybersecurity-writeups" title="Go to repository" class="md-source" aria-label="GitHub repository: jasonachkar/cybersecurity-writeups">
-  <div class="md-source__icon md-icon">
+        <a href="https://github.com/jasonachkar/cybersecurity-writeups" title="Repository source" class="md-source">
+  <div class="md-source__icon md-icon" aria-hidden="true">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
   </div>
-  <div class="md-source__repository">
-    jasonachkar/cybersecurity-writeups
-  </div>
+  <div class="md-source__repository">jasonachkar/cybersecurity-writeups</div>
 </a>
       </div>
     
   </nav>
   
 </header>
-<div class="md-container" data-md-component="container">
+    
+    <div class="md-container" data-md-component="container">
       
       
         
@@ -210,201 +221,2296 @@
           
             
               
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Cloud Security Engineering" class="md-nav__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Cloud Security Engineering
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jasonachkar/cybersecurity-writeups" title="Repository source" class="md-source">
+  <div class="md-source__icon md-icon" aria-hidden="true">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">jasonachkar/cybersecurity-writeups</div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../research/" class="md-nav__link ">
               
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../cloud-security/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Security
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Cloud Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/iam-at-scale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IAM and workload federation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/cloud-network-segmentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network segmentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/multi-account-landing-zones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Landing zones
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/kubernetes-multi-tenancy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes isolation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/cloud-detection-and-response/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Detection and response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/serverless-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serverless security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../appsec/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Security
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Application Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appsec/ai-agent-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI-agent authorization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appsec/saas-multitenancy-isolation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-tenant SaaS isolation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appsec/oauth2-oidc-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 and OIDC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appsec/api-microservices-threat-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API threat modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../appsec/runtime-protection-rasp-waf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime protection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../devsecops/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DevSecOps
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DevSecOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/secure-cicd-pipeline-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secure CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/iac-security-and-policy-as-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IaC policy engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/supply-chain-sbom-signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supply-chain evidence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/secureobs-multitenant-security-scanner/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SecureObs architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../threat-intel/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Intelligence
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Threat Intelligence
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../threat-intel/attack-path-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attack-path analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../threat-intel/cloud-breach-case-studies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incident case studies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../labs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Labs
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Labs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/secure-cicd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secure CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/iam-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IAM and OIDC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/oauth-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth and OIDC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/ai-agent-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI-agent security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/postgresql-rls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL RLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/kubernetes-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/supply-chain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supply-chain policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/iac-policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IaC policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/azure-landing-zone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Azure landing zone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripts
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Scripts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cloud-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../devsecops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DevSecOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../threat-intelligence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Intelligence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../study-notes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Study notes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Study notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/certification-notes/az-900/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AZ-900
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AZ-900
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/az-900/domain-1-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 1 - Cloud concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/az-900/domain-2-architecture-services/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 2 - Architecture and services
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/az-900/domain-3-management-governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 3 - Management and governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/certification-notes/sc-500/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SC-500
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SC-500
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-1-identity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 1 - Identity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-2-storage-networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 2 - Storage and networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-3-secure-compute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 3 - Secure compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-4-manage-monitor-posture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 4 - Manage and monitor posture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/security-plus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security+
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/google-cybersecurity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Google Cybersecurity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
             
             
               
-              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+</nav>
+                  </div>
+                </div>
+              </div>
             
           
           
-            <!-- docs-left-nav:start -->
-<aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group"><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview" aria-current="page">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
-</aside>
-<!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Scripts
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
               
               <article class="md-content__inner md-typeset">
-<!-- docs-article-header:start --><header class="docs-article-header"><!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/scripts/">Scripts</a></li><li aria-current="page">Application Security</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="application-security-scripts">Application Security scripts</h1></header><!-- docs-article-header:end --><p>The application security scripts and packages I've written, with their source shown directly below &mdash; no need to open GitHub to read them.</p><section id="oauth-pkce-verifier" aria-labelledby="oauth-pkce-verifier-heading">
-<h2 id="oauth-pkce-verifier-heading">OAuth PKCE (S256) verifier and generator</h2>
-<p class="docs-script-badges"><span class="docs-badge">Go</span><span class="docs-badge">Read-only</span><span class="docs-badge">Go test suite</span></p>
-<section class="docs-source-viewer" data-source-viewer id="source-oauth-pkce-verifier" aria-label="Source code: pkce.go">
+                
+                  
+  <header class="docs-article-header">
+  <h1 id="application-security-scripts">Application Security scripts</h1>
+  
+  <p class="docs-article-header__orientation">
+    <span>Application Security</span>
+    
+  </p>
+  
+</header>
+  
+  
+  <p>The application security scripts and packages I've written, with their source shown directly below — no need to open GitHub to read them.</p>
+  
+<section class="docs-script" id="oauth-pkce-verifier" aria-labelledby="oauth-pkce-verifier-heading">
+  <h2 id="oauth-pkce-verifier-heading">OAuth PKCE (S256) verifier and generator</h2>
+  <p class="docs-badges"><span>Go</span><span>Read-only</span><span>Go test suite</span></p>
+  
+
+<section class="docs-source-viewer" data-source-viewer data-search-exclude id="source-oauth-pkce-verifier" aria-label="Source code: pkce.go">
   <header class="docs-source-viewer__toolbar">
     <div class="docs-source-viewer__identity">
-      <div class="docs-source-viewer__title-row"><strong class="docs-source-viewer__toolbar-title" data-source-active-filename>pkce.go</strong><span class="docs-source-viewer__summary"><span data-source-active-language>Go</span><span aria-hidden="true"> · </span><span data-source-active-lines>85 lines</span></span></div>
-      <code class="docs-source-viewer__path" data-source-active-path title="appsec/scripts/oauth-pkce/pkce.go">appsec/scripts/oauth-pkce/pkce.go</code>
+      <div><strong data-source-active-filename>pkce.go</strong> <span class="docs-source-viewer__summary"><span data-source-active-language>Go</span> · <span data-source-active-lines>85 lines</span></span></div>
+      <code data-source-active-path title="appsec/scripts/oauth-pkce/pkce.go">appsec/scripts/oauth-pkce/pkce.go</code>
+    </div>
+    <div class="docs-source-viewer__links">
+      <a href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/appsec/scripts/oauth-pkce/pkce.go" data-source-github>Open on GitHub</a>
+      <a href="https://raw.githubusercontent.com/jasonachkar/cybersecurity-writeups/main/appsec/scripts/oauth-pkce/pkce.go" data-source-raw>View raw</a>
     </div>
     <div class="docs-source-viewer__actions" data-source-actions>
-      <button type="button" class="docs-source-viewer__button" data-copy-source>Copy</button>
-      <button type="button" class="docs-source-viewer__button" aria-pressed="false" data-wrap-source>Wrap</button>
-      <button type="button" class="docs-source-viewer__button" aria-expanded="false" data-expand-source hidden>Expand</button>
+      <button type="button" data-copy-source>Copy</button>
+      <button type="button" data-wrap-source aria-pressed="false">Wrap</button>
+      <button type="button" data-expand-source aria-expanded="false" hidden>Expand</button>
     </div>
     <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
   </header>
-  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files"><button type="button" role="tab" id="source-oauth-pkce-verifier-tab-0" aria-controls="source-oauth-pkce-verifier-panel-0" aria-selected="true" tabindex="0" class="docs-source-viewer__tab" data-current-tab data-source-tab data-index="0">Implementation</button><button type="button" role="tab" id="source-oauth-pkce-verifier-tab-1" aria-controls="source-oauth-pkce-verifier-panel-1" aria-selected="false" tabindex="-1" class="docs-source-viewer__tab" data-source-tab data-index="1">Tests</button></div>
-  <div role="tabpanel" id="source-oauth-pkce-verifier-panel-0" aria-labelledby="source-oauth-pkce-verifier-tab-0" class="docs-source-viewer__panel" data-source-panel data-index="0" data-source-filename="pkce.go" data-source-language="Go" data-source-path="appsec/scripts/oauth-pkce/pkce.go" data-source-lines="85" data-source-highlighter="shiki">
-      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="pkce.go source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-go"><span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// Package oauthpkce is a bounded educational S256-only OAuth PKCE verifier.</span></span>
-<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// It deliberately never logs verifiers or challenges.</span></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">package</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">oauthpkce</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">crypto/rand</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">crypto/sha256</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">crypto/subtle</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">encoding/base64</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">errors</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">fmt</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">math/big</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">regexp</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">MinVerifierLength</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">43</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">MaxVerifierLength</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">128</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">var</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> verifierPattern </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> regexp.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">MustCompile</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`^[A-Za-z0-9\-._~]+$`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// IsValidCodeVerifier enforces the RFC 7636 length and unreserved-character rules.</span></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">verifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MinVerifierLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MaxVerifierLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		verifierPattern.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">MatchString</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// GenerateRandomVerifier returns an RFC 7636 verifier generated from crypto/rand.</span></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">GenerateRandomVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">length</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">int</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MinVerifierLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MaxVerifierLength {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Errorf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;verifier length must be between </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%d</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> and </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%d</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> characters&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			MinVerifierLength,</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			MaxVerifierLength,</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">alphabet</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	alphabetLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> big.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">NewInt</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">int64</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(alphabet)))</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	verifier </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">make</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, length)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> index </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> verifier {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		randomIndex, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> rand.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Int</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(rand.Reader, alphabetLength)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Errorf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;generate verifier entropy: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%w</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, err)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		verifier[index] </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> alphabet[randomIndex.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Int64</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()]</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// ComputeChallengeS256 derives BASE64URL(SHA-256(ASCII(code_verifier))).</span></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ComputeChallengeS256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">verifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier) {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, errors.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">New</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;code_verifier does not satisfy RFC 7636 syntax&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	sum </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sha256.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Sum256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier))</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> base64.RawURLEncoding.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">EncodeToString</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(sum[:]), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isValidS256Challenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">challenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	decoded, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> base64.RawURLEncoding.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Strict</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">().</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DecodeString</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(challenge)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(decoded) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sha256.Size</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// ValidatePKCES256 validates one token request against its stored authorization</span></span>
-<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// transaction. It rejects method downgrade and malformed inputs before performing a</span></span>
-<span class="line"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// constant-time comparison of equal-length S256 challenges.</span></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">codeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">storedChallenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">method</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> method </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(codeVerifier) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isValidS256Challenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(storedChallenge) {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	computedChallenge, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ComputeChallengeS256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(codeVerifier)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> subtle.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ConstantTimeCompare</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		[]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(computedChallenge),</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		[]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(storedChallenge),</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
-</code></pre>
-    </div><div role="tabpanel" id="source-oauth-pkce-verifier-panel-1" aria-labelledby="source-oauth-pkce-verifier-tab-1" class="docs-source-viewer__panel" data-source-panel data-index="1" data-source-filename="pkce_test.go" data-source-language="Go" data-source-path="appsec/scripts/oauth-pkce/pkce_test.go" data-source-lines="56" data-source-highlighter="shiki" hidden>
-      <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="pkce_test.go source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-go"><span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">package</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">oauthpkce_test</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	oauthpkce </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">github.com/jasonachkar/cybersecurity-writeups/appsec/scripts/oauth-pkce</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">vectorVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">vectorChallenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">wrongVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXa&quot;</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">invalidCharacterVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjX!&quot;</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	tests </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">struct</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		name      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		verifier  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		challenge </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		method    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		want      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}{</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;RFC 7636 S256 vector is accepted&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;wrong verifier is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, wrongVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;plain method downgrade is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, vectorVerifier, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;plain&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;method names are not normalized&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;s256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;short verifier is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;too-short&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;non-unreserved character is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, invalidCharacterVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;malformed stored challenge is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;not-base64url!&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, tt </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tests {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Run</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tt.name, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			got </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tt.verifier, tt.challenge, tt.method)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> got </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tt.want {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ValidatePKCES256() = </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">, want </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, got, tt.want)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			}</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		})</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
-<span class="line"></span>
-<span class="line"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestGeneratedVerifierRoundTrip</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	verifier, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">GenerateRandomVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">64</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;GenerateRandomVerifier: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, err)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier) {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;generated verifier failed syntax validation&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	challenge, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ComputeChallengeS256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ComputeChallengeS256: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, err)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier, challenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;generated verifier round trip was rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span>
-<span class="line"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span>
-</code></pre>
-    </div>
+  
+  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files">
+    
+    <button type="button" role="tab" id="source-oauth-pkce-verifier-tab-0" aria-controls="source-oauth-pkce-verifier-panel-0" aria-selected="true" tabindex="0" data-source-tab data-index="0" data-current-tab>Implementation</button>
+    
+    <button type="button" role="tab" id="source-oauth-pkce-verifier-tab-1" aria-controls="source-oauth-pkce-verifier-panel-1" aria-selected="false" tabindex="-1" data-source-tab data-index="1">Tests</button>
+    
+  </div>
+  
+  
+  <div role="tabpanel" id="source-oauth-pkce-verifier-panel-0" class="docs-source-viewer__panel" data-source-panel data-index="0" data-source-filename="pkce.go" data-source-language="Go" data-source-path="appsec/scripts/oauth-pkce/pkce.go" data-source-lines="85" data-source-github="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/appsec/scripts/oauth-pkce/pkce.go" data-source-raw="https://raw.githubusercontent.com/jasonachkar/cybersecurity-writeups/main/appsec/scripts/oauth-pkce/pkce.go">
+    <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="pkce.go source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-go"><span class="line" id="source-oauth-pkce-verifier-0-L1"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L1" aria-label="Link to line 1">1</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// Package oauthpkce is a bounded educational S256-only OAuth PKCE verifier.</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L2"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L2" aria-label="Link to line 2">2</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// It deliberately never logs verifiers or challenges.</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L3"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L3" aria-label="Link to line 3">3</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">package</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">oauthpkce</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L4"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L4" aria-label="Link to line 4">4</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L5"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L5" aria-label="Link to line 5">5</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L6"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L6" aria-label="Link to line 6">6</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">crypto/rand</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L7"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L7" aria-label="Link to line 7">7</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">crypto/sha256</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L8"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L8" aria-label="Link to line 8">8</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">crypto/subtle</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L9"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L9" aria-label="Link to line 9">9</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">encoding/base64</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L10"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L10" aria-label="Link to line 10">10</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">errors</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L11"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L11" aria-label="Link to line 11">11</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">fmt</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L12"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L12" aria-label="Link to line 12">12</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">math/big</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L13"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L13" aria-label="Link to line 13">13</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">regexp</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L14"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L14" aria-label="Link to line 14">14</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L15"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L15" aria-label="Link to line 15">15</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L16"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L16" aria-label="Link to line 16">16</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L17"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L17" aria-label="Link to line 17">17</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">MinVerifierLength</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">43</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L18"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L18" aria-label="Link to line 18">18</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">MaxVerifierLength</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">128</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L19"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L19" aria-label="Link to line 19">19</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L20"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L20" aria-label="Link to line 20">20</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L21"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L21" aria-label="Link to line 21">21</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">var</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> verifierPattern </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> regexp.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">MustCompile</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">`^[A-Za-z0-9\-._~]+$`</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L22"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L22" aria-label="Link to line 22">22</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L23"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L23" aria-label="Link to line 23">23</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// IsValidCodeVerifier enforces the RFC 7636 length and unreserved-character rules.</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L24"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L24" aria-label="Link to line 24">24</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">verifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L25"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L25" aria-label="Link to line 25">25</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L26"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L26" aria-label="Link to line 26">26</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MinVerifierLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L27"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L27" aria-label="Link to line 27">27</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MaxVerifierLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L28"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L28" aria-label="Link to line 28">28</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		verifierPattern.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">MatchString</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L29"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L29" aria-label="Link to line 29">29</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L30"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L30" aria-label="Link to line 30">30</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L31"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L31" aria-label="Link to line 31">31</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// GenerateRandomVerifier returns an RFC 7636 verifier generated from crypto/rand.</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L32"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L32" aria-label="Link to line 32">32</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">GenerateRandomVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">length</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">int</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L33"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L33" aria-label="Link to line 33">33</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&lt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MinVerifierLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> length </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&gt;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> MaxVerifierLength {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L34"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L34" aria-label="Link to line 34">34</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Errorf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L35"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L35" aria-label="Link to line 35">35</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;verifier length must be between </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%d</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> and </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%d</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF"> characters&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">,</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L36"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L36" aria-label="Link to line 36">36</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			MinVerifierLength,</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L37"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L37" aria-label="Link to line 37">37</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			MaxVerifierLength,</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L38"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L38" aria-label="Link to line 38">38</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L39"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L39" aria-label="Link to line 39">39</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L40"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L40" aria-label="Link to line 40">40</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L41"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L41" aria-label="Link to line 41">41</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">alphabet</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L42"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L42" aria-label="Link to line 42">42</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	alphabetLength </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> big.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">NewInt</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">int64</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(alphabet)))</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L43"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L43" aria-label="Link to line 43">43</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	verifier </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">make</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, length)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L44"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L44" aria-label="Link to line 44">44</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> index </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> verifier {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L45"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L45" aria-label="Link to line 45">45</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		randomIndex, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> rand.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Int</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(rand.Reader, alphabetLength)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L46"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L46" aria-label="Link to line 46">46</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L47"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L47" aria-label="Link to line 47">47</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, fmt.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Errorf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;generate verifier entropy: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%w</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, err)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L48"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L48" aria-label="Link to line 48">48</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L49"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L49" aria-label="Link to line 49">49</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		verifier[index] </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> alphabet[randomIndex.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Int64</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">()]</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L50"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L50" aria-label="Link to line 50">50</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L51"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L51" aria-label="Link to line 51">51</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L52"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L52" aria-label="Link to line 52">52</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L53"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L53" aria-label="Link to line 53">53</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L54"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L54" aria-label="Link to line 54">54</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// ComputeChallengeS256 derives BASE64URL(SHA-256(ASCII(code_verifier))).</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L55"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L55" aria-label="Link to line 55">55</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ComputeChallengeS256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">verifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) (</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">error</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L56"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L56" aria-label="Link to line 56">56</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier) {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L57"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L57" aria-label="Link to line 57">57</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, errors.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">New</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;code_verifier does not satisfy RFC 7636 syntax&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L58"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L58" aria-label="Link to line 58">58</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L59"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L59" aria-label="Link to line 59">59</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	sum </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sha256.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Sum256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">([]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier))</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L60"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L60" aria-label="Link to line 60">60</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> base64.RawURLEncoding.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">EncodeToString</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(sum[:]), </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L61"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L61" aria-label="Link to line 61">61</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L62"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L62" aria-label="Link to line 62">62</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L63"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L63" aria-label="Link to line 63">63</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isValidS256Challenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">challenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L64"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L64" aria-label="Link to line 64">64</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	decoded, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> base64.RawURLEncoding.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Strict</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">().</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">DecodeString</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(challenge)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L65"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L65" aria-label="Link to line 65">65</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">&amp;&amp;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">len</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(decoded) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> sha256.Size</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L66"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L66" aria-label="Link to line 66">66</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L67"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L67" aria-label="Link to line 67">67</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L68"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L68" aria-label="Link to line 68">68</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// ValidatePKCES256 validates one token request against its stored authorization</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L69"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L69" aria-label="Link to line 69">69</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// transaction. It rejects method downgrade and malformed inputs before performing a</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L70"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L70" aria-label="Link to line 70">70</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#6E7781;--shiki-dark:#8B949E">// constant-time comparison of equal-length S256 challenges.</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L71"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L71" aria-label="Link to line 71">71</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">codeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">storedChallenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">method</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L72"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L72" aria-label="Link to line 72">72</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> method </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(codeVerifier) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">||</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L73"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L73" aria-label="Link to line 73">73</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">isValidS256Challenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(storedChallenge) {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L74"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L74" aria-label="Link to line 74">74</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L75"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L75" aria-label="Link to line 75">75</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L76"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L76" aria-label="Link to line 76">76</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L77"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L77" aria-label="Link to line 77">77</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	computedChallenge, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ComputeChallengeS256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(codeVerifier)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L78"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L78" aria-label="Link to line 78">78</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L79"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L79" aria-label="Link to line 79">79</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L80"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L80" aria-label="Link to line 80">80</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L81"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L81" aria-label="Link to line 81">81</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">return</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> subtle.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ConstantTimeCompare</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L82"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L82" aria-label="Link to line 82">82</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		[]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(computedChallenge),</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L83"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L83" aria-label="Link to line 83">83</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		[]</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">byte</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(storedChallenge),</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L84"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L84" aria-label="Link to line 84">84</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	) </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">==</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">1</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-0-L85"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-0-L85" aria-label="Link to line 85">85</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span></span></code></pre>
+  </div>
+  
+  <div role="tabpanel" id="source-oauth-pkce-verifier-panel-1" class="docs-source-viewer__panel" data-source-panel data-index="1" data-source-filename="pkce_test.go" data-source-language="Go" data-source-path="appsec/scripts/oauth-pkce/pkce_test.go" data-source-lines="56" data-source-github="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/appsec/scripts/oauth-pkce/pkce_test.go" data-source-raw="https://raw.githubusercontent.com/jasonachkar/cybersecurity-writeups/main/appsec/scripts/oauth-pkce/pkce_test.go" hidden>
+    <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="pkce_test.go source code" style="--shiki-light:#1f2328;--shiki-dark:#e6edf3;--shiki-light-bg:#ffffff;--shiki-dark-bg:#0d1117"><code class="language-go"><span class="line" id="source-oauth-pkce-verifier-1-L1"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L1" aria-label="Link to line 1">1</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">package</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">oauthpkce_test</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L2"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L2" aria-label="Link to line 2">2</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L3"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L3" aria-label="Link to line 3">3</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">import</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> (</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L4"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L4" aria-label="Link to line 4">4</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L5"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L5" aria-label="Link to line 5">5</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L6"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L6" aria-label="Link to line 6">6</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	oauthpkce </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">github.com/jasonachkar/cybersecurity-writeups/appsec/scripts/oauth-pkce</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L7"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L7" aria-label="Link to line 7">7</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L8"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L8" aria-label="Link to line 8">8</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L9"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L9" aria-label="Link to line 9">9</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L10"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L10" aria-label="Link to line 10">10</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">vectorVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L11"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L11" aria-label="Link to line 11">11</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">vectorChallenge</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L12"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L12" aria-label="Link to line 12">12</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">wrongVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXa&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L13"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L13" aria-label="Link to line 13">13</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">const</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">invalidCharacterVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjX!&quot;</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L14"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L14" aria-label="Link to line 14">14</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L15"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L15" aria-label="Link to line 15">15</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	tests </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> []</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">struct</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L16"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L16" aria-label="Link to line 16">16</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		name      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L17"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L17" aria-label="Link to line 17">17</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		verifier  </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L18"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L18" aria-label="Link to line 18">18</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		challenge </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L19"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L19" aria-label="Link to line 19">19</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		method    </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">string</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L20"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L20" aria-label="Link to line 20">20</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		want      </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">bool</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L21"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L21" aria-label="Link to line 21">21</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}{</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L22"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L22" aria-label="Link to line 22">22</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;RFC 7636 S256 vector is accepted&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">true</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L23"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L23" aria-label="Link to line 23">23</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;wrong verifier is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, wrongVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L24"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L24" aria-label="Link to line 24">24</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;plain method downgrade is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, vectorVerifier, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;plain&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L25"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L25" aria-label="Link to line 25">25</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;method names are not normalized&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;s256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L26"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L26" aria-label="Link to line 26">26</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;short verifier is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;too-short&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L27"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L27" aria-label="Link to line 27">27</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;non-unreserved character is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, invalidCharacterVerifier, vectorChallenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L28"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L28" aria-label="Link to line 28">28</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		{</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;malformed stored challenge is rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, vectorVerifier, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;not-base64url!&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">false</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">},</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L29"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L29" aria-label="Link to line 29">29</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L30"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L30" aria-label="Link to line 30">30</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L31"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L31" aria-label="Link to line 31">31</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">for</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> _, tt </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">range</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tests {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L32"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L32" aria-label="Link to line 32">32</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Run</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tt.name, </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L33"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L33" aria-label="Link to line 33">33</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			got </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(tt.verifier, tt.challenge, tt.method)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L34"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L34" aria-label="Link to line 34">34</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> got </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> tt.want {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L35"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L35" aria-label="Link to line 35">35</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">				t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ValidatePKCES256() = </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">, want </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, got, tt.want)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L36"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L36" aria-label="Link to line 36">36</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">			}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L37"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L37" aria-label="Link to line 37">37</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		})</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L38"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L38" aria-label="Link to line 38">38</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L39"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L39" aria-label="Link to line 39">39</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L40"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L40" aria-label="Link to line 40">40</a><span class="docs-source-viewer__line-content"> </span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L41"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L41" aria-label="Link to line 41">41</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">func</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">TestGeneratedVerifierRoundTrip</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">t</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">*</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">testing</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">.</span><span style="--shiki-light:#953800;--shiki-dark:#FFA657">T</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L42"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L42" aria-label="Link to line 42">42</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	verifier, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">GenerateRandomVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">64</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L43"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L43" aria-label="Link to line 43">43</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L44"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L44" aria-label="Link to line 44">44</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;GenerateRandomVerifier: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, err)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L45"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L45" aria-label="Link to line 45">45</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L46"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L46" aria-label="Link to line 46">46</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">IsValidCodeVerifier</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier) {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L47"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L47" aria-label="Link to line 47">47</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;generated verifier failed syntax validation&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L48"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L48" aria-label="Link to line 48">48</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L49"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L49" aria-label="Link to line 49">49</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	challenge, err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">:=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ComputeChallengeS256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L50"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L50" aria-label="Link to line 50">50</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> err </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!=</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#0550AE;--shiki-dark:#79C0FF">nil</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L51"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L51" aria-label="Link to line 51">51</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatalf</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;ComputeChallengeS256: </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">%v</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">, err)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L52"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L52" aria-label="Link to line 52">52</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L53"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L53" aria-label="Link to line 53">53</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	</span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">if</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3"> </span><span style="--shiki-light:#CF222E;--shiki-dark:#FF7B72">!</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">oauthpkce.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">ValidatePKCES256</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(verifier, challenge, </span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;S256&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">) {</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L54"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L54" aria-label="Link to line 54">54</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">		t.</span><span style="--shiki-light:#8250DF;--shiki-dark:#D2A8FF">Fatal</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">(</span><span style="--shiki-light:#0A3069;--shiki-dark:#A5D6FF">&quot;generated verifier round trip was rejected&quot;</span><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">)</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L55"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L55" aria-label="Link to line 55">55</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">	}</span></span></span>
+<span class="line" id="source-oauth-pkce-verifier-1-L56"><a class="docs-source-viewer__line-number" href="#source-oauth-pkce-verifier-1-L56" aria-label="Link to line 56">56</a><span class="docs-source-viewer__line-content"><span style="--shiki-light:#1F2328;--shiki-dark:#E6EDF3">}</span></span></span></code></pre>
+  </div>
+  
 </section>
-<h3>What it does</h3><p>A small, dependency-free implementation of RFC 7636&#39;s S256 PKCE flow: generating a valid random verifier, deriving its challenge, and validating a verifier against a stored challenge using a constant-time comparison.</p>
-<h3>Why I wrote it</h3><p>The OAuth/OIDC write-up needed a real PKCE implementation behind its test cases instead of a description of one, so I wrote the minimal correct version and used it as that reference implementation.</p>
-<h3>How it works</h3><p>GenerateRandomVerifier draws from crypto/rand and formats the result to RFC 7636&#39;s unreserved-character alphabet. ComputeChallengeS256 does the SHA-256 + base64url-no-padding derivation. ValidatePKCES256 recomputes the expected challenge from the supplied verifier and compares it to the stored one with crypto/subtle.ConstantTimeCompare, and only accepts the S256 method (deliberately, plain is never accepted).</p>
-<h3>Requirements</h3><ul><li>Go 1.22+</li></ul>
-<h3>Permissions and safety</h3><p>None — no filesystem, network, or credential access. It deliberately never logs the verifier or challenge values it handles.</p>
-<h3>Usage</h3><pre><code>go test ./appsec/scripts/oauth-pkce/...</code></pre>
-<h3>Inputs</h3><p>A verifier length (for generation) or a verifier/challenge/method triple (for validation).</p>
-<h3>Outputs</h3><p>A verifier string, a challenge string, or a boolean validation result.</p>
-<h3>What I tested</h3><p>pkce_test.go exercises the correct round trip plus the negative cases: a wrong verifier, a plain-method downgrade attempt, wrong verifier length, invalid characters, and a malformed stored challenge.</p>
-<h3>Limitations</h3><ul><li>This checks the PKCE mechanics only — it says nothing about redirect-URI matching, state/nonce handling, or token validation, which live in the OAuth/OIDC lab instead.</li><li>No CLI entry point; it is meant to be imported or exercised via its tests.</li></ul>
-<h3>Related research</h3><ul><li>Related research: <a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li>Related lab: <a href="/labs/oauth-oidc/">OAuth/OIDC lab</a></li></ul>
+  <h3>What it does</h3><p>Implements RFC 7636 S256 verifier generation, challenge derivation, and constant-time verification.</p>
+  <h3>Why it exists</h3><p>The OAuth/OIDC research needed a runnable PKCE reference implementation behind its boundary tests.</p>
+  <h3>Permissions and safety</h3><p>None. It performs no filesystem, network, or credential access.</p>
+  <h3>Usage</h3><pre><code>go test ./appsec/scripts/oauth-pkce/...</code></pre>
+  <h3>What was tested</h3><p>The suite covers successful round trips, wrong verifiers, downgrade attempts, invalid lengths and characters, and malformed challenges.</p>
+  <h3>Limitations</h3><ul><li>It covers PKCE mechanics only, not the complete OAuth authorization flow.</li><li>It is a package rather than a standalone CLI.</li></ul>
+  
+  <div class="docs-script__related"><h3>Related content</h3><ul>
+    <li>Research: <a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li>
+    <li>Lab: <a href="/labs/oauth-oidc/">OAuth and OIDC</a></li>
+  </ul></div>
 </section>
 
-<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/scripts/cloud-security/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Scripts</span><span class="docs-prevnext__title">Cloud Security</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/scripts/devsecops/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Scripts</span><span class="docs-prevnext__title">DevSecOps</span></a></nav><!-- docs-prevnext:end -->
-</article>
+  
+
+                
+              </article>
             </div>
           
           
@@ -420,20 +2526,55 @@
       </main>
       
         <footer class="md-footer">
-<!-- docs-footer:start -->
-<div class="docs-footer">
-  <p class="docs-footer__copyright">&copy; 2026 Jason Achkar Diab</p>
-  <ul class="docs-footer__links">
-    <li><a href="/#featured-research">Research</a></li>
-    <li><a href="/#validated-labs">Labs</a></li>
-    <li><a href="/scripts/">Scripts</a></li>
-    <li><a href="/#study-notes">Study notes</a></li>
-    <li><a href="/about/">About</a></li>
-    <li><a href="https://github.com/jasonachkar/cybersecurity-writeups">GitHub</a></li>
-  </ul>
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../cloud-security/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Cloud Security">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Cloud Security
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../devsecops/" class="md-footer__link md-footer__link--next" aria-label="Next: DevSecOps">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                DevSecOps
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  &copy; 2026 Jason Achkardiab. All rights reserved.
 </div>
-<!-- docs-footer:end -->
-
+      
+    </div>
+  </div>
 </footer>
       
     </div>
@@ -445,13 +2586,14 @@
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.breadcrumbs", "search.suggest", "search.highlight", "content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.path", "navigation.indexes", "navigation.footer", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
-<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
-<script src="../../assets/javascripts/docs-ui.js" defer></script>
-<script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
+      
+        <script src="../../js/docs-ui.js"></script>
+      
+        <script src="../../js/source-viewer.js"></script>
       
     
   </body>

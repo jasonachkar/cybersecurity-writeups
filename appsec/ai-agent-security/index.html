@@ -6,18 +6,30 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
+        <meta name="description" content="External authorization, action-bound approval, concurrent local consumption, and bounded tool execution.">
       
       
         <meta name="author" content="Jason Achkar Diab">
       
       
-        <link rel="icon" href="../../assets/images/favicon.png">
+        <link rel="canonical" href="https://docs.jasonachkardiab.com/appsec/ai-agent-security/">
+      
+      
+        <link rel="prev" href="../">
+      
+      
+        <link rel="next" href="../saas-multitenancy-isolation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
     
     
       
-        <title>Threat-Driven Security Architecture for AI Agents | Jason Achkar Diab</title>
+        <title>Threat-Driven Security Architecture for AI Agents - Cloud Security Engineering</title>
       
     
     
@@ -35,19 +47,24 @@
     
     
       
-        
-        
-        <link rel="stylesheet" href="../../css/custom.css">
-<link rel="stylesheet" href="../../css/portfolio.css">
-<script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+    
+      <link rel="stylesheet" href="../../css/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
 
     
     
-                    <link rel="canonical" href="https://docs.jasonachkardiab.com/appsec/ai-agent-security/">
-  <meta name="robots" content="index, follow">
-</head>
+  
+  
+  
+    <meta property="og:description" content="External authorization, action-bound approval, concurrent local consumption, and bounded tool execution.">
+    <meta name="twitter:description" content="External authorization, action-bound approval, concurrent local consumption, and bounded tool execution.">
+  
+
+  </head>
   
   
     
@@ -66,7 +83,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#threat-driven-security-architecture-for-ai-agents" class="md-skip">
+        <a href="#whats-actually-built-here-versus-whats-a-design" class="md-skip">
           Skip to content
         </a>
       
@@ -80,15 +97,15 @@
 
   
 
-<header class="md-header" data-md-component="header">
+<header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="Security Engineering Docs" class="md-header__button md-logo" aria-label="Security Engineering Docs" data-md-component="logo">
+    <a href="../.." title="Cloud Security Engineering" class="md-header__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    <label class="md-header__button md-icon" for="__drawer" tabindex="0">
+    <label class="md-header__button md-icon" for="__drawer">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
     </label>
@@ -96,7 +113,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            Security Engineering Docs
+            Cloud Security Engineering
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -142,11 +159,11 @@
     
       
       
-        <label class="md-header__button md-icon" for="__search" aria-label="Search documentation" tabindex="0">
+        <label class="md-header__button md-icon" for="__search">
           
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
         </label>
-        <div class="md-search" data-md-component="search" role="dialog" aria-label="Site search">
+        <div class="md-search" data-md-component="search" role="dialog">
   <label class="md-search__overlay" for="__search"></label>
   <div class="md-search__inner" role="search">
     <form class="md-search__form" name="search">
@@ -184,21 +201,20 @@
     
     
       <div class="md-header__source">
-        <a href="https://github.com/jasonachkar/cybersecurity-writeups" title="Go to repository" class="md-source" aria-label="GitHub repository: jasonachkar/cybersecurity-writeups">
-  <div class="md-source__icon md-icon">
+        <a href="https://github.com/jasonachkar/cybersecurity-writeups" title="Repository source" class="md-source">
+  <div class="md-source__icon md-icon" aria-hidden="true">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
   </div>
-  <div class="md-source__repository">
-    jasonachkar/cybersecurity-writeups
-  </div>
+  <div class="md-source__repository">jasonachkar/cybersecurity-writeups</div>
 </a>
       </div>
     
   </nav>
   
 </header>
-<div class="md-container" data-md-component="container">
+    
+    <div class="md-container" data-md-component="container">
       
       
         
@@ -210,164 +226,3020 @@
           
             
               
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="Cloud Security Engineering" class="md-nav__button md-logo" aria-label="Cloud Security Engineering" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Cloud Security Engineering
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/jasonachkar/cybersecurity-writeups" title="Repository source" class="md-source">
+  <div class="md-source__icon md-icon" aria-hidden="true">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">jasonachkar/cybersecurity-writeups</div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../research/" class="md-nav__link ">
               
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Research
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2" id="__nav_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Research
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../cloud-security/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Security
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Cloud Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/iam-at-scale/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IAM and workload federation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/cloud-network-segmentation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Network segmentation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/multi-account-landing-zones/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Landing zones
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/kubernetes-multi-tenancy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes isolation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/cloud-detection-and-response/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Detection and response
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cloud-security/serverless-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Serverless security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Security
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Application Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI-agent authorization
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI-agent authorization
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#whats-actually-built-here-versus-whats-a-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's actually built here versus what's a design
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The core decision
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope-non-goals-and-assumptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope, non-goals, and assumptions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scope, non-goals, and assumptions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-established-by-this-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not established by this design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assumptions-to-validate-per-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assumptions to validate per deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assets-actors-and-security-invariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets, actors, and security invariants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-and-trust-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture and trust boundaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threat-model-and-required-negative-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat model and required negative evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#control-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Control design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keep-instructions-and-authority-separate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep instructions and authority separate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isolate-retrieval-and-prevent-cross-tenant-rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Isolate retrieval and prevent cross-tenant RAG
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authorize-capabilities-outside-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authorize capabilities outside the model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#treat-mcp-and-tool-servers-as-security-principals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treat MCP and tool servers as security principals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-model-and-tool-output-at-every-sink" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validate model and tool output at every sink
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#govern-durable-memory-as-a-data-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Govern durable memory as a data store
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sandbox-execution-egress-and-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sandbox execution, egress, and secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#require-bound-approval-for-high-impact-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Require bound approval for high-impact actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-an-independent-kill-switch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build an independent kill switch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-modes-and-explicit-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure modes and explicit semantics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-and-release-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation and release evidence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evaluation and release evidence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deterministic-boundary-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deterministic boundary tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-and-system-evaluations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model and system evaluations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tested-companion-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tested companion lab
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#staged-rollout-and-rollback-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Staged rollout and rollback gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-and-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Observability and operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#incident-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Incident response
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-and-agent-supply-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model and agent supply chain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standards-and-version-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standards and version baseline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-still-not-solved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's still not solved
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#engineering-and-operational-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engineering and operational checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../saas-multitenancy-isolation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Multi-tenant SaaS isolation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../oauth2-oidc-deep-dive/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth 2.0 and OIDC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-microservices-threat-modeling/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API threat modeling
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runtime-protection-rasp-waf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runtime protection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../devsecops/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DevSecOps
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_4" id="__nav_2_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    DevSecOps
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/secure-cicd-pipeline-design/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secure CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/iac-security-and-policy-as-code/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IaC policy engineering
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/supply-chain-sbom-signing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supply-chain evidence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/secrets-management/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets management
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../devsecops/secureobs-multitenant-security-scanner/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SecureObs architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../threat-intel/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Intelligence
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_5" id="__nav_2_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Threat Intelligence
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../threat-intel/attack-path-analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attack-path analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../threat-intel/cloud-breach-case-studies/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incident case studies
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../labs/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Labs
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Labs
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/secure-cicd/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secure CI/CD
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/iam-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IAM and OIDC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/oauth-oidc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OAuth and OIDC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/ai-agent-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AI-agent security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/postgresql-rls/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    PostgreSQL RLS
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/kubernetes-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kubernetes security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/supply-chain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Supply-chain policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/iac-policy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    IaC policy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../labs/azure-landing-zone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Azure landing zone
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../scripts/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scripts
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Scripts
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scripts/cloud-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cloud Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scripts/application-security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Application Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scripts/devsecops/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    DevSecOps
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scripts/threat-intelligence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Intelligence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../study-notes/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Study notes
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5" id="__nav_5_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Study notes
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_2" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/certification-notes/az-900/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    AZ-900
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_2" id="__nav_5_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    AZ-900
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/az-900/domain-1-concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 1 - Cloud concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/az-900/domain-2-architecture-services/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 2 - Architecture and services
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/az-900/domain-3-management-governance/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 3 - Management and governance
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../docs/certification-notes/sc-500/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SC-500
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_5_3" id="__nav_5_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    SC-500
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-1-identity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 1 - Identity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-2-storage-networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 2 - Storage and networking
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-3-secure-compute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 3 - Secure compute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/sc-500/domain-4-manage-monitor-posture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Domain 4 - Manage and monitor posture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/security-plus/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security+
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../docs/certification-notes/google-cybersecurity/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Google Cybersecurity
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
             
             
               
-              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#whats-actually-built-here-versus-whats-a-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's actually built here versus what's a design
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-core-decision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The core decision
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scope-non-goals-and-assumptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scope, non-goals, and assumptions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Scope, non-goals, and assumptions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#in-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        In scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#not-established-by-this-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Not established by this design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#assumptions-to-validate-per-deployment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assumptions to validate per deployment
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#assets-actors-and-security-invariants" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Assets, actors, and security invariants
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-and-trust-boundaries" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture and trust boundaries
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#threat-model-and-required-negative-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Threat model and required negative evidence
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#control-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Control design
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Control design">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#keep-instructions-and-authority-separate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keep instructions and authority separate
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#isolate-retrieval-and-prevent-cross-tenant-rag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Isolate retrieval and prevent cross-tenant RAG
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authorize-capabilities-outside-the-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authorize capabilities outside the model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#treat-mcp-and-tool-servers-as-security-principals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Treat MCP and tool servers as security principals
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-model-and-tool-output-at-every-sink" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validate model and tool output at every sink
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#govern-durable-memory-as-a-data-store" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Govern durable memory as a data store
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sandbox-execution-egress-and-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sandbox execution, egress, and secrets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#require-bound-approval-for-high-impact-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Require bound approval for high-impact actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#build-an-independent-kill-switch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Build an independent kill switch
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#failure-modes-and-explicit-semantics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Failure modes and explicit semantics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#evaluation-and-release-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evaluation and release evidence
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Evaluation and release evidence">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deterministic-boundary-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deterministic boundary tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#model-and-system-evaluations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model and system evaluations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tested-companion-lab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tested companion lab
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#staged-rollout-and-rollback-gates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Staged rollout and rollback gates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#observability-and-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Observability and operations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#incident-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Incident response
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#model-and-agent-supply-chain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Model and agent supply chain
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standards-and-version-baseline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Standards and version baseline
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#whats-still-not-solved" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's still not solved
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#engineering-and-operational-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Engineering and operational checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
             
           
           
-            <!-- docs-left-nav:start -->
-<aside class="docs-left-nav" id="docs-left-nav" aria-label="Documentation navigation">
-  <nav aria-label="Documentation"><ul><li><a href="/">Home</a></li><li><details class="docs-nav-group" open><summary>Research</summary><ul><li><a href="/research/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/cloud-security/iam-at-scale/">IAM and workload federation</a></li><li><a href="/cloud-security/cloud-network-segmentation/">Network segmentation</a></li><li><a href="/cloud-security/multi-account-landing-zones/">Landing zones</a></li><li><a href="/cloud-security/kubernetes-multi-tenancy/">Kubernetes isolation</a></li><li><a href="/cloud-security/cloud-detection-and-response/">Detection and response</a></li><li><a href="/cloud-security/serverless-security/">Serverless security</a></li></ul></details></li><li><details class="docs-nav-group" open><summary>Application Security</summary><ul><li><a href="/appsec/" class="docs-nav-overview">Overview</a></li><li><a href="/appsec/ai-agent-security/" aria-current="page">AI-agent authorization</a></li><li><a href="/appsec/saas-multitenancy-isolation/">Multi-tenant SaaS isolation</a></li><li><a href="/appsec/oauth2-oidc-deep-dive/">OAuth 2.0 and OIDC</a></li><li><a href="/appsec/api-microservices-threat-modeling/">API threat modeling</a></li><li><a href="/appsec/runtime-protection-rasp-waf/">Runtime protection</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/devsecops/secure-cicd-pipeline-design/">Secure CI/CD</a></li><li><a href="/devsecops/iac-security-and-policy-as-code/">IaC policy engineering</a></li><li><a href="/devsecops/supply-chain-sbom-signing/">Supply-chain evidence</a></li><li><a href="/devsecops/secrets-management/">Secrets management</a></li><li><a href="/devsecops/secureobs-multitenant-security-scanner/">SecureObs architecture</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/threat-intel/" class="docs-nav-overview">Overview</a></li><li><a href="/threat-intel/attack-path-analysis/">Attack-path analysis</a></li><li><a href="/threat-intel/cloud-breach-case-studies/">Incident case studies</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Labs</summary><ul><li><a href="/labs/" class="docs-nav-overview">Overview</a></li><li><a href="/labs/secure-cicd/">Secure CI/CD</a></li><li><a href="/labs/iam-oidc/">IAM and OIDC</a></li><li><a href="/labs/oauth-oidc/">OAuth and OIDC</a></li><li><a href="/labs/ai-agent-security/">AI-agent security</a></li><li><a href="/labs/postgresql-rls/">PostgreSQL RLS</a></li><li><a href="/labs/kubernetes-security/">Kubernetes security</a></li><li><a href="/labs/supply-chain/">Supply-chain policy</a></li><li><a href="/labs/iac-policy/">IaC policy</a></li><li><a href="/labs/azure-landing-zone/">Azure landing zone</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Scripts</summary><ul><li><a href="/scripts/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>Cloud Security</summary><ul><li><a href="/scripts/cloud-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/cloud-security/#k8s-rbac-auditor">Kubernetes RBAC privilege-escalation auditor</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Application Security</summary><ul><li><a href="/scripts/application-security/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/application-security/#oauth-pkce-verifier">OAuth PKCE (S256) verifier and generator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>DevSecOps</summary><ul><li><a href="/scripts/devsecops/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/devsecops/#kyverno-policy-schema-check">Kyverno policy schema validator</a></li><li><a href="/scripts/devsecops/#tetragon-policy-schema-check">Tetragon policy schema validator</a></li></ul></details></li><li><details class="docs-nav-group"><summary>Threat Intelligence</summary><ul><li><a href="/scripts/threat-intelligence/" class="docs-nav-overview">Overview</a></li><li><a href="/scripts/threat-intelligence/#cloudtrail-analyzer">CloudTrail suspicious-activity analyzer</a></li></ul></details></li></ul></details></li><li><details class="docs-nav-group"><summary>Study notes</summary><ul><li><a href="/study-notes/" class="docs-nav-overview">Overview</a></li><li><details class="docs-nav-group"><summary>AZ-900</summary><ul><li><a href="/docs/certification-notes/az-900/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/az-900/domain-1-concepts/">Domain 1: Cloud concepts</a></li><li><a href="/docs/certification-notes/az-900/domain-2-architecture-services/">Domain 2: Architecture &amp; services</a></li><li><a href="/docs/certification-notes/az-900/domain-3-management-governance/">Domain 3: Management &amp; governance</a></li></ul></details></li><li><details class="docs-nav-group"><summary>SC-500</summary><ul><li><a href="/docs/certification-notes/sc-500/" class="docs-nav-overview">Overview</a></li><li><a href="/docs/certification-notes/sc-500/domain-1-identity/">Domain 1: Identity</a></li><li><a href="/docs/certification-notes/sc-500/domain-2-storage-networking/">Domain 2: Storage &amp; networking</a></li><li><a href="/docs/certification-notes/sc-500/domain-3-secure-compute/">Domain 3: Secure compute</a></li><li><a href="/docs/certification-notes/sc-500/domain-4-manage-monitor-posture/">Domain 4: Manage, monitor &amp; posture</a></li></ul></details></li><li><a href="/docs/certification-notes/security-plus/">Security+</a></li><li><a href="/docs/certification-notes/google-cybersecurity/">Google Cybersecurity</a></li></ul></details></li><li><a href="/about/">About</a></li></ul></nav>
-</aside>
-<!-- docs-left-nav:end --><div class="md-content" data-md-component="content">
+            <div class="md-content" data-md-component="content">
+              
+                
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../../research/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Research
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Application Security
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
               
               <article class="md-content__inner md-typeset">
                 
                   
-
+  <header class="docs-article-header">
+  <h1 id="threat-driven-security-architecture-for-ai-agents">Threat-Driven Security Architecture for AI Agents</h1>
+  <p class="docs-article-header__summary">External authorization, action-bound approval, concurrent local consumption, and bounded tool execution.</p>
+  <p class="docs-article-header__orientation">
+    <span>Application Security</span>
+    <span aria-hidden="true">·</span><span>27 min read</span>
+  </p>
+  
+    <section class="docs-evidence" aria-labelledby="docs-evidence-heading">
+  <h2 id="docs-evidence-heading" class="docs-evidence__title">Evidence status</h2>
+  <dl class="docs-evidence__grid">
+    <div><dt>Implementation</dt><dd>Partially tested</dd></div>
+    <div><dt>Review</dt><dd>Partially verified</dd></div>
+    <div><dt>Sources</dt><dd>Primary sources reviewed</dd></div>
+    <div><dt>Last reviewed</dt><dd><time datetime="2026-07-25">2026-07-25</time></dd></div>
+  </dl>
+  <details class="docs-evidence__details">
+    <summary>What do these statuses mean?</summary>
+    <p><strong>Partially tested:</strong> Some controls are backed by executable tests, but the complete architecture is not production-validated.</p>
+    <p><strong>Partially verified:</strong> The article has reviewed evidence, but one or more documented validation gaps remain.</p>
+    <p><a href="../../about/#research-methodology">Read the research methodology</a></p>
+  </details>
+</section>
+    <nav class="docs-article-actions" aria-label="Article actions">
+  <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
+    <span data-focus-label>Focus</span>
+  </button>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/appsec/ai-agent-security.md">View source</a>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/edit/main/appsec/ai-agent-security.md">Edit on GitHub</a>
+</nav>
+  
+</header>
+  
+<aside class="docs-key-takeaway" aria-labelledby="docs-key-takeaway-heading">
+  <h2 id="docs-key-takeaway-heading">Key takeaway</h2>
+  <p>Treat the model as an untrusted planner: external identity, authorization, approval, and execution controls decide whether a proposed action may run.</p>
+</aside>
 
   
-  
-
-
-<!-- docs-article-header:start --><header class="docs-article-header"><!-- docs-breadcrumbs:start --><nav class="docs-breadcrumbs" aria-label="Breadcrumb"><ol><li><a href="/">Home</a></li><li><a href="/research/">Research</a></li><li><a href="/appsec/">Application Security</a></li><li aria-current="page">AI-agent authorization</li></ol></nav><!-- docs-breadcrumbs:end -->
-<h1 id="threat-driven-security-architecture-for-ai-agents">Threat-Driven Security Architecture for AI Agents</h1></header><!-- docs-article-header:end -->
-<!-- docs-inline-toc:start -->
-<details class="docs-inline-toc">
-  <summary>On this page</summary>
-  <nav aria-label="On this page (inline)">
-    <ol><li><a href="#evidence-and-implementation-status">What&#39;s actually built here versus what&#39;s a design</a></li><li><a href="#executive-security-decision">The core decision</a></li><li><a href="#scope-non-goals-and-assumptions">Scope, non-goals, and assumptions</a></li><li><a href="#assets-actors-and-security-invariants">Assets, actors, and security invariants</a></li><li><a href="#architecture-and-trust-boundaries">Architecture and trust boundaries</a></li><li><a href="#threat-model-and-required-negative-evidence">Threat model and required negative evidence</a></li><li><a href="#control-design">Control design</a></li><li><a href="#failure-modes-and-explicit-semantics">Failure modes and explicit semantics</a></li><li><a href="#evaluation-and-release-evidence">Evaluation and release evidence</a></li><li><a href="#staged-rollout-and-rollback-gates">Staged rollout and rollback gates</a></li><li><a href="#observability-and-operations">Observability and operations</a></li><li><a href="#incident-response">Incident response</a></li><li><a href="#model-and-agent-supply-chain">Model and agent supply chain</a></li><li><a href="#standards-and-version-baseline">Standards and version baseline</a></li><li><a href="#residual-risks-and-limitations">What&#39;s still not solved</a></li><li><a href="#engineering-and-operational-checklist">Engineering and operational checklist</a></li></ol>
-  </nav>
-</details>
-<!-- docs-inline-toc:end -->
-<p>The way I think about it: an AI agent is just an untrusted planner sitting inside a normal security system. The model can propose a tool, a target, some parameters, a whole workflow &mdash; but a deterministic control plane, not the model, decides whether that proposal is actually allowed. So every effect an agent can have on the outside world should go through a broker that pulls identity and tenant context from outside the model, applies its own resource limits, asks for approval when the stakes are high, and logs the decision before it ever calls a narrowly scoped tool.</p>
+  <p>The way I think about it: an AI agent is just an untrusted planner sitting inside a normal security system. The model can propose a tool, a target, some parameters, a whole workflow — but a deterministic control plane, not the model, decides whether that proposal is actually allowed. So every effect an agent can have on the outside world should go through a broker that pulls identity and tenant context from outside the model, applies its own resource limits, asks for approval when the stakes are high, and logs the decision before it ever calls a narrowly scoped tool.</p>
 <p>System prompts and content filters are not authorization boundaries, and I don't treat them as one.</p>
-<p>They're still worth having as defense in depth &mdash; they steer behavior and cut down on unsafe output &mdash; but neither one tells you who the user is, which tenant they belong to, what they're entitled to, or whether they actually agreed to a transaction. An injected instruction, a poisoned retrieval result, a model that regresses, or an unexpected tool response should never be able to grant a capability on its own.</p>
-<h2 id="evidence-and-implementation-status">What's actually built here versus what's a design</h2>
+<p>They're still worth having as defense in depth — they steer behavior and cut down on unsafe output — but neither one tells you who the user is, which tenant they belong to, what they're entitled to, or whether they actually agreed to a transaction. An injected instruction, a poisoned retrieval result, a model that regresses, or an unexpected tool response should never be able to grant a capability on its own.</p>
+<h2 id="whats-actually-built-here-versus-whats-a-design">What's actually built here versus what's a design</h2>
 <p>I want to be upfront about what backs this write-up, because it's easy to blur "I designed this" with "I ran this":</p>
 <ul>
-<li><strong>The design:</strong> the end-to-end architecture, the operational procedures, the deployment patterns, and most of the evaluation cases below are engineering guidance I've worked through carefully &mdash; but I haven't validated any of it against a production agent, a real identity provider, a real model, a sandbox, a vector database, or an actual MCP implementation.</li>
-<li><strong>What I actually ran:</strong> the dependency-free
-  <a href="../../labs/ai-agent-security/"><code>labs/ai-agent-security</code></a> lab, where I execute a
-  local, fake tool through an external broker. I wrote tests that cover both cases that should succeed and cases that should fail &mdash; tenant checks, tool checks, amount limits, approval flow, replay, and the kill switch. It makes no network request and does nothing real.</li>
-<li><strong>What I checked against sources:</strong> I checked the standards and protocol statements against the primary sources listed under <code>References</code>, on 2026-07-23. Given how broad the design is and how small the lab intentionally is, I'm tagging this <code>implementationStatus: partially-tested</code> and <code>reviewStatus: partially-verified</code> &mdash; that's just the honest read of where it stands.</li>
+<li><strong>The design:</strong> the end-to-end architecture, the operational procedures, the deployment patterns, and most of the evaluation cases below are engineering guidance I've worked through carefully — but I haven't validated any of it against a production agent, a real identity provider, a real model, a sandbox, a vector database, or an actual MCP implementation.</li>
+<li><strong>What I actually ran:</strong> the dependency-free <a href="../../labs/ai-agent-security/"><code>labs/ai-agent-security</code></a> lab, where I execute a local, fake tool through an external broker. I wrote tests that cover both cases that should succeed and cases that should fail — tenant checks, tool checks, amount limits, approval flow, replay, and the kill switch. It makes no network request and does nothing real.</li>
+<li><strong>What I checked against sources:</strong> I checked the standards and protocol statements against the primary sources listed under <code>References</code>, on 2026-07-23. Given how broad the design is and how small the lab intentionally is, I'm tagging this <code>implementationStatus: partially-tested</code> and <code>reviewStatus: partially-verified</code> — that's just the honest read of where it stands.</li>
 </ul>
-<h2 id="executive-security-decision">The core decision</h2>
+<h2 id="the-core-decision">The core decision</h2>
 <p>Adopt a control-plane/data-plane split:</p>
 <ol>
 <li>Authenticate the human or workload before model invocation.</li>
-<li>Derive principal, tenant, purpose, and entitlements from trusted server-side
-   state.</li>
-<li>Treat user input, retrieved content, model output, memory, tool descriptions,
-   and tool results as untrusted data.</li>
+<li>Derive principal, tenant, purpose, and entitlements from trusted server-side state.</li>
+<li>Treat user input, retrieved content, model output, memory, tool descriptions, and tool results as untrusted data.</li>
 <li>Permit the model to emit only a proposed, typed action.</li>
 <li>Route every action through an external capability broker.</li>
-<li>Authorize the exact principal, tenant, tool, resource, constraints, and
-   current policy version.</li>
+<li>Authorize the exact principal, tenant, tool, resource, constraints, and current policy version.</li>
 <li>Require separate, short-lived, single-use approval for high-impact effects.</li>
 <li>Give the selected tool a narrow downstream credential only after approval.</li>
-<li>Constrain execution with a sandbox, deny-by-default egress, resource limits,
-   and an independently operated kill switch.</li>
-<li>Record the decision and outcome without placing credentials or unnecessary
-    sensitive content in logs.</li>
+<li>Constrain execution with a sandbox, deny-by-default egress, resource limits, and an independently operated kill switch.</li>
+<li>Record the decision and outcome without placing credentials or unnecessary sensitive content in logs.</li>
 </ol>
 <p>The point of designing it this way: the model's output is just one more input the broker has to check, never the thing that gets to decide.</p>
 <h2 id="scope-non-goals-and-assumptions">Scope, non-goals, and assumptions</h2>
 <h3 id="in-scope">In scope</h3>
 <ul>
-<li>LLM-backed assistants and agents that retrieve data, retain memory, call local
-  or remote tools, use MCP, or coordinate subordinate agents;</li>
-<li>direct and indirect prompt injection, retrieval and memory poisoning,
-  cross-tenant access, confused-deputy behavior, unsafe output consumption,
-  excessive agency, and model/software supply-chain compromise;</li>
-<li>identity, authorization, approval, secret delivery, execution isolation,
-  observability, staged rollout, evaluation, and incident response.</li>
+<li>LLM-backed assistants and agents that retrieve data, retain memory, call local or remote tools, use MCP, or coordinate subordinate agents;</li>
+<li>direct and indirect prompt injection, retrieval and memory poisoning, cross-tenant access, confused-deputy behavior, unsafe output consumption, excessive agency, and model/software supply-chain compromise;</li>
+<li>identity, authorization, approval, secret delivery, execution isolation, observability, staged rollout, evaluation, and incident response.</li>
 </ul>
 <h3 id="not-established-by-this-design">Not established by this design</h3>
 <ul>
-<li>that a model is truthful, deterministic, aligned, unbiased, or free of
-  exploitable behavior;</li>
+<li>that a model is truthful, deterministic, aligned, unbiased, or free of exploitable behavior;</li>
 <li>that a content classifier detects every harmful instruction;</li>
 <li>that a container alone safely executes arbitrary hostile native code;</li>
-<li>that a generic control list satisfies a particular legal, regulatory, safety,
-  privacy, or sector-specific obligation;</li>
+<li>that a generic control list satisfies a particular legal, regulatory, safety, privacy, or sector-specific obligation;</li>
 <li>that using MCP makes a tool or server trustworthy;</li>
-<li>that human approval is effective when the reviewer lacks context, time, or a
-  trustworthy interface.</li>
+<li>that human approval is effective when the reviewer lacks context, time, or a trustworthy interface.</li>
 </ul>
 <h3 id="assumptions-to-validate-per-deployment">Assumptions to validate per deployment</h3>
 <ul>
-<li>The identity tier can authenticate users and workloads, resolve current tenant
-  membership, and revoke access within a documented interval.</li>
-<li>Each protected resource has an authoritative tenant owner and action-specific
-  policy.</li>
-<li>Downstream systems can enforce authorization again, support idempotency where
-  effects may be retried, and return stable identifiers for audit.</li>
-<li>The broker, policy store, approval service, secret manager, audit pipeline, and
-  kill-switch path are outside the model's writable boundary.</li>
-<li>Operators can isolate workloads, revoke credentials, stop queued work, and
-  restore retrieval and memory from known-good versions.</li>
-<li>Any exception to deny-by-default egress, tenant isolation, or bound approval is
-  explicitly risk-accepted rather than silently delegated to the model.</li>
+<li>The identity tier can authenticate users and workloads, resolve current tenant membership, and revoke access within a documented interval.</li>
+<li>Each protected resource has an authoritative tenant owner and action-specific policy.</li>
+<li>Downstream systems can enforce authorization again, support idempotency where effects may be retried, and return stable identifiers for audit.</li>
+<li>The broker, policy store, approval service, secret manager, audit pipeline, and kill-switch path are outside the model's writable boundary.</li>
+<li>Operators can isolate workloads, revoke credentials, stop queued work, and restore retrieval and memory from known-good versions.</li>
+<li>Any exception to deny-by-default egress, tenant isolation, or bound approval is explicitly risk-accepted rather than silently delegated to the model.</li>
 </ul>
 <h2 id="assets-actors-and-security-invariants">Assets, actors, and security invariants</h2>
-<p>Primary assets include tenant data, model and retrieval inputs, durable memory,
-tool credentials, financial or destructive authority, approval records, model
-artifacts, policy, prompts, audit evidence, and system availability.</p>
-<p>Threat actors and fault sources include a malicious user, a tenant that can
-publish indexed content, a compromised document or website, a malicious tool
-server, a poisoned model or adapter, an overprivileged integration, a confused
-deputy, a compromised operator account, and an ordinary model or application
-failure.</p>
+<p>Primary assets include tenant data, model and retrieval inputs, durable memory, tool credentials, financial or destructive authority, approval records, model artifacts, policy, prompts, audit evidence, and system availability.</p>
+<p>Threat actors and fault sources include a malicious user, a tenant that can publish indexed content, a compromised document or website, a malicious tool server, a poisoned model or adapter, an overprivileged integration, a confused deputy, a compromised operator account, and an ordinary model or application failure.</p>
 <p>The system should preserve these invariants:</p>
 <ol>
-<li>Missing or ambiguous principal, tenant, audience, purpose, tool, or policy
-   context denies execution.</li>
-<li>Content cannot create authority. Instructions found in prompts, documents,
-   memory, tool metadata, or tool results never add permissions.</li>
-<li>The model runtime never receives an omnibus credential or a credential for an
-   action that has not been authorized.</li>
-<li>Every external effect is mediated by the same broker or by a downstream
-   boundary with equivalent controls.</li>
-<li>Tenant isolation is enforced on ingestion, retrieval, memory read/write, tool
-   execution, task state, audit access, and deletion.</li>
-<li>Approval is bound to the exact action displayed to the approver; a changed
-   target, amount, tenant, tool, or payload requires new approval.</li>
-<li>Disabling execution, revoking capability, or isolating a tenant does not
-   depend on cooperation from the model.</li>
+<li>Missing or ambiguous principal, tenant, audience, purpose, tool, or policy context denies execution.</li>
+<li>Content cannot create authority. Instructions found in prompts, documents, memory, tool metadata, or tool results never add permissions.</li>
+<li>The model runtime never receives an omnibus credential or a credential for an action that has not been authorized.</li>
+<li>Every external effect is mediated by the same broker or by a downstream boundary with equivalent controls.</li>
+<li>Tenant isolation is enforced on ingestion, retrieval, memory read/write, tool execution, task state, audit access, and deletion.</li>
+<li>Approval is bound to the exact action displayed to the approver; a changed target, amount, tenant, tool, or payload requires new approval.</li>
+<li>Disabling execution, revoking capability, or isolating a tenant does not depend on cooperation from the model.</li>
 </ol>
 <h2 id="architecture-and-trust-boundaries">Architecture and trust boundaries</h2>
-<pre class="mermaid"><code>flowchart LR
-  subgraph UZ["Untrusted content zone"]
-    U["User or calling service"]
-    EXT["Web, email, files, and tool results"]
-    R["Tenant-scoped retrieval"]
+<div class="language-text highlight"><pre><span></span><code>flowchart LR
+  subgraph UZ[&quot;Untrusted content zone&quot;]
+    U[&quot;User or calling service&quot;]
+    EXT[&quot;Web, email, files, and tool results&quot;]
+    R[&quot;Tenant-scoped retrieval&quot;]
   end
 
-  subgraph AZ["Agent reasoning zone"]
-    C["Context builder with provenance labels"]
-    M["Model: untrusted planner"]
-    O["Orchestrator: typed proposed call"]
-    MW["Memory write gate"]
+  subgraph AZ[&quot;Agent reasoning zone&quot;]
+    C[&quot;Context builder with provenance labels&quot;]
+    M[&quot;Model: untrusted planner&quot;]
+    O[&quot;Orchestrator: typed proposed call&quot;]
+    MW[&quot;Memory write gate&quot;]
   end
 
-  subgraph CZ["Trusted control plane"]
-    I["Identity gateway"]
-    P["Policy and entitlement service"]
-    A["Independent approval service"]
-    B["Capability and tool broker"]
-    K["Execution kill switch"]
-    S["Secret manager"]
-    L["Security audit pipeline"]
+  subgraph CZ[&quot;Trusted control plane&quot;]
+    I[&quot;Identity gateway&quot;]
+    P[&quot;Policy and entitlement service&quot;]
+    A[&quot;Independent approval service&quot;]
+    B[&quot;Capability and tool broker&quot;]
+    K[&quot;Execution kill switch&quot;]
+    S[&quot;Secret manager&quot;]
+    L[&quot;Security audit pipeline&quot;]
   end
 
-  subgraph EZ["Constrained execution zone"]
-    T["Pinned tool or MCP server"]
-    E["Deny-by-default egress proxy"]
-    D["Downstream resource"]
+  subgraph EZ[&quot;Constrained execution zone&quot;]
+    T[&quot;Pinned tool or MCP server&quot;]
+    E[&quot;Deny-by-default egress proxy&quot;]
+    D[&quot;Downstream resource&quot;]
   end
 
   U --&gt; I
@@ -376,32 +3248,25 @@ failure.</p>
   R --&gt; C
   C --&gt; M
   M --&gt; O
-  O --&gt;|"proposal, never authority"| B
+  O --&gt;|&quot;proposal, never authority&quot;| B
   O --&gt; MW
   MW --&gt; R
-  I --&gt;|"authenticated principal and tenant"| B
-  P --&gt;|"allowlist and constraints"| B
-  A --&gt;|"action-bound approval"| B
-  K --&gt;|"independent deny"| B
-  S --&gt;|"just-in-time narrow credential"| B
-  B --&gt;|"authorized typed call"| T
+  I --&gt;|&quot;authenticated principal and tenant&quot;| B
+  P --&gt;|&quot;allowlist and constraints&quot;| B
+  A --&gt;|&quot;action-bound approval&quot;| B
+  K --&gt;|&quot;independent deny&quot;| B
+  S --&gt;|&quot;just-in-time narrow credential&quot;| B
+  B --&gt;|&quot;authorized typed call&quot;| T
   T --&gt; E
   E --&gt; D
   B --&gt; L
   T --&gt; L
   R --&gt; L
-  MW --&gt; L</code></pre>
-<p>The critical boundary is between the orchestrator's proposed call and the
-broker's authorization decision. Keep authenticated context on a protected
-server-side channel; do not ask the model to copy identity, scopes, or tenant
-claims into tool arguments. Tool parameters are still untrusted even when they
-match a schema.</p>
+  MW --&gt; L
+</code></pre></div>
+<p>The critical boundary is between the orchestrator's proposed call and the broker's authorization decision. Keep authenticated context on a protected server-side channel; do not ask the model to copy identity, scopes, or tenant claims into tool arguments. Tool parameters are still untrusted even when they match a schema.</p>
 <h2 id="threat-model-and-required-negative-evidence">Threat model and required negative evidence</h2>
-<p>The <a href="https://genai.owasp.org/llm-top-10/">OWASP Top 10 for LLM Applications 2025</a>
-and <a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">OWASP Top 10 for Agentic Applications
-2026</a>
-are living community risk catalogs, not authorization specifications. Use them
-as threat inputs and verify controls against the actual architecture.</p>
+<p>The <a href="https://genai.owasp.org/llm-top-10/">OWASP Top 10 for LLM Applications 2025</a> and <a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">OWASP Top 10 for Agentic Applications 2026</a> are living community risk catalogs, not authorization specifications. Use them as threat inputs and verify controls against the actual architecture.</p>
 <table>
 <thead>
 <tr>
@@ -478,189 +3343,95 @@ as threat inputs and verify controls against the actual architecture.</p>
 </tr>
 </tbody>
 </table>
-<p>Passing a model-level injection evaluation is useful evidence about behavior, but
-it is not evidence that authorization is correct. The deterministic boundary
-must reject forbidden actions even when the model proposes them every time.</p>
+<p>Passing a model-level injection evaluation is useful evidence about behavior, but it is not evidence that authorization is correct. The deterministic boundary must reject forbidden actions even when the model proposes them every time.</p>
 <h2 id="control-design">Control design</h2>
 <h3 id="keep-instructions-and-authority-separate">Keep instructions and authority separate</h3>
-<p>Classify every context item with origin, tenant, owner, version, retrieval time,
-and trust purpose. A "trusted source" may support an answer, but its prose still
-does not become executable policy. Place policy in code or a dedicated policy
-service with reviewed changes, explicit defaults, and versioned decisions.</p>
+<p>Classify every context item with origin, tenant, owner, version, retrieval time, and trust purpose. A "trusted source" may support an answer, but its prose still does not become executable policy. Place policy in code or a dedicated policy service with reviewed changes, explicit defaults, and versioned decisions.</p>
 <p>For direct and indirect injection:</p>
 <ul>
 <li>mark user, retrieval, memory, and tool-result segments as data;</li>
-<li>minimize the content provided to the model and remove active markup when it is
-  not needed;</li>
+<li>minimize the content provided to the model and remove active markup when it is not needed;</li>
 <li>do not expose unnecessary tools to the session;</li>
 <li>require structured proposals and validate every field;</li>
-<li>keep authorization, approval, credential use, and egress enforcement after the
-  model;</li>
-<li>measure content filters, prompt hardening, and injection classifiers as
-  fallible detection or steering controls, never fail-open gates.</li>
+<li>keep authorization, approval, credential use, and egress enforcement after the model;</li>
+<li>measure content filters, prompt hardening, and injection classifiers as fallible detection or steering controls, never fail-open gates.</li>
 </ul>
-<p>The prompt-injection and data-poisoning terminology used here aligns with the
-final <a href="https://csrc.nist.gov/pubs/ai/100/2/e2025/final">NIST AI 100-2 E2025 adversarial machine-learning
-taxonomy</a>. NIST also publishes a
-potential-updates notice for that final document; record the exact edition and
-errata state used by an evaluation.</p>
+<p>The prompt-injection and data-poisoning terminology used here aligns with the final <a href="https://csrc.nist.gov/pubs/ai/100/2/e2025/final">NIST AI 100-2 E2025 adversarial machine-learning taxonomy</a>. NIST also publishes a potential-updates notice for that final document; record the exact edition and errata state used by an evaluation.</p>
 <h3 id="isolate-retrieval-and-prevent-cross-tenant-rag">Isolate retrieval and prevent cross-tenant RAG</h3>
-<p>Derive the tenant from authenticated membership, not from a model-produced
-filter, request body, filename, or document metadata alone. Enforce that tenant
-at every data operation:</p>
+<p>Derive the tenant from authenticated membership, not from a model-produced filter, request body, filename, or document metadata alone. Enforce that tenant at every data operation:</p>
 <ul>
-<li>ingestion verifies the writer may add content to that tenant and records source
-  URI/object ID, content digest, parser and embedding versions, owner, and time;</li>
+<li>ingestion verifies the writer may add content to that tenant and records source URI/object ID, content digest, parser and embedding versions, owner, and time;</li>
 <li>chunk and embedding records carry a non-null authoritative tenant key;</li>
-<li>queries deny when tenant context is absent and apply the filter in the storage
-  authorization layer, not only in the prompt or application post-processing;</li>
-<li>post-retrieval checks verify every returned record belongs to the expected
-  tenant before context assembly;</li>
-<li>caches include tenant, principal or policy cohort, model, prompt template, and
-  source versions in the key;</li>
-<li>updates and deletion remove or tombstone derived chunks, embeddings, summaries,
-  and caches;</li>
-<li>shared indexes receive adversarial cross-tenant tests after schema, embedding,
-  ranking, or library changes.</li>
+<li>queries deny when tenant context is absent and apply the filter in the storage authorization layer, not only in the prompt or application post-processing;</li>
+<li>post-retrieval checks verify every returned record belongs to the expected tenant before context assembly;</li>
+<li>caches include tenant, principal or policy cohort, model, prompt template, and source versions in the key;</li>
+<li>updates and deletion remove or tombstone derived chunks, embeddings, summaries, and caches;</li>
+<li>shared indexes receive adversarial cross-tenant tests after schema, embedding, ranking, or library changes.</li>
 </ul>
-<p>Embedding similarity and metadata supplied by an indexed document are not access
-control. Separate physical indexes may reduce some blast radius, but they do not
-remove the need for authenticated ingestion, query authorization, and deletion
-correctness. OWASP describes retrieval-specific risks under its living
-<a href="https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/">vector and embedding weaknesses
-material</a>.</p>
-<p>Treat retrieved content as potentially poisoned even after authorization.
-Quarantine newly ingested high-risk sources, maintain an emergency source
-denylist, and support re-indexing from a known-good corpus. Retrieval provenance
-should be visible to reviewers and carried into audit without logging entire
-sensitive documents.</p>
+<p>Embedding similarity and metadata supplied by an indexed document are not access control. Separate physical indexes may reduce some blast radius, but they do not remove the need for authenticated ingestion, query authorization, and deletion correctness. OWASP describes retrieval-specific risks under its living <a href="https://genai.owasp.org/llmrisk/llm082025-vector-and-embedding-weaknesses/">vector and embedding weaknesses material</a>.</p>
+<p>Treat retrieved content as potentially poisoned even after authorization. Quarantine newly ingested high-risk sources, maintain an emergency source denylist, and support re-indexing from a known-good corpus. Retrieval provenance should be visible to reviewers and carried into audit without logging entire sensitive documents.</p>
 <h3 id="authorize-capabilities-outside-the-model">Authorize capabilities outside the model</h3>
 <p>The broker evaluates a capability tuple such as:</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1">(principal, tenant, tool, action, resource, constraints, purpose, expiry, policy-version)
-</span></code></pre></div>
-<p>This tuple is an <strong>illustrative design</strong>, not a wire-format standard. Production
-policy should also account for environment, device or workload identity,
-separation of duties, risk tier, and downstream entitlements where relevant.</p>
+<div class="language-text highlight"><pre><span></span><code>(principal, tenant, tool, action, resource, constraints, purpose, expiry, policy-version)
+</code></pre></div>
+<p>This tuple is an <strong>illustrative design</strong>, not a wire-format standard. Production policy should also account for environment, device or workload identity, separation of duties, risk tier, and downstream entitlements where relevant.</p>
 <p>The broker should:</p>
 <ul>
 <li>accept identity only from a validated gateway or workload channel;</li>
 <li>allow only registered tool and action identifiers;</li>
 <li>parse a closed, versioned schema and reject unknown or ambiguous fields;</li>
-<li>constrain resource IDs, destinations, amount, data classification, time,
-  frequency, and cumulative budget;</li>
+<li>constrain resource IDs, destinations, amount, data classification, time, frequency, and cumulative budget;</li>
 <li>re-check current entitlement immediately before execution;</li>
 <li>ask a separate approval service for high-impact calls;</li>
-<li>mint, exchange, or retrieve a short-lived credential for only the selected
-  downstream resource;</li>
-<li>pass authoritative tenant and principal context independently of model
-  arguments;</li>
+<li>mint, exchange, or retrieve a short-lived credential for only the selected downstream resource;</li>
+<li>pass authoritative tenant and principal context independently of model arguments;</li>
 <li>make downstream services authorize again;</li>
 <li>apply idempotency keys and reconcile uncertain outcomes before retrying.</li>
 </ul>
-<p>Do not hand the model a broad user access token. Do not let a tool server forward
-the client's bearer token to another API. The current <a href="https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization">MCP 2025-11-25
-authorization specification</a>
-requires resource indicators and prohibits token passthrough; its design builds
-on OAuth protected-resource metadata and related standards. Independently of
-MCP, follow <a href="https://www.rfc-editor.org/rfc/rfc9700">OAuth 2.0 Security Best Current Practice,
-RFC 9700</a> and bind requested tokens to
-the intended resource using <a href="https://www.rfc-editor.org/rfc/rfc8707">RFC 8707</a>.</p>
+<p>Do not hand the model a broad user access token. Do not let a tool server forward the client's bearer token to another API. The current <a href="https://modelcontextprotocol.io/specification/2025-11-25/basic/authorization">MCP 2025-11-25 authorization specification</a> requires resource indicators and prohibits token passthrough; its design builds on OAuth protected-resource metadata and related standards. Independently of MCP, follow <a href="https://www.rfc-editor.org/rfc/rfc9700">OAuth 2.0 Security Best Current Practice, RFC 9700</a> and bind requested tokens to the intended resource using <a href="https://www.rfc-editor.org/rfc/rfc8707">RFC 8707</a>.</p>
 <h3 id="treat-mcp-and-tool-servers-as-security-principals">Treat MCP and tool servers as security principals</h3>
-<p>MCP defines interoperability; it does not certify a server, tool, prompt,
-resource, or returned content. The
-<a href="https://modelcontextprotocol.io/specification/2025-11-25/server">MCP server specification</a>
-describes tools as model-controlled, which makes the client/broker boundary
-especially important.</p>
+<p>MCP defines interoperability; it does not certify a server, tool, prompt, resource, or returned content. The <a href="https://modelcontextprotocol.io/specification/2025-11-25/server">MCP server specification</a> describes tools as model-controlled, which makes the client/broker boundary especially important.</p>
 <p>For each MCP or proprietary tool server:</p>
 <ul>
-<li>register owner, business purpose, transport, endpoint, issuer, expected
-  audience, permitted tenants, tool names, schema versions, artifact digest,
-  network destinations, data classes, and incident contact;</li>
-<li>authenticate both ends, negotiate only supported protocol versions, and reject
-  unexpected capability or schema changes;</li>
-<li>isolate local <code>stdio</code> servers because they inherit local process access; do not
-  place a general cloud credential or an entire user environment in their
-  process;</li>
-<li>validate tool names and descriptions as untrusted metadata and prevent
-  lookalike or collision-based selection;</li>
-<li>cap input/output size, task duration, progress events, redirects, and resource
-  fetches;</li>
-<li>bind asynchronous task state and results to the authenticated principal and
-  tenant, rather than relying on an opaque task ID alone;</li>
-<li>prohibit inbound-token passthrough, validate the server audience, and obtain a
-  separate downstream token;</li>
-<li>run high-risk servers in separate identities and isolation domains so one
-  server cannot read another server's secrets or network.</li>
+<li>register owner, business purpose, transport, endpoint, issuer, expected audience, permitted tenants, tool names, schema versions, artifact digest, network destinations, data classes, and incident contact;</li>
+<li>authenticate both ends, negotiate only supported protocol versions, and reject unexpected capability or schema changes;</li>
+<li>isolate local <code>stdio</code> servers because they inherit local process access; do not place a general cloud credential or an entire user environment in their process;</li>
+<li>validate tool names and descriptions as untrusted metadata and prevent lookalike or collision-based selection;</li>
+<li>cap input/output size, task duration, progress events, redirects, and resource fetches;</li>
+<li>bind asynchronous task state and results to the authenticated principal and tenant, rather than relying on an opaque task ID alone;</li>
+<li>prohibit inbound-token passthrough, validate the server audience, and obtain a separate downstream token;</li>
+<li>run high-risk servers in separate identities and isolation domains so one server cannot read another server's secrets or network.</li>
 </ul>
-<p>As of 2026-07-23, MCP's
-<a href="https://modelcontextprotocol.io/docs/learn/versioning">versioning page</a> identifies
-<code>2025-11-25</code> as the current protocol. The project has announced <code>2026-07-28</code> as a
-<a href="https://blog.modelcontextprotocol.io/tags/protocol/">release candidate</a>, so it
-is a preview, not the baseline claimed by this article. Re-check the status
-before implementation because the specification is living material.</p>
+<p>As of 2026-07-23, MCP's <a href="https://modelcontextprotocol.io/docs/learn/versioning">versioning page</a> identifies <code>2025-11-25</code> as the current protocol. The project has announced <code>2026-07-28</code> as a <a href="https://blog.modelcontextprotocol.io/tags/protocol/">release candidate</a>, so it is a preview, not the baseline claimed by this article. Re-check the status before implementation because the specification is living material.</p>
 <h3 id="validate-model-and-tool-output-at-every-sink">Validate model and tool output at every sink</h3>
-<p>Model output, structured output, and tool output remain untrusted after parsing.
-A valid JSON object may still contain an unauthorized resource or an injection
-payload.</p>
+<p>Model output, structured output, and tool output remain untrusted after parsing. A valid JSON object may still contain an unauthorized resource or an injection payload.</p>
 <ul>
-<li>Use a closed schema with type, length, range, character, and enumeration
-  constraints.</li>
+<li>Use a closed schema with type, length, range, character, and enumeration constraints.</li>
 <li>Encode text for its final HTML, Markdown, CSV, log, header, or template context.</li>
 <li>Use parameterized database and API operations.</li>
-<li>Never build shell commands, SQL, paths, URLs, templates, or policy expressions
-  by concatenating model output.</li>
-<li>Resolve object IDs through an authorized lookup; do not accept arbitrary
-  filesystem paths or URLs.</li>
-<li>Route outbound HTTP through an egress proxy that validates scheme, hostname,
-  port, resolved destination, redirect target, and response size. Account for
-  private addresses and DNS rebinding.</li>
-<li>Strip credentials and unnecessary sensitive fields from errors and tool
-  responses before they re-enter model context.</li>
+<li>Never build shell commands, SQL, paths, URLs, templates, or policy expressions by concatenating model output.</li>
+<li>Resolve object IDs through an authorized lookup; do not accept arbitrary filesystem paths or URLs.</li>
+<li>Route outbound HTTP through an egress proxy that validates scheme, hostname, port, resolved destination, redirect target, and response size. Account for private addresses and DNS rebinding.</li>
+<li>Strip credentials and unnecessary sensitive fields from errors and tool responses before they re-enter model context.</li>
 </ul>
-<p>OWASP's <a href="https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/">improper output handling
-entry</a>
-provides a threat catalog; the actual encoder and validator must be selected for
-each sink.</p>
+<p>OWASP's <a href="https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/">improper output handling entry</a> provides a threat catalog; the actual encoder and validator must be selected for each sink.</p>
 <h3 id="govern-durable-memory-as-a-data-store">Govern durable memory as a data store</h3>
-<p>Memory is a second retrieval system with a write path. A model-generated summary
-can preserve an attack after the original prompt disappears.</p>
-<p>Separate conversation state, user preferences, factual records, and security
-policy. The model may propose a memory, but a memory gate should:</p>
+<p>Memory is a second retrieval system with a write path. A model-generated summary can preserve an attack after the original prompt disappears.</p>
+<p>Separate conversation state, user preferences, factual records, and security policy. The model may propose a memory, but a memory gate should:</p>
 <ul>
 <li>authenticate the writer and bind user, tenant, session, and purpose;</li>
 <li>reject attempts to store credentials, hidden policy, or another tenant's data;</li>
-<li>retain origin, source references, model and prompt version, confidence or
-  review state, and expiry;</li>
-<li>prevent a retrieved memory from overriding policy or becoming identity
-  evidence;</li>
-<li>require approval for durable memories that change workflow, destinations,
-  permissions, or other high-impact behavior;</li>
-<li>support inspection, correction, deletion, quarantine, version rollback, and
-  tenant-scoped export;</li>
-<li>detect unusual write volume, repeated injected phrases, cross-user reuse, and
-  abrupt changes in influential memory.</li>
+<li>retain origin, source references, model and prompt version, confidence or review state, and expiry;</li>
+<li>prevent a retrieved memory from overriding policy or becoming identity evidence;</li>
+<li>require approval for durable memories that change workflow, destinations, permissions, or other high-impact behavior;</li>
+<li>support inspection, correction, deletion, quarantine, version rollback, and tenant-scoped export;</li>
+<li>detect unusual write volume, repeated injected phrases, cross-user reuse, and abrupt changes in influential memory.</li>
 </ul>
-<p>Do not silently train on conversation or memory data. Training and retention
-decisions require their own documented authority, purpose, tenant handling, and
-deletion semantics.</p>
+<p>Do not silently train on conversation or memory data. Training and retention decisions require their own documented authority, purpose, tenant handling, and deletion semantics.</p>
 <h3 id="sandbox-execution-egress-and-secrets">Sandbox execution, egress, and secrets</h3>
-<p>Use an ephemeral execution identity and filesystem per task or trust cohort.
-Depending on the runtime and threat model, controls may include a non-root user,
-read-only base image, minimal writable volume, syscall and capability reduction,
-no host or container-engine socket, no cloud instance-metadata access, CPU/memory/
-process/file/output/time quotas, and a stronger virtual-machine boundary for
-hostile native code.</p>
-<p>Network access should be denied by default. Send permitted traffic through an
-authenticated proxy with a destination and method allowlist, response limits,
-redirect validation, DNS and private-range protections, and attributable logs.
-Do not allow a generic "browse the internet" path from the same identity that can
-reach internal administration APIs.</p>
-<p>Keep secrets out of prompts, retrieval, memory, environment dumps, command lines,
-and model-visible error messages. The broker should obtain a narrowly scoped,
-short-lived credential after authorization and expose it only to the selected
-tool process or make the downstream call itself. Secret scanning and output
-filters are backstops; the primary control is that the model never receives the
-secret.</p>
+<p>Use an ephemeral execution identity and filesystem per task or trust cohort. Depending on the runtime and threat model, controls may include a non-root user, read-only base image, minimal writable volume, syscall and capability reduction, no host or container-engine socket, no cloud instance-metadata access, CPU/memory/ process/file/output/time quotas, and a stronger virtual-machine boundary for hostile native code.</p>
+<p>Network access should be denied by default. Send permitted traffic through an authenticated proxy with a destination and method allowlist, response limits, redirect validation, DNS and private-range protections, and attributable logs. Do not allow a generic "browse the internet" path from the same identity that can reach internal administration APIs.</p>
+<p>Keep secrets out of prompts, retrieval, memory, environment dumps, command lines, and model-visible error messages. The broker should obtain a narrowly scoped, short-lived credential after authorization and expose it only to the selected tool process or make the downstream call itself. Secret scanning and output filters are backstops; the primary control is that the model never receives the secret.</p>
 <h3 id="require-bound-approval-for-high-impact-actions">Require bound approval for high-impact actions</h3>
 <p>Classify high-impact operations before rollout. Typical candidates include:</p>
 <ul>
@@ -672,23 +3443,10 @@ secret.</p>
 <li>sending external communications or making a legally significant submission;</li>
 <li>disabling a security control or expanding egress.</li>
 </ul>
-<p>The approval interface should show the authenticated requester, tenant, exact
-tool and action, target, before/after change, amount and unit, data leaving the
-boundary, expected side effects, and expiry. Approval must be recorded through a
-separate authenticated channel, cryptographically or server-side bound to a
-canonical action digest, short-lived, single-use, and revalidated immediately
-before execution.</p>
-<p>Any material change after approval creates a new action. Do not approve a plan
-that later allows the model to choose the target or amount. Rate-limit approval
-requests and measure reviewer overrides, abandonment, repeated prompts, and
-approval latency for signs of fatigue. A human click is not proof that the
-action was understood.</p>
+<p>The approval interface should show the authenticated requester, tenant, exact tool and action, target, before/after change, amount and unit, data leaving the boundary, expected side effects, and expiry. Approval must be recorded through a separate authenticated channel, cryptographically or server-side bound to a canonical action digest, short-lived, single-use, and revalidated immediately before execution.</p>
+<p>Any material change after approval creates a new action. Do not approve a plan that later allows the model to choose the target or amount. Rate-limit approval requests and measure reviewer overrides, abandonment, repeated prompts, and approval latency for signs of fatigue. A human click is not proof that the action was understood.</p>
 <h3 id="build-an-independent-kill-switch">Build an independent kill switch</h3>
-<p>Provide global, tenant, principal, model, tool-server, tool, destination, and
-action-level disablement. Enforce it in the broker and, for defense in depth, in
-credential issuance, queue consumption, egress, and downstream policy. The
-control must not require a prompt change, model response, normal deployment, or
-access to the affected agent.</p>
+<p>Provide global, tenant, principal, model, tool-server, tool, destination, and action-level disablement. Enforce it in the broker and, for defense in depth, in credential issuance, queue consumption, egress, and downstream policy. The control must not require a prompt change, model response, normal deployment, or access to the affected agent.</p>
 <p>Define and rehearse:</p>
 <ul>
 <li>how pending and in-flight work is stopped or quarantined;</li>
@@ -699,9 +3457,7 @@ access to the affected agent.</p>
 <li>how long it takes each check in the chain to actually pick up the change;</li>
 <li>safe restoration and re-authorization after containment.</li>
 </ul>
-<p>Failing to reach the kill-switch policy service should deny new high-impact
-actions. Any low-risk degraded mode must be explicit, bounded, observable, and
-tested.</p>
+<p>Failing to reach the kill-switch policy service should deny new high-impact actions. Any low-risk degraded mode must be explicit, bounded, observable, and tested.</p>
 <h2 id="failure-modes-and-explicit-semantics">Failure modes and explicit semantics</h2>
 <table>
 <thead>
@@ -757,76 +3513,47 @@ tested.</p>
 </tr>
 </tbody>
 </table>
-<p>Availability pressure is not permission to weaken tenant or authorization
-boundaries. If an emergency bypass is genuinely required, handle it as a
-time-bound, approved, logged break-glass event and a security exception.</p>
+<p>Availability pressure is not permission to weaken tenant or authorization boundaries. If an emergency bypass is genuinely required, handle it as a time-bound, approved, logged break-glass event and a security exception.</p>
 <h2 id="evaluation-and-release-evidence">Evaluation and release evidence</h2>
-<p>The <a href="https://www.nist.gov/itl/ai-risk-management-framework">NIST AI RMF 1.0</a>
-organizes risk work around Govern, Map, Measure, and Manage. Its
-<a href="https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence">Generative AI Profile, NIST AI
-600-1</a>
-calls for documented testing, red-teaming, monitoring, and risk tracking across
-the lifecycle. Use those outcomes to govern an engineering test program, not as
-a claim of certification.</p>
+<p>The <a href="https://www.nist.gov/itl/ai-risk-management-framework">NIST AI RMF 1.0</a> organizes risk work around Govern, Map, Measure, and Manage. Its <a href="https://www.nist.gov/publications/artificial-intelligence-risk-management-framework-generative-artificial-intelligence">Generative AI Profile, NIST AI 600-1</a> calls for documented testing, red-teaming, monitoring, and risk tracking across the lifecycle. Use those outcomes to govern an engineering test program, not as a claim of certification.</p>
 <h3 id="deterministic-boundary-tests">Deterministic boundary tests</h3>
-<p>For the broker, storage authorization, egress proxy, memory gate, and downstream
-service, make these release-blocking:</p>
+<p>For the broker, storage authorization, egress proxy, memory gate, and downstream service, make these release-blocking:</p>
 <ul>
-<li>unknown principal, tenant, tool, action, schema version, resource, and policy
-  deny;</li>
+<li>unknown principal, tenant, tool, action, schema version, resource, and policy deny;</li>
 <li>cross-tenant read, write, cache, task, memory, audit, and deletion cases deny;</li>
-<li>over-limit amount, rate, data class, destination, time, and cumulative budget
-  deny;</li>
-<li>missing, expired, altered, wrong-principal, wrong-tenant, wrong-tool,
-  wrong-target, and replayed approvals deny;</li>
-<li>changed tool-server digest, audience, issuer, redirect, schema, and capability
-  deny;</li>
-<li>private-network, metadata-service, redirect, DNS-rebinding, and oversized
-  response egress cases deny;</li>
+<li>over-limit amount, rate, data class, destination, time, and cumulative budget deny;</li>
+<li>missing, expired, altered, wrong-principal, wrong-tenant, wrong-tool, wrong-target, and replayed approvals deny;</li>
+<li>changed tool-server digest, audience, issuer, redirect, schema, and capability deny;</li>
+<li>private-network, metadata-service, redirect, DNS-rebinding, and oversized response egress cases deny;</li>
 <li>executor invocation count remains zero for every rejected proposal;</li>
 <li>kill switches prevent new invocation at each configured scope.</li>
 </ul>
-<p>These tests require zero false allows for the cases encoded. A passing finite
-suite does not prove the policy complete.</p>
+<p>These tests require zero false allows for the cases encoded. A passing finite suite does not prove the policy complete.</p>
 <h3 id="model-and-system-evaluations">Model and system evaluations</h3>
 <p>Use versioned, access-controlled suites that include:</p>
 <ul>
-<li>direct and indirect injections in user text, documents, email, web content,
-  images converted to text, code comments, tool descriptions, errors, and tool
-  results;</li>
-<li>obfuscation, encoding, multilingual, multi-turn, delayed-trigger, and
-  instruction-conflict variants;</li>
-<li>poisoned retrieval ranking, forged provenance, cross-tenant document IDs,
-  cache collisions, stale deletion, and malicious memory;</li>
-<li>tool-name collisions, schema ambiguity, argument smuggling, approval spoofing,
-  confused-deputy flows, asynchronous tasks, retries, and time-of-check/time-of-use
-  changes;</li>
-<li>output payloads for every interpreter or renderer and exfiltration attempts
-  using unmistakably fake canary values;</li>
-<li>long-horizon loops, multi-agent delegation, resource exhaustion, partial tool
-  failure, and uncertain downstream outcomes;</li>
+<li>direct and indirect injections in user text, documents, email, web content, images converted to text, code comments, tool descriptions, errors, and tool results;</li>
+<li>obfuscation, encoding, multilingual, multi-turn, delayed-trigger, and instruction-conflict variants;</li>
+<li>poisoned retrieval ranking, forged provenance, cross-tenant document IDs, cache collisions, stale deletion, and malicious memory;</li>
+<li>tool-name collisions, schema ambiguity, argument smuggling, approval spoofing, confused-deputy flows, asynchronous tasks, retries, and time-of-check/time-of-use changes;</li>
+<li>output payloads for every interpreter or renderer and exfiltration attempts using unmistakably fake canary values;</li>
+<li>long-horizon loops, multi-agent delegation, resource exhaustion, partial tool failure, and uncertain downstream outcomes;</li>
 <li>model, prompt, adapter, embedding, parser, runtime, policy, and tool upgrades.</li>
 </ul>
-<p>Run repeated trials because model behavior can vary. Record the entire tested
-configuration and distinguish:</p>
+<p>Run repeated trials because model behavior can vary. Record the entire tested configuration and distinguish:</p>
 <ul>
 <li><strong>proposal attack success:</strong> the model produced a forbidden proposal;</li>
 <li><strong>boundary false allow:</strong> a forbidden proposal reached the executor;</li>
-<li><strong>sensitive-output rate:</strong> fake canary or protected fixture appeared outside
-  its allowed sink;</li>
+<li><strong>sensitive-output rate:</strong> fake canary or protected fixture appeared outside its allowed sink;</li>
 <li><strong>false deny and task success:</strong> legitimate work was blocked or failed;</li>
 <li><strong>budget containment:</strong> calls, time, tokens, output, and cost remained bounded;</li>
-<li><strong>detection and response:</strong> telemetry fired and containment completed within
-  the rehearsed objective.</li>
+<li><strong>detection and response:</strong> telemetry fired and containment completed within the rehearsed objective.</li>
 </ul>
-<p>Do not average away a tenant-isolation or unauthorized-execution failure. Set
-explicit per-boundary release gates and document unmeasured risks. Keep held-out
-adversarial cases separate from prompt tuning and version both the corpus and
-expected policy decisions.</p>
+<p>Do not average away a tenant-isolation or unauthorized-execution failure. Set explicit per-boundary release gates and document unmeasured risks. Keep held-out adversarial cases separate from prompt tuning and version both the corpus and expected policy decisions.</p>
 <h3 id="tested-companion-lab">Tested companion lab</h3>
 <p>Run:</p>
-<div class="language-powershell highlight"><pre><span></span><code><span id="__span-1-1"><span class="n">node</span> <span class="p">-</span><span class="n">-test</span> <span class="n">labs</span><span class="p">/</span><span class="n">ai-agent-security</span><span class="p">/</span><span class="n">tests</span><span class="p">/</span><span class="n">broker</span><span class="p">.</span><span class="n">test</span><span class="p">.</span><span class="n">js</span>
-</span></code></pre></div>
+<div class="language-powershell highlight"><pre><span></span><code><span class="n">node</span> <span class="p">-</span><span class="n">-test</span> <span class="n">labs</span><span class="p">/</span><span class="n">ai-agent-security</span><span class="p">/</span><span class="n">tests</span><span class="p">/</span><span class="n">broker</span><span class="p">.</span><span class="n">test</span><span class="p">.</span><span class="n">js</span>
+</code></pre></div>
 <p>The lab proves only that its small JavaScript broker:</p>
 <ul>
 <li>allows an authorized tenant/tool/amount and calls a fake executor;</li>
@@ -835,8 +3562,7 @@ expected policy decisions.</p>
 <li>rejects approval bound to different action details or reused approval;</li>
 <li>denies execution while its injected kill switch is active.</li>
 </ul>
-<p>It does not implement token validation, cryptographic approval, a policy engine,
-MCP, network egress, a sandbox, durable audit, or a real external action.</p>
+<p>It does not implement token validation, cryptographic approval, a policy engine, MCP, network egress, a sandbox, durable audit, or a real external action.</p>
 <h2 id="staged-rollout-and-rollback-gates">Staged rollout and rollback gates</h2>
 <table>
 <thead>
@@ -880,108 +3606,53 @@ MCP, network egress, a sandbox, durable audit, or a real external action.</p>
 </tr>
 </tbody>
 </table>
-<p>Expand one dimension at a time: tenant population, data class, tool, autonomy,
-model, or egress. Do not change all of them in one release. Rollback must preserve
-security policy and tenant isolation; "temporarily bypass the broker" is not a
-rollback.</p>
+<p>Expand one dimension at a time: tenant population, data class, tool, autonomy, model, or egress. Do not change all of them in one release. Rollback must preserve security policy and tenant isolation; "temporarily bypass the broker" is not a rollback.</p>
 <h2 id="observability-and-operations">Observability and operations</h2>
-<p>Emit structured events at retrieval, memory, proposal, authorization, approval,
-credential issuance, tool invocation, egress, downstream result, and kill-switch
-transitions. Correlate them with a trace ID while minimizing content.</p>
+<p>Emit structured events at retrieval, memory, proposal, authorization, approval, credential issuance, tool invocation, egress, downstream result, and kill-switch transitions. Correlate them with a trace ID while minimizing content.</p>
 <p>Useful fields include:</p>
 <ul>
-<li>authenticated principal and workload, authoritative tenant, session, purpose,
-  environment, and policy version;</li>
-<li>model provider, model and adapter digest/version, prompt-template version, and
-  orchestrator release;</li>
-<li>retrieved source IDs, tenants, versions, digests, ranking metadata, and
-  post-filter result counts;</li>
-<li>proposed tool, registered server identity and digest, schema version, target
-  class, amount/unit, risk tier, and budget;</li>
-<li>allow/deny decision, stable reason code, evaluated constraints, approval ID and
-  expiry, and kill-switch state;</li>
+<li>authenticated principal and workload, authoritative tenant, session, purpose, environment, and policy version;</li>
+<li>model provider, model and adapter digest/version, prompt-template version, and orchestrator release;</li>
+<li>retrieved source IDs, tenants, versions, digests, ranking metadata, and post-filter result counts;</li>
+<li>proposed tool, registered server identity and digest, schema version, target class, amount/unit, risk tier, and budget;</li>
+<li>allow/deny decision, stable reason code, evaluated constraints, approval ID and expiry, and kill-switch state;</li>
 <li>credential audience and lifetime without the credential value;</li>
-<li>executor start/finish, idempotency key, downstream status, bytes, duration,
-  egress destination, and reconciliation result;</li>
+<li>executor start/finish, idempotency key, downstream status, bytes, duration, egress destination, and reconciliation result;</li>
 <li>memory writer, subject, source, review state, version, expiry, and deletion.</li>
 </ul>
-<p>Do not log bearer tokens, approval secrets, raw credentials, unnecessary prompt
-content, sensitive document bodies, or unrestricted model/tool output. Protect
-audit access with the same tenant and administrative separation applied to the
-source systems.</p>
+<p>Do not log bearer tokens, approval secrets, raw credentials, unnecessary prompt content, sensitive document bodies, or unrestricted model/tool output. Protect audit access with the same tenant and administrative separation applied to the source systems.</p>
 <p>Alert on:</p>
 <ul>
 <li>any deterministic boundary false allow;</li>
 <li>cross-tenant retrieval/memory mismatch or missing tenant context;</li>
 <li>unknown or changed tool server, schema, digest, issuer, or audience;</li>
-<li>sharp changes in proposal denials, approval requests, reviewer overrides,
-  memory writes, external destinations, loop termination, cost, or latency;</li>
-<li>fake secret canary detection, blocked metadata/private-network access, or
-  attempted credential disclosure;</li>
-<li>kill-switch activation, failure to propagate, audit backlog, or repeated
-  uncertain downstream outcomes.</li>
+<li>sharp changes in proposal denials, approval requests, reviewer overrides, memory writes, external destinations, loop termination, cost, or latency;</li>
+<li>fake secret canary detection, blocked metadata/private-network access, or attempted credential disclosure;</li>
+<li>kill-switch activation, failure to propagate, audit backlog, or repeated uncertain downstream outcomes.</li>
 </ul>
-<p>Pre-deployment evaluation cannot represent all production conditions. NIST's
-final <a href="https://www.nist.gov/publications/challenges-monitoring-deployed-ai-systems-center-ai-standards-and-innovation">AI 800-4 report on deployed-system
-monitoring</a>
-describes post-deployment monitoring practices as still nascent; keep claims
-about coverage and effectiveness bounded to measured evidence.</p>
+<p>Pre-deployment evaluation cannot represent all production conditions. NIST's final <a href="https://www.nist.gov/publications/challenges-monitoring-deployed-ai-systems-center-ai-standards-and-innovation">AI 800-4 report on deployed-system monitoring</a> describes post-deployment monitoring practices as still nascent; keep claims about coverage and effectiveness bounded to measured evidence.</p>
 <h2 id="incident-response">Incident response</h2>
 <p>Add agent-specific actions to the normal incident plan:</p>
 <ol>
-<li><strong>Detect and classify:</strong> identify affected tenants, principals, model/prompt/
-   adapter versions, retrieval sources, memory records, tools, credentials,
-   egress destinations, approvals, and downstream effects.</li>
-<li><strong>Contain:</strong> activate the narrowest reliable kill switch, stop queue
-   consumption, deny credential issuance and egress, quarantine tool servers,
-   freeze implicated ingestion and memory writes, and revoke affected tokens.</li>
-<li><strong>Preserve evidence:</strong> retain policy versions, decision records, action
-   digests, source and model artifact digests, tool results, task state, approval
-   evidence, and downstream reconciliation IDs under the incident evidence
-   policy. Avoid collecting unrelated tenant content.</li>
-<li><strong>Eradicate:</strong> remove poisoned sources/memory, rebuild indexes and caches,
-   rotate exposed secrets, patch or replace tools, restore approved artifacts,
-   and close the authorization or sandbox gap.</li>
-<li><strong>Reconcile and recover:</strong> determine which external effects actually occurred,
-   reverse them through normal audited interfaces where possible, restore in
-   read-only/canary mode, and re-run deterministic plus adversarial tests.</li>
-<li><strong>Communicate and learn:</strong> follow applicable contractual, legal, regulatory,
-   and tenant-notification processes; publish a bounded internal account; add
-   regression tests and update the threat model, policy, playbooks, and risk
-   register.</li>
+<li><strong>Detect and classify:</strong> identify affected tenants, principals, model/prompt/ adapter versions, retrieval sources, memory records, tools, credentials, egress destinations, approvals, and downstream effects.</li>
+<li><strong>Contain:</strong> activate the narrowest reliable kill switch, stop queue consumption, deny credential issuance and egress, quarantine tool servers, freeze implicated ingestion and memory writes, and revoke affected tokens.</li>
+<li><strong>Preserve evidence:</strong> retain policy versions, decision records, action digests, source and model artifact digests, tool results, task state, approval evidence, and downstream reconciliation IDs under the incident evidence policy. Avoid collecting unrelated tenant content.</li>
+<li><strong>Eradicate:</strong> remove poisoned sources/memory, rebuild indexes and caches, rotate exposed secrets, patch or replace tools, restore approved artifacts, and close the authorization or sandbox gap.</li>
+<li><strong>Reconcile and recover:</strong> determine which external effects actually occurred, reverse them through normal audited interfaces where possible, restore in read-only/canary mode, and re-run deterministic plus adversarial tests.</li>
+<li><strong>Communicate and learn:</strong> follow applicable contractual, legal, regulatory, and tenant-notification processes; publish a bounded internal account; add regression tests and update the threat model, policy, playbooks, and risk register.</li>
 </ol>
-<p>Do not delete suspicious memory or retrieval content before preserving the
-minimum evidence needed to understand derived chunks, caches, summaries, and
-effects. Do not re-enable automation solely because model output appears normal.</p>
+<p>Do not delete suspicious memory or retrieval content before preserving the minimum evidence needed to understand derived chunks, caches, summaries, and effects. Do not re-enable automation solely because model output appears normal.</p>
 <h2 id="model-and-agent-supply-chain">Model and agent supply chain</h2>
-<p>Apply the final <a href="https://csrc.nist.gov/pubs/sp/800/218/a/final">NIST SP
-800-218A</a> as an AI-specific
-community profile alongside SSDF 1.1. Maintain an inventory and provenance graph
-for:</p>
+<p>Apply the final <a href="https://csrc.nist.gov/pubs/sp/800/218/a/final">NIST SP 800-218A</a> as an AI-specific community profile alongside SSDF 1.1. Maintain an inventory and provenance graph for:</p>
 <ul>
 <li>base models, weights, adapters, tokenizers, embedding and reranking models;</li>
 <li>training, tuning, retrieval, evaluation, and safety datasets;</li>
-<li>system/developer prompt templates, policies, tool schemas, MCP servers, agent
-  packages, plugins, and approval workflows;</li>
-<li>parsers, converters, inference runtimes, native libraries, containers, build
-  systems, and deployment manifests.</li>
+<li>system/developer prompt templates, policies, tool schemas, MCP servers, agent packages, plugins, and approval workflows;</li>
+<li>parsers, converters, inference runtimes, native libraries, containers, build systems, and deployment manifests.</li>
 </ul>
-<p>Acquire from approved sources; record licenses and use restrictions; pin
-immutable digests; verify signatures/attestations where the ecosystem supports
-them; scan ordinary dependencies; and isolate model loading and conversion.
-Treat executable or unsafe serialization formats as code and do not deserialize
-an untrusted artifact in a privileged environment. Preserve the exact artifact
-set used for evaluation and support rollback to a known-good set.</p>
-<p>A provider name or model label is not a stable version. Contract and operational
-controls should address unannounced model changes, retention/training use,
-subprocessors, regional processing, incident notice, vulnerability handling,
-deprecation, export, and deletion. Re-run security and task evaluations before a
-new model, adapter, embedding, prompt, policy, runtime, or tool becomes eligible.</p>
-<p>The <a href="https://slsa.dev/spec/">SLSA provenance specification</a> and
-<a href="https://cyclonedx.org/capabilities/mlbom/">CycloneDX machine-learning
-BOM</a> are primary project materials
-that can represent parts of this evidence. Neither, by itself, proves an
-artifact safe or a deployed agent authorized.</p>
+<p>Acquire from approved sources; record licenses and use restrictions; pin immutable digests; verify signatures/attestations where the ecosystem supports them; scan ordinary dependencies; and isolate model loading and conversion. Treat executable or unsafe serialization formats as code and do not deserialize an untrusted artifact in a privileged environment. Preserve the exact artifact set used for evaluation and support rollback to a known-good set.</p>
+<p>A provider name or model label is not a stable version. Contract and operational controls should address unannounced model changes, retention/training use, subprocessors, regional processing, incident notice, vulnerability handling, deprecation, export, and deletion. Re-run security and task evaluations before a new model, adapter, embedding, prompt, policy, runtime, or tool becomes eligible.</p>
+<p>The <a href="https://slsa.dev/spec/">SLSA provenance specification</a> and <a href="https://cyclonedx.org/capabilities/mlbom/">CycloneDX machine-learning BOM</a> are primary project materials that can represent parts of this evidence. Neither, by itself, proves an artifact safe or a deployed agent authorized.</p>
 <h2 id="standards-and-version-baseline">Standards and version baseline</h2>
 <table>
 <thead>
@@ -1034,69 +3705,40 @@ artifact safe or a deployed agent authorized.</p>
 </tr>
 </tbody>
 </table>
-<p>Re-check every living or in-revision source at the next review. A newer date does
-not automatically make a draft, release candidate, or catalog a normative
-replacement for a final publication.</p>
-<h2 id="residual-risks-and-limitations">What's still not solved</h2>
+<p>Re-check every living or in-revision source at the next review. A newer date does not automatically make a draft, release candidate, or catalog a normative replacement for a final publication.</p>
+<h2 id="whats-still-not-solved">What's still not solved</h2>
 <p>Even with all of this in place, here's what can still go wrong:</p>
 <ul>
 <li>novel model behavior and injection techniques that evade detection;</li>
-<li>a compromised broker, policy administrator, identity tier, approval service,
-  tool server, downstream service, or build pipeline;</li>
+<li>a compromised broker, policy administrator, identity tier, approval service, tool server, downstream service, or build pipeline;</li>
 <li>legitimate but malicious insiders with authorized access;</li>
-<li>authorization policy that is enforced correctly but models the wrong business
-  rule;</li>
-<li>side channels across shared inference, retrieval, caches, telemetry, or
-  infrastructure;</li>
-<li>sandbox escapes, kernel or runtime vulnerabilities, DNS and supply-chain
-  compromise;</li>
+<li>authorization policy that is enforced correctly but models the wrong business rule;</li>
+<li>side channels across shared inference, retrieval, caches, telemetry, or infrastructure;</li>
+<li>sandbox escapes, kernel or runtime vulnerabilities, DNS and supply-chain compromise;</li>
 <li>poisoned sources that are authorized and plausible enough to pass review;</li>
 <li>approval fatigue, collusion, inaccessible context, and delayed revocation;</li>
-<li>model-provider changes and incomplete visibility into hosted models or data
-  handling;</li>
-<li>finite evaluations that do not cover open-ended, long-horizon, multi-agent
-  interactions.</li>
+<li>model-provider changes and incomplete visibility into hosted models or data handling;</li>
+<li>finite evaluations that do not cover open-ended, long-horizon, multi-agent interactions.</li>
 </ul>
-<p>The strongest mitigation is to reduce capability and blast radius: fewer tools,
-smaller data scopes, shorter credentials, reversible effects, lower budgets,
-tighter egress, narrower tenants, and less unattended autonomy. Some use cases
-should remain read-only, require approval permanently, or not use an agent.</p>
+<p>The strongest mitigation is to reduce capability and blast radius: fewer tools, smaller data scopes, shorter credentials, reversible effects, lower budgets, tighter egress, narrower tenants, and less unattended autonomy. Some use cases should remain read-only, require approval permanently, or not use an agent.</p>
 <h2 id="engineering-and-operational-checklist">Engineering and operational checklist</h2>
-<ul class="docs-checklist">
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Principal and tenant are authenticated outside the model and deny when
-      missing.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> User, retrieval, memory, tool metadata, model output, and tool output are
-      all treated as untrusted.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Every effect crosses an external capability broker and downstream
-      authorization.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Tool, resource, destination, amount, data class, rate, step, time, and cost
-      constraints are explicit allowlists.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> High-impact approval is separate, exact, short-lived, single-use, and
-      revalidated before execution.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> RAG ingestion, query, cache, derived data, and deletion each have a cross-tenant
-      test that's supposed to fail.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> MCP/tool servers have owners, pinned identities/versions/digests, schema
-      limits, isolation, audience validation, and no token passthrough.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Model and tool output is validated and encoded for each final sink.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Memory writes have tenant binding, provenance, review state, TTL, and
-      deletion/rollback.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Model context is secretless; credentials are just-in-time, narrow, and not
-      visible to the model.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Execution is ephemeral and resource-limited; network egress is denied by
-      default.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Kill switches exist at multiple scopes and are rehearsed independently of
-      the model.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Deterministic authorization tests and stochastic model/system evaluations
-      are both release evidence.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Observability distinguishes proposals, policy decisions, approvals,
-      execution, egress, and downstream outcomes without logging secrets.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Incident response covers retrieval, memory, model artifacts, tasks, tools,
-      credentials, approvals, and external-effect reconciliation.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> Models, adapters, data, prompts, policies, runtimes, tools, and evaluations
-      have provenance, immutable versions, admission checks, and rollback.</label></li>
-<li class="docs-checklist-item"><label><input type="checkbox" disabled> What's still not solved, what hasn't been measured, and the maximum autonomy permitted are all
-      explicitly signed off by whoever owns that decision.</label></li>
-</ul>
+<p>Principal and tenant are authenticated outside the model and deny when missing.</p>
+<p>User, retrieval, memory, tool metadata, model output, and tool output are all treated as untrusted.</p>
+<p>Every effect crosses an external capability broker and downstream authorization.</p>
+<p>Tool, resource, destination, amount, data class, rate, step, time, and cost constraints are explicit allowlists.</p>
+<p>High-impact approval is separate, exact, short-lived, single-use, and revalidated before execution.</p>
+<p>RAG ingestion, query, cache, derived data, and deletion each have a cross-tenant test that's supposed to fail.</p>
+<p>MCP/tool servers have owners, pinned identities/versions/digests, schema limits, isolation, audience validation, and no token passthrough.</p>
+<p>Model and tool output is validated and encoded for each final sink.</p>
+<p>Memory writes have tenant binding, provenance, review state, TTL, and deletion/rollback.</p>
+<p>Model context is secretless; credentials are just-in-time, narrow, and not visible to the model.</p>
+<p>Execution is ephemeral and resource-limited; network egress is denied by default.</p>
+<p>Kill switches exist at multiple scopes and are rehearsed independently of the model.</p>
+<p>Deterministic authorization tests and stochastic model/system evaluations are both release evidence.</p>
+<p>Observability distinguishes proposals, policy decisions, approvals, execution, egress, and downstream outcomes without logging secrets.</p>
+<p>Incident response covers retrieval, memory, model artifacts, tasks, tools, credentials, approvals, and external-effect reconciliation.</p>
+<p>Models, adapters, data, prompts, policies, runtimes, tools, and evaluations have provenance, immutable versions, admission checks, and rollback.</p>
+<p>What's still not solved, what hasn't been measured, and the maximum autonomy permitted are all explicitly signed off by whoever owns that decision.</p>
 <h2 id="references">References</h2>
 <ul>
 <li><a href="https://www.nist.gov/itl/ai-risk-management-framework">NIST Artificial Intelligence Risk Management Framework 1.0</a></li>
@@ -1117,33 +3759,41 @@ should remain read-only, require approval permanently, or not use an agent.</p>
 <li><a href="https://slsa.dev/spec/">SLSA specification</a></li>
 <li><a href="https://cyclonedx.org/capabilities/mlbom/">CycloneDX machine-learning bill of materials</a></li>
 </ul>
-
-
-
-
-
-
-
   
   
+    
 
+<section class="docs-related" aria-labelledby="docs-related-heading">
+  <h2 id="docs-related-heading">Related content</h2>
+  <div class="docs-related__grid">
+    
+      
+    
+      
+      <a class="docs-related__item" href="/labs/ai-agent-security/">
+        <span class="docs-related__type">Lab</span>
+        <strong>AI-agent security</strong>
+        <span>Exercises action-bound approval, replay resistance, kill-switch behavior, and unknown-argument denial in a local tool broker.</span>
+      </a>
+      
+    
+      
+    
+  </div>
+</section>
 
-
-
-
+    <aside class="docs-contribute" aria-label="Contribute to this article">
+  <p><strong>Help improve this page</strong></p>
+  <div>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/edit/main/appsec/ai-agent-security.md">Suggest an improvement</a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Threat-Driven%20Security%20Architecture%20for%20AI%20Agents&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com//appsec/ai-agent-security/%250ASource%3A%20appsec/ai-agent-security.md%250A%250ADescribe%20the%20issue%20or%20suggested%20improvement%3A">Report an issue</a>
+  </div>
+</aside>
+  
 
                 
-
-<!-- docs-prevnext:start --><nav class="docs-prevnext" aria-label="Page navigation"><a class="docs-prevnext__link docs-prevnext__link--prev" href="/appsec/"><span class="docs-prevnext__dir">&larr; Previous</span><span class="docs-prevnext__cat">Research</span><span class="docs-prevnext__title">Application Security</span></a><a class="docs-prevnext__link docs-prevnext__link--next" href="/appsec/saas-multitenancy-isolation/"><span class="docs-prevnext__dir">Next &rarr;</span><span class="docs-prevnext__cat">Application Security</span><span class="docs-prevnext__title">Multi-tenant SaaS isolation</span></a></nav><!-- docs-prevnext:end -->
-</article>
-            </div><!-- docs-desktop-toc:start -->
-<aside class="docs-right-toc" aria-label="On this page">
-  <strong class="docs-right-toc__title">On this page</strong>
-  <nav aria-label="On this page">
-    <ol><li><a href="#evidence-and-implementation-status">What&#39;s actually built here versus what&#39;s a design</a></li><li><a href="#executive-security-decision">The core decision</a></li><li><a href="#scope-non-goals-and-assumptions">Scope, non-goals, and assumptions</a></li><li><a href="#assets-actors-and-security-invariants">Assets, actors, and security invariants</a></li><li><a href="#architecture-and-trust-boundaries">Architecture and trust boundaries</a></li><li><a href="#threat-model-and-required-negative-evidence">Threat model and required negative evidence</a></li><li><a href="#control-design">Control design</a></li><li><a href="#failure-modes-and-explicit-semantics">Failure modes and explicit semantics</a></li><li><a href="#evaluation-and-release-evidence">Evaluation and release evidence</a></li><li><a href="#staged-rollout-and-rollback-gates">Staged rollout and rollback gates</a></li><li><a href="#observability-and-operations">Observability and operations</a></li><li><a href="#incident-response">Incident response</a></li><li><a href="#model-and-agent-supply-chain">Model and agent supply chain</a></li><li><a href="#standards-and-version-baseline">Standards and version baseline</a></li><li><a href="#residual-risks-and-limitations">What&#39;s still not solved</a></li><li><a href="#engineering-and-operational-checklist">Engineering and operational checklist</a></li></ol>
-  </nav>
-</aside>
-<!-- docs-desktop-toc:end -->
+              </article>
+            </div>
           
           
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
@@ -1158,20 +3808,55 @@ should remain read-only, require approval permanently, or not use an agent.</p>
       </main>
       
         <footer class="md-footer">
-<!-- docs-footer:start -->
-<div class="docs-footer">
-  <p class="docs-footer__copyright">&copy; 2026 Jason Achkar Diab</p>
-  <ul class="docs-footer__links">
-    <li><a href="/#featured-research">Research</a></li>
-    <li><a href="/#validated-labs">Labs</a></li>
-    <li><a href="/scripts/">Scripts</a></li>
-    <li><a href="/#study-notes">Study notes</a></li>
-    <li><a href="/about/">About</a></li>
-    <li><a href="https://github.com/jasonachkar/cybersecurity-writeups">GitHub</a></li>
-  </ul>
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../" class="md-footer__link md-footer__link--prev" aria-label="Previous: Application Security overview">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Application Security overview
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../saas-multitenancy-isolation/" class="md-footer__link md-footer__link--next" aria-label="Next: Multi-tenant SaaS isolation">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Multi-tenant SaaS isolation
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  &copy; 2026 Jason Achkardiab. All rights reserved.
 </div>
-<!-- docs-footer:end -->
-
+      
+    </div>
+  </div>
 </footer>
       
     </div>
@@ -1183,13 +3868,14 @@ should remain read-only, require approval permanently, or not use an agent.</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.breadcrumbs", "search.suggest", "search.highlight", "content.code.copy", "content.code.select"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.path", "navigation.indexes", "navigation.footer", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
-<script src="../../assets/javascripts/docs-source-viewer.js" defer></script>
-<script src="../../assets/javascripts/docs-ui.js" defer></script>
-<script src="../../assets/javascripts/portfolio-a11y.js" defer></script>
+      
+        <script src="../../js/docs-ui.js"></script>
+      
+        <script src="../../js/source-viewer.js"></script>
       
     
   </body>

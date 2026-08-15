@@ -1,8 +1,0 @@
-node_modules/
-qa/runtime/
-qa-artifacts/
-# Local tooling worktrees / cached pinned-tool downloads (scripts/fetch-pinned-tool.mjs).
-.tools/
-# Generated runtime QA evidence lives in GitHub Actions artifacts, not git.
-qa/*.json
-!qa/.gitkeep

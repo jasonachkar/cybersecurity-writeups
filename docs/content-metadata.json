@@ -1,7 +1,82 @@
 {
-  "deprecated": true,
-  "statusAuthority": "/content-status.json",
-  "keyType": "public URL",
-  "reason": "This gh-pages artifact no longer uses Markdown-source-path review flags as a public status authority.",
-  "migratedAt": "2026-07-25T09:00:00Z"
+  "docs/certification-notes/az-900/README.md": {
+    "lastReviewed": "2026-07-21",
+    "reviewStatus": "requires-review",
+    "validatedAgainst": [],
+    "sourceQuality": "requires-review",
+    "implementationStatus": "illustrative",
+    "reviewIntervalDays": 365
+  },
+  "docs/certification-notes/google-cybersecurity/README.md": {
+    "lastReviewed": "2026-07-21",
+    "reviewStatus": "requires-review",
+    "validatedAgainst": [],
+    "sourceQuality": "requires-review",
+    "implementationStatus": "illustrative",
+    "reviewIntervalDays": 365
+  },
+  "docs/research/enterprise-cloud-security-engineering/README.md": {
+    "lastReviewed": "2026-07-21",
+    "reviewStatus": "requires-review",
+    "validatedAgainst": [],
+    "sourceQuality": "requires-review",
+    "implementationStatus": "illustrative",
+    "reviewIntervalDays": 180
+  },
+  "docs/research/oauth-misconfigurations/README.md": {
+    "lastReviewed": "2026-07-21",
+    "reviewStatus": "requires-review",
+    "validatedAgainst": [],
+    "sourceQuality": "requires-review",
+    "implementationStatus": "illustrative",
+    "reviewIntervalDays": 180
+  },
+  "docs/research/threat-modeling-saas/README.md": {
+    "lastReviewed": "2026-07-21",
+    "reviewStatus": "requires-review",
+    "validatedAgainst": [],
+    "sourceQuality": "requires-review",
+    "implementationStatus": "illustrative",
+    "reviewIntervalDays": 180
+  },
+  "docs/tutorials/azure-firewall-walkthrough/README.md": {
+    "lastReviewed": "2026-07-21",
+    "reviewStatus": "requires-review",
+    "validatedAgainst": [],
+    "sourceQuality": "requires-review",
+    "implementationStatus": "illustrative",
+    "reviewIntervalDays": 180
+  },
+  "docs/tutorials/ci-cd-gates/README.md": {
+    "lastReviewed": "2026-07-21",
+    "reviewStatus": "requires-review",
+    "validatedAgainst": [],
+    "sourceQuality": "requires-review",
+    "implementationStatus": "illustrative",
+    "reviewIntervalDays": 180
+  },
+  "docs/tutorials/detection-engineering-sentinel/README.md": {
+    "lastReviewed": "2026-07-21",
+    "reviewStatus": "requires-review",
+    "validatedAgainst": [],
+    "sourceQuality": "requires-review",
+    "implementationStatus": "illustrative",
+    "reviewIntervalDays": 180
+  },
+  "docs/tutorials/owasp-api-security-top-10/README.md": {
+    "lastReviewed": "2026-07-21",
+    "reviewStatus": "requires-review",
+    "validatedAgainst": [],
+    "sourceQuality": "requires-review",
+    "implementationStatus": "illustrative",
+    "reviewIntervalDays": 180
+  },
+  "docs/tutorials/securing-entra-id/README.md": {
+    "lastReviewed": "2026-07-21",
+    "reviewStatus": "requires-review",
+    "validatedAgainst": [],
+    "sourceQuality": "requires-review",
+    "implementationStatus": "illustrative",
+    "reviewIntervalDays": 180
+  }
 }

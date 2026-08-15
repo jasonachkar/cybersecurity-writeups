@@ -1,8 +1,0 @@
-{
-  "statementType": "https://in-toto.io/Statement/v1",
-  "predicateType": "https://slsa.dev/provenance/v1",
-  "expectedBuilderId": "https://github.com/jasonachkar/cybersecurity-writeups/.github/workflows/release.yml@refs/heads/main",
-  "expectedBuildType": "https://actions.github.io/buildtypes/workflow/v1",
-  "expectedSourceUri": "git+https://github.com/jasonachkar/cybersecurity-writeups@refs/heads/main",
-  "expectedIssuer": "https://token.actions.githubusercontent.com"
-}
