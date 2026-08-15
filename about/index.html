@@ -58,6 +58,9 @@
   
   
   
+  
+    <script src="../js/vendor/mermaid.min.js"></script>
+  
 
   </head>
   
@@ -2438,6 +2441,14 @@ itself proof that the guidance is correct: material remains marked
 <code>validatedAgainst</code> sources.</p>
 <p>Passing repository checks means the documented local tests behaved as expected.
 It does not claim that every design was deployed to a live environment.</p>
+<p>The publishing flow is deliberately one-way: canonical inputs are validated on
+<code>main</code>, and only the resulting verified static artifact is written to
+<code>gh-pages</code>.</p>
+<pre class="mermaid" data-diagram-label="Canonical documentation publishing flow"><code>flowchart TD
+    SOURCE["Canonical Markdown, metadata, and source"] --&gt; CATALOG["Catalog and deterministic build"]
+    CATALOG --&gt; QA["Content, security, UI, visual, and accessibility checks"]
+    QA --&gt; SITE["Verified static artifact"]
+    SITE --&gt; PAGES["Generated gh-pages branch"]</code></pre>
 <h2 id="source">Source</h2>
 <p>The source for this site is public in the
 <a href="https://github.com/jasonachkar/cybersecurity-writeups">cybersecurity-writeups repository</a>.</p>
