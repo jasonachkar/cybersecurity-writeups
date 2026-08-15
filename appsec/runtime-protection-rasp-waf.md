@@ -1,5 +1,8 @@
 ---
 title: "Layered Runtime Application Protection: WAF, In-Process Controls and eBPF Enforcement"
+id: "runtime-protection-rasp-waf"
+navTitle: "Runtime protection"
+order: 50
 type: "appsec"
 tags:
   - appsec
@@ -9,7 +12,6 @@ tags:
   - waf
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 8
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "Tetragon TracingPolicy API reference — https://tetragon.io/docs/reference/tracing-policy/"

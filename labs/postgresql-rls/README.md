@@ -1,3 +1,22 @@
+---
+id: postgresql-rls
+title: PostgreSQL row-level security isolation lab
+navTitle: PostgreSQL RLS
+domain: appsec
+order: 50
+summary: Exercises row-level security, transaction-local tenant context, pooled connections, and negative cross-tenant cases.
+implementationStatus: tested
+related:
+  research: [saas-multitenancy-isolation]
+sourceFiles:
+  - { path: labs/postgresql-rls/init/001-schema.sql, label: Schema and RLS policies, language: sql, primary: true }
+  - { path: labs/postgresql-rls/tests/rls-tests.sql, label: RLS tests, language: sql }
+  - { path: labs/postgresql-rls/tests/pool-tests.js, label: Pool lifecycle tests, language: javascript }
+runCommands:
+  - labs/postgresql-rls/run-tests.sh
+  - labs/postgresql-rls/run-tests.ps1
+---
+
 # PostgreSQL row-level security isolation lab
 
 This disposable lab tests a transaction-scoped tenant context, complete `USING` and `WITH CHECK` policies, forced row security, and role properties that prevent ordinary application identities from bypassing the boundary.
@@ -14,19 +33,15 @@ This disposable lab tests a transaction-scoped tenant context, complete `USING` 
 
 PowerShell:
 
-<div class="language-powershell highlight">
-
-<span id="__span-0-1"><span class="p">`./`</span><span class="n">`labs`</span><span class="p">`/`</span><span class="n">`postgresql-rls`</span><span class="p">`/`</span><span class="n">`run-tests`</span><span class="p">`.`</span><span class="n">`ps1`</span>` `</span>
-
-</div>
+```powershell
+./labs/postgresql-rls/run-tests.ps1
+```
 
 POSIX shell:
 
-<div class="language-sh highlight">
-
-<span id="__span-1-1">`./labs/postgresql-rls/run-tests.sh `</span>
-
-</div>
+```sh
+./labs/postgresql-rls/run-tests.sh
+```
 
 The scripts generate an ephemeral local password, install the lockfile-pinned `pg` client, start the service, run SQL runtime/boundary/catalog suites plus the pooled-client suite, and remove containers and volumes. The password is not persisted in a tracked file. Pass `-Keep` or `--keep` to retain the service for inspection.
 

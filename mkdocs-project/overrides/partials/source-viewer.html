@@ -1,0 +1,32 @@
+{% set viewer = source_item %}
+{% set primary = viewer.sourceFiles | selectattr("primary") | first %}
+<section class="docs-source-viewer" data-source-viewer data-search-exclude id="{{ viewer.viewerId }}" aria-label="Source code: {{ primary.filename }}">
+  <header class="docs-source-viewer__toolbar">
+    <div class="docs-source-viewer__identity">
+      <div><strong data-source-active-filename>{{ primary.filename }}</strong> <span class="docs-source-viewer__summary"><span data-source-active-language>{{ primary.highlighted.language.displayName }}</span> · <span data-source-active-lines>{{ primary.lineCount }} lines</span></span></div>
+      <code data-source-active-path title="{{ primary.path }}">{{ primary.path }}</code>
+    </div>
+    <div class="docs-source-viewer__links">
+      <a href="{{ primary.github }}" data-source-github>Open on GitHub</a>
+      <a href="{{ primary.raw }}" data-source-raw>View raw</a>
+    </div>
+    <div class="docs-source-viewer__actions" data-source-actions>
+      <button type="button" data-copy-source>Copy</button>
+      <button type="button" data-wrap-source aria-pressed="false">Wrap</button>
+      <button type="button" data-expand-source aria-expanded="false"{% if not primary.expandable %} hidden{% endif %}>Expand</button>
+    </div>
+    <span class="docs-source-viewer__status" aria-live="polite" aria-atomic="true" data-source-status></span>
+  </header>
+  {% if viewer.sourceFiles | length > 1 %}
+  <div class="docs-source-viewer__tabs" role="tablist" aria-label="Source files">
+    {% for file in viewer.sourceFiles %}
+    <button type="button" role="tab" id="{{ viewer.viewerId }}-tab-{{ loop.index0 }}" aria-controls="{{ viewer.viewerId }}-panel-{{ loop.index0 }}" aria-selected="{{ 'true' if file.primary else 'false' }}" tabindex="{{ '0' if file.primary else '-1' }}" data-source-tab data-index="{{ loop.index0 }}"{% if file.primary %} data-current-tab{% endif %}>{{ file.label }}</button>
+    {% endfor %}
+  </div>
+  {% endif %}
+  {% for file in viewer.sourceFiles %}
+  <div role="tabpanel" id="{{ viewer.viewerId }}-panel-{{ loop.index0 }}" class="docs-source-viewer__panel" data-source-panel data-index="{{ loop.index0 }}" data-source-filename="{{ file.filename }}" data-source-language="{{ file.highlighted.language.displayName }}" data-source-path="{{ file.path }}" data-source-lines="{{ file.lineCount }}" data-source-github="{{ file.github }}" data-source-raw="{{ file.raw }}"{% if file.expandable %} data-source-expandable{% endif %}{% if not file.primary %} hidden{% endif %}>
+    <pre class="docs-source-viewer__code shiki shiki-themes github-light-default github-dark-default" data-source-code tabindex="0" aria-label="{{ file.filename }} source code"{% if file.highlighted.rootStyle %} style="{{ file.highlighted.rootStyle }}"{% endif %}><code class="language-{{ file.highlighted.language.id }}">{{ file.highlighted.html | safe }}</code></pre>
+  </div>
+  {% endfor %}
+</section>

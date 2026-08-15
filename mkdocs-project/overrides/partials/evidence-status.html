@@ -1,0 +1,15 @@
+<section class="docs-evidence" aria-labelledby="docs-evidence-heading">
+  <h2 id="docs-evidence-heading" class="docs-evidence__title">Evidence status</h2>
+  <dl class="docs-evidence__grid">
+    <div><dt>Implementation</dt><dd>{{ docs_page.implementationLabel }}</dd></div>
+    <div><dt>Review</dt><dd>{{ docs_page.reviewLabel }}</dd></div>
+    <div><dt>Sources</dt><dd>{{ docs_page.sourceQualityLabel }}</dd></div>
+    <div><dt>Last reviewed</dt><dd><time datetime="{{ docs_page.lastReviewed }}">{{ docs_page.lastReviewed }}</time></dd></div>
+  </dl>
+  <details class="docs-evidence__details">
+    <summary>What do these statuses mean?</summary>
+    <p><strong>{{ docs_page.implementationLabel }}:</strong> {{ docs_page.implementationDescription }}</p>
+    <p><strong>{{ docs_page.reviewLabel }}:</strong> {{ docs_page.reviewDescription }}</p>
+    <p><a href="{{ 'about/#research-methodology' | url }}">Read the research methodology</a></p>
+  </details>
+</section>

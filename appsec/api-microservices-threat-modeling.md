@@ -1,5 +1,8 @@
 ---
 title: "API and Microservice Trust Boundaries: Workload Identity, User Context and Downstream Authorization"
+id: "api-microservices-threat-modeling"
+navTitle: "API threat modeling"
+order: 40
 type: "appsec"
 tags:
   - appsec
@@ -9,7 +12,6 @@ tags:
   - modeling
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 9
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "NIST SP 800-204 - Security Strategies for Microservices-based Application Systems — https://csrc.nist.gov/pubs/sp/800/204/final"

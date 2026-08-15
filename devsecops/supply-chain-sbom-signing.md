@@ -1,5 +1,8 @@
 ---
 title: "Software Supply-chain Evidence: SBOMs, Provenance, Signing, and Verification"
+id: "supply-chain-sbom-signing"
+navTitle: "Supply-chain evidence"
+order: 30
 type: "devsecops"
 tags:
   - devsecops
@@ -9,7 +12,6 @@ tags:
   - signing
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 12
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "SLSA v1.2 build provenance — https://slsa.dev/spec/v1.2/build-provenance"
@@ -143,11 +145,14 @@ A conforming SLSA v1 statement keeps `buildDefinition` and `runDetails` inside i
 
 Adding a custom top-level object such as:
 
-<div class="language-json highlight">
-
-<span id="__span-0-1"><span class="p">`{`</span>` `</span><span id="__span-0-2"><span class="w">` `</span><span class="nt">`"verification"`</span><span class="p">`:`</span><span class="w">` `</span><span class="p">`{`</span>` `</span><span id="__span-0-3"><span class="w">` `</span><span class="nt">`"issuer"`</span><span class="p">`:`</span><span class="w">` `</span><span class="s2">`"<issuer>"`</span><span class="p">`,`</span>` `</span><span id="__span-0-4"><span class="w">` `</span><span class="nt">`"verified"`</span><span class="p">`:`</span><span class="w">` `</span><span class="kc">`true`</span>` `</span><span id="__span-0-5"><span class="w">` `</span><span class="p">`}`</span>` `</span><span id="__span-0-6"><span class="p">`}`</span>` `</span>
-
-</div>
+```json
+{
+ "verification": {
+ "issuer": "<issuer>",
+ "verified": true
+ }
+}
+```
 
 cannot establish cryptographic validity. An attacker able to edit the statement could edit that object too. Keep the external verifier result in a separate trusted process boundary, bind it to the exact verified statement, and never let the build under test forge the result consumed by promotion policy.
 
@@ -239,11 +244,10 @@ Rollback deploys a previously verified digest whose evidence remains acceptable 
 
 Run:
 
-<div class="language-powershell highlight">
-
-<span id="__span-1-1"><span class="n">`npm`</span>` `<span class="n">`ci`</span>` `<span class="p">`-`</span><span class="n">`-ignore-scripts`</span>` `</span><span id="__span-1-2"><span class="n">`node`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`supply-chain`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`run-tests`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span>
-
-</div>
+```powershell
+npm ci --ignore-scripts
+node labs/supply-chain/tests/run-tests.js
+```
 
 The lab validates exact artifact hash, statement/predicate types, and independent `expectedBuilderId`, `expectedBuildType`, `expectedSourceUri`, and `expectedIssuer` policy fields. Tests confirming these get rejected cover:
 

@@ -1,3 +1,19 @@
+---
+id: ai-agent-security
+title: AI Agent External Tool-Broker Lab
+navTitle: AI-agent security
+domain: appsec
+order: 40
+summary: Exercises action-bound approval, replay resistance, kill-switch behavior, and unknown-argument denial in a local tool broker.
+implementationStatus: tested
+related:
+  research: [ai-agent-security]
+sourceFiles:
+  - { path: labs/ai-agent-security/broker.js, label: Broker implementation, language: javascript, primary: true }
+  - { path: labs/ai-agent-security/tests/broker.test.js, label: Tests, language: javascript }
+runCommands: [node --test labs/ai-agent-security/tests/broker.test.js]
+---
+
 # AI Agent External Tool-Broker Lab
 
 Status: **tested teaching implementation**. The surrounding production architecture in [`appsec/ai-agent-security.md`](../../appsec/ai-agent-security.md) is **conceptual and partially tested**.
@@ -25,11 +41,9 @@ The tests assert that the fake executor's invocation count stays zero for denied
 
 From the repository root with Node.js 22 or newer:
 
-<div class="language-powershell highlight">
-
-<span id="__span-0-1"><span class="n">`node`</span>` `<span class="p">`-`</span><span class="n">`-test`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`ai-agent-security`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`broker`</span><span class="p">`.`</span><span class="n">`test`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span>
-
-</div>
+```powershell
+node --test labs/ai-agent-security/tests/broker.test.js
+```
 
 No package installation, environment variable, credential, service, container, or network connection is required.
 

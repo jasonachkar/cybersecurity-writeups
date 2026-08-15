@@ -1,5 +1,8 @@
 ---
 title: "Attack Path Analysis: Preconditions, Reachability and Evidence-Backed Control Breaks"
+id: "attack-path-analysis"
+navTitle: "Attack-path analysis"
+order: 10
 type: "threat-intel"
 tags:
   - threat-intel
@@ -8,7 +11,6 @@ tags:
   - analysis
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 10
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "GitHub Actions OpenID Connect security model — https://docs.github.com/en/actions/concepts/security/openid-connect"

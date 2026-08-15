@@ -1,5 +1,8 @@
 ---
 title: "OAuth 2.0 and OpenID Connect Security Engineering"
+id: "oauth2-oidc-deep-dive"
+navTitle: "OAuth 2.0 and OIDC"
+order: 30
 type: "appsec"
 tags:
   - appsec
@@ -9,7 +12,6 @@ tags:
   - dive
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 9
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "RFC 9700: OAuth 2.0 Security Best Current Practice — https://www.rfc-editor.org/rfc/rfc9700.html"
@@ -84,19 +86,29 @@ Avoid putting sensitive business data in front-channel parameters. Signed/encryp
 
 Use a maintained library and configured issuer metadata. Pseudocode for an ID token:
 
-<div class="language-text highlight">
-
-<span id="__span-0-1">`# Pseudocode: library calls and provider requirements vary. `</span><span id="__span-0-2">`metadata = cached_metadata_for(configured_issuer) `</span><span id="__span-0-3">`key = select_allowed_key(metadata.jwks, token.header.kid) `</span><span id="__span-0-4">`reject unless header.algorithm is in the configured asymmetric allowlist `</span><span id="__span-0-5">`claims = verify_signature_and_decode(token, key) `</span><span id="__span-0-6">`require claims.iss == configured_issuer `</span><span id="__span-0-7">`require client_id is an allowed member of claims.aud `</span><span id="__span-0-8">`validate azp according to OIDC Core when multiple audiences are present `</span><span id="__span-0-9">`validate exp, iat, and nbf with narrow documented clock skew `</span><span id="__span-0-10">`require claims.nonce == one_time_session_nonce `</span>
-
-</div>
+```text
+# Pseudocode: library calls and provider requirements vary.
+metadata = cached_metadata_for(configured_issuer)
+key = select_allowed_key(metadata.jwks, token.header.kid)
+reject unless header.algorithm is in the configured asymmetric allowlist
+claims = verify_signature_and_decode(token, key)
+require claims.iss == configured_issuer
+require client_id is an allowed member of claims.aud
+validate azp according to OIDC Core when multiple audiences are present
+validate exp, iat, and nbf with narrow documented clock skew
+require claims.nonce == one_time_session_nonce
+```
 
 The resource server performs a separate access-token validation for itself:
 
-<div class="language-text highlight">
-
-<span id="__span-1-1">`# Pseudocode: JWT access token profile or introspection contract must be explicit. `</span><span id="__span-1-2">`claims = validate_access_token(token, configured_authorization_server) `</span><span id="__span-1-3">`require api_resource_identifier is in claims.aud `</span><span id="__span-1-4">`require token is active and within time bounds `</span><span id="__span-1-5">`require scopes/authorization_details and subject/client are allowed for this action `</span><span id="__span-1-6">`enforce tenant/object/business authorization using server-side data `</span>
-
-</div>
+```text
+# Pseudocode: JWT access token profile or introspection contract must be explicit.
+claims = validate_access_token(token, configured_authorization_server)
+require api_resource_identifier is in claims.aud
+require token is active and within time bounds
+require scopes/authorization_details and subject/client are allowed for this action
+enforce tenant/object/business authorization using server-side data
+```
 
 Reject `alg: none`, algorithms outside a narrow allowlist, tokens signed by the wrong key type, missing required claims, unknown critical headers, and keys from an unconfigured issuer. `kid` selects among already trusted issuer keys; it is not a URL to fetch. Fetch discovery/JWKS only from a configured HTTPS issuer with controlled redirect, DNS, egress, size, timeout, cache, and key-rotation behavior.
 

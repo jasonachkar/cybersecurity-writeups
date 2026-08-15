@@ -21,12 +21,28 @@
     "docs:pipeline:test": "cd tools/docs-pipeline && go test ./...",
     "docs:inventory": "go run ./tools/docs-pipeline/main.go inventory",
     "docs:audit": "go run ./tools/docs-pipeline/main.go audit -published-ref origin/gh-pages",
-    "docs:build": "go run ./tools/docs-pipeline/main.go build -python python3",
+    "docs:catalog": "node scripts/render-docs-data.mjs --check",
+    "docs:catalog:test": "node --test scripts/docs-catalog-lib.test.js",
+    "docs:build": "go run ./tools/docs-pipeline/main.go build -python .venv/bin/python",
+    "docs:serve": "go run ./tools/docs-pipeline/main.go serve -python .venv/bin/python",
     "docs:verify": "go run ./tools/docs-pipeline/main.go verify -site .artifacts/site",
-    "validate": "npm run markdown:check && npm run generated:check && npm run metadata:check && npm run freshness:check && npm run research:check && npm run actions:check && npm run code:check && npm run links:check && npm run labs:test"
+    "docs:test:html": "node tests/docs/html.test.mjs",
+    "docs:test:ui": "node tests/docs/ui.test.mjs",
+    "docs:test:a11y": "node tests/docs/accessibility.test.mjs",
+    "docs:test:visual": "playwright test tests/docs/visual.spec.mjs",
+    "docs:update-snapshots": "playwright test tests/docs/visual.spec.mjs --update-snapshots",
+    "research:new": "node scripts/research-new.js",
+    "research:new:test": "node --test scripts/research-new.test.js",
+    "verify:docs": "npm run docs:pipeline:test && npm run docs:catalog && npm run docs:build && npm run docs:test:html && npm run docs:test:ui && npm run docs:test:a11y && npm run docs:test:visual",
+    "verify:all": "npm run validate && npm run verify:docs",
+    "validate": "npm run markdown:check && npm run generated:check && npm run metadata:check && npm run freshness:check && npm run research:check && npm run actions:check && npm run code:check && npm run links:check && npm run labs:test && npm run research:new:test && npm run docs:catalog:test && npm run docs:catalog"
   },
   "devDependencies": {
+    "axe-core": "4.12.1",
+    "html-validate": "11.5.6",
     "markdownlint-cli2": "0.23.1",
+    "playwright": "1.61.1",
+    "shiki": "4.4.3",
     "yaml": "2.9.0"
   }
 }

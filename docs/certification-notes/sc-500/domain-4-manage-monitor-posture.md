@@ -18,13 +18,13 @@ reviewIntervalDays: 90
 
 # Study Notes: Manage and monitor security posture
 
-<div class="aside study-currency" aria-label="Official-owner check">
+<aside class="study-currency" aria-label="Official-owner check">
 
 **Official-owner check**
 
 Microsoft study guide last updated **2026-05-13**. The maintained collection follows the current four domains. [Official SC-500 study guide](https://learn.microsoft.com/en-us/credentials/certifications/resources/study-guides/sc-500).
 
-</div>
+</aside>
 
 The current fourth skills group covers Defender for Cloud posture and workload protection, Microsoft Sentinel collection and automation, and Microsoft Security Copilot administration.
 

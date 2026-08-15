@@ -117,6 +117,8 @@ func main() {
 	switch os.Args[1] {
 	case "build":
 		err = runBuild(os.Args[2:])
+	case "serve":
+		err = runServe(os.Args[2:])
 	case "verify":
 		err = runVerify(os.Args[2:])
 	case "inventory":
@@ -137,12 +139,35 @@ func main() {
 }
 
 func usage(w io.Writer) {
-	fmt.Fprintln(w, "usage: docs-pipeline <build|verify|inventory|audit> [options]")
+	fmt.Fprintln(w, "usage: docs-pipeline <build|serve|verify|inventory|audit> [options]")
 	fmt.Fprintln(w, "")
 	fmt.Fprintln(w, "  build      run strict MkDocs build, verify routes, write manifest")
+	fmt.Fprintln(w, "  serve      run the canonical MkDocs development server")
 	fmt.Fprintln(w, "  verify     validate a previously built site")
 	fmt.Fprintln(w, "  inventory  print canonical source-to-route inventory as JSON")
 	fmt.Fprintln(w, "  audit      compare canonical routes with published lifecycle data")
+}
+
+func runServe(args []string) error {
+	set, rootFlag, _ := commonFlags("serve", args)
+	python := set.String("python", "python3", "Python interpreter with documentation dependencies installed")
+	address := set.String("address", "127.0.0.1:8000", "development server listen address")
+	if err := set.Parse(args); err != nil {
+		return err
+	}
+	m, err := loadModel(*rootFlag)
+	if err != nil {
+		return err
+	}
+	command := exec.Command(*python, "-m", "mkdocs", "serve", "--strict", "-f", m.config.MkDocsConfig, "--dev-addr", *address)
+	command.Dir = m.root
+	command.Stdin = os.Stdin
+	command.Stdout = os.Stdout
+	command.Stderr = os.Stderr
+	if err := command.Run(); err != nil {
+		return fmt.Errorf("MkDocs development server failed: %w", err)
+	}
+	return nil
 }
 
 func commonFlags(name string, args []string) (*flag.FlagSet, *string, error) {
@@ -174,6 +199,9 @@ func runBuild(args []string) error {
 	command.Stderr = os.Stderr
 	if err := command.Run(); err != nil {
 		return fmt.Errorf("strict MkDocs build failed: %w", err)
+	}
+	if err := os.WriteFile(filepath.Join(outputPath, ".nojekyll"), []byte{}, 0o644); err != nil {
+		return fmt.Errorf("write .nojekyll marker: %w", err)
 	}
 	if err := verifySite(m, outputPath); err != nil {
 		return err

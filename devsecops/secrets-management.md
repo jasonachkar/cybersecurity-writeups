@@ -1,5 +1,8 @@
 ---
 title: "Secrets Management Engineering: Identity, Delivery, Rotation and Runtime Exposure"
+id: "secrets-management"
+navTitle: "Secrets management"
+order: 40
 type: "devsecops"
 tags:
   - devsecops
@@ -7,7 +10,6 @@ tags:
   - management
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 9
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "Kubernetes Secrets — https://kubernetes.io/docs/concepts/configuration/secret/"

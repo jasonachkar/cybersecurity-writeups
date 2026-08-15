@@ -1,5 +1,8 @@
 ---
 title: "AWS Multi-Account Landing Zones: Guardrails and Control-Plane Isolation"
+id: "multi-account-landing-zones"
+navTitle: "Landing zones"
+order: 30
 type: "cloud-security"
 tags:
   - cloud-security
@@ -9,7 +12,6 @@ tags:
   - zones
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 10
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "AWS Organizations: Service control policies — https://docs.aws.amazon.com/organizations/latest/userguide/orgs_manage_policies_scps.html"
@@ -75,11 +77,20 @@ Cross-account requests require both the trusted-principal side and trusting-reso
 
 ## Reference account structure
 
-<div class="language-text highlight">
-
-<span id="__span-0-1">`Organization root `</span><span id="__span-0-2">`├── Security OU `</span><span id="__span-0-3">`│ ├── Log archive `</span><span id="__span-0-4">`│ └── Security tooling / delegated administration `</span><span id="__span-0-5">`├── Infrastructure OU `</span><span id="__span-0-6">`│ ├── Network `</span><span id="__span-0-7">`│ └── Shared services `</span><span id="__span-0-8">`├── Workloads OU `</span><span id="__span-0-9">`│ ├── Production `</span><span id="__span-0-10">`│ └── Non-production `</span><span id="__span-0-11">`├── Sandbox OU `</span><span id="__span-0-12">`└── Suspended / quarantine OU `</span>
-
-</div>
+```text
+Organization root
+├── Security OU
+│ ├── Log archive
+│ └── Security tooling / delegated administration
+├── Infrastructure OU
+│ ├── Network
+│ └── Shared services
+├── Workloads OU
+│ ├── Production
+│ └── Non-production
+├── Sandbox OU
+└── Suspended / quarantine OU
+```
 
 Keep workloads out of the management account. Delegate supported security services to the security-tooling account, but remember that delegated administration does not transfer all Organizations privileges and does not make that account immune to SCPs. Use a distinct log-archive account with tightly limited write and delete paths.
 
@@ -87,11 +98,46 @@ Keep workloads out of the management account. Delegate supported security servic
 
 The following deny-list fragment demonstrates two guardrails. It is intentionally incomplete and must not be copied into production without service-impact analysis.
 
-<div class="language-json highlight">
-
-<span id="__span-1-1"><span class="p">`{`</span>` `</span><span id="__span-1-2"><span class="w">` `</span><span class="nt">`"Version"`</span><span class="p">`:`</span><span class="w">` `</span><span class="s2">`"2012-10-17"`</span><span class="p">`,`</span>` `</span><span id="__span-1-3"><span class="w">` `</span><span class="nt">`"Statement"`</span><span class="p">`:`</span><span class="w">` `</span><span class="p">`[`</span>` `</span><span id="__span-1-4"><span class="w">` `</span><span class="p">`{`</span>` `</span><span id="__span-1-5"><span class="w">` `</span><span class="nt">`"Sid"`</span><span class="p">`:`</span><span class="w">` `</span><span class="s2">`"DenyLeavingOrganization"`</span><span class="p">`,`</span>` `</span><span id="__span-1-6"><span class="w">` `</span><span class="nt">`"Effect"`</span><span class="p">`:`</span><span class="w">` `</span><span class="s2">`"Deny"`</span><span class="p">`,`</span>` `</span><span id="__span-1-7"><span class="w">` `</span><span class="nt">`"Action"`</span><span class="p">`:`</span><span class="w">` `</span><span class="s2">`"organizations:LeaveOrganization"`</span><span class="p">`,`</span>` `</span><span id="__span-1-8"><span class="w">` `</span><span class="nt">`"Resource"`</span><span class="p">`:`</span><span class="w">` `</span><span class="s2">`"*"`</span>` `</span><span id="__span-1-9"><span class="w">` `</span><span class="p">`},`</span>` `</span><span id="__span-1-10"><span class="w">` `</span><span class="p">`{`</span>` `</span><span id="__span-1-11"><span class="w">` `</span><span class="nt">`"Sid"`</span><span class="p">`:`</span><span class="w">` `</span><span class="s2">`"DenyUnsupportedRegionsWithGlobalServiceExceptions"`</span><span class="p">`,`</span>` `</span><span id="__span-1-12"><span class="w">` `</span><span class="nt">`"Effect"`</span><span class="p">`:`</span><span class="w">` `</span><span class="s2">`"Deny"`</span><span class="p">`,`</span>` `</span><span id="__span-1-13"><span class="w">` `</span><span class="nt">`"NotAction"`</span><span class="p">`:`</span><span class="w">` `</span><span class="p">`[`</span>` `</span><span id="__span-1-14"><span class="w">` `</span><span class="s2">`"account:*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-15"><span class="w">` `</span><span class="s2">`"aws-portal:*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-16"><span class="w">` `</span><span class="s2">`"budgets:*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-17"><span class="w">` `</span><span class="s2">`"cloudfront:*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-18"><span class="w">` `</span><span class="s2">`"globalaccelerator:*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-19"><span class="w">` `</span><span class="s2">`"iam:*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-20"><span class="w">` `</span><span class="s2">`"networkmanager:*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-21"><span class="w">` `</span><span class="s2">`"organizations:*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-22"><span class="w">` `</span><span class="s2">`"route53:*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-23"><span class="w">` `</span><span class="s2">`"route53domains:*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-24"><span class="w">` `</span><span class="s2">`"support:*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-25"><span class="w">` `</span><span class="s2">`"waf:*"`</span>` `</span><span id="__span-1-26"><span class="w">` `</span><span class="p">`],`</span>` `</span><span id="__span-1-27"><span class="w">` `</span><span class="nt">`"Resource"`</span><span class="p">`:`</span><span class="w">` `</span><span class="s2">`"*"`</span><span class="p">`,`</span>` `</span><span id="__span-1-28"><span class="w">` `</span><span class="nt">`"Condition"`</span><span class="p">`:`</span><span class="w">` `</span><span class="p">`{`</span>` `</span><span id="__span-1-29"><span class="w">` `</span><span class="nt">`"StringNotEquals"`</span><span class="p">`:`</span><span class="w">` `</span><span class="p">`{`</span>` `</span><span id="__span-1-30"><span class="w">` `</span><span class="nt">`"aws:RequestedRegion"`</span><span class="p">`:`</span><span class="w">` `</span><span class="p">`[`</span>` `</span><span id="__span-1-31"><span class="w">` `</span><span class="s2">`"ca-central-1"`</span><span class="p">`,`</span>` `</span><span id="__span-1-32"><span class="w">` `</span><span class="s2">`"us-east-1"`</span>` `</span><span id="__span-1-33"><span class="w">` `</span><span class="p">`]`</span>` `</span><span id="__span-1-34"><span class="w">` `</span><span class="p">`}`</span>` `</span><span id="__span-1-35"><span class="w">` `</span><span class="p">`}`</span>` `</span><span id="__span-1-36"><span class="w">` `</span><span class="p">`}`</span>` `</span><span id="__span-1-37"><span class="w">` `</span><span class="p">`]`</span>` `</span><span id="__span-1-38"><span class="p">`}`</span>` `</span>
-
-</div>
+```json
+{
+ "Version": "2012-10-17",
+ "Statement": [
+ {
+ "Sid": "DenyLeavingOrganization",
+ "Effect": "Deny",
+ "Action": "organizations:LeaveOrganization",
+ "Resource": "*"
+ },
+ {
+ "Sid": "DenyUnsupportedRegionsWithGlobalServiceExceptions",
+ "Effect": "Deny",
+ "NotAction": [
+ "account:*",
+ "aws-portal:*",
+ "budgets:*",
+ "cloudfront:*",
+ "globalaccelerator:*",
+ "iam:*",
+ "networkmanager:*",
+ "organizations:*",
+ "route53:*",
+ "route53domains:*",
+ "support:*",
+ "waf:*"
+ ],
+ "Resource": "*",
+ "Condition": {
+ "StringNotEquals": {
+ "aws:RequestedRegion": [
+ "ca-central-1",
+ "us-east-1"
+ ]
+ }
+ }
+ }
+ ]
+}
+```
 
 This example has important limitations:
 

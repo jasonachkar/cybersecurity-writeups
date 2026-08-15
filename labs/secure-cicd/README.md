@@ -1,3 +1,22 @@
+---
+id: secure-cicd
+title: Secure CI/CD boundary and fail-closed gate lab
+navTitle: Secure CI/CD
+domain: devsecops
+order: 10
+summary: Exercises untrusted workflow boundaries and fail-closed scanner evidence against local positive and negative fixtures.
+implementationStatus: tested
+related:
+  research: [secure-cicd-pipeline-design]
+sourceFiles:
+  - { path: labs/secure-cicd/gate.js, label: Gate implementation, language: javascript, primary: true }
+  - { path: labs/secure-cicd/tests/run-tests.js, label: Fixture tests, language: javascript }
+  - { path: labs/secure-cicd/tests/policy-tests.js, label: Policy tests, language: javascript }
+runCommands:
+  - node labs/secure-cicd/tests/run-tests.js
+  - node --test labs/secure-cicd/tests/policy-tests.js
+---
+
 # Secure CI/CD boundary and fail-closed gate lab
 
 **Evidence status:** partially tested. The local tests evaluate fixture structure and fail-closed gate behavior; they do not execute a hosted workflow, authenticate to Azure, or inspect repository environment settings.
@@ -11,19 +30,15 @@ This lab makes CI/CD trust-boundary decisions reproducible. It keeps untrusted p
 
 The security-policy suite uses Node.js built-ins only:
 
-<div class="language-powershell highlight">
-
-<span id="__span-0-1"><span class="n">`node`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`secure-cicd`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`policy-tests`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span>
-
-</div>
+```powershell
+node labs/secure-cicd/tests/policy-tests.js
+```
 
 Run the existing gate and YAML fixture suite after installing locked dependencies:
 
-<div class="language-powershell highlight">
-
-<span id="__span-1-1"><span class="n">`node`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`secure-cicd`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`run-tests`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span>
-
-</div>
+```powershell
+node labs/secure-cicd/tests/run-tests.js
+```
 
 Expected output ends with `PASS`. The gate test asserts exit code `0` only for a completed scanner report within policy. Critical findings and secret findings return `3`; invalid or failed scanner input returns `2`. A pipeline should treat every nonzero code as blocking.
 

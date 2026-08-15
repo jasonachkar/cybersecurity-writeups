@@ -29,6 +29,7 @@ This document covers core domains, tools, and technical competencies taught thro
 
 ### Essential Linux Command Line Tools
 Security analysts use the Linux CLI to inspect logs, manage system permissions, and audit configurations.
+
 - `ls -la`: Lists all directory files with permissions, owner, and group details.
 - `chmod`: Modifies file permissions (e.g., `chmod 600 config.txt` sets read/write only for owner).
 - `chown`: Changes file ownership.
@@ -40,6 +41,7 @@ Security analysts use the Linux CLI to inspect logs, manage system permissions, 
 SQL queries are used to query databases containing access logs, employee directories, or asset registers.
 
 **Querying Access Logs:**
+
 ```sql
 SELECT username, login_time, ip_address, status 
 FROM login_attempts 
@@ -73,6 +75,7 @@ WHERE status = 'Failed' AND login_time >= '2026-06-01';
 Python is used to automate repetitive tasks like log parsing, IP scanning, or file checking.
 
 **Automated Log Parsing Script:**
+
 ```python
 def check_failed_logins(log_file):
     with open(log_file, 'r') as file:
@@ -91,6 +94,7 @@ check_failed_logins("/var/log/secure")
 ## 5. Threat Detection and Incident Response
 
 ### Incident Response Lifecycle (NIST)
+
 1. **Preparation:** Establish security policies, incident response plans, and deployment of detection tools.
 2. **Detection and Analysis:** Identify potential incidents and analyze scope, vectors, and baseline impact.
 3. **Containment, Eradication, and Recovery:** Limit the attack blast radius, remove threats (delete malware, patch vulnerabilities), and restore clean system state.

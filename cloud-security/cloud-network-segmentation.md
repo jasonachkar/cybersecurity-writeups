@@ -1,5 +1,8 @@
 ---
 title: "Cloud Network Segmentation and Egress Control: Routing, Private Endpoints and Failure Domains"
+id: "cloud-network-segmentation"
+navTitle: "Network segmentation"
+order: 20
 type: "cloud-security"
 tags:
   - cloud-security
@@ -8,7 +11,6 @@ tags:
   - segmentation
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 8
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "AWS Transit Gateway route tables, associations and propagation — https://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html"

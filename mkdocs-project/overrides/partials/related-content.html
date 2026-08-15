@@ -1,0 +1,17 @@
+{% set relation_count = docs_page.related.research | length + docs_page.related.labs | length + docs_page.related.scripts | length %}
+{% if relation_count %}
+<section class="docs-related" aria-labelledby="docs-related-heading">
+  <h2 id="docs-related-heading">Related content</h2>
+  <div class="docs-related__grid">
+    {% for type, items in [("Research", docs_page.related.research), ("Lab", docs_page.related.labs), ("Script", docs_page.related.scripts)] %}
+      {% for item in items %}
+      <a class="docs-related__item" href="{{ item.url | url }}">
+        <span class="docs-related__type">{{ type }}</span>
+        <strong>{{ item.navTitle or item.title }}</strong>
+        {% if item.summary %}<span>{{ item.summary }}</span>{% endif %}
+      </a>
+      {% endfor %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

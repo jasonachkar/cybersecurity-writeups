@@ -1,0 +1,25 @@
+{% if docs_home %}
+  {% include "partials/home.html" %}
+{% elif docs_page %}
+  {% include "partials/article-meta.html" %}
+  {% if docs_page.kind == "research" %}{% include "partials/key-takeaway.html" %}{% endif %}
+  {% if docs_page.kind == "lab" %}
+    <section class="docs-lab-implementation" aria-labelledby="implementation">
+      <h2 id="implementation">Implementation</h2>
+      {% set source_item = docs_page %}{% include "partials/source-viewer.html" %}
+      {% if docs_page.runCommands %}<h3>Run it</h3><ul>{% for command in docs_page.runCommands %}<li><code>{{ command }}</code></li>{% endfor %}</ul>{% endif %}
+    </section>
+  {% endif %}
+  {{ page.content }}
+  {% if docs_page.kind == "script-category" %}{% include "partials/scripts-category.html" %}{% endif %}
+  {% if docs_page.kind in ["research", "lab"] %}
+    {% include "partials/related-content.html" %}
+    {% include "partials/article-contribute.html" %}
+  {% endif %}
+{% else %}
+  {% include "partials/tags.html" %}
+  {% include "partials/actions.html" %}
+  {% if "\u003ch1" not in page.content %}<h1>{{ page.title | d(config.site_name, true) }}</h1>{% endif %}
+  {{ page.content }}
+  {% include "partials/source-file.html" %}
+{% endif %}

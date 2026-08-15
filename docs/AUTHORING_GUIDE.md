@@ -21,6 +21,22 @@ Use [the security write-up template](templates/security-writeup-template.md) for
 material. Concise articles may combine sections, but should not omit the underlying
 reasoning.
 
+For a new primary research article, use the canonical scaffold instead of copying
+frontmatter from an existing page:
+
+```bash
+npm run research:new -- \
+  --domain appsec \
+  --slug secure-token-exchange \
+  --title "Secure Token Exchange"
+```
+
+The command validates the domain and slug, rejects collisions, selects the next
+domain order, and creates conservative `requires-review` metadata. It prints the
+canonical path plus preview and verification commands. Keep the generated stable
+`id` when renaming the article. Omit `readingTime` unless the derived estimate has a
+documented reason to be overridden.
+
 ## Write claims that can survive review
 
 Apply the [research policy](RESEARCH_POLICY.md). Cite primary sources close to
@@ -56,8 +72,12 @@ From the repository root:
 
 ```powershell
 npm ci
-npm run validate
+npm run docs:serve
+npm run verify:all
 ```
+
+Use `npm run verify:docs` for the documentation-product checks alone and
+`npm run links:external` when intentionally checking external destinations.
 
 Run lab-specific commands documented in each lab. Cloud validation stops before
 deployment unless the task explicitly authorizes a target subscription/account and

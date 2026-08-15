@@ -1,0 +1,18 @@
+{% for script in docs_page.scripts %}
+<section class="docs-script" id="{{ script.id }}" aria-labelledby="{{ script.id }}-heading">
+  <h2 id="{{ script.id }}-heading">{{ script.title }}</h2>
+  <p class="docs-badges"><span>{{ script.language }}</span><span>{{ "Modifies state" if script.modifiesState else "Read-only" }}</span><span>{{ script.testStatus }}</span></p>
+  {% set source_item = script %}{% include "partials/source-viewer.html" %}
+  <h3>What it does</h3><p>{{ script.purpose }}</p>
+  <h3>Why it exists</h3><p>{{ script.why }}</p>
+  <h3>Permissions and safety</h3><p>{{ script.permissions }}</p>
+  <h3>Usage</h3><pre><code>{{ script.usage | e }}</code></pre>
+  <h3>What was tested</h3><p>{{ script.tested }}</p>
+  <h3>Limitations</h3><ul>{% for limitation in script.limitations %}<li>{{ limitation }}</li>{% endfor %}</ul>
+  {% set relation_count = script.related.research | length + script.related.labs | length %}
+  {% if relation_count %}<div class="docs-script__related"><h3>Related content</h3><ul>
+    {% for item in script.related.research %}<li>Research: <a href="{{ item.url | url }}">{{ item.navTitle }}</a></li>{% endfor %}
+    {% for item in script.related.labs %}<li>Lab: <a href="{{ item.url | url }}">{{ item.navTitle }}</a></li>{% endfor %}
+  </ul></div>{% endif %}
+</section>
+{% endfor %}

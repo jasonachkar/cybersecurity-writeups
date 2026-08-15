@@ -1,5 +1,8 @@
 ---
 title: "Infrastructure as Code Security and Policy Engineering"
+id: "iac-security-and-policy-as-code"
+navTitle: "IaC policy engineering"
+order: 20
 type: "devsecops"
 tags:
   - devsecops
@@ -9,7 +12,6 @@ tags:
   - policy
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 12
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "Terraform S3 backend — https://developer.hashicorp.com/terraform/language/backend/s3"
@@ -49,11 +51,18 @@ State can contain resource identifiers, topology, generated values, and secrets 
 
 For the Terraform S3 backend, current HashiCorp documentation supports native S3 locking with `use_lockfile = true` and recommends S3 bucket versioning for recovery. DynamoDB-based locking is deprecated and is planned for removal. Existing backends may temporarily configure both during migration, but new guidance should not make a DynamoDB lock table the default.
 
-<div class="language-hcl highlight">
-
-<span id="__span-0-1"><span class="c1">`# Illustrative: values and policy must be organization-specific.`</span>` `</span><span id="__span-0-2"><span class="nb">`terraform`</span><span class="w">` `</span><span class="p">`{`</span>` `</span><span id="__span-0-3"><span class="w">` `</span><span class="kr">`backend`</span><span class="w">` `</span><span class="nv">`"s3"`</span><span class="w">` `</span><span class="p">`{`</span>` `</span><span id="__span-0-4"><span class="w">` `</span><span class="na">`bucket`</span><span class="w">` `</span><span class="o">`=`</span><span class="w">` `</span><span class="s2">`"<restricted-state-bucket>"`</span>` `</span><span id="__span-0-5"><span class="w">` `</span><span class="na">`key`</span><span class="w">` `</span><span class="o">`=`</span><span class="w">` `</span><span class="s2">`"landing-zones/prod/terraform.tfstate"`</span>` `</span><span id="__span-0-6"><span class="w">` `</span><span class="na">`region`</span><span class="w">` `</span><span class="o">`=`</span><span class="w">` `</span><span class="s2">`"ca-central-1"`</span>` `</span><span id="__span-0-7"><span class="w">` `</span><span class="na">`encrypt`</span><span class="w">` `</span><span class="o">`=`</span><span class="w">` `</span><span class="no">`true`</span>` `</span><span id="__span-0-8"><span class="w">` `</span><span class="na">`use_lockfile`</span><span class="w">` `</span><span class="o">`=`</span><span class="w">` `</span><span class="no">`true`</span>` `</span><span id="__span-0-9"><span class="w">` `</span><span class="p">`}`</span>` `</span><span id="__span-0-10"><span class="p">`}`</span>` `</span>
-
-</div>
+```hcl
+# Illustrative: values and policy must be organization-specific.
+terraform {
+ backend "s3" {
+ bucket = "<restricted-state-bucket>"
+ key = "landing-zones/prod/terraform.tfstate"
+ region = "ca-central-1"
+ encrypt = true
+ use_lockfile = true
+ }
+}
+```
 
 Enforce TLS, encryption with an appropriately governed KMS key, bucket public-access blocks, versioning, narrow state/lock object permissions, separate state per trust boundary, access logging/audit, retention/recovery, and no developer-wide state download. Backend partial configuration or environment federation avoids committing credentials. `encrypt = true` is not a substitute for bucket/key policies.
 
@@ -101,11 +110,20 @@ The [Terraform plan and Rego policy lab](../labs/iac-policy/README.md) is **part
 
 From the repository root, the tested commands are:
 
-<div class="language-powershell highlight">
+```powershell
+node labs/iac-policy/tests/run-tests.js
 
-<span id="__span-1-1"><span class="n">`node`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`run-tests`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span><span id="__span-1-2">` `</span><span id="__span-1-3"><span class="n">`opa`</span>` `<span class="n">`test`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`policy`</span><span class="p">`/`</span><span class="n">`terraform`</span><span class="p">`.`</span><span class="n">`rego`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`policy`</span><span class="p">`/`</span><span class="n">`secure_fixture_test`</span><span class="p">`.`</span><span class="n">`rego`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`fixtures`</span><span class="p">`/`</span><span class="n">`secure_plan`</span><span class="p">`.`</span><span class="n">`json`</span>` `<span class="n">`-v`</span>` `</span><span id="__span-1-4"><span class="n">`opa`</span>` `<span class="n">`test`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`policy`</span><span class="p">`/`</span><span class="n">`terraform`</span><span class="p">`.`</span><span class="n">`rego`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`policy`</span><span class="p">`/`</span><span class="n">`insecure_fixture_test`</span><span class="p">`.`</span><span class="n">`rego`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`fixtures`</span><span class="p">`/`</span><span class="n">`insecure_plan`</span><span class="p">`.`</span><span class="n">`json`</span>` `<span class="n">`-v`</span>` `</span><span id="__span-1-5"><span class="n">`opa`</span>` `<span class="n">`test`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`policy`</span><span class="p">`/`</span><span class="n">`terraform`</span><span class="p">`.`</span><span class="n">`rego`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`policy`</span><span class="p">`/`</span><span class="n">`unknown_fixture_test`</span><span class="p">`.`</span><span class="n">`rego`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`fixtures`</span><span class="p">`/`</span><span class="n">`unknown_plan`</span><span class="p">`.`</span><span class="n">`json`</span>` `<span class="n">`-v`</span>` `</span><span id="__span-1-6"><span class="n">`opa`</span>` `<span class="n">`test`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`policy`</span><span class="p">`/`</span><span class="n">`terraform`</span><span class="p">`.`</span><span class="n">`rego`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`policy`</span><span class="p">`/`</span><span class="n">`deleted_fixture_test`</span><span class="p">`.`</span><span class="n">`rego`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`fixtures`</span><span class="p">`/`</span><span class="n">`deleted_control_plan`</span><span class="p">`.`</span><span class="n">`json`</span>` `<span class="n">`-v`</span>` `</span><span id="__span-1-7">` `</span><span id="__span-1-8"><span class="n">`terraform`</span>` `<span class="n">`fmt`</span>` `<span class="n">`-check`</span>` `<span class="n">`-recursive`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`terraform`</span>` `</span><span id="__span-1-9"><span class="n">`terraform`</span>` `<span class="n">`-chdir`</span><span class="p">`=`</span><span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`terraform`</span><span class="p">`/`</span><span class="n">`insecure`</span>` `<span class="n">`init`</span>` `<span class="n">`-backend`</span><span class="p">`=`</span><span class="n">`false`</span>` `<span class="n">`-input`</span><span class="p">`=`</span><span class="n">`false`</span>` `</span><span id="__span-1-10"><span class="n">`terraform`</span>` `<span class="n">`-chdir`</span><span class="p">`=`</span><span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`terraform`</span><span class="p">`/`</span><span class="n">`insecure`</span>` `<span class="n">`validate`</span>` `</span><span id="__span-1-11"><span class="n">`terraform`</span>` `<span class="n">`-chdir`</span><span class="p">`=`</span><span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`terraform`</span><span class="p">`/`</span><span class="n">`hardened`</span>` `<span class="n">`init`</span>` `<span class="n">`-backend`</span><span class="p">`=`</span><span class="n">`false`</span>` `<span class="n">`-input`</span><span class="p">`=`</span><span class="n">`false`</span>` `</span><span id="__span-1-12"><span class="n">`terraform`</span>` `<span class="n">`-chdir`</span><span class="p">`=`</span><span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iac-policy`</span><span class="p">`/`</span><span class="n">`terraform`</span><span class="p">`/`</span><span class="n">`hardened`</span>` `<span class="n">`validate`</span>` `</span>
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/secure_fixture_test.rego labs/iac-policy/fixtures/secure_plan.json -v
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/insecure_fixture_test.rego labs/iac-policy/fixtures/insecure_plan.json -v
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/unknown_fixture_test.rego labs/iac-policy/fixtures/unknown_plan.json -v
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/deleted_fixture_test.rego labs/iac-policy/fixtures/deleted_control_plan.json -v
 
-</div>
+terraform fmt -check -recursive labs/iac-policy/terraform
+terraform -chdir=labs/iac-policy/terraform/insecure init -backend=false -input=false
+terraform -chdir=labs/iac-policy/terraform/insecure validate
+terraform -chdir=labs/iac-policy/terraform/hardened init -backend=false -input=false
+terraform -chdir=labs/iac-policy/terraform/hardened validate
+```
 
 On 2026-07-23, the structural harness ended with `PASS`; all five OPA assertions passed across the four invocations; and both Terraform configurations initialized offline and validated successfully. `-backend=false` prevented backend initialization, and the configurations declare no provider/resource operations. No AWS API, remote state, plan, or apply was used.
 

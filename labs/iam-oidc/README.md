@@ -1,3 +1,19 @@
+---
+id: iam-oidc
+title: IAM and workload-identity decision lab
+navTitle: IAM and OIDC
+domain: cloud-security
+order: 20
+summary: Exercises issuer, audience, subject, delegation, boundary, PassRole, and external-ID decisions against local fixtures.
+implementationStatus: tested
+related:
+  research: [iam-at-scale]
+sourceFiles:
+  - { path: labs/iam-oidc/evaluator.js, label: Policy evaluator, language: javascript, primary: true }
+  - { path: labs/iam-oidc/tests/run-tests.js, label: Fixture tests, language: javascript }
+runCommands: [node labs/iam-oidc/tests/run-tests.js]
+---
+
 # IAM and workload-identity decision lab
 
 This dependency-free offline lab tests exact workload-identity trust fixtures and a small, explicit subset of authorization semantics. It exists to prevent four different decisions from being collapsed into “the token worked”:
@@ -16,19 +32,15 @@ This dependency-free offline lab tests exact workload-identity trust fixtures an
 
 From the repository root:
 
-<div class="language-powershell highlight">
-
-<span id="__span-0-1"><span class="n">`node`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`iam-oidc`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`run-tests`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span>
-
-</div>
+```powershell
+node labs/iam-oidc/tests/run-tests.js
+```
 
 Expected output:
 
-<div class="language-text highlight">
-
-<span id="__span-1-1">`PASS: 45 IAM/OIDC structural and policy-model evaluations completed. `</span>
-
-</div>
+```text
+PASS: 45 IAM/OIDC structural and policy-model evaluations completed.
+```
 
 The command exits nonzero on any unexpected decision or structural regression.
 

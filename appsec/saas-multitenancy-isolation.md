@@ -1,5 +1,11 @@
 ---
 title: "Engineering Tenant Isolation for a Multi-tenant SaaS Platform"
+id: "saas-multitenancy-isolation"
+navTitle: "Multi-tenant SaaS isolation"
+order: 20
+featured: true
+featuredOrder: 20
+summary: "Authorization across API, database, pool, cache, queue, storage, and telemetry boundaries."
 type: "appsec"
 tags:
   - appsec
@@ -8,7 +14,6 @@ tags:
   - isolation
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 12
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "PostgreSQL row security policies — https://www.postgresql.org/docs/current/ddl-rowsecurity.html"
@@ -115,11 +120,13 @@ Do not permit a general request header to select the database tenant without thi
 
 The tested SQL pattern is:
 
-<div class="language-sql highlight">
-
-<span id="__span-0-1"><span class="c1">`-- Tested in labs/postgresql-rls.`</span>` `</span><span id="__span-0-2"><span class="k">`BEGIN`</span><span class="p">`;`</span>` `</span><span id="__span-0-3"><span class="k">`SELECT`</span><span class="w">` `</span><span class="n">`set_config`</span><span class="p">`(`</span><span class="s1">`'app.tenant_id'`</span><span class="p">`,`</span><span class="w">` `</span><span class="err">`$`</span><span class="mi">`1`</span><span class="p">`,`</span><span class="w">` `</span><span class="k">`true`</span><span class="p">`);`</span>` `</span><span id="__span-0-4"><span class="c1">`-- All tenant queries use this same transaction/connection.`</span>` `</span><span id="__span-0-5"><span class="k">`COMMIT`</span><span class="p">`;`</span>` `</span>
-
-</div>
+```sql
+-- Tested in labs/postgresql-rls.
+BEGIN;
+SELECT set_config('app.tenant_id', $1, true);
+-- All tenant queries use this same transaction/connection.
+COMMIT;
+```
 
 The third argument `true` makes `set_config` transaction-local. The application must not return a rows iterator whose transaction has already committed, and must not set context on one pooled connection before executing work on another. Use a helper that accepts a callback, sets context, executes all work, and commits only after the callback closes its rows/results.
 
@@ -127,11 +134,20 @@ The third argument `true` makes `set_config` transaction-local. The application 
 
 The lab applies this expression:
 
-<div class="language-sql highlight">
+```sql
+-- Tested in labs/postgresql-rls/init/001-schema.sql.
+ALTER TABLE app.customer_record ENABLE ROW LEVEL SECURITY;
+ALTER TABLE app.customer_record FORCE ROW LEVEL SECURITY;
 
-<span id="__span-1-1"><span class="c1">`-- Tested in labs/postgresql-rls/init/001-schema.sql.`</span>` `</span><span id="__span-1-2"><span class="k">`ALTER`</span><span class="w">` `</span><span class="k">`TABLE`</span><span class="w">` `</span><span class="n">`app`</span><span class="p">`.`</span><span class="n">`customer_record`</span><span class="w">` `</span><span class="n">`ENABLE`</span><span class="w">` `</span><span class="k">`ROW`</span><span class="w">` `</span><span class="k">`LEVEL`</span><span class="w">` `</span><span class="k">`SECURITY`</span><span class="p">`;`</span>` `</span><span id="__span-1-3"><span class="k">`ALTER`</span><span class="w">` `</span><span class="k">`TABLE`</span><span class="w">` `</span><span class="n">`app`</span><span class="p">`.`</span><span class="n">`customer_record`</span><span class="w">` `</span><span class="k">`FORCE`</span><span class="w">` `</span><span class="k">`ROW`</span><span class="w">` `</span><span class="k">`LEVEL`</span><span class="w">` `</span><span class="k">`SECURITY`</span><span class="p">`;`</span>` `</span><span id="__span-1-4">` `</span><span id="__span-1-5"><span class="k">`CREATE`</span><span class="w">` `</span><span class="n">`POLICY`</span><span class="w">` `</span><span class="n">`tenant_isolation`</span><span class="w">` `</span><span class="k">`ON`</span><span class="w">` `</span><span class="n">`app`</span><span class="p">`.`</span><span class="n">`customer_record`</span>` `</span><span id="__span-1-6"><span class="w">` `</span><span class="k">`FOR`</span><span class="w">` `</span><span class="k">`ALL`</span><span class="w">` `</span><span class="k">`TO`</span><span class="w">` `</span><span class="n">`tenant_runtime`</span><span class="p">`,`</span><span class="w">` `</span><span class="n">`tenant_migrator`</span>` `</span><span id="__span-1-7"><span class="w">` `</span><span class="k">`USING`</span><span class="w">` `</span><span class="p">`(`</span>` `</span><span id="__span-1-8"><span class="w">` `</span><span class="n">`tenant_id`</span><span class="w">` `</span><span class="o">`=`</span><span class="w">` `</span><span class="k">`NULLIF`</span><span class="p">`(`</span><span class="n">`current_setting`</span><span class="p">`(`</span><span class="s1">`'app.tenant_id'`</span><span class="p">`,`</span><span class="w">` `</span><span class="k">`true`</span><span class="p">`),`</span><span class="w">` `</span><span class="s1">`''`</span><span class="p">`)::`</span><span class="n">`uuid`</span>` `</span><span id="__span-1-9"><span class="w">` `</span><span class="p">`)`</span>` `</span><span id="__span-1-10"><span class="w">` `</span><span class="k">`WITH`</span><span class="w">` `</span><span class="k">`CHECK`</span><span class="w">` `</span><span class="p">`(`</span>` `</span><span id="__span-1-11"><span class="w">` `</span><span class="n">`tenant_id`</span><span class="w">` `</span><span class="o">`=`</span><span class="w">` `</span><span class="k">`NULLIF`</span><span class="p">`(`</span><span class="n">`current_setting`</span><span class="p">`(`</span><span class="s1">`'app.tenant_id'`</span><span class="p">`,`</span><span class="w">` `</span><span class="k">`true`</span><span class="p">`),`</span><span class="w">` `</span><span class="s1">`''`</span><span class="p">`)::`</span><span class="n">`uuid`</span>` `</span><span id="__span-1-12"><span class="w">` `</span><span class="p">`);`</span>` `</span>
-
-</div>
+CREATE POLICY tenant_isolation ON app.customer_record
+ FOR ALL TO tenant_runtime, tenant_migrator
+ USING (
+ tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid
+ )
+ WITH CHECK (
+ tenant_id = NULLIF(current_setting('app.tenant_id', true), '')::uuid
+ );
+```
 
 `current_setting(..., true)` returns null when the custom setting is absent. The comparison then matches no row. An empty setting becomes null; a malformed nonempty UUID raises an error. `USING` restricts visible/existing rows; `WITH CHECK` restricts new row values after an insert or update.
 
@@ -178,11 +194,9 @@ Index tenant keys with access patterns, inspect query plans under representative
 
 Run the disposable PostgreSQL 18.4 lab:
 
-<div class="language-powershell highlight">
-
-<span id="__span-2-1"><span class="p">`./`</span><span class="n">`labs`</span><span class="p">`/`</span><span class="n">`postgresql-rls`</span><span class="p">`/`</span><span class="n">`run-tests`</span><span class="p">`.`</span><span class="n">`ps1`</span>` `</span>
-
-</div>
+```powershell
+./labs/postgresql-rls/run-tests.ps1
+```
 
 It validates:
 

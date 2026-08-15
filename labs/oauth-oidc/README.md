@@ -1,3 +1,19 @@
+---
+id: oauth-oidc
+title: OAuth/OIDC token-boundary lab
+navTitle: OAuth and OIDC
+domain: appsec
+order: 30
+summary: Exercises issuer, audience, time, nonce, state, redirects, PKCE, and key rotation against local boundary fixtures.
+implementationStatus: tested
+related:
+  research: [oauth2-oidc-deep-dive]
+sourceFiles:
+  - { path: labs/oauth-oidc/oauth-security.js, label: Boundary adapter, language: javascript, primary: true }
+  - { path: labs/oauth-oidc/tests/oauth-security.test.js, label: Tests, language: javascript }
+runCommands: [node --test labs/oauth-oidc/tests/oauth-security.test.js]
+---
+
 # OAuth/OIDC token-boundary lab
 
 **Implementation status:** Tested locally on 2026-07-23 with Node.js 24.12.0 and Go 1.26.1. The JavaScript suite supports Node.js 22 or newer.
@@ -21,11 +37,10 @@ The `tid` and `scope`/`scp` names are an explicit example contract. Real provide
 
 From the repository root:
 
-<div class="language-text highlight">
-
-<span id="__span-0-1">`node labs/oauth-oidc/tests/oauth-security.test.js `</span><span id="__span-0-2">`go test ./appsec/scripts/oauth-pkce `</span>
-
-</div>
+```text
+node labs/oauth-oidc/tests/oauth-security.test.js
+go test ./appsec/scripts/oauth-pkce
+```
 
 Expected results are 14 passing Node.js checks and 8 passing Go checks. The Go program covers the RFC 7636 Appendix B vector, generated-verifier round trip, wrong verifier, `plain` downgrade, method case, length, syntax, and malformed challenge. It never prints verifier or challenge values.
 

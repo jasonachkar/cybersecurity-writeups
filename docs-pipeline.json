@@ -9,10 +9,14 @@
   "artifactDirectory": ".artifacts",
   "migrationMode": false,
   "buildInputs": [
+    "package.json",
+    "package-lock.json",
     "mkdocs-project/docs/CNAME",
     "mkdocs-project/docs/css",
+    "mkdocs-project/docs/js",
     "mkdocs-project/hooks",
     "mkdocs-project/overrides",
+    "scripts",
     "tools/docs-pipeline/go.mod",
     "tools/docs-pipeline/main.go"
   ],

@@ -1,5 +1,8 @@
 ---
 title: "Cloud Detection Engineering: Durable Telemetry, High-Signal Analytics and Safe Response"
+id: "cloud-detection-and-response"
+navTitle: "Detection and response"
+order: 50
 type: "cloud-security"
 tags:
   - cloud-security
@@ -9,7 +12,6 @@ tags:
   - response
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 7
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "Microsoft Azure Monitor `AWSCloudTrail` table schema — https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/awscloudtrail"

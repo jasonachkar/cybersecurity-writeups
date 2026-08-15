@@ -5,4 +5,8 @@
   {% if page and page.meta and page.meta.robots %}
     <meta name="robots" content="{{ page.meta.robots }}">
   {% endif %}
+  {% if page and page.meta and page.meta.description %}
+    <meta property="og:description" content="{{ page.meta.description }}">
+    <meta name="twitter:description" content="{{ page.meta.description }}">
+  {% endif %}
 {% endblock %}

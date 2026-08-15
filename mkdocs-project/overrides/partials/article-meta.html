@@ -1,0 +1,14 @@
+<header class="docs-article-header">
+  <h1 id="{{ docs_page.headingId }}">{{ docs_page.title }}</h1>
+  {% if docs_page.summary %}<p class="docs-article-header__summary">{{ docs_page.summary }}</p>{% endif %}
+  <p class="docs-article-header__orientation">
+    <span>{{ docs_page.domainLabel }}</span>
+    {% if docs_page.readingTime %}<span aria-hidden="true">·</span><span>{{ docs_page.readingTime }} min read</span>{% endif %}
+  </p>
+  {% if docs_page.kind == "research" %}
+    {% include "partials/evidence-status.html" %}
+    {% include "partials/article-actions.html" %}
+  {% elif docs_page.kind == "lab" %}
+    <p class="docs-lab-status"><strong>Implementation:</strong> {{ docs_page.implementationLabel }}</p>
+  {% endif %}
+</header>

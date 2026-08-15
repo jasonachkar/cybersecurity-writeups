@@ -1,5 +1,8 @@
 ---
 title: "Cloud Incident Case Studies: Evidence, Chronology, and Control Lessons"
+id: "cloud-breach-case-studies"
+navTitle: "Incident case studies"
+order: 20
 type: "threat-intel"
 tags:
   - threat-intel
@@ -9,7 +12,6 @@ tags:
   - studies
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 7
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "Capital One 2019 incident facts — https://www.capitalone.com/digital/facts2019/"

@@ -1,3 +1,23 @@
+---
+id: kubernetes-security
+title: Kubernetes admission, network, and image-policy lab
+navTitle: Kubernetes security
+domain: cloud-security
+order: 60
+summary: Exercises pod hardening, network-policy, and image-decision cases using local fixtures and pinned policy schemas.
+implementationStatus: partially-tested
+related:
+  research: [kubernetes-multi-tenancy]
+  scripts: [k8s-rbac-auditor, kyverno-policy-schema-check]
+sourceFiles:
+  - { path: labs/kubernetes-security/policies/hardened-pods.yaml, label: Kyverno policy, language: yaml, primary: true }
+  - { path: labs/kubernetes-security/policies/verify-release-images.yaml, label: Image-verification policy, language: yaml }
+  - { path: labs/kubernetes-security/tests/run-tests.js, label: Decision-model tests, language: javascript }
+runCommands:
+  - kyverno test labs/kubernetes-security
+  - node labs/kubernetes-security/tests/run-tests.js
+---
+
 # Kubernetes admission, network, and image-policy lab
 
 **Evidence status:** partially tested lab. Native Kyverno v1.18.2 testing exercised the hardened-pod policy. The image policy is a schema-validated example; signature, certificate, registry, transparency, mutation, and live admission were not tested.
@@ -12,19 +32,15 @@ This lab validates a narrow Kubernetes security baseline with positive and negat
 
 Run the dependency-free structural and identity-policy tests:
 
-<div class="language-text highlight">
-
-<span id="__span-0-1">`node labs/kubernetes-security/tests/run-tests.js `</span>
-
-</div>
+```text
+node labs/kubernetes-security/tests/run-tests.js
+```
 
 Run the native Kyverno tests:
 
-<div class="language-text highlight">
-
-<span id="__span-1-1">`kyverno test labs/kubernetes-security --remove-color `</span>
-
-</div>
+```text
+kyverno test labs/kubernetes-security --remove-color
+```
 
 On 2026-07-23, the official Kyverno v1.18.2 Windows CLI asset (SHA-256 `b5c9d1cb75587a312dc8334537a5773bdedb1a985deae9d89a5251385afb831f`) ran the native hardened-pod suite: `7 tests passed and 0 tests failed`. This native run does not include `verify-release-images.yaml`.
 

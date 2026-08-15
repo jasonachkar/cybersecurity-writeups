@@ -1,5 +1,12 @@
 ---
 title: "Threat-Driven Security Architecture for AI Agents"
+id: "ai-agent-security"
+navTitle: "AI-agent authorization"
+order: 10
+featured: true
+featuredOrder: 30
+summary: "External authorization, action-bound approval, concurrent local consumption, and bounded tool execution."
+keyTakeaway: "Treat the model as an untrusted planner: external identity, authorization, approval, and execution controls decide whether a proposed action may run."
 type: "appsec"
 tags:
   - ai-agents
@@ -8,7 +15,6 @@ tags:
   - tool-security
 date: "2026-07-23"
 lastReviewed: "2026-07-25"
-readingTime: 35
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "NIST AI 100-2 E2025"
@@ -212,11 +218,9 @@ Treat retrieved content as potentially poisoned even after authorization. Quaran
 
 The broker evaluates a capability tuple such as:
 
-<div class="language-text highlight">
-
-<span id="__span-0-1">`(principal, tenant, tool, action, resource, constraints, purpose, expiry, policy-version) `</span>
-
-</div>
+```text
+(principal, tenant, tool, action, resource, constraints, purpose, expiry, policy-version)
+```
 
 This tuple is an **illustrative design**, not a wire-format standard. Production policy should also account for environment, device or workload identity, separation of duties, risk tier, and downstream entitlements where relevant.
 
@@ -386,11 +390,9 @@ Do not average away a tenant-isolation or unauthorized-execution failure. Set ex
 
 Run:
 
-<div class="language-powershell highlight">
-
-<span id="__span-1-1"><span class="n">`node`</span>` `<span class="p">`-`</span><span class="n">`-test`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`ai-agent-security`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`broker`</span><span class="p">`.`</span><span class="n">`test`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span>
-
-</div>
+```powershell
+node --test labs/ai-agent-security/tests/broker.test.js
+```
 
 The lab proves only that its small JavaScript broker:
 

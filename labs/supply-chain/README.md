@@ -1,3 +1,20 @@
+---
+id: supply-chain
+title: Artifact provenance and SBOM verification lab
+navTitle: Supply-chain policy
+domain: devsecops
+order: 70
+summary: Exercises offline artifact digest, provenance identity, source, builder, and SBOM policy decisions.
+implementationStatus: partially-tested
+related:
+  research: [supply-chain-sbom-signing]
+sourceFiles:
+  - { path: labs/supply-chain/verify-provenance.js, label: Verifier, language: javascript, primary: true }
+  - { path: labs/supply-chain/policy.json, label: Policy contract, language: json }
+  - { path: labs/supply-chain/tests/run-tests.js, label: Tests, language: javascript }
+runCommands: [node labs/supply-chain/tests/run-tests.js]
+---
+
 # Artifact provenance and SBOM verification lab
 
 SLSA v1.2 uses tracks and track-specific levels, not one universal maturity score.
@@ -16,11 +33,9 @@ The policy independently constrains `predicate.runDetails.builder.id`, `predicat
 - Node.js 24.12.0 (compatible Node.js 22+ should also work).
 - Repository dependencies installed using `npm ci --ignore-scripts`.
 
-<div class="language-powershell highlight">
-
-<span id="__span-0-1"><span class="n">`node`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`supply-chain`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`run-tests`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span>
-
-</div>
+```powershell
+node labs/supply-chain/tests/run-tests.js
+```
 
 Expected output ends in `PASS`. Cases the policy should reject:
 
@@ -53,11 +68,16 @@ Production code must invoke and authenticate a supported verifier, consume its r
 
 Example production commands, not executed by this offline lab:
 
-<div class="language-sh highlight">
+```sh
+cosign verify-attestation \
+ --type slsaprovenance \
+ --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+ --certificate-identity-regexp='^https://github.com/jasonachkar/cybersecurity-writeups/' \
+ <artifact-reference>
 
-<span id="__span-1-1">`cosign`<span class="w">` `</span>`verify-attestation`<span class="w">` `</span><span class="se">`\`</span>` `</span><span id="__span-1-2"><span class="w">` `</span>`--type`<span class="w">` `</span>`slsaprovenance`<span class="w">` `</span><span class="se">`\`</span>` `</span><span id="__span-1-3"><span class="w">` `</span>`--certificate-oidc-issuer`<span class="o">`=`</span>`https://token.actions.githubusercontent.com`<span class="w">` `</span><span class="se">`\`</span>` `</span><span id="__span-1-4"><span class="w">` `</span>`--certificate-identity-regexp`<span class="o">`=`</span><span class="s1">`'^https://github.com/jasonachkar/cybersecurity-writeups/'`</span><span class="w">` `</span><span class="se">`\`</span>` `</span><span id="__span-1-5"><span class="w">` `</span>`<artifact-reference> `</span><span id="__span-1-6">` `</span><span id="__span-1-7">`gh`<span class="w">` `</span>`attestation`<span class="w">` `</span>`verify`<span class="w">` `</span>`<artifact-path>`<span class="w">` `</span><span class="se">`\`</span>` `</span><span id="__span-1-8"><span class="w">` `</span>`--repo`<span class="w">` `</span>`jasonachkar/cybersecurity-writeups `</span>
-
-</div>
+gh attestation verify <artifact-path> \
+ --repo jasonachkar/cybersecurity-writeups
+```
 
 Pin the expected artifact digest and narrow workflow identity; do not treat a valid signature from any identity as authorization.
 

@@ -1,3 +1,23 @@
+---
+id: iac-policy
+title: Terraform plan and Rego policy lab
+navTitle: IaC policy
+domain: devsecops
+order: 80
+summary: Exercises secure, insecure, unknown, and deleted-control Terraform plan states through local policy fixtures.
+implementationStatus: partially-tested
+related:
+  research: [iac-security-and-policy-as-code]
+sourceFiles:
+  - { path: labs/iac-policy/policy/terraform.rego, label: Rego policy, language: rego, primary: true }
+  - { path: labs/iac-policy/policy/secure_fixture_test.rego, label: Rego tests, language: rego }
+  - { path: labs/iac-policy/tests/run-tests.js, label: Harness tests, language: javascript }
+runCommands:
+  - npm run verify:terraform
+  - npm run verify:opa
+  - node labs/iac-policy/tests/run-tests.js
+---
+
 # Terraform plan and Rego policy lab
 
 This lab demonstrates why source scanning, plan evaluation, provider-side controls, and drift monitoring are separate layers. It does not deploy infrastructure.
@@ -10,27 +30,27 @@ This lab demonstrates why source scanning, plan evaluation, provider-side contro
 
 Run the dependency-free structural tests:
 
-<div class="language-text highlight">
-
-<span id="__span-0-1">`node labs/iac-policy/tests/run-tests.js `</span>
-
-</div>
+```text
+node labs/iac-policy/tests/run-tests.js
+```
 
 Run the native policy tests against each positive or negative serialized-plan fixture:
 
-<div class="language-text highlight">
-
-<span id="__span-1-1">`opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/secure_fixture_test.rego labs/iac-policy/fixtures/secure_plan.json -v `</span><span id="__span-1-2">`opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/insecure_fixture_test.rego labs/iac-policy/fixtures/insecure_plan.json -v `</span><span id="__span-1-3">`opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/unknown_fixture_test.rego labs/iac-policy/fixtures/unknown_plan.json -v `</span><span id="__span-1-4">`opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/deleted_fixture_test.rego labs/iac-policy/fixtures/deleted_control_plan.json -v `</span>
-
-</div>
+```text
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/secure_fixture_test.rego labs/iac-policy/fixtures/secure_plan.json -v
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/insecure_fixture_test.rego labs/iac-policy/fixtures/insecure_plan.json -v
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/unknown_fixture_test.rego labs/iac-policy/fixtures/unknown_plan.json -v
+opa test labs/iac-policy/policy/terraform.rego labs/iac-policy/policy/deleted_fixture_test.rego labs/iac-policy/fixtures/deleted_control_plan.json -v
+```
 
 Validate the two backend examples without contacting AWS:
 
-<div class="language-text highlight">
-
-<span id="__span-2-1">`terraform -chdir=labs/iac-policy/terraform/insecure init -backend=false `</span><span id="__span-2-2">`terraform -chdir=labs/iac-policy/terraform/insecure validate `</span><span id="__span-2-3">`terraform -chdir=labs/iac-policy/terraform/hardened init -backend=false `</span><span id="__span-2-4">`terraform -chdir=labs/iac-policy/terraform/hardened validate `</span>
-
-</div>
+```text
+terraform -chdir=labs/iac-policy/terraform/insecure init -backend=false
+terraform -chdir=labs/iac-policy/terraform/insecure validate
+terraform -chdir=labs/iac-policy/terraform/hardened init -backend=false
+terraform -chdir=labs/iac-policy/terraform/hardened validate
+```
 
 ## Evidence and negative cases
 

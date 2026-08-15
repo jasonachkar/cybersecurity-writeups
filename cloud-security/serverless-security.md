@@ -1,5 +1,8 @@
 ---
 title: "Serverless Security Engineering: Event Trust, Function Identity and Runtime Reuse"
+id: "serverless-security"
+navTitle: "Serverless security"
+order: 60
 type: "cloud-security"
 tags:
   - cloud-security
@@ -7,7 +10,6 @@ tags:
   - security
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 9
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "API Gateway Lambda proxy integration — https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html"

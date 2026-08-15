@@ -1,565 +1,233 @@
-/* Custom CSS for Cybersecurity Writeups Website */
-/* Premium Docs Aesthetic — GitHub Dark / Vercel inspired */
-
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
-
-/* ========================================================
-   LIGHT MODE
-   ======================================================== */
+/* Canonical documentation product styles. Component rules use --docs-* tokens. */
 :root {
-  --md-text-font: 'Outfit', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
-  --md-code-font: 'JetBrains Mono', SFMono-Regular, Consolas, Menlo, monospace;
-
-  /* Light Mode Palette */
-  --md-primary-fg-color: #0f172a;         /* Slate 900 — header bg */
-  --md-primary-fg-color--dark: #020617;
-  --md-accent-fg-color: #4f46e5;         /* Indigo 600 */
-  --md-accent-fg-color--transparent: rgba(79, 70, 229, 0.1);
-  --md-typeset-a-color: #2563eb;         /* Blue 600 — clear link color */
+  --md-text-font: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --md-code-font: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+  --md-primary-fg-color: #172033;
+  --md-primary-fg-color--dark: #0b1020;
+  --md-accent-fg-color: #315bc7;
+  --md-typeset-a-color: #2455c3;
+  --docs-bg: #fff;
+  --docs-surface: #f7f8fb;
+  --docs-surface-strong: #eef1f7;
+  --docs-text: #172033;
+  --docs-muted: #596579;
+  --docs-border: #d9deea;
+  --docs-accent: #315bc7;
+  --docs-accent-soft: #edf2ff;
+  --docs-success: #176b47;
+  --docs-radius: .55rem;
+  --docs-radius-lg: .8rem;
+  --docs-shadow: 0 .35rem 1.25rem rgba(23, 32, 51, .08);
+  --docs-content: 49rem;
 }
 
-/* ========================================================
-   DARK MODE — Every element must be legible
-   ======================================================== */
 body[data-md-color-scheme="slate"] {
-  --md-primary-fg-color: #161b22;         /* Header background */
-  --md-primary-fg-color--dark: #0d1117;
-  --md-primary-bg-color: #f0f6fc;         /* Header text — near-white */
-  --md-accent-fg-color: #58a6ff;         /* GitHub Blue accent */
-  --md-accent-fg-color--transparent: rgba(88, 166, 255, 0.15);
-
-  --md-default-bg-color: #0d1117;        /* Page background */
-  --md-default-bg-color--page: #0d1117;
-  --md-default-bg-color--light: #161b22;
-
-  --md-default-fg-color: #e6edf3;        /* Primary text — bright for readability */
-  --md-default-fg-color--light: #8b949e;
-  --md-default-fg-color--lighter: #484f58;
-  --md-default-fg-color--lightest: #21262d;
-
-  --md-code-bg-color: #161b22;
-  --md-code-fg-color: #e6edf3;
-
-  --md-typeset-a-color: #58a6ff;         /* Links — GitHub Blue, always visible */
-  --md-typeset-color: #e6edf3;           /* Body text */
-
-  --md-footer-bg-color: #0d1117;
-  --md-footer-bg-color--dark: #010409;
-  --md-footer-fg-color: #8b949e;
-  --md-footer-fg-color--light: #484f58;
+  --md-primary-fg-color: #101521;
+  --md-primary-fg-color--dark: #090c13;
+  --md-accent-fg-color: #8cb4ff;
+  --md-typeset-a-color: #8cb4ff;
+  --md-default-bg-color: #0d1118;
+  --md-default-fg-color: #e7ebf2;
+  --md-default-fg-color--light: #a9b2c2;
+  --md-code-bg-color: #171d29;
+  --docs-bg: #0d1118;
+  --docs-surface: #141a24;
+  --docs-surface-strong: #1b2230;
+  --docs-text: #edf1f7;
+  --docs-muted: #a9b2c2;
+  --docs-border: #30394a;
+  --docs-accent: #8cb4ff;
+  --docs-accent-soft: #172545;
+  --docs-success: #62d6a2;
+  --docs-shadow: 0 .35rem 1.4rem rgba(0, 0, 0, .3);
 }
 
-/* ========================================================
-   SCROLLBAR
-   ======================================================== */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+html { scroll-behavior: smooth; }
+body { color: var(--docs-text); }
+.md-header { background: color-mix(in srgb, var(--md-primary-fg-color) 96%, transparent); backdrop-filter: blur(.7rem); }
+.md-typeset { color: var(--docs-text); font-size: .82rem; line-height: 1.72; }
+.md-typeset h1,
+.md-typeset h2,
+.md-typeset h3 { color: var(--docs-text); font-weight: 650; letter-spacing: -.025em; }
+.md-typeset h1 { margin: 0 0 .8rem; font-size: clamp(2rem, 5vw, 2.65rem); line-height: 1.12; }
+.md-typeset h2 { margin-top: 2.3rem; padding-bottom: .35rem; border-bottom: 1px solid var(--docs-border); }
+.md-typeset h3 { margin-top: 1.7rem; }
+.md-typeset a { text-decoration-thickness: .08em; text-underline-offset: .18em; }
+.md-typeset a:hover { color: color-mix(in srgb, var(--docs-accent) 78%, var(--docs-text)); }
+.md-copyright { color: #d5dae3; opacity: 1; }
+.md-copyright a { color: #fff; }
+.md-typeset pre { border: 1px solid var(--docs-border); border-radius: var(--docs-radius); box-shadow: none; }
+.md-typeset code { border-radius: .25rem; }
+.md-typeset table:not([class]) { border: 1px solid var(--docs-border); border-radius: var(--docs-radius); box-shadow: none; }
+.md-typeset table:not([class]) th { background: var(--docs-surface-strong); color: var(--docs-text); font-weight: 650; }
+.md-typeset .admonition { border-radius: var(--docs-radius); box-shadow: none; }
+.mermaid { overflow-x: auto; padding: 1rem; border: 1px solid var(--docs-border); border-radius: var(--docs-radius); }
 
-::-webkit-scrollbar-track {
-  background: var(--md-default-bg-color);
-}
+/* Navigation */
+.md-nav { font-size: .7rem; line-height: 1.35; }
+.md-nav__link { border-radius: .3rem; color: var(--docs-muted); }
+.md-nav__link:hover { color: var(--docs-text); }
+.md-nav__link--active { color: var(--docs-accent); font-weight: 650; }
+.md-nav__list .md-nav__list { margin-left: .35rem; padding-left: .45rem; border-left: 1px solid var(--docs-border); }
+.md-sidebar--secondary .md-nav__list { border-left: 0; }
 
-::-webkit-scrollbar-thumb {
-  background: rgba(139, 148, 158, 0.35);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 148, 158, 0.6);
-}
-
-/* ========================================================
-   TYPOGRAPHY — Headings
-   ======================================================== */
-h1, h2, h3, h4, h5, h6 {
-  font-weight: 600 !important;
-  letter-spacing: -0.02em;
-  color: #0f172a !important;              /* Slate 900 — strong dark in light mode */
-}
-
-/* Light mode h1 */
-h1 {
-  font-size: 2.2rem !important;
-  margin-bottom: 1.5rem !important;
-  color: #0f172a !important;
-}
-
-h2 {
-  font-size: 1.6rem !important;
-  margin-top: 2rem !important;
-  border-bottom: 1px solid rgba(15, 23, 42, 0.12);
-  padding-bottom: 8px;
-  color: #1e293b !important;              /* Slate 800 */
-}
-
-h3 {
-  font-size: 1.3rem !important;
-  color: #1e293b !important;
-}
-
-h4, h5, h6 {
-  color: #334155 !important;              /* Slate 700 */
-}
-
-/* Dark mode — force ALL headings to be white / near-white */
-body[data-md-color-scheme="slate"] h1,
-body[data-md-color-scheme="slate"] h2,
-body[data-md-color-scheme="slate"] h3,
-body[data-md-color-scheme="slate"] h4,
-body[data-md-color-scheme="slate"] h5,
-body[data-md-color-scheme="slate"] h6,
-body[data-md-color-scheme="slate"] .md-typeset h1,
-body[data-md-color-scheme="slate"] .md-typeset h2,
-body[data-md-color-scheme="slate"] .md-typeset h3,
-body[data-md-color-scheme="slate"] .md-typeset h4,
-body[data-md-color-scheme="slate"] .md-typeset h5,
-body[data-md-color-scheme="slate"] .md-typeset h6 {
-  color: #f0f6fc !important;
-}
-
-body[data-md-color-scheme="slate"] h1,
-body[data-md-color-scheme="slate"] .md-typeset h1 {
-  border-left: none !important;
-}
-
-body[data-md-color-scheme="slate"] h2,
-body[data-md-color-scheme="slate"] .md-typeset h2 {
-  border-bottom-color: rgba(139, 148, 158, 0.2);
-}
-
-/* ========================================================
-   LINKS — Always visually distinct and clickable
-   ======================================================== */
-
-/* Light mode links */
-.md-typeset a {
-  color: #2563eb !important;              /* Blue 600 — strong contrast */
-  text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition: color 0.15s ease, border-bottom-color 0.15s ease;
-}
-
-.md-typeset a:hover {
-  color: #1d4ed8 !important;              /* Blue 700 on hover */
-  border-bottom-color: #1d4ed8;
-}
-
-/* Dark mode links */
-body[data-md-color-scheme="slate"] .md-typeset a {
-  color: #58a6ff !important;              /* GitHub Blue — bright, unmissable */
-  border-bottom: 1px solid rgba(88, 166, 255, 0.3);
-}
-
-body[data-md-color-scheme="slate"] .md-typeset a:hover {
-  color: #79c0ff !important;              /* Lighter blue on hover */
-  border-bottom-color: #79c0ff;
-}
-
-/* Sidebar nav links should NOT have underlines */
-.md-nav a,
-.md-tabs a,
-.md-header a,
-.md-footer a,
-.md-source a {
-  border-bottom: none !important;
-}
-
-/* Active sidebar styles consolidated at the bottom of the file */
-
-/* Table of contents links (right sidebar) */
-body[data-md-color-scheme="slate"] .md-nav--secondary a {
-  color: #8b949e !important;
-  border-bottom: none !important;
-}
-
-body[data-md-color-scheme="slate"] .md-nav--secondary a:hover {
-  color: #58a6ff !important;
-}
-
-body[data-md-color-scheme="slate"] .md-nav--secondary .md-nav__link--active {
-  color: #58a6ff !important;
-  background-color: transparent !important;
-}
-
-/* ========================================================
-   DARK MODE — Body text, paragraphs, lists
-   ======================================================== */
-body[data-md-color-scheme="slate"] .md-typeset,
-body[data-md-color-scheme="slate"] .md-typeset p,
-body[data-md-color-scheme="slate"] .md-typeset li,
-body[data-md-color-scheme="slate"] .md-typeset td,
-body[data-md-color-scheme="slate"] .md-typeset th,
-body[data-md-color-scheme="slate"] .md-typeset blockquote {
-  color: #c9d1d9 !important;
-}
-
-/* Bold text slightly brighter */
-body[data-md-color-scheme="slate"] .md-typeset strong,
-body[data-md-color-scheme="slate"] .md-typeset b {
-  color: #e6edf3 !important;
-}
-
-/* Italic text */
-body[data-md-color-scheme="slate"] .md-typeset em,
-body[data-md-color-scheme="slate"] .md-typeset i {
-  color: #c9d1d9 !important;
-}
-
-/* ========================================================
-   CODE BLOCKS
-   ======================================================== */
-.md-typeset pre {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-  border: 1px solid rgba(139, 148, 158, 0.15) !important;
-}
-
-.md-typeset code {
-  border-radius: 4px;
-  padding: 2px 6px;
-}
-
-/* Dark mode inline code */
-body[data-md-color-scheme="slate"] .md-typeset code {
-  background-color: #21262d !important;
-  color: #e6edf3 !important;
-  border: 1px solid rgba(139, 148, 158, 0.2);
-}
-
-/* ========================================================
-   TABLES
-   ======================================================== */
-.md-typeset table:not([class]) {
-  border-radius: 8px !important;
-  overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
-  border-collapse: collapse;
-}
-
-.md-typeset table:not([class]) th {
-  font-weight: 500;
-}
-
-/* Light mode table header */
-:root .md-typeset table:not([class]) th {
-  background-color: #0f172a !important;
-  color: white !important;
-}
-
-/* Dark mode table header */
-body[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
-  background-color: #21262d !important;
-  color: #e6edf3 !important;
-}
-
-body[data-md-color-scheme="slate"] .md-typeset table:not([class]) td {
-  border-bottom: 1px solid rgba(139, 148, 158, 0.15);
-}
-
-body[data-md-color-scheme="slate"] .md-typeset table:not([class]) tr:hover td {
-  background-color: rgba(88, 166, 255, 0.04);
-}
-
-/* ========================================================
-   ADMONITIONS / CALLOUT BLOCKS
-   ======================================================== */
-.md-typeset .admonition {
-  border-radius: 6px !important;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
-}
-
-body[data-md-color-scheme="slate"] .md-typeset .admonition {
-  background-color: #161b22 !important;
-  border-color: rgba(139, 148, 158, 0.25) !important;
-}
-
-/* ========================================================
-   SIDEBAR
-   ======================================================== */
-body[data-md-color-scheme="slate"] .md-sidebar {
-  border-right-color: rgba(139, 148, 158, 0.1);
-}
-
-/* Redundant overrides removed, styled in the unified section below */
-
-/* ========================================================
-   SEARCH BAR
-   ======================================================== */
-body[data-md-color-scheme="slate"] .md-search__input {
-  background-color: #21262d !important;
-  color: #e6edf3 !important;
-  border: 1px solid rgba(139, 148, 158, 0.3);
-}
-
-body[data-md-color-scheme="slate"] .md-search__input::placeholder {
-  color: #484f58 !important;
-}
-
-/* ========================================================
-   MERMAID DIAGRAMS
-   ======================================================== */
-.mermaid {
-  background-color: transparent !important;
-  padding: 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(139, 148, 158, 0.1);
-  margin-bottom: 1.5rem;
-  display: flex;
-  justify-content: center;
-}
-
-/* ========================================================
-   HEADER
-   ======================================================== */
-.md-header {
-  backdrop-filter: blur(12px) !important;
-  background-color: rgba(15, 23, 42, 0.95) !important;
-}
-
-body[data-md-color-scheme="slate"] .md-header {
-  background-color: rgba(13, 17, 23, 0.95) !important;
-  border-bottom: 1px solid rgba(139, 148, 158, 0.1);
-}
-
-/* Header title text in dark mode */
-body[data-md-color-scheme="slate"] .md-header__title {
-  color: #f0f6fc !important;
-}
-
-body[data-md-color-scheme="slate"] .md-header .md-header__button,
-body[data-md-color-scheme="slate"] .md-header .md-icon {
-  color: #f0f6fc !important;
-}
-
-/* ========================================================
-   CONTENT AREA — subtle card effect in dark mode
-   ======================================================== */
-body[data-md-color-scheme="slate"] .md-content {
-  background-color: #0d1117;
-}
-
-/* Horizontal rules */
-body[data-md-color-scheme="slate"] .md-typeset hr {
-  border-color: rgba(139, 148, 158, 0.15);
-}
-
-/* ========================================================
-   FOOTER
-   ======================================================== */
-body[data-md-color-scheme="slate"] .md-footer {
-  background-color: #010409 !important;
-  border-top: 1px solid rgba(139, 148, 158, 0.1);
-}
-
-body[data-md-color-scheme="slate"] .md-copyright {
-  color: #484f58 !important;
-}
-
-/* ========================================================
-   MODERN SIDEBAR (SonarQube/Stripe Aesthetic)
-   ======================================================== */
-
-.md-sidebar--primary {
-  padding-top: 0.5rem;
-}
-
-.md-nav {
-  /* Inherits 'Outfit' font family naturally, just adjusting scale and spacing */
-  font-size: 0.72rem !important;
-  line-height: 1.3 !important;
-}
-
-/* Ensure the TOC toggle label is completely hidden */
-.md-nav__link[for="__toc"],
-label.md-nav__link[for="__toc"] {
-  display: none !important;
-}
-
-/* Parent Category/Folder items (collapsible headers) */
-.md-nav__item--nested > .md-nav__link:not([for="__toc"]) {
-  font-weight: 600 !important;
-  color: #334155 !important; /* Slate 700 */
-  padding-top: 0.35rem !important;
-  padding-bottom: 0.35rem !important;
-  font-size: 0.74rem !important;
-}
-
-body[data-md-color-scheme="slate"] .md-nav__item--nested > .md-nav__link:not([for="__toc"]) {
-  color: #cbd5e1 !important; /* Slate 300 */
-}
-
-/* Sidebar Links (Leaf nodes/pages) */
-.md-nav__link:not([for="__toc"]) {
-  color: #475569 !important; /* Slate 600 */
-  transition: all 0.15s ease !important;
-  border-radius: 4px !important;
-  padding: 0.35rem 0.55rem !important;
-  margin: 0.12rem 0 !important; /* Increased margin for highlight separation */
-  display: flex;
+/* Shared controls */
+.docs-button,
+.docs-action,
+.docs-source-viewer button,
+.docs-source-viewer__links a {
+  display: inline-flex;
   align-items: center;
-  font-size: 0.72rem !important;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: .45rem .75rem;
+  border: 1px solid var(--docs-border);
+  border-radius: .42rem;
+  background: var(--docs-bg);
+  color: var(--docs-text);
+  font: inherit;
+  font-weight: 650;
+  line-height: 1;
+  text-decoration: none;
+  cursor: pointer;
+}
+.docs-button:hover,
+.docs-action:hover,
+.docs-source-viewer button:hover,
+.docs-source-viewer__links a:hover { border-color: var(--docs-accent); color: var(--docs-accent); }
+.docs-button--primary { border-color: var(--docs-accent); background: var(--docs-accent); color: var(--docs-bg); }
+.docs-button--primary:hover { background: color-mix(in srgb, var(--docs-accent) 86%, black); color: var(--docs-bg); }
+.md-typeset .docs-button--primary,
+.md-typeset .docs-button--primary:hover { color: #fff; }
+body[data-md-color-scheme="slate"] .md-typeset .docs-button--primary,
+body[data-md-color-scheme="slate"] .md-typeset .docs-button--primary:hover { color: #0d1118; }
+body[data-md-color-scheme="default"] .highlight :is(.c, .c1, .nv, .na, .ow, .o) { color: #4a5568; }
+
+/* Homepage */
+.docs-hero { max-width: 57rem; padding: clamp(1.8rem, 5vw, 4rem) 0 2.7rem; }
+.docs-hero__kicker,
+.docs-card__eyebrow { margin: 0 0 .65rem; color: var(--docs-accent); font-size: .67rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+.docs-hero__lede { max-width: 45rem; margin: 0; color: var(--docs-muted); font-size: 1rem; line-height: 1.6; }
+.docs-hero__actions { display: flex; flex-wrap: wrap; gap: .55rem; margin-top: 1.4rem; }
+.docs-hero-search { display: flex; width: min(100%, 37rem); align-items: center; justify-content: space-between; margin-top: 1.7rem; padding: .8rem 1rem; border: 1px solid var(--docs-border); border-radius: var(--docs-radius); background: var(--docs-surface); color: var(--docs-muted); font: inherit; text-align: left; cursor: pointer; }
+.docs-hero-search:hover { border-color: var(--docs-accent); }
+.docs-hero-search kbd { padding: .1rem .4rem; border: 1px solid var(--docs-border); border-radius: .25rem; background: var(--docs-bg); color: var(--docs-text); }
+.docs-home-section { margin: 0 0 3rem; }
+.docs-section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.docs-section-heading h2 { flex: 1; }
+.docs-card-grid { display: grid; gap: .85rem; }
+.docs-card-grid--featured,
+.docs-card-grid--domains,
+.docs-card-grid--hands-on { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.docs-card { display: flex; min-width: 0; flex-direction: column; padding: 1.15rem; border: 1px solid var(--docs-border); border-radius: var(--docs-radius-lg); background: var(--docs-surface); color: var(--docs-text); text-decoration: none; transition: border-color .15s ease, transform .15s ease, box-shadow .15s ease; }
+.docs-card:hover { border-color: var(--docs-accent); color: var(--docs-text); box-shadow: var(--docs-shadow); transform: translateY(-.1rem); }
+.docs-card h3 { margin: 0 0 .45rem; font-size: 1rem; }
+.docs-card p { flex: 1; margin: 0 0 .8rem; color: var(--docs-muted); }
+.docs-card > span:last-child { color: var(--docs-muted); font-size: .69rem; }
+.docs-card__status { color: var(--docs-success); }
+.docs-card--compact { min-height: 11rem; }
+.docs-recent { margin: 0; padding: 0; list-style: none; }
+.docs-recent li { border-bottom: 1px solid var(--docs-border); }
+.docs-recent a { display: grid; grid-template-columns: 1fr auto; gap: 1rem; padding: .8rem .1rem; color: var(--docs-text); text-decoration: none; }
+.docs-recent a:hover strong { color: var(--docs-accent); }
+.docs-recent span { color: var(--docs-muted); font-size: .7rem; text-align: right; }
+.docs-study-notes { display: flex; align-items: center; justify-content: space-between; gap: 2rem; margin: 3.5rem 0 1rem; padding: 1.1rem 1.25rem; border: 1px solid var(--docs-border); border-radius: var(--docs-radius); background: var(--docs-surface); }
+.docs-study-notes h2 { margin: 0; padding: 0; border: 0; font-size: 1rem; }
+.docs-study-notes p { margin: .3rem 0 0; color: var(--docs-muted); }
+
+/* Article opening */
+.docs-article-header { margin-bottom: 1.7rem; }
+.docs-article-header__summary { max-width: 46rem; margin: 0 0 .7rem; color: var(--docs-muted); font-size: 1rem; line-height: 1.58; }
+.docs-article-header__orientation { display: flex; gap: .45rem; margin: 0; color: var(--docs-muted); font-size: .72rem; }
+.docs-evidence { margin-top: 1.25rem; padding: 1rem; border: 1px solid var(--docs-border); border-radius: var(--docs-radius); background: var(--docs-surface); }
+.docs-evidence__title { margin: 0 0 .65rem; padding: 0; border: 0; font-size: .74rem; letter-spacing: .05em; text-transform: uppercase; }
+.docs-evidence__grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; margin: 0; }
+.docs-evidence__grid div { min-width: 0; }
+.docs-evidence__grid dt { color: var(--docs-muted); font-size: .65rem; }
+.docs-evidence__grid dd { margin: .15rem 0 0; font-size: .72rem; font-weight: 650; }
+.docs-evidence__details { margin-top: .75rem; padding-top: .7rem; border-top: 1px solid var(--docs-border); color: var(--docs-muted); }
+.docs-evidence__details summary { color: var(--docs-accent); cursor: pointer; }
+.docs-evidence__details p { margin: .55rem 0 0; }
+.docs-article-actions { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .85rem; }
+.docs-key-takeaway { margin: 1.5rem 0; padding: 1rem 1.15rem; border-left: .2rem solid var(--docs-accent); border-radius: 0 var(--docs-radius) var(--docs-radius) 0; background: var(--docs-accent-soft); }
+.docs-key-takeaway h2 { margin: 0 0 .35rem; padding: 0; border: 0; font-size: .83rem; }
+.docs-key-takeaway p { margin: 0; }
+.docs-lab-status { display: inline-block; padding: .45rem .65rem; border-radius: .35rem; background: var(--docs-accent-soft); color: var(--docs-text); }
+
+/* Related and contribution */
+.docs-related { margin-top: 3rem; }
+.docs-related__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .65rem; }
+.docs-related__item { display: flex; flex-direction: column; padding: .85rem; border: 1px solid var(--docs-border); border-radius: var(--docs-radius); background: var(--docs-surface); color: var(--docs-text); text-decoration: none; }
+.docs-related__item:hover { border-color: var(--docs-accent); color: var(--docs-text); }
+.docs-related__type { color: var(--docs-accent); font-size: .62rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.docs-related__item > span:last-child:not(.docs-related__type) { margin-top: .3rem; color: var(--docs-muted); }
+.docs-contribute { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin: 2rem 0 1rem; padding: .9rem 1rem; border-block: 1px solid var(--docs-border); }
+.docs-contribute p { margin: 0; }
+.docs-contribute div { display: flex; flex-wrap: wrap; gap: 1rem; }
+
+/* Scripts and source viewer */
+.docs-script { margin-top: 3rem; scroll-margin-top: 4rem; }
+.docs-badges { display: flex; flex-wrap: wrap; gap: .35rem; }
+.docs-badges span { padding: .2rem .45rem; border: 1px solid var(--docs-border); border-radius: 999px; background: var(--docs-surface); color: var(--docs-muted); font-size: .65rem; }
+.docs-source-viewer { margin: 1.1rem 0 1.6rem; overflow: hidden; border: 1px solid var(--docs-border); border-radius: var(--docs-radius-lg); background: var(--docs-surface); }
+.docs-source-viewer__toolbar { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .65rem 1rem; align-items: center; padding: .75rem; border-bottom: 1px solid var(--docs-border); }
+.docs-source-viewer__identity { min-width: 0; }
+.docs-source-viewer__identity code { display: block; overflow: hidden; padding: 0; background: transparent; color: var(--docs-muted); font-size: .64rem; text-overflow: ellipsis; white-space: nowrap; }
+.docs-source-viewer__summary { color: var(--docs-muted); font-size: .66rem; font-weight: 400; }
+.docs-source-viewer__links,
+.docs-source-viewer__actions { display: flex; flex-wrap: wrap; gap: .35rem; }
+.docs-source-viewer__actions { grid-column: 1 / -1; }
+.docs-source-viewer button,
+.docs-source-viewer__links a { min-height: 1.85rem; padding: .35rem .55rem; background: var(--docs-surface-strong); font-size: .64rem; }
+.docs-source-viewer__status { align-self: center; color: var(--docs-muted); font-size: .65rem; }
+.docs-source-viewer__tabs { display: flex; overflow-x: auto; border-bottom: 1px solid var(--docs-border); }
+.docs-source-viewer__tabs button { border: 0; border-right: 1px solid var(--docs-border); border-radius: 0; background: transparent; }
+.docs-source-viewer__tabs button[aria-selected="true"] { background: var(--docs-accent-soft); color: var(--docs-accent); }
+.docs-source-viewer__panel { max-height: 34rem; overflow: auto; }
+.docs-source-viewer.is-expanded .docs-source-viewer__panel { max-height: none; }
+.docs-source-viewer__code { min-width: max-content; margin: 0; padding: .75rem 0; border: 0; border-radius: 0; background-color: var(--shiki-light-bg, #fff); font-size: .68rem; line-height: 1.55; box-shadow: none; }
+.docs-source-viewer__code code { display: block; padding: 0; background: transparent; }
+.docs-source-viewer__code .line { display: grid; grid-template-columns: 3.3rem minmax(0, 1fr); min-height: 1.55em; }
+.docs-source-viewer__line-number { position: sticky; left: 0; z-index: 1; padding-right: .8rem; background: var(--shiki-light-bg, #fff); color: #7a8495; text-align: right; text-decoration: none; user-select: none; }
+.docs-source-viewer__line-content { padding-right: 1rem; white-space: pre; }
+.docs-source-viewer.is-wrapped .docs-source-viewer__code { min-width: 0; }
+.docs-source-viewer.is-wrapped .docs-source-viewer__line-content { white-space: pre-wrap; overflow-wrap: anywhere; }
+body[data-md-color-scheme="slate"] .docs-source-viewer__code { background-color: var(--shiki-dark-bg, #0d1117); }
+body[data-md-color-scheme="slate"] .docs-source-viewer__code span { color: var(--shiki-dark, inherit); }
+body[data-md-color-scheme="slate"] .docs-source-viewer__line-number { background: var(--shiki-dark-bg, #0d1117); color: #8791a3; }
+.docs-lab-implementation { margin-top: 1.5rem; }
+
+/* Desktop Focus mode */
+@media (min-width: 76.25em) {
+  body.docs-focus-mode .md-sidebar { display: none; }
+  body.docs-focus-mode .md-main__inner { max-width: calc(var(--docs-content) + 2.4rem); }
+  body.docs-focus-mode .md-content { margin: 0; }
+  body.docs-focus-mode .md-content__inner { max-width: var(--docs-content); margin-inline: auto; }
 }
 
-/* Ensure list items themselves have distinct vertical separation to prevent overlaps */
-.md-sidebar--primary .md-nav__item {
-  margin-bottom: 0.12rem !important;
+@media (max-width: 76.234375em) {
+  .docs-action--focus { display: none; }
 }
 
-body[data-md-color-scheme="slate"] .md-nav__link:not([for="__toc"]) {
-  color: #94a3b8 !important; /* Slate 400 */
+@media (max-width: 44.984375em) {
+  .docs-card-grid--featured,
+  .docs-card-grid--domains,
+  .docs-card-grid--hands-on,
+  .docs-related__grid { grid-template-columns: 1fr; }
+  .docs-card--compact { min-height: 0; }
+  .docs-evidence__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .docs-recent a { grid-template-columns: 1fr; gap: .2rem; }
+  .docs-recent span { text-align: left; }
+  .docs-study-notes,
+  .docs-contribute { align-items: flex-start; flex-direction: column; }
+  .docs-source-viewer__toolbar { grid-template-columns: 1fr; }
+  .docs-source-viewer__links,
+  .docs-source-viewer__actions { grid-column: 1; }
+  .docs-source-viewer__links a { flex: 1; }
+  .docs-source-viewer__code { font-size: .63rem; }
 }
 
-/* Hover effect on links */
-.md-nav__link:not([for="__toc"]):hover {
-  background-color: #f1f5f9 !important; /* Slate 100 */
-  color: #0f172a !important; /* Slate 900 */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { scroll-behavior: auto; transition-duration: .01ms; animation-duration: .01ms; animation-iteration-count: 1; }
 }
-
-body[data-md-color-scheme="slate"] .md-nav__link:not([for="__toc"]):hover {
-  background-color: rgba(255, 255, 255, 0.04) !important;
-  color: #f8fafc !important; /* Slate 50 */
-}
-
-/* Active Leaf Page Highlight */
-.md-nav__link.md-nav__link--active:not([for="__toc"]),
-.md-nav__link.md-nav__link--active:not([for="__toc"]) .md-ellipsis {
-  color: #2563eb !important; /* Deep Blue */
-  font-weight: 600 !important;
-}
-
-.md-nav__link.md-nav__link--active:not([for="__toc"]) {
-  background-color: #eff6ff !important; /* Light blue tint */
-}
-
-/* Active Leaf Page Highlight (Dark Mode) */
-body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active:not([for="__toc"]),
-body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active:not([for="__toc"]) .md-ellipsis {
-  color: #38bdf8 !important; /* Sky Blue */
-}
-
-body[data-md-color-scheme="slate"] .md-nav__link.md-nav__link--active:not([for="__toc"]) {
-  background-color: rgba(56, 189, 248, 0.1) !important;
-}
-
-/* Adjust nested items indentation for clear visual hierarchy */
-.md-nav__list .md-nav__list {
-  padding-left: 0.5rem !important;
-  border-left: 1px solid #e2e8f0;
-  margin-left: 0.6rem;
-}
-
-body[data-md-color-scheme="slate"] .md-nav__list .md-nav__list {
-  border-left-color: rgba(255, 255, 255, 0.08);
-}
-
-/* ========================================================
-   MERMAID DIAGRAM TEXT LEGIBILITY FIX
-   ======================================================== */
-
-/* Respect inline color styles (like color:#fff or color:rgb(255,255,255)) regardless of browser serialization format */
-
-/* Class-based HTML text nodes inside foreignObject */
-svg [style*="color:#fff"] .nodeLabel,
-svg [style*="color: #fff"] .nodeLabel,
-svg [style*="color:#ffffff"] .nodeLabel,
-svg [style*="color: #ffffff"] .nodeLabel,
-svg [style*="color:rgb(255,255,255)"] .nodeLabel,
-svg [style*="color: rgb(255, 255, 255)"] .nodeLabel,
-svg [style*="color:#fff"] .label *,
-svg [style*="color: #fff"] .label *,
-svg [style*="color:#ffffff"] .label *,
-svg [style*="color: #ffffff"] .label *,
-svg [style*="color:rgb(255,255,255)"] .label *,
-svg [style*="color: rgb(255, 255, 255)"] .label *,
-
-/* SVG native text and tspan elements */
-svg [style*="color:#fff"] text,
-svg [style*="color: #fff"] text,
-svg [style*="color:#ffffff"] text,
-svg [style*="color: #ffffff"] text,
-svg [style*="color:rgb(255,255,255)"] text,
-svg [style*="color: rgb(255, 255, 255)"] text,
-svg [style*="color:#fff"] tspan,
-svg [style*="color: #fff"] tspan,
-svg [style*="color:#ffffff"] tspan,
-svg [style*="color: #ffffff"] tspan,
-svg [style*="color:rgb(255,255,255)"] tspan,
-svg [style*="color: rgb(255, 255, 255)"] tspan,
-
-/* Sibling elements (when style is on the sibling rect container instead of the parent) */
-svg .node [style*="color:#fff"] ~ .label *,
-svg .node [style*="color: #fff"] ~ .label *,
-svg .node [style*="color:#ffffff"] ~ .label *,
-svg .node [style*="color: #ffffff"] ~ .label *,
-svg .node [style*="color:rgb(255,255,255)"] ~ .label *,
-svg .node [style*="color: rgb(255, 255, 255)"] ~ .label *,
-svg .node [style*="color:#fff"] ~ text,
-svg .node [style*="color: #fff"] ~ text,
-svg .node [style*="color:#ffffff"] ~ text,
-svg .node [style*="color: #ffffff"] ~ text,
-svg .node [style*="color:rgb(255,255,255)"] ~ text,
-svg .node [style*="color: rgb(255, 255, 255)"] ~ text,
-svg .node [style*="color:#fff"] ~ tspan,
-svg .node [style*="color: #fff"] ~ tspan,
-svg .node [style*="color:#ffffff"] ~ tspan,
-svg .node [style*="color: #ffffff"] ~ tspan,
-svg .node [style*="color:rgb(255,255,255)"] ~ tspan,
-svg .node [style*="color: rgb(255, 255, 255)"] ~ tspan {
-  color: #ffffff !important;
-  fill: #ffffff !important;
-}
-
-/* Fallback: Direct hex mappings for the specific colored nodes we defined */
-svg .node [style*="fill:#2563eb"] ~ .label *,
-svg .node [style*="fill: #2563eb"] ~ .label *,
-svg .node [style*="fill:rgb(37, 99, 235)"] ~ .label *,
-svg .node [style*="fill: rgb(37, 99, 235)"] ~ .label *,
-
-svg .node [style*="fill:#0891b2"] ~ .label *,
-svg .node [style*="fill: #0891b2"] ~ .label *,
-svg .node [style*="fill:rgb(8, 145, 178)"] ~ .label *,
-svg .node [style*="fill: rgb(8, 145, 178)"] ~ .label *,
-
-svg .node [style*="fill:#7c3aed"] ~ .label *,
-svg .node [style*="fill: #7c3aed"] ~ .label *,
-svg .node [style*="fill:rgb(124, 58, 237)"] ~ .label *,
-svg .node [style*="fill: rgb(124, 58, 237)"] ~ .label *,
-
-svg .node [style*="fill:#d97706"] ~ .label *,
-svg .node [style*="fill: #d97706"] ~ .label *,
-svg .node [style*="fill:rgb(217, 119, 6)"] ~ .label *,
-svg .node [style*="fill: rgb(217, 119, 6)"] ~ .label *,
-
-svg .node [style*="fill:#ea580c"] ~ .label *,
-svg .node [style*="fill: #ea580c"] ~ .label *,
-svg .node [style*="fill:rgb(234, 88, 12)"] ~ .label *,
-svg .node [style*="fill: rgb(234, 88, 12)"] ~ .label *,
-
-svg .node [style*="fill:#ca8a04"] ~ .label *,
-svg .node [style*="fill: #ca8a04"] ~ .label *,
-svg .node [style*="fill:rgb(202, 138, 4)"] ~ .label *,
-svg .node [style*="fill: rgb(202, 138, 4)"] ~ .label *,
-
-svg .node [style*="fill:#059669"] ~ .label *,
-svg .node [style*="fill: #059669"] ~ .label *,
-svg .node [style*="fill:rgb(5, 150, 105)"] ~ .label *,
-svg .node [style*="fill: rgb(5, 150, 105)"] ~ .label *,
-
-svg .node [style*="fill:#dc2626"] ~ .label *,
-svg .node [style*="fill: #dc2626"] ~ .label *,
-svg .node [style*="fill:rgb(220, 38, 38)"] ~ .label *,
-svg .node [style*="fill: rgb(220, 38, 38)"] ~ .label *,
-
-svg .node [style*="fill:#475569"] ~ .label *,
-svg .node [style*="fill: #475569"] ~ .label *,
-svg .node [style*="fill:rgb(71, 85, 105)"] ~ .label *,
-svg .node [style*="fill: rgb(71, 85, 105)"] ~ .label * {
-  color: #ffffff !important;
-  fill: #ffffff !important;
-}
-
-
-
-

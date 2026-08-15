@@ -1,5 +1,11 @@
 ---
 title: "Secure CI/CD Pipeline Architecture and Trust Boundaries"
+id: "secure-cicd-pipeline-design"
+navTitle: "Secure CI/CD"
+order: 10
+featured: true
+featuredOrder: 10
+summary: "Workflow identity, untrusted validation, protected build, and attestation policy."
 type: "devsecops"
 tags:
   - devsecops
@@ -9,7 +15,6 @@ tags:
   - design
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 12
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "GitHub secure use reference — https://docs.github.com/en/actions/reference/security/secure-use"
@@ -183,11 +188,13 @@ A checksum uploaded beside an artifact detects accidental corruption, but it is 
 
 The fixture therefore verifies with GitHub CLI 2.96.0 using:
 
-<div class="language-bash highlight">
-
-`gh attestation verify dist/release.txt \ --repo "$GITHUB_REPOSITORY" \ --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/trusted-build-release.yml" \ --source-ref "refs/heads/main" \ --source-digest "$GITHUB_SHA" `
-
-</div>
+```bash
+gh attestation verify dist/release.txt \
+  --repo "$GITHUB_REPOSITORY" \
+  --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/trusted-build-release.yml" \
+  --source-ref "refs/heads/main" \
+  --source-digest "$GITHUB_SHA"
+```
 
 GitHub CLI documents `--signer-workflow` as `[host/]owner/repository/path/to/workflow`; for this non-reusable fixture the signer is the repository workflow above. If signing moves into a reusable workflow, constrain the reusable workflow identity instead. The attestation authenticates the signed statement and signer identity, but provenance predicate fields can still be influenced by the originating workflow. A correctly designed trusted reusable builder narrows that influence by moving build and signing logic outside caller-controlled execution.
 
@@ -220,11 +227,12 @@ Rollback a pipeline policy version or workflow revision through protected review
 
 Run:
 
-<div class="language-powershell highlight">
-
-<span id="__span-0-1"><span class="n">`npm`</span>` `<span class="n">`ci`</span>` `<span class="p">`-`</span><span class="n">`-ignore-scripts`</span>` `</span><span id="__span-0-2"><span class="n">`node`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`secure-cicd`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`policy-tests`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span><span id="__span-0-3"><span class="n">`node`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`secure-cicd`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`run-tests`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span><span id="__span-0-4"><span class="n">`node`</span>` `<span class="n">`scripts`</span><span class="p">`/`</span><span class="n">`check-action-pins`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span>
-
-</div>
+```powershell
+npm ci --ignore-scripts
+node labs/secure-cicd/tests/policy-tests.js
+node labs/secure-cicd/tests/run-tests.js
+node scripts/check-action-pins.js
+```
 
 The dependency-free policy suite checks full-SHA action pins, least permissions, untrusted PR isolation, digest and provenance verification before privileged use, repository plus signer-workflow/source-ref/source-digest constraints, protected- environment binding, OIDC without stored cloud credentials, and cache-poisoning resistance. Each boundary has an accepted hardened fixture and an intentionally unsafe fixture expected to fail. The gate suite covers a passing report, above-policy critical/secret findings, scanner failure, and malformed values. Repository CI also parses YAML, checks JavaScript syntax, checks internal links, and validates generated/index metadata.
 

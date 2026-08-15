@@ -4,7 +4,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { ROOT, isIndexed, markdownFiles, parseDocument, relative } = require("./content-lib");
 
-const REQUIRED = ["title", "type", "tags", "date", "lastReviewed", "readingTime", "reviewStatus", "validatedAgainst", "sourceQuality", "implementationStatus", "reviewIntervalDays"];
+const REQUIRED = ["title", "type", "tags", "date", "lastReviewed", "reviewStatus", "validatedAgainst", "sourceQuality", "implementationStatus", "reviewIntervalDays"];
+const PRIMARY_RESEARCH = /^(appsec|cloud-security|devsecops|threat-intel)\/[^/]+\.md$/;
 const TYPES = new Set(["cloud-security", "appsec", "devsecops", "threat-intel", "tutorial", "research", "certification-notes"]);
 const REVIEW = new Set(["verified", "partially-verified", "requires-review", "historical"]);
 const QUALITY = new Set(["primary-sources-reviewed", "mixed-sources", "requires-review"]);
@@ -30,7 +31,11 @@ for (const file of markdownFiles()) {
   const registryMetadata = registry[rel] || {};
   if (registry[rel]) seenRegistry.add(rel);
   const metadata = { ...registryMetadata, ...(document.metadata || {}) };
+  const primaryResearch = PRIMARY_RESEARCH.test(rel) && !rel.endsWith("/index.md");
   for (const field of REQUIRED) {
+    if (metadata[field] === undefined || metadata[field] === null || metadata[field] === "") error(file, `missing required field ${field}`);
+  }
+  for (const field of primaryResearch ? ["id", "navTitle", "order"] : ["readingTime"]) {
     if (metadata[field] === undefined || metadata[field] === null || metadata[field] === "") error(file, `missing required field ${field}`);
   }
   if (registry[rel] && registryMetadata.reviewStatus !== "requires-review") error(file, "legacy registry entries may not claim verification; move reviewed metadata into page front matter");
@@ -46,7 +51,8 @@ for (const file of markdownFiles()) {
   const publicationDate = String(metadata.date || "");
   if (!DATE_PATTERN.test(publicationDate) && !(registry[rel] && LEGACY_DATE_PATTERN.test(publicationDate))) error(file, "date must use YYYY-MM-DD (legacy registry pages may preserve YYYY-MM)");
   if (metadata.lastReviewed > today) error(file, `lastReviewed ${metadata.lastReviewed} is in the future`);
-  if (!Number.isInteger(metadata.readingTime) || metadata.readingTime < 1) error(file, "readingTime must be a positive integer");
+  if (metadata.readingTime !== undefined && (!Number.isInteger(metadata.readingTime) || metadata.readingTime < 1)) error(file, "readingTime must be a positive integer when supplied");
+  if (primaryResearch && (!Number.isInteger(metadata.order) || metadata.order < 1)) error(file, "order must be a positive integer");
   if (!Number.isInteger(metadata.reviewIntervalDays) || metadata.reviewIntervalDays < 1) error(file, "reviewIntervalDays must be a positive integer");
   const normalizedTitle = String(metadata.title || "").trim().toLowerCase();
   if (titles.has(normalizedTitle)) error(file, `duplicate title also used by ${titles.get(normalizedTitle)}`);

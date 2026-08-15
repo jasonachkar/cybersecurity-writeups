@@ -12,9 +12,8 @@ Cloud computing is the delivery of computing services over the internet on a pay
 High availability ensures that your applications and resources remain accessible to users with minimal downtime, even in the event of hardware or system failures. In Azure, HA is structured around:
 * **Service Level Agreements (SLAs):** Microsoft's commitment to uptime (e.g., 99.9%, 99.99%).
 * **Composite SLAs:** When multiple services work together, their SLAs multiply.
-    $$\text{Composite SLA} = \text{SLA}_{\text{Web App}} \times \text{SLA}_{\text{Database}}$$
-    For instance:
-    $$0.9995 \times 0.9999 = 99.94\%$$
+  `Composite SLA = SLA(Web App) × SLA(Database)`. For instance,
+  `0.9995 × 0.9999 = 99.94%`.
 
 ### 1.2 Scalability (Vertical vs. Horizontal)
 * **Vertical Scaling (Scale Up):** Adding more CPU or RAM to an existing Virtual Machine (e.g., upgrading from a Standard D2s to a Standard D4s). This usually requires a reboot.

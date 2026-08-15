@@ -1,3 +1,17 @@
+---
+id: azure-landing-zone
+title: Azure landing-zone hierarchy and policy lab
+navTitle: Azure landing zone
+domain: cloud-security
+order: 90
+summary: Compiles a bounded Azure landing-zone Bicep example without deploying cloud resources.
+implementationStatus: partially-tested
+sourceFiles:
+  - { path: labs/azure-landing-zone/main.bicep, label: Landing-zone module, language: bicep, primary: true }
+  - { path: labs/azure-landing-zone/modules/policy-baseline.bicep, label: Policy baseline, language: bicep }
+runCommands: [npm run verify:bicep]
+---
+
 # Azure landing-zone hierarchy and policy lab
 
 This lab compiles a small tenant-scope Bicep design for a management-group hierarchy and an audit-first custom policy assignment. It demonstrates deployment shape, federated CI identity, and a reviewable what-if boundary; it does not deploy during repository validation.
@@ -11,11 +25,9 @@ The sample separates platform, landing-zone, and sandbox subscriptions beneath a
 - Azure CLI 2.83.0 or later with Bicep support.
 - No Azure login is needed to compile.
 
-<div class="language-powershell highlight">
-
-<span id="__span-0-1"><span class="n">`az`</span>` `<span class="n">`bicep`</span>` `<span class="n">`build`</span>` `<span class="p">`-`</span><span class="o">`-file`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`azure-landing-zone`</span><span class="p">`/`</span><span class="n">`main`</span><span class="p">`.`</span><span class="n">`bicep`</span>` `</span>
-
-</div>
+```powershell
+az bicep build --file labs/azure-landing-zone/main.bicep
+```
 
 Expected result: Bicep returns a compiled ARM template without diagnostics. The repository code validator performs this compilation when Azure CLI is available and reports an explicit limitation otherwise.
 
@@ -23,11 +35,14 @@ Expected result: Bicep returns a compiled ARM template without diagnostics. The 
 
 After replacing every angle-bracket placeholder, an authorized reviewer may inspect:
 
-<div class="language-powershell highlight">
-
-<span id="__span-1-1"><span class="n">`az`</span>` `<span class="n">`login`</span>` `<span class="p">`-`</span><span class="n">`-tenant`</span>` `<span class="p">`<`</span><span class="n">`tenant-id`</span><span class="p">`>`</span>` `<span class="p">`-`</span><span class="n">`-allow-no-subscriptions`</span>` `</span><span id="__span-1-2"><span class="n">`az`</span>` `<span class="n">`deployment`</span>` `<span class="n">`tenant`</span>` `<span class="n">`what-if`</span>` `<span class="p">`` ` ``</span>` `</span><span id="__span-1-3">` `<span class="p">`-`</span><span class="n">`-name`</span>` `<span class="n">`landing-zone-review`</span>` `<span class="p">`` ` ``</span>` `</span><span id="__span-1-4">` `<span class="p">`-`</span><span class="n">`-location`</span>` `<span class="n">`canadacentral`</span>` `<span class="p">`` ` ``</span>` `</span><span id="__span-1-5">` `<span class="p">`-`</span><span class="n">`-template`</span><span class="o">`-file`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`azure-landing-zone`</span><span class="p">`/`</span><span class="n">`main`</span><span class="p">`.`</span><span class="n">`bicep`</span>` `<span class="p">`` ` ``</span>` `</span><span id="__span-1-6">` `<span class="p">`-`</span><span class="n">`-parameters`</span>` `<span class="s1">`'@labs/azure-landing-zone/parameters.example.json'`</span>` `</span>
-
-</div>
+```powershell
+az login --tenant <tenant-id> --allow-no-subscriptions
+az deployment tenant what-if
+ --name landing-zone-review
+ --location canadacentral
+ --template-file labs/azure-landing-zone/main.bicep
+ --parameters '@labs/azure-landing-zone/parameters.example.json'
+```
 
 The included workflow uses GitHub OIDC and a protected environment. Configure the federated credential with an exact repository/environment subject, constrain the service principal to the required tenant/management-group operations, and require a human review of the what-if artifact. Do not add a client secret.
 

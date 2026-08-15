@@ -1,5 +1,8 @@
 ---
 title: "SecureObs: Customer-side CI Security Scanning with a Multi-tenant Findings Platform"
+id: "secureobs-multitenant-security-scanner"
+navTitle: "SecureObs architecture"
+order: 50
 type: "devsecops"
 tags:
   - devsecops
@@ -9,7 +12,6 @@ tags:
   - scanner
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 15
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "PostgreSQL row security policies — https://www.postgresql.org/docs/current/ddl-rowsecurity.html"
@@ -157,11 +159,9 @@ These are **recommended review criteria**. What I can confirm is that normalizat
 
 The build gate is implemented, but this public repository does not establish its exact private decision state machine. A required gate should distinguish:
 
-<div class="language-text highlight">
-
-<span id="__span-0-1">`PASS | POLICY_BLOCK | SCANNER_ERROR | CONFIG_ERROR | UPLOAD_ERROR | AUTH_ERROR | STALE `</span>
-
-</div>
+```text
+PASS | POLICY_BLOCK | SCANNER_ERROR | CONFIG_ERROR | UPLOAD_ERROR | AUTH_ERROR | STALE
+```
 
 Only an explicit, current `PASS` bound to the intended tenant/project and immutable source/artifact should allow a protected release. Missing, malformed, stale, or unavailable evidence must not silently become green. Emergency bypass should require an owned, time-bounded, audited risk acceptance rather than an ignored exit code.
 
@@ -281,11 +281,11 @@ Before production, prove cross-tenant job and credential denial, hostile-reposit
 
 Repository-reproduced checks:
 
-<div class="language-powershell highlight">
-
-<span id="__span-1-1"><span class="n">`npm`</span>` `<span class="n">`ci`</span>` `<span class="p">`-`</span><span class="n">`-ignore-scripts`</span>` `</span><span id="__span-1-2"><span class="n">`node`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`secure-cicd`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`run-tests`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span><span id="__span-1-3"><span class="p">`./`</span><span class="n">`labs`</span><span class="p">`/`</span><span class="n">`postgresql-rls`</span><span class="p">`/`</span><span class="n">`run-tests`</span><span class="p">`.`</span><span class="n">`ps1`</span>` `</span>
-
-</div>
+```powershell
+npm ci --ignore-scripts
+node labs/secure-cicd/tests/run-tests.js
+./labs/postgresql-rls/run-tests.ps1
+```
 
 Private implementation tests still required before stronger claims:
 

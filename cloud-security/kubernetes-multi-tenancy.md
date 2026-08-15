@@ -1,5 +1,8 @@
 ---
 title: "Kubernetes Multi-tenancy: Boundaries, Isolation, and Operations"
+id: "kubernetes-multi-tenancy"
+navTitle: "Kubernetes isolation"
+order: 40
 type: "cloud-security"
 tags:
   - cloud-security
@@ -8,7 +11,6 @@ tags:
   - tenancy
 date: "2026-07-25"
 lastReviewed: "2026-07-25"
-readingTime: 10
 reviewStatus: "partially-verified"
 validatedAgainst:
   - "Kubernetes multi-tenancy — https://kubernetes.io/docs/concepts/security/multi-tenancy/"
@@ -121,19 +123,16 @@ Rollout starts with asset/tenant classification, RBAC and identity inventory, au
 
 The [Kubernetes admission, network, and image-policy lab](../labs/kubernetes-security/README.md) is **partially tested** against Kubernetes `1.34` fixture API shapes and Kyverno CLI `1.18.2`. From the repository root:
 
-<div class="language-powershell highlight">
-
-<span id="__span-0-1"><span class="n">`node`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`kubernetes-security`</span><span class="p">`/`</span><span class="n">`tests`</span><span class="p">`/`</span><span class="n">`run-tests`</span><span class="p">`.`</span><span class="n">`js`</span>` `</span><span id="__span-0-2"><span class="n">`kyverno`</span>` `<span class="n">`test`</span>` `<span class="n">`labs`</span><span class="p">`/`</span><span class="n">`kubernetes-security`</span>` `<span class="p">`-`</span><span class="n">`-remove-color`</span>` `</span>
-
-</div>
+```powershell
+node labs/kubernetes-security/tests/run-tests.js
+kyverno test labs/kubernetes-security --remove-color
+```
 
 On 2026-07-23, the Node harness reported:
 
-<div class="language-text highlight">
-
-<span id="__span-1-1">`PASS: Kubernetes admission, image identity (12 cases), and NetworkPolicy structural tests completed. `</span>
-
-</div>
+```text
+PASS: Kubernetes admission, image identity (12 cases), and NetworkPolicy structural tests completed.
+```
 
 The official Kyverno v1.18.2 Windows CLI asset (SHA-256 `b5c9d1cb75587a312dc8334537a5773bdedb1a985deae9d89a5251385afb831f`) applied the hardened-pod `ValidatingPolicy` to seven Pod fixtures and reported `7 tests passed and 0 tests failed`. One compliant Pod was accepted; the six expected-denial fixtures covered:
 

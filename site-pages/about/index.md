@@ -15,9 +15,18 @@ and threat intelligence.
 
 ## How it is maintained
 
+### Research methodology
+
 Markdown, metadata, examples, and the documentation build are validated on
 `main`. The staged site includes a source-and-artifact manifest, and publication
 is blocked whenever canonical routes or lifecycle classifications drift.
+
+The evidence rows on research pages distinguish repository-tested examples from
+illustrative architecture, record the article's review state, and describe the
+quality of sources used for consequential claims. A current review date is not
+itself proof that the guidance is correct: material remains marked
+`requires-review` until it has been checked against its declared
+`validatedAgainst` sources.
 
 Passing repository checks means the documented local tests behaved as expected.
 It does not claim that every design was deployed to a live environment.

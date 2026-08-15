@@ -1,0 +1,7 @@
+<aside class="docs-contribute" aria-label="Contribute to this article">
+  <p><strong>Help improve this page</strong></p>
+  <div>
+    <a href="{{ docs_page.github.edit }}">Suggest an improvement</a>
+    <a href="{{ docs_catalog.repository }}/issues/new?title={{ ('Docs: ' ~ docs_page.title) | urlencode }}&amp;body={{ ('Article: ' ~ config.site_url ~ docs_page.url ~ '%0ASource: ' ~ docs_page.sourcePath ~ '%0A%0ADescribe the issue or suggested improvement:') | urlencode }}">Report an issue</a>
+  </div>
+</aside>
