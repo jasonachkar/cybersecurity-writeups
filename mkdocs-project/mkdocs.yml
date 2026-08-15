@@ -4,7 +4,7 @@ site_url: "https://docs.jasonachkardiab.com"
 site_author: "Jason Achkar Diab"
 repo_name: "jasonachkar/cybersecurity-writeups"
 repo_url: "https://github.com/jasonachkar/cybersecurity-writeups"
-edit_uri: "edit/main/"
+edit_uri: ""
 
 docs_dir: docs
 site_dir: site

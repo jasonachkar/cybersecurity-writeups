@@ -29,6 +29,7 @@ test("article metadata, actions, relationships, breadcrumbs, and TOC match catal
   assert.equal(await page.locator(".docs-article-header__summary").textContent(), item.summary);
   assert.equal(await page.locator(".docs-evidence__grid dd").nth(0).textContent(), item.implementationLabel);
   assert.equal(await page.locator(`.docs-article-actions a[href='${item.github.view}']`).count(), 1);
+  assert.equal(await page.locator("a[href*='/edit/main/']").count(), 0);
   assert.equal(await page.locator(".docs-related__item").count(), 1);
   assert.ok(await page.locator(".md-path").isVisible());
   assert.ok(await page.locator(".md-sidebar--secondary").isVisible());
@@ -55,7 +56,11 @@ test("desktop Focus mode persists, hides both rails, and restores focus on exit"
 test("homepage ordering, search trigger, and navigation are data-driven", async () => {
   const {context, page, errors} = await pageAt("/");
   assert.equal(await page.locator(".docs-card-grid--featured > .docs-card").count(), 4);
-  assert.deepEqual(await page.locator(".docs-recent strong").allTextContents(), catalog.recent.map(item => item.navTitle));
+  const primaryAction = page.locator(".docs-hero__actions a").first();
+  assert.equal(await primaryAction.locator(".docs-link-arrow").isVisible(), true);
+  assert.equal(await primaryAction.evaluate(link => getComputedStyle(link).textDecorationLine.includes("underline")), true);
+  const recentTitles = (await page.locator(".docs-recent strong").allTextContents()).map(title => title.replace(/\s+→$/, ""));
+  assert.deepEqual(recentTitles, catalog.recent.map(item => item.navTitle));
   await page.locator("[data-docs-search-open]").click();
   assert.equal(await page.locator("#__search").isChecked(), true);
   await page.keyboard.press("Escape");
@@ -68,6 +73,15 @@ test("source viewer switches files, wraps, expands, and updates canonical links"
   const {context, page, errors} = await pageAt("/labs/ai-agent-security/");
   const viewer = page.locator("[data-source-viewer]");
   assert.equal(await viewer.locator("[role=tab]").count(), 2);
+  const sourceLink = viewer.locator("a[data-source-github]");
+  assert.equal(await sourceLink.locator(".docs-link-arrow").isVisible(), true);
+  assert.equal(await sourceLink.evaluate(link => getComputedStyle(link).textDecorationLine.includes("underline")), true);
+  const lightTokenColors = await viewer.locator(".docs-source-viewer__line-content span[style*='--shiki-light']").evaluateAll(tokens => [...new Set(tokens.map(token => getComputedStyle(token).color))]);
+  assert.ok(lightTokenColors.length >= 3, `expected a light syntax palette, received ${lightTokenColors.join(", ")}`);
+  await page.locator("body").evaluate(body => body.setAttribute("data-md-color-scheme", "slate"));
+  const darkTokenColors = await viewer.locator(".docs-source-viewer__line-content span[style*='--shiki-dark']").evaluateAll(tokens => [...new Set(tokens.map(token => getComputedStyle(token).color))]);
+  assert.ok(darkTokenColors.length >= 3, `expected a dark syntax palette, received ${darkTokenColors.join(", ")}`);
+  assert.notDeepEqual(lightTokenColors, darkTokenColors);
   const second = viewer.locator("[role=tab]").nth(1);
   await second.focus();
   await page.keyboard.press("Enter");

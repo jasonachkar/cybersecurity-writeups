@@ -96,7 +96,6 @@ function commonItem({ kind, id, title, navTitle, order, domain, sourcePath, url,
     related: { research: [], labs: [], scripts: [] }, declaredRelated: metadata.related || {},
     github: {
       view: `${REPOSITORY}/blob/main/${sourcePath}`,
-      edit: `${REPOSITORY}/edit/main/${sourcePath}`,
       raw: `https://raw.githubusercontent.com/jasonachkar/cybersecurity-writeups/main/${sourcePath}`,
     },
   };
@@ -264,7 +263,6 @@ function pageMap(research, labs, scripts) {
       summary: category.description, sourcePath: source, url: `/scripts/${category.id}/`,
       github: {
         view: `${REPOSITORY}/blob/main/${source}`,
-        edit: `${REPOSITORY}/edit/main/${source}`,
       },
       scripts: scripts.scripts.filter(item => item.category === category.id),
     };

@@ -3,21 +3,21 @@
   <h1 id="cybersecurity-research-labs-and-scripts">Cybersecurity research, labs, and scripts.</h1>
   <p class="docs-hero__lede">Evidence-aware security architecture, threat models, runnable labs, and source implementations across cloud security, application security, DevSecOps, and threat intelligence.</p>
   <div class="docs-hero__actions">
-    <a class="docs-button docs-button--primary" href="#featured-research">Browse research</a>
-    <a class="docs-button" href="{{ 'labs/' | url }}">Explore labs</a>
-    <a class="docs-button" href="{{ 'scripts/' | url }}">View scripts</a>
+    <a class="docs-button docs-button--primary" href="#featured-research">Browse research <span class="docs-link-arrow" aria-hidden="true">↓</span></a>
+    <a class="docs-button" href="{{ 'labs/' | url }}">Explore labs <span class="docs-link-arrow" aria-hidden="true">→</span></a>
+    <a class="docs-button" href="{{ 'scripts/' | url }}">View scripts <span class="docs-link-arrow" aria-hidden="true">→</span></a>
   </div>
   <button class="docs-hero-search" type="button" data-docs-search-open aria-label="Open site search"><span>Search security research</span><kbd>/</kbd></button>
 </section>
 
 <section class="docs-home-section" aria-labelledby="featured-research">
-  <div class="docs-section-heading"><h2 id="featured-research">Start here</h2><a href="{{ 'research/' | url }}">Browse all research</a></div>
+  <div class="docs-section-heading"><h2 id="featured-research">Start here</h2><a href="{{ 'research/' | url }}">Browse all research <span class="docs-link-arrow" aria-hidden="true">→</span></a></div>
   <div class="docs-card-grid docs-card-grid--featured">
     {% for item in docs_catalog.featured %}
     <a class="docs-card" href="{{ item.url | url }}">
       <span class="docs-card__eyebrow">{{ item.domainLabel }} · {{ item.readingTime }} min</span>
       <h3>{{ item.navTitle }}</h3><p>{{ item.summary }}</p>
-      <span class="docs-card__status">{{ item.implementationLabel }}</span>
+      <span class="docs-card__status">{{ item.implementationLabel }} <span class="docs-link-arrow" aria-hidden="true">→</span></span>
     </a>
     {% endfor %}
   </div>
@@ -28,7 +28,7 @@
   <div class="docs-card-grid docs-card-grid--domains">
     {% for domain in docs_catalog.domains %}
     <a class="docs-card docs-card--compact" href="{{ (domain.id ~ '/') | url }}">
-      <h3>{{ domain.title }}</h3><p>{{ domain.description }}</p><span>{{ domain.count }} articles</span>
+      <h3>{{ domain.title }}</h3><p>{{ domain.description }}</p><span>{{ domain.count }} articles <span class="docs-link-arrow" aria-hidden="true">→</span></span>
     </a>
     {% endfor %}
   </div>
@@ -37,8 +37,8 @@
 <section class="docs-home-section" aria-labelledby="hands-on-engineering">
   <h2 id="hands-on-engineering">Hands-on engineering</h2>
   <div class="docs-card-grid docs-card-grid--hands-on">
-    <a class="docs-card" href="{{ 'labs/' | url }}"><span class="docs-card__eyebrow">Bounded experiments</span><h3>Labs</h3><p>Runnable implementations and fixtures that test a specific security decision in isolation.</p><span>{{ docs_catalog.labs | length }} labs</span></a>
-    <a class="docs-card" href="{{ 'scripts/' | url }}"><span class="docs-card__eyebrow">Reusable source</span><h3>Scripts</h3><p>Utilities and source implementations built alongside the research, with their test and safety boundaries.</p><span>{{ docs_catalog.scripts | length }} scripts</span></a>
+    <a class="docs-card" href="{{ 'labs/' | url }}"><span class="docs-card__eyebrow">Bounded experiments</span><h3>Labs</h3><p>Runnable implementations and fixtures that test a specific security decision in isolation.</p><span>{{ docs_catalog.labs | length }} labs <span class="docs-link-arrow" aria-hidden="true">→</span></span></a>
+    <a class="docs-card" href="{{ 'scripts/' | url }}"><span class="docs-card__eyebrow">Reusable source</span><h3>Scripts</h3><p>Utilities and source implementations built alongside the research, with their test and safety boundaries.</p><span>{{ docs_catalog.scripts | length }} scripts <span class="docs-link-arrow" aria-hidden="true">→</span></span></a>
   </div>
 </section>
 
@@ -46,12 +46,12 @@
   <h2 id="recently-reviewed">Recently reviewed</h2>
   <ol class="docs-recent">
     {% for item in docs_catalog.recent %}
-    <li><a href="{{ item.url | url }}"><strong>{{ item.navTitle }}</strong><span>{{ item.domainLabel }} · <time datetime="{{ item.lastReviewed }}">{{ item.lastReviewed }}</time> · {{ item.readingTime }} min</span></a></li>
+    <li><a href="{{ item.url | url }}"><strong>{{ item.navTitle }} <span class="docs-link-arrow" aria-hidden="true">→</span></strong><span>{{ item.domainLabel }} · <time datetime="{{ item.lastReviewed }}">{{ item.lastReviewed }}</time> · {{ item.readingTime }} min</span></a></li>
     {% endfor %}
   </ol>
 </section>
 
 <aside class="docs-study-notes" aria-labelledby="study-notes-heading">
   <div><p class="docs-card__eyebrow">Learning and certification</p><h2 id="study-notes-heading">Study notes</h2><p>Course-oriented notes kept distinct from original research and implementation evidence.</p></div>
-  <a href="{{ 'study-notes/' | url }}">Browse study notes</a>
+  <a href="{{ 'study-notes/' | url }}">Browse study notes <span class="docs-link-arrow" aria-hidden="true">→</span></a>
 </aside>

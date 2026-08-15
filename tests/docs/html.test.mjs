@@ -22,13 +22,14 @@ test("every lifecycle route exists and archived routes remain noindex", () => {
   }
 });
 
-test("catalog-managed research has canonical metadata, source actions, and no duplicate H1", () => {
+test("catalog-managed research has canonical metadata, read-only source actions, and no duplicate H1", () => {
   for (const item of catalog.research) {
     const html = readPage(item.url);
     assert.equal((html.match(/<h1\b/g) || []).length, 1, item.url);
     assert.match(html, new RegExp(`<meta name="description" content="${item.summary ? item.summary.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") : "Deep-dive"}`));
     assert.ok(html.includes(`href="${item.github.view}"`), `${item.url}: view source`);
-    assert.ok(html.includes(`href="${item.github.edit}"`), `${item.url}: edit source`);
+    assert.doesNotMatch(html, /\/edit\/main\//, `${item.url}: editing must not be offered`);
+    assert.doesNotMatch(html, />Edit on GitHub</);
     assert.match(html, /class="docs-evidence"/);
     assert.doesNotMatch(html, /<section class="docs-related"[^>]*>\s*<h2[^>]*>Related content<\/h2>\s*<div[^>]*>\s*<\/div>/);
   }
@@ -37,6 +38,7 @@ test("catalog-managed research has canonical metadata, source actions, and no du
 test("homepage, search enrichment, and source viewers derive from the catalog", () => {
   const home = readPage("/");
   assert.equal((home.match(/class="docs-card" href="\/(?:appsec|cloud-security|devsecops|threat-intel)\//g) || []).length, 4);
+  assert.match(home, /class="docs-link-arrow" aria-hidden="true">→<\/span>/);
   const recentTitles = [...home.matchAll(/<ol class="docs-recent">([\s\S]*?)<\/ol>/g)][0][1];
   let cursor = -1;
   for (const item of catalog.recent) {
