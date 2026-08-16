@@ -58,7 +58,7 @@ Not established by this design:
 
 Primary assets are tenant data, membership and entitlements, audit evidence, administrative credentials, export jobs, and tenant-scoped encryption references. Threat actors include a legitimate user selecting another tenant, a compromised API credential, a confused-deputy background job, an operator using a bypass identity, and a faulty migration or connection-pool integration.
 
-```
+```mermaid
 flowchart LR
   C["Untrusted client input"] --> I["Identity provider"]
   I --> A["API authentication"]

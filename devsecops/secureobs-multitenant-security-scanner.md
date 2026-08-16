@@ -74,7 +74,7 @@ Not established by this case study:
 
 ### Current architecture
 
-```
+```mermaid
 flowchart LR
   D["Developer change"] --> CI["Customer GitHub Actions or Azure DevOps pipeline"]
   CI --> SC["SecureObs scanner container in customer CI"]
@@ -241,7 +241,7 @@ Forced RLS protects covered PostgreSQL queries, not dashboard caches, logs, expo
 
 > **Not implemented today.** The services and flows in this section are a design option for future requirements. They must not be represented as the architecture currently running at `secureobs.com`.
 
-```
+```mermaid
 flowchart LR
   U["Authorized tenant request or CI trigger"] --> API["Control-plane API"]
   API --> J["Immutable tenant-bound job envelope"]

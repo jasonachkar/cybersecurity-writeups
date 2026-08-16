@@ -42,7 +42,7 @@ At scale, IAM is an authorization system and operating model. The design objecti
 
 An AWS role session requires both authentication/trust and authorization. A signed OIDC token proves claims only if AWS trusts the issuer and validates the signature, and the role trust policy still has to match the request. A signed token does not give every repository access by default, and an attacker cannot simply type a different signed `sub`. Risk appears when the trust policy accepts an overly broad pattern, accepts the wrong audience/issuer, or protects the accepted repository/ref/environment poorly.
 
-```
+```mermaid
 flowchart LR
   W["Workforce IdP"] --> I["IAM Identity Center permission set"]
   G["GitHub OIDC issuer"] --> T["Role trust: provider, aud, sub"]

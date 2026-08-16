@@ -34,7 +34,7 @@ Kubernetes multi-tenancy is a spectrum. Namespaces are an administrative and pol
 
 Use shared clusters only when tenant trust, regulatory requirements, blast radius, and operational controls support a soft-to-moderate boundary. Use dedicated clusters - and often dedicated cloud accounts/subscriptions/projects - for hostile, regulated, high- impact, or custom-control-plane tenants. A product may offer several tiers.
 
-```
+```mermaid
 flowchart TB
   O["Cloud organization/account boundary"] --> C["Kubernetes control plane"]
   C --> N1["Tenant namespace and RBAC"]

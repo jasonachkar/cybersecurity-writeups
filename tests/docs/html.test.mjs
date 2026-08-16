@@ -35,6 +35,17 @@ test("catalog-managed research has canonical metadata, read-only source actions,
   }
 });
 
+test("every research Mermaid fence is emitted as a renderable diagram", () => {
+  for (const item of catalog.research) {
+    const source = fs.readFileSync(path.join(ROOT, item.sourcePath), "utf8");
+    const diagramCount = (source.match(/^```mermaid(?:\s.*)?$/gm) || []).length;
+    if (!diagramCount) continue;
+    const html = readPage(item.url);
+    assert.equal((html.match(/class="mermaid"/g) || []).length, diagramCount, `${item.url}: Mermaid diagram count`);
+    assert.match(html, /js\/vendor\/mermaid\.min\.js/, `${item.url}: local Mermaid runtime`);
+  }
+});
+
 test("homepage, search enrichment, and source viewers derive from the catalog", () => {
   const home = readPage("/");
   assert.equal((home.match(/class="docs-card" href="\/(?:appsec|cloud-security|devsecops|threat-intel)\//g) || []).length, 4);

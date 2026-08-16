@@ -103,7 +103,7 @@ The system should preserve these invariants:
 
 ## Architecture and trust boundaries
 
-```
+```mermaid
 flowchart LR
   subgraph UZ["Untrusted content zone"]
     U["User or calling service"]

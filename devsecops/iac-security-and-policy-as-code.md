@@ -31,7 +31,7 @@ Infrastructure as Code (IaC) is privileged software. Source, modules/providers, 
 
 ## Threat model and control plane
 
-```
+```mermaid
 flowchart LR
   C["Reviewed IaC source"] --> D["Locked modules/providers"]
   D --> P["Plan identity"]

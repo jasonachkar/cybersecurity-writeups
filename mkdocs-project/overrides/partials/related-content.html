@@ -7,9 +7,8 @@
       {% for item in items %}
       <a class="docs-related__item" href="{{ item.url | url }}">
         <span class="docs-related__type">{{ type }}</span>
-        <strong>{{ item.navTitle or item.title }}</strong>
+        <strong><span class="docs-link-label">{{ item.navTitle or item.title }} <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
         {% if item.summary %}<span>{{ item.summary }}</span>{% endif %}
-        <span class="docs-related__direction" aria-hidden="true">Explore →</span>
       </a>
       {% endfor %}
     {% endfor %}

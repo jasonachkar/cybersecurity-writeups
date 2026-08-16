@@ -57,7 +57,7 @@ Not provided:
 
 ## Threat model
 
-```
+```mermaid
 flowchart LR
   U["Untrusted PR, issue text, dependency, fork"] --> V["Validation identity: read-only, no secrets"]
   V --> E["Untrusted logs, reports, artifacts, caches"]

@@ -57,10 +57,25 @@ test("homepage ordering, search trigger, and navigation are data-driven", async 
   const {context, page, errors} = await pageAt("/");
   assert.equal(await page.locator(".docs-card-grid--featured > .docs-card").count(), 4);
   const primaryAction = page.locator(".docs-hero__actions a").first();
+  const primaryLabel = primaryAction.locator(".docs-link-label");
   assert.equal(await primaryAction.locator(".docs-link-arrow").isVisible(), true);
   assert.equal(await primaryAction.evaluate(link => getComputedStyle(link).textDecorationLine), "none");
+  const restingBorder = await primaryLabel.evaluate(label => getComputedStyle(label).borderBottomColor);
   await primaryAction.hover();
-  assert.equal(await primaryAction.evaluate(link => getComputedStyle(link).textDecorationLine.includes("underline")), true);
+  assert.equal(await primaryAction.evaluate(link => getComputedStyle(link).textDecorationLine), "none");
+  assert.notEqual(await primaryLabel.evaluate(label => getComputedStyle(label).borderBottomColor), restingBorder);
+  assert.equal(await primaryLabel.evaluate(label => {
+    const styles = getComputedStyle(label);
+    return styles.borderBottomColor === styles.color;
+  }), true);
+  const featuredCard = page.locator(".docs-card-grid--featured > .docs-card").first();
+  const featuredTitle = featuredCard.locator("h3 .docs-link-label");
+  await featuredCard.hover();
+  assert.equal(await featuredTitle.evaluate(label => {
+    const styles = getComputedStyle(label);
+    return styles.borderBottomColor === styles.color;
+  }), true);
+  assert.equal(await featuredCard.locator("p").evaluate(description => getComputedStyle(description).textDecorationLine), "none");
   const recentTitles = (await page.locator(".docs-recent strong").allTextContents()).map(title => title.replace(/\s+→$/, ""));
   assert.deepEqual(recentTitles, catalog.recent.map(item => item.navTitle));
   await page.locator("[data-docs-search-open]").click();
@@ -76,10 +91,17 @@ test("source viewer switches files, wraps, expands, and updates canonical links"
   const viewer = page.locator("[data-source-viewer]");
   assert.equal(await viewer.locator("[role=tab]").count(), 2);
   const sourceLink = viewer.locator("a[data-source-github]");
+  const sourceLabel = sourceLink.locator(".docs-link-label");
   assert.equal(await sourceLink.locator(".docs-link-arrow").isVisible(), true);
   assert.equal(await sourceLink.evaluate(link => getComputedStyle(link).textDecorationLine), "none");
+  const restingBorder = await sourceLabel.evaluate(label => getComputedStyle(label).borderBottomColor);
   await sourceLink.hover();
-  assert.equal(await sourceLink.evaluate(link => getComputedStyle(link).textDecorationLine.includes("underline")), true);
+  assert.equal(await sourceLink.evaluate(link => getComputedStyle(link).textDecorationLine), "none");
+  assert.notEqual(await sourceLabel.evaluate(label => getComputedStyle(label).borderBottomColor), restingBorder);
+  assert.equal(await sourceLabel.evaluate(label => {
+    const styles = getComputedStyle(label);
+    return styles.borderBottomColor === styles.color;
+  }), true);
   const lightTokenColors = await viewer.locator(".docs-source-viewer__line-content span[style*='--shiki-light']").evaluateAll(tokens => [...new Set(tokens.map(token => getComputedStyle(token).color))]);
   assert.ok(lightTokenColors.length >= 3, `expected a light syntax palette, received ${lightTokenColors.join(", ")}`);
   await page.locator("body").evaluate(body => body.setAttribute("data-md-color-scheme", "slate"));
@@ -103,10 +125,12 @@ test("source viewer switches files, wraps, expands, and updates canonical links"
   await context.close();
 });
 
-test("Mermaid diagrams render locally and follow the selected theme", async () => {
-  const {context, page, errors} = await pageAt("/about/");
+test("article Mermaid diagrams render locally and follow the selected theme", async () => {
+  const {context, page, errors} = await pageAt("/devsecops/secure-cicd-pipeline-design/");
   const diagram = page.locator("div.mermaid");
   await diagram.waitFor({state: "visible"});
+  const diagramBox = await diagram.boundingBox();
+  assert.ok(diagramBox.height > 100, `expected a rendered diagram, received ${diagramBox.height}px`);
   assert.equal(await page.locator("pre.mermaid").count(), 0);
   assert.equal(await page.evaluate(() => typeof window.mermaid), "object");
   assert.equal(await page.evaluate(() => performance.getEntriesByType("resource").some(entry => entry.name.includes("unpkg.com/mermaid"))), false);

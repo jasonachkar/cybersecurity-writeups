@@ -44,7 +44,7 @@ Do not send an ID token to an API as an access token. Do not validate every acce
 
 ## Threat model
 
-```
+```mermaid
 sequenceDiagram
   participant U as User agent
   participant C as OIDC client

@@ -65,7 +65,7 @@ Not established:
 
 ## Threat model
 
-```
+```mermaid
 flowchart LR
   S["Reviewed source and locked inputs"] --> B["Trusted builder platform"]
   B --> A["Artifact digest"]

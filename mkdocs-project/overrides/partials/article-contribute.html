@@ -1,7 +1,7 @@
 <aside class="docs-contribute" aria-label="Contribute to this article">
   <p><strong>Help improve this page</strong></p>
   <div>
-    <a href="{{ docs_catalog.repository }}/issues/new?title={{ ('Suggestion: ' ~ docs_page.title) | urlencode }}&amp;body={{ ('Article: ' ~ config.site_url ~ docs_page.url.lstrip('/') ~ '\nSource: ' ~ docs_page.sourcePath ~ '\n\nDescribe the improvement you would like to suggest:') | urlencode }}">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
-    <a href="{{ docs_catalog.repository }}/issues/new?title={{ ('Docs: ' ~ docs_page.title) | urlencode }}&amp;body={{ ('Article: ' ~ config.site_url ~ docs_page.url.lstrip('/') ~ '\nSource: ' ~ docs_page.sourcePath ~ '\n\nDescribe the issue:') | urlencode }}">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+    <a href="{{ docs_catalog.repository }}/issues/new?title={{ ('Suggestion: ' ~ docs_page.title) | urlencode }}&amp;body={{ ('Article: ' ~ config.site_url ~ docs_page.url.lstrip('/') ~ '\nSource: ' ~ docs_page.sourcePath ~ '\n\nDescribe the improvement you would like to suggest:') | urlencode }}"><span class="docs-link-label">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+    <a href="{{ docs_catalog.repository }}/issues/new?title={{ ('Docs: ' ~ docs_page.title) | urlencode }}&amp;body={{ ('Article: ' ~ config.site_url ~ docs_page.url.lstrip('/') ~ '\nSource: ' ~ docs_page.sourcePath ~ '\n\nDescribe the issue:') | urlencode }}"><span class="docs-link-label">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
   </div>
 </aside>
