@@ -1075,12 +1075,17 @@
     {
       "path": "mkdocs-project/docs/css/custom.css",
       "destination": "mkdocs-project/docs/css/custom.css",
-      "sha256": "1c606d77666f590ab68cf4b27a6825208b020a7851db05834eafa7f752fd4cb5"
+      "sha256": "3293ac24a448ba4f10b21f981f1fda953c225ca313b1853ec42aca06c6e133bd"
     },
     {
       "path": "mkdocs-project/docs/js/docs-ui.js",
       "destination": "mkdocs-project/docs/js/docs-ui.js",
       "sha256": "a6087c50c43733850119364d544d2ad6e1aaca7f3d34cfbfcd19bebf8385ef07"
+    },
+    {
+      "path": "mkdocs-project/docs/js/mermaid-zoom.js",
+      "destination": "mkdocs-project/docs/js/mermaid-zoom.js",
+      "sha256": "36604390b995b56c9cfe8dc708feab6f4764d3fcd65c9a2cb64b5433c91f0c4d"
     },
     {
       "path": "mkdocs-project/docs/js/source-viewer.js",
@@ -1100,7 +1105,7 @@
     {
       "path": "mkdocs-project/overrides/main.html",
       "destination": "mkdocs-project/overrides/main.html",
-      "sha256": "773850b77b9bf7d9a3f34ec39ed6cb5442471b501ee45db8c0ad174ed29d56cb"
+      "sha256": "ce772296569900a73cdad580054904be70890011d65923c1416780bdcd2ac1b1"
     },
     {
       "path": "mkdocs-project/overrides/partials/article-actions.html",
@@ -2309,7 +2314,7 @@
     },
     {
       "path": "about/index.html",
-      "sha256": "5f3fc8a55211731449497e3da0b904e312a8ac301a26a958edf01b55e2d7eb07"
+      "sha256": "7f6297b0e5b3e90e2de903bb892303bb25e27ad1a23e784a3b33df3b105f7b69"
     },
     {
       "path": "about/quality-methodology/index.html",
@@ -2321,7 +2326,7 @@
     },
     {
       "path": "appsec/ai-agent-security/index.html",
-      "sha256": "ee123ca1b7e15d81e3c8967c10e91287f956976a63d8b0f14a9801b4316a87f2"
+      "sha256": "7a9aa86b6dfb40bfd858e8a1e530cc30d51b63dcc0eb6cdb7fcc145f40f3387b"
     },
     {
       "path": "appsec/api-microservices-threat-modeling/index.html",
@@ -2333,7 +2338,7 @@
     },
     {
       "path": "appsec/oauth2-oidc-deep-dive/index.html",
-      "sha256": "6e0e7434aa543633fff66718f3187eac4224a0d76e58ec6cd8c5fda7706f25b5"
+      "sha256": "2fc6f2a76f1dd87768724015306cb409d875c00909ac702ccf98f1a02b365980"
     },
     {
       "path": "appsec/runtime-protection-rasp-waf/index.html",
@@ -2341,7 +2346,7 @@
     },
     {
       "path": "appsec/saas-multitenancy-isolation/index.html",
-      "sha256": "a283fc3a546bbd881e0c7ff57b40e41b3fa5a1d5c480dd77bbc63ca0a196f3cc"
+      "sha256": "9e2105836c7e2855ab52cb163fa878c4971d68cabf8b548932a382ff77efaa83"
     },
     {
       "path": "appsec/scripts/oauth-pkce/go.mod",
@@ -2537,7 +2542,7 @@
     },
     {
       "path": "cloud-security/iam-at-scale/index.html",
-      "sha256": "b988cf47735b82e47df04ec66cdaef60acd79c6516fd99ba03d214e28ccf9701"
+      "sha256": "8160c3032355baa0d2c333c52b6880a68a702ba00bf392a15b3ab443c5c3ddfb"
     },
     {
       "path": "cloud-security/index.html",
@@ -2545,7 +2550,7 @@
     },
     {
       "path": "cloud-security/kubernetes-multi-tenancy/index.html",
-      "sha256": "a666d767de7097fefdc7fa101a5e5cbcff0a1aff8a0d2ec2b17b565d326d4eba"
+      "sha256": "b4072481b2fbebd4eac1e425477176b170bd4e59dd9b344d0b9cbdffccff603b"
     },
     {
       "path": "cloud-security/multi-account-landing-zones/index.html",
@@ -2569,11 +2574,11 @@
     },
     {
       "path": "css/custom.css",
-      "sha256": "1c606d77666f590ab68cf4b27a6825208b020a7851db05834eafa7f752fd4cb5"
+      "sha256": "3293ac24a448ba4f10b21f981f1fda953c225ca313b1853ec42aca06c6e133bd"
     },
     {
       "path": "devsecops/iac-security-and-policy-as-code/index.html",
-      "sha256": "52e96ab8f21575063b92c8bce92b8179d6338fa00ad25fba0ef7ee5465c88df5"
+      "sha256": "2b6b0ba6ea678a466c903aab79a013eb32f4d117f651588df799219d7ebe3434"
     },
     {
       "path": "devsecops/index.html",
@@ -2597,15 +2602,15 @@
     },
     {
       "path": "devsecops/secure-cicd-pipeline-design/index.html",
-      "sha256": "c79fcfea3ed789c1e8757375c41f0e485d26b7b50640ab6193dbc407cfc970a4"
+      "sha256": "9c3820cb449f4c72bffd5fd6c69718a5318a8c20994e1414a7cd0f433e38d1fa"
     },
     {
       "path": "devsecops/secureobs-multitenant-security-scanner/index.html",
-      "sha256": "f171a0ec9844b76a3a5bf0b3079b7a00d0e97ab0a714937589c1dd8d45ba19ca"
+      "sha256": "415b0ca6e131a4054a3f8fe9f147802665132fca21d07a034d7ba61600bc7398"
     },
     {
       "path": "devsecops/supply-chain-sbom-signing/index.html",
-      "sha256": "bc27b3a8b8cf56a00ecb5b1e949da92ea48a145b1839730c2dcf2798a40caf11"
+      "sha256": "d9e3dced9c5a66258b69aaf2777ff2d7da5df139cc6f3e991d1c8fcd0a1be57c"
     },
     {
       "path": "docs/AUTHORING_GUIDE/index.html",
@@ -2950,6 +2955,10 @@
     {
       "path": "js/docs-ui.js",
       "sha256": "a6087c50c43733850119364d544d2ad6e1aaca7f3d34cfbfcd19bebf8385ef07"
+    },
+    {
+      "path": "js/mermaid-zoom.js",
+      "sha256": "36604390b995b56c9cfe8dc708feab6f4764d3fcd65c9a2cb64b5433c91f0c4d"
     },
     {
       "path": "js/source-viewer.js",
