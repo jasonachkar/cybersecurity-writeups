@@ -64,6 +64,8 @@
     <meta name="twitter:description" content="Issuer, audience, subject, delegation, PassRole, and permission-boundary decisions.">
   
   
+    <script src="../../js/vendor/mermaid.min.js"></script>
+  
 
   </head>
   
@@ -2727,7 +2729,7 @@
   <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
     <span data-focus-label>Focus</span>
   </button>
-  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/cloud-security/iam-at-scale.md">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/cloud-security/iam-at-scale.md"><span class="docs-link-label">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
 </nav>
   
 </header>
@@ -2744,18 +2746,17 @@
 </ul>
 <h2 id="trust-model">Trust model</h2>
 <p>An AWS role session requires both authentication/trust and authorization. A signed OIDC token proves claims only if AWS trusts the issuer and validates the signature, and the role trust policy still has to match the request. A signed token does not give every repository access by default, and an attacker cannot simply type a different signed <code>sub</code>. Risk appears when the trust policy accepts an overly broad pattern, accepts the wrong audience/issuer, or protects the accepted repository/ref/environment poorly.</p>
-<div class="language-text highlight"><pre><span></span><code>flowchart LR
-  W[&quot;Workforce IdP&quot;] --&gt; I[&quot;IAM Identity Center permission set&quot;]
-  G[&quot;GitHub OIDC issuer&quot;] --&gt; T[&quot;Role trust: provider, aud, sub&quot;]
-  K[&quot;EKS Pod Identity or IRSA&quot;] --&gt; T2[&quot;Workload role trust&quot;]
-  I --&gt; S[&quot;Short-lived role session&quot;]
+<pre class="mermaid"><code>flowchart LR
+  W["Workforce IdP"] --&gt; I["IAM Identity Center permission set"]
+  G["GitHub OIDC issuer"] --&gt; T["Role trust: provider, aud, sub"]
+  K["EKS Pod Identity or IRSA"] --&gt; T2["Workload role trust"]
+  I --&gt; S["Short-lived role session"]
   T --&gt; S
   T2 --&gt; S
-  S --&gt; E[&quot;Effective authorization&quot;]
-  P[&quot;Identity/resource policy&quot;] --&gt; E
-  B[&quot;Boundary/session policy&quot;] --&gt; E
-  O[&quot;SCP/RCP and service rules&quot;] --&gt; E
-</code></pre></div>
+  S --&gt; E["Effective authorization"]
+  P["Identity/resource policy"] --&gt; E
+  B["Boundary/session policy"] --&gt; E
+  O["SCP/RCP and service rules"] --&gt; E</code></pre>
 <h2 id="four-independent-decision-stages">Four independent decision stages</h2>
 <p>“OIDC succeeded” is not a useful security verdict. Preserve the stage that accepted or rejected a request:</p>
 <ol>
@@ -2906,9 +2907,8 @@
       
       <a class="docs-related__item" href="/labs/iam-oidc/">
         <span class="docs-related__type">Lab</span>
-        <strong>IAM and OIDC</strong>
+        <strong><span class="docs-link-label">IAM and OIDC <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
         <span>Exercises issuer, audience, subject, delegation, boundary, PassRole, and external-ID decisions against local fixtures.</span>
-        <span class="docs-related__direction" aria-hidden="true">Explore →</span>
       </a>
       
     
@@ -2920,8 +2920,8 @@
     <aside class="docs-contribute" aria-label="Contribute to this article">
   <p><strong>Help improve this page</strong></p>
   <div>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20AWS%20IAM%20at%20Scale%3A%20Federation%2C%20Delegation%2C%20and%20Guardrails&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/cloud-security/iam-at-scale/%0ASource%3A%20cloud-security/iam-at-scale.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20AWS%20IAM%20at%20Scale%3A%20Federation%2C%20Delegation%2C%20and%20Guardrails&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/cloud-security/iam-at-scale/%0ASource%3A%20cloud-security/iam-at-scale.md%0A%0ADescribe%20the%20issue%3A">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20AWS%20IAM%20at%20Scale%3A%20Federation%2C%20Delegation%2C%20and%20Guardrails&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/cloud-security/iam-at-scale/%0ASource%3A%20cloud-security/iam-at-scale.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A"><span class="docs-link-label">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20AWS%20IAM%20at%20Scale%3A%20Federation%2C%20Delegation%2C%20and%20Guardrails&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/cloud-security/iam-at-scale/%0ASource%3A%20cloud-security/iam-at-scale.md%0A%0ADescribe%20the%20issue%3A"><span class="docs-link-label">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
   </div>
 </aside>
   

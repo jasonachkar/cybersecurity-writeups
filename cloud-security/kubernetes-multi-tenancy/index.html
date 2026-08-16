@@ -64,6 +64,8 @@
     <meta name="twitter:description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
   
   
+    <script src="../../js/vendor/mermaid.min.js"></script>
+  
 
   </head>
   
@@ -2683,7 +2685,7 @@
   <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
     <span data-focus-label>Focus</span>
   </button>
-  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/cloud-security/kubernetes-multi-tenancy.md">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/cloud-security/kubernetes-multi-tenancy.md"><span class="docs-link-label">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
 </nav>
   
 </header>
@@ -2693,19 +2695,18 @@
 <p>Kubernetes multi-tenancy is a spectrum. Namespaces are an administrative and policy scope inside one control plane, not a hard security boundary by themselves. Containers on a node share a kernel. Network connectivity is allowed by default unless policy and the network implementation enforce restrictions. Cloud workload identities, node credentials, admission, RBAC, secrets, storage, DNS, observability, and operator access must be designed together.</p>
 <h2 id="isolation-decision">Isolation decision</h2>
 <p>Use shared clusters only when tenant trust, regulatory requirements, blast radius, and operational controls support a soft-to-moderate boundary. Use dedicated clusters - and often dedicated cloud accounts/subscriptions/projects - for hostile, regulated, high- impact, or custom-control-plane tenants. A product may offer several tiers.</p>
-<div class="language-text highlight"><pre><span></span><code>flowchart TB
-  O[&quot;Cloud organization/account boundary&quot;] --&gt; C[&quot;Kubernetes control plane&quot;]
-  C --&gt; N1[&quot;Tenant namespace and RBAC&quot;]
-  C --&gt; N2[&quot;Platform namespaces&quot;]
-  N1 --&gt; A[&quot;Admission and Pod Security&quot;]
-  N1 --&gt; W[&quot;Default-deny network policy&quot;]
-  N1 --&gt; I[&quot;Dedicated service account/workload identity&quot;]
-  N1 --&gt; Q[&quot;Quota, limits, priority&quot;]
-  A --&gt; K[&quot;Shared node kernel/runtime&quot;]
+<pre class="mermaid"><code>flowchart TB
+  O["Cloud organization/account boundary"] --&gt; C["Kubernetes control plane"]
+  C --&gt; N1["Tenant namespace and RBAC"]
+  C --&gt; N2["Platform namespaces"]
+  N1 --&gt; A["Admission and Pod Security"]
+  N1 --&gt; W["Default-deny network policy"]
+  N1 --&gt; I["Dedicated service account/workload identity"]
+  N1 --&gt; Q["Quota, limits, priority"]
+  A --&gt; K["Shared node kernel/runtime"]
   W --&gt; K
-  I --&gt; X[&quot;Cloud APIs&quot;]
-  K --&gt; S[&quot;Storage, secrets, logs, DNS&quot;]
-</code></pre></div>
+  I --&gt; X["Cloud APIs"]
+  K --&gt; S["Storage, secrets, logs, DNS"]</code></pre>
 <h2 id="boundary-layers-and-abuse-cases">Boundary layers and abuse cases</h2>
 <table>
 <thead>
@@ -2871,25 +2872,22 @@
       
       <a class="docs-related__item" href="/labs/kubernetes-security/">
         <span class="docs-related__type">Lab</span>
-        <strong>Kubernetes security</strong>
+        <strong><span class="docs-link-label">Kubernetes security <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
         <span>Exercises pod hardening, network-policy, and image-decision cases using local fixtures and pinned policy schemas.</span>
-        <span class="docs-related__direction" aria-hidden="true">Explore →</span>
       </a>
       
     
       
       <a class="docs-related__item" href="/scripts/cloud-security/#k8s-rbac-auditor">
         <span class="docs-related__type">Script</span>
-        <strong>Kubernetes RBAC privilege-escalation auditor</strong>
+        <strong><span class="docs-link-label">Kubernetes RBAC privilege-escalation auditor <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
         <span>Checks exported Kubernetes RBAC objects for scope mismatches and special verbs that can enable privilege escalation.</span>
-        <span class="docs-related__direction" aria-hidden="true">Explore →</span>
       </a>
       
       <a class="docs-related__item" href="/scripts/devsecops/#kyverno-policy-schema-check">
         <span class="docs-related__type">Script</span>
-        <strong>Kyverno policy schema validator</strong>
+        <strong><span class="docs-link-label">Kyverno policy schema validator <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
         <span>Validates a Kyverno policy against a pinned CRD structural schema without requiring a live cluster.</span>
-        <span class="docs-related__direction" aria-hidden="true">Explore →</span>
       </a>
       
     
@@ -2899,8 +2897,8 @@
     <aside class="docs-contribute" aria-label="Contribute to this article">
   <p><strong>Help improve this page</strong></p>
   <div>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20Kubernetes%20Multi-tenancy%3A%20Boundaries%2C%20Isolation%2C%20and%20Operations&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/cloud-security/kubernetes-multi-tenancy/%0ASource%3A%20cloud-security/kubernetes-multi-tenancy.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Kubernetes%20Multi-tenancy%3A%20Boundaries%2C%20Isolation%2C%20and%20Operations&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/cloud-security/kubernetes-multi-tenancy/%0ASource%3A%20cloud-security/kubernetes-multi-tenancy.md%0A%0ADescribe%20the%20issue%3A">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20Kubernetes%20Multi-tenancy%3A%20Boundaries%2C%20Isolation%2C%20and%20Operations&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/cloud-security/kubernetes-multi-tenancy/%0ASource%3A%20cloud-security/kubernetes-multi-tenancy.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A"><span class="docs-link-label">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Kubernetes%20Multi-tenancy%3A%20Boundaries%2C%20Isolation%2C%20and%20Operations&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/cloud-security/kubernetes-multi-tenancy/%0ASource%3A%20cloud-security/kubernetes-multi-tenancy.md%0A%0ADescribe%20the%20issue%3A"><span class="docs-link-label">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
   </div>
 </aside>
   

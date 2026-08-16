@@ -64,6 +64,8 @@
     <meta name="twitter:description" content="External authorization, action-bound approval, concurrent local consumption, and bounded tool execution.">
   
   
+    <script src="../../js/vendor/mermaid.min.js"></script>
+  
 
   </head>
   
@@ -3137,7 +3139,7 @@
   <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
     <span data-focus-label>Focus</span>
   </button>
-  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/appsec/ai-agent-security.md">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/appsec/ai-agent-security.md"><span class="docs-link-label">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
 </nav>
   
 </header>
@@ -3212,34 +3214,34 @@
 <li>Disabling execution, revoking capability, or isolating a tenant does not depend on cooperation from the model.</li>
 </ol>
 <h2 id="architecture-and-trust-boundaries">Architecture and trust boundaries</h2>
-<div class="language-text highlight"><pre><span></span><code>flowchart LR
-  subgraph UZ[&quot;Untrusted content zone&quot;]
-    U[&quot;User or calling service&quot;]
-    EXT[&quot;Web, email, files, and tool results&quot;]
-    R[&quot;Tenant-scoped retrieval&quot;]
+<pre class="mermaid"><code>flowchart LR
+  subgraph UZ["Untrusted content zone"]
+    U["User or calling service"]
+    EXT["Web, email, files, and tool results"]
+    R["Tenant-scoped retrieval"]
   end
 
-  subgraph AZ[&quot;Agent reasoning zone&quot;]
-    C[&quot;Context builder with provenance labels&quot;]
-    M[&quot;Model: untrusted planner&quot;]
-    O[&quot;Orchestrator: typed proposed call&quot;]
-    MW[&quot;Memory write gate&quot;]
+  subgraph AZ["Agent reasoning zone"]
+    C["Context builder with provenance labels"]
+    M["Model: untrusted planner"]
+    O["Orchestrator: typed proposed call"]
+    MW["Memory write gate"]
   end
 
-  subgraph CZ[&quot;Trusted control plane&quot;]
-    I[&quot;Identity gateway&quot;]
-    P[&quot;Policy and entitlement service&quot;]
-    A[&quot;Independent approval service&quot;]
-    B[&quot;Capability and tool broker&quot;]
-    K[&quot;Execution kill switch&quot;]
-    S[&quot;Secret manager&quot;]
-    L[&quot;Security audit pipeline&quot;]
+  subgraph CZ["Trusted control plane"]
+    I["Identity gateway"]
+    P["Policy and entitlement service"]
+    A["Independent approval service"]
+    B["Capability and tool broker"]
+    K["Execution kill switch"]
+    S["Secret manager"]
+    L["Security audit pipeline"]
   end
 
-  subgraph EZ[&quot;Constrained execution zone&quot;]
-    T[&quot;Pinned tool or MCP server&quot;]
-    E[&quot;Deny-by-default egress proxy&quot;]
-    D[&quot;Downstream resource&quot;]
+  subgraph EZ["Constrained execution zone"]
+    T["Pinned tool or MCP server"]
+    E["Deny-by-default egress proxy"]
+    D["Downstream resource"]
   end
 
   U --&gt; I
@@ -3248,22 +3250,21 @@
   R --&gt; C
   C --&gt; M
   M --&gt; O
-  O --&gt;|&quot;proposal, never authority&quot;| B
+  O --&gt;|"proposal, never authority"| B
   O --&gt; MW
   MW --&gt; R
-  I --&gt;|&quot;authenticated principal and tenant&quot;| B
-  P --&gt;|&quot;allowlist and constraints&quot;| B
-  A --&gt;|&quot;action-bound approval&quot;| B
-  K --&gt;|&quot;independent deny&quot;| B
-  S --&gt;|&quot;just-in-time narrow credential&quot;| B
-  B --&gt;|&quot;authorized typed call&quot;| T
+  I --&gt;|"authenticated principal and tenant"| B
+  P --&gt;|"allowlist and constraints"| B
+  A --&gt;|"action-bound approval"| B
+  K --&gt;|"independent deny"| B
+  S --&gt;|"just-in-time narrow credential"| B
+  B --&gt;|"authorized typed call"| T
   T --&gt; E
   E --&gt; D
   B --&gt; L
   T --&gt; L
   R --&gt; L
-  MW --&gt; L
-</code></pre></div>
+  MW --&gt; L</code></pre>
 <p>The critical boundary is between the orchestrator's proposed call and the broker's authorization decision. Keep authenticated context on a protected server-side channel; do not ask the model to copy identity, scopes, or tenant claims into tool arguments. Tool parameters are still untrusted even when they match a schema.</p>
 <h2 id="threat-model-and-required-negative-evidence">Threat model and required negative evidence</h2>
 <p>The <a href="https://genai.owasp.org/llm-top-10/">OWASP Top 10 for LLM Applications 2025</a> and <a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/">OWASP Top 10 for Agentic Applications 2026</a> are living community risk catalogs, not authorization specifications. Use them as threat inputs and verify controls against the actual architecture.</p>
@@ -3772,9 +3773,8 @@
       
       <a class="docs-related__item" href="/labs/ai-agent-security/">
         <span class="docs-related__type">Lab</span>
-        <strong>AI-agent security</strong>
+        <strong><span class="docs-link-label">AI-agent security <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
         <span>Exercises action-bound approval, replay resistance, kill-switch behavior, and unknown-argument denial in a local tool broker.</span>
-        <span class="docs-related__direction" aria-hidden="true">Explore →</span>
       </a>
       
     
@@ -3786,8 +3786,8 @@
     <aside class="docs-contribute" aria-label="Contribute to this article">
   <p><strong>Help improve this page</strong></p>
   <div>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20Threat-Driven%20Security%20Architecture%20for%20AI%20Agents&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/ai-agent-security/%0ASource%3A%20appsec/ai-agent-security.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Threat-Driven%20Security%20Architecture%20for%20AI%20Agents&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/ai-agent-security/%0ASource%3A%20appsec/ai-agent-security.md%0A%0ADescribe%20the%20issue%3A">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20Threat-Driven%20Security%20Architecture%20for%20AI%20Agents&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/ai-agent-security/%0ASource%3A%20appsec/ai-agent-security.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A"><span class="docs-link-label">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Threat-Driven%20Security%20Architecture%20for%20AI%20Agents&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/ai-agent-security/%0ASource%3A%20appsec/ai-agent-security.md%0A%0ADescribe%20the%20issue%3A"><span class="docs-link-label">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
   </div>
 </aside>
   

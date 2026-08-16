@@ -64,6 +64,8 @@
     <meta name="twitter:description" content="Workflow identity, untrusted validation, protected build, and attestation policy.">
   
   
+    <script src="../../js/vendor/mermaid.min.js"></script>
+  
 
   </head>
   
@@ -2961,7 +2963,7 @@
   <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
     <span data-focus-label>Focus</span>
   </button>
-  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/devsecops/secure-cicd-pipeline-design.md">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/devsecops/secure-cicd-pipeline-design.md"><span class="docs-link-label">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
 </nav>
   
 </header>
@@ -2987,20 +2989,19 @@
 <li>permission to deploy the repository's teaching fixtures.</li>
 </ul>
 <h2 id="threat-model">Threat model</h2>
-<div class="language-text highlight"><pre><span></span><code>flowchart LR
-  U[&quot;Untrusted PR, issue text, dependency, fork&quot;] --&gt; V[&quot;Validation identity: read-only, no secrets&quot;]
-  V --&gt; E[&quot;Untrusted logs, reports, artifacts, caches&quot;]
-  M[&quot;Protected branch revision&quot;] --&gt; B[&quot;Trusted build identity&quot;]
-  B --&gt; A[&quot;Immutable artifact digest&quot;]
-  B --&gt; P[&quot;Provenance, SBOM, scan evidence&quot;]
-  A --&gt; G[&quot;Policy verification&quot;]
+<pre class="mermaid"><code>flowchart LR
+  U["Untrusted PR, issue text, dependency, fork"] --&gt; V["Validation identity: read-only, no secrets"]
+  V --&gt; E["Untrusted logs, reports, artifacts, caches"]
+  M["Protected branch revision"] --&gt; B["Trusted build identity"]
+  B --&gt; A["Immutable artifact digest"]
+  B --&gt; P["Provenance, SBOM, scan evidence"]
+  A --&gt; G["Policy verification"]
   P --&gt; G
-  G --&gt; H[&quot;Protected environment approval&quot;]
-  H --&gt; O[&quot;OIDC token exchange&quot;]
-  O --&gt; R[&quot;Narrow release role&quot;]
-  R --&gt; D[&quot;Deploy exact verified digest&quot;]
-  E -. never execute or trust directly .-&gt; G
-</code></pre></div>
+  G --&gt; H["Protected environment approval"]
+  H --&gt; O["OIDC token exchange"]
+  O --&gt; R["Narrow release role"]
+  R --&gt; D["Deploy exact verified digest"]
+  E -. never execute or trust directly .-&gt; G</code></pre>
 <h3 id="material-abuse-cases">Material abuse cases</h3>
 <table>
 <thead>
@@ -3217,9 +3218,8 @@
       
       <a class="docs-related__item" href="/labs/secure-cicd/">
         <span class="docs-related__type">Lab</span>
-        <strong>Secure CI/CD</strong>
+        <strong><span class="docs-link-label">Secure CI/CD <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
         <span>Exercises untrusted workflow boundaries and fail-closed scanner evidence against local positive and negative fixtures.</span>
-        <span class="docs-related__direction" aria-hidden="true">Explore →</span>
       </a>
       
     
@@ -3231,8 +3231,8 @@
     <aside class="docs-contribute" aria-label="Contribute to this article">
   <p><strong>Help improve this page</strong></p>
   <div>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20Secure%20CI/CD%20Pipeline%20Architecture%20and%20Trust%20Boundaries&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/secure-cicd-pipeline-design/%0ASource%3A%20devsecops/secure-cicd-pipeline-design.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Secure%20CI/CD%20Pipeline%20Architecture%20and%20Trust%20Boundaries&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/secure-cicd-pipeline-design/%0ASource%3A%20devsecops/secure-cicd-pipeline-design.md%0A%0ADescribe%20the%20issue%3A">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20Secure%20CI/CD%20Pipeline%20Architecture%20and%20Trust%20Boundaries&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/secure-cicd-pipeline-design/%0ASource%3A%20devsecops/secure-cicd-pipeline-design.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A"><span class="docs-link-label">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Secure%20CI/CD%20Pipeline%20Architecture%20and%20Trust%20Boundaries&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/secure-cicd-pipeline-design/%0ASource%3A%20devsecops/secure-cicd-pipeline-design.md%0A%0ADescribe%20the%20issue%3A"><span class="docs-link-label">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
   </div>
 </aside>
   

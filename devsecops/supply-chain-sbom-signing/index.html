@@ -64,6 +64,8 @@
     <meta name="twitter:description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
   
   
+    <script src="../../js/vendor/mermaid.min.js"></script>
+  
 
   </head>
   
@@ -2905,7 +2907,7 @@
   <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
     <span data-focus-label>Focus</span>
   </button>
-  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/devsecops/supply-chain-sbom-signing.md">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/devsecops/supply-chain-sbom-signing.md"><span class="docs-link-label">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
 </nav>
   
 </header>
@@ -2942,21 +2944,20 @@
 <li>production cryptographic verification by the offline fixture harness.</li>
 </ul>
 <h2 id="threat-model">Threat model</h2>
-<div class="language-text highlight"><pre><span></span><code>flowchart LR
-  S[&quot;Reviewed source and locked inputs&quot;] --&gt; B[&quot;Trusted builder platform&quot;]
-  B --&gt; A[&quot;Artifact digest&quot;]
-  B --&gt; V[&quot;SLSA provenance statement&quot;]
-  B --&gt; M[&quot;SBOM&quot;]
-  V --&gt; E[&quot;Signed attestation envelope&quot;]
-  E --&gt; X[&quot;External cryptographic verifier result&quot;]
-  A --&gt; P[&quot;Promotion policy evaluator&quot;]
+<pre class="mermaid"><code>flowchart LR
+  S["Reviewed source and locked inputs"] --&gt; B["Trusted builder platform"]
+  B --&gt; A["Artifact digest"]
+  B --&gt; V["SLSA provenance statement"]
+  B --&gt; M["SBOM"]
+  V --&gt; E["Signed attestation envelope"]
+  E --&gt; X["External cryptographic verifier result"]
+  A --&gt; P["Promotion policy evaluator"]
   V --&gt; P
   M --&gt; P
   X --&gt; P
-  Y[&quot;Environment policy and valid waiver&quot;] --&gt; P
-  P --&gt; D[&quot;Deploy exact digest&quot;]
-  T[&quot;Attacker: source, dependency, runner, registry, signer, verifier&quot;] -. &quot;tamper or substitute&quot; .-&gt; P
-</code></pre></div>
+  Y["Environment policy and valid waiver"] --&gt; P
+  P --&gt; D["Deploy exact digest"]
+  T["Attacker: source, dependency, runner, registry, signer, verifier"] -. "tamper or substitute" .-&gt; P</code></pre>
 <table>
 <thead>
 <tr>
@@ -3189,9 +3190,8 @@
       
       <a class="docs-related__item" href="/labs/supply-chain/">
         <span class="docs-related__type">Lab</span>
-        <strong>Supply-chain policy</strong>
+        <strong><span class="docs-link-label">Supply-chain policy <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
         <span>Exercises offline artifact digest, provenance identity, source, builder, and SBOM policy decisions.</span>
-        <span class="docs-related__direction" aria-hidden="true">Explore →</span>
       </a>
       
     
@@ -3203,8 +3203,8 @@
     <aside class="docs-contribute" aria-label="Contribute to this article">
   <p><strong>Help improve this page</strong></p>
   <div>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20Software%20Supply-chain%20Evidence%3A%20SBOMs%2C%20Provenance%2C%20Signing%2C%20and%20Verification&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/supply-chain-sbom-signing/%0ASource%3A%20devsecops/supply-chain-sbom-signing.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Software%20Supply-chain%20Evidence%3A%20SBOMs%2C%20Provenance%2C%20Signing%2C%20and%20Verification&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/supply-chain-sbom-signing/%0ASource%3A%20devsecops/supply-chain-sbom-signing.md%0A%0ADescribe%20the%20issue%3A">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20Software%20Supply-chain%20Evidence%3A%20SBOMs%2C%20Provenance%2C%20Signing%2C%20and%20Verification&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/supply-chain-sbom-signing/%0ASource%3A%20devsecops/supply-chain-sbom-signing.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A"><span class="docs-link-label">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Software%20Supply-chain%20Evidence%3A%20SBOMs%2C%20Provenance%2C%20Signing%2C%20and%20Verification&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/supply-chain-sbom-signing/%0ASource%3A%20devsecops/supply-chain-sbom-signing.md%0A%0ADescribe%20the%20issue%3A"><span class="docs-link-label">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
   </div>
 </aside>
   

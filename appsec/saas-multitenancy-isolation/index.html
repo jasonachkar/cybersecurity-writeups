@@ -64,6 +64,8 @@
     <meta name="twitter:description" content="Authorization across API, database, pool, cache, queue, storage, and telemetry boundaries.">
   
   
+    <script src="../../js/vendor/mermaid.min.js"></script>
+  
 
   </head>
   
@@ -2961,7 +2963,7 @@
   <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
     <span data-focus-label>Focus</span>
   </button>
-  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/appsec/saas-multitenancy-isolation.md">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/appsec/saas-multitenancy-isolation.md"><span class="docs-link-label">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
 </nav>
   
 </header>
@@ -2989,20 +2991,19 @@
 </ul>
 <h2 id="assets-actors-and-trust-boundaries">Assets, actors, and trust boundaries</h2>
 <p>Primary assets are tenant data, membership and entitlements, audit evidence, administrative credentials, export jobs, and tenant-scoped encryption references. Threat actors include a legitimate user selecting another tenant, a compromised API credential, a confused-deputy background job, an operator using a bypass identity, and a faulty migration or connection-pool integration.</p>
-<div class="language-text highlight"><pre><span></span><code>flowchart LR
-  C[&quot;Untrusted client input&quot;] --&gt; I[&quot;Identity provider&quot;]
-  I --&gt; A[&quot;API authentication&quot;]
+<pre class="mermaid"><code>flowchart LR
+  C["Untrusted client input"] --&gt; I["Identity provider"]
+  I --&gt; A["API authentication"]
   C --&gt; A
-  A --&gt; Z[&quot;Server-side membership and authorization&quot;]
-  Z --&gt; T[&quot;Transaction boundary sets tenant context&quot;]
-  T --&gt; R[&quot;Non-bypass runtime role&quot;]
-  R --&gt; P[&quot;PostgreSQL RLS USING and WITH CHECK&quot;]
-  P --&gt; D[(&quot;Tenant rows&quot;)]
-  A --&gt; Q[&quot;Queue message with authenticated tenant binding&quot;]
-  Q --&gt; W[&quot;Worker authorization and transaction&quot;]
+  A --&gt; Z["Server-side membership and authorization"]
+  Z --&gt; T["Transaction boundary sets tenant context"]
+  T --&gt; R["Non-bypass runtime role"]
+  R --&gt; P["PostgreSQL RLS USING and WITH CHECK"]
+  P --&gt; D[("Tenant rows")]
+  A --&gt; Q["Queue message with authenticated tenant binding"]
+  Q --&gt; W["Worker authorization and transaction"]
   W --&gt; R
-  B[&quot;Break-glass or migration identity&quot;] -. audited bypass .-&gt; D
-</code></pre></div>
+  B["Break-glass or migration identity"] -. audited bypass .-&gt; D</code></pre>
 <p>The most important boundary is between untrusted tenant selectors and the server-established authorization result. Copying <code>X-Tenant-ID</code> directly into a database session setting is an insecure direct object reference with extra steps.</p>
 <h2 id="threat-model-and-abuse-cases">Threat model and abuse cases</h2>
 <table>
@@ -3221,9 +3222,8 @@
       
       <a class="docs-related__item" href="/labs/postgresql-rls/">
         <span class="docs-related__type">Lab</span>
-        <strong>PostgreSQL RLS</strong>
+        <strong><span class="docs-link-label">PostgreSQL RLS <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
         <span>Exercises row-level security, transaction-local tenant context, pooled connections, and negative cross-tenant cases.</span>
-        <span class="docs-related__direction" aria-hidden="true">Explore →</span>
       </a>
       
     
@@ -3235,8 +3235,8 @@
     <aside class="docs-contribute" aria-label="Contribute to this article">
   <p><strong>Help improve this page</strong></p>
   <div>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20Engineering%20Tenant%20Isolation%20for%20a%20Multi-tenant%20SaaS%20Platform&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/saas-multitenancy-isolation/%0ASource%3A%20appsec/saas-multitenancy-isolation.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Engineering%20Tenant%20Isolation%20for%20a%20Multi-tenant%20SaaS%20Platform&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/saas-multitenancy-isolation/%0ASource%3A%20appsec/saas-multitenancy-isolation.md%0A%0ADescribe%20the%20issue%3A">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20Engineering%20Tenant%20Isolation%20for%20a%20Multi-tenant%20SaaS%20Platform&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/saas-multitenancy-isolation/%0ASource%3A%20appsec/saas-multitenancy-isolation.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A"><span class="docs-link-label">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Engineering%20Tenant%20Isolation%20for%20a%20Multi-tenant%20SaaS%20Platform&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/saas-multitenancy-isolation/%0ASource%3A%20appsec/saas-multitenancy-isolation.md%0A%0ADescribe%20the%20issue%3A"><span class="docs-link-label">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
   </div>
 </aside>
   

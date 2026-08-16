@@ -64,6 +64,8 @@
     <meta name="twitter:description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
   
   
+    <script src="../../js/vendor/mermaid.min.js"></script>
+  
 
   </head>
   
@@ -2761,7 +2763,7 @@
   <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
     <span data-focus-label>Focus</span>
   </button>
-  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/appsec/oauth2-oidc-deep-dive.md">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/appsec/oauth2-oidc-deep-dive.md"><span class="docs-link-label">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
 </nav>
   
 </header>
@@ -2803,7 +2805,7 @@
 </table>
 <p>Do not send an ID token to an API as an access token. Do not validate every access token by comparing <code>aud</code> to a UI client's ID: the resource server validates that the token is intended for that resource/API. Exact access-token format and validation may be JWT-profile based, opaque/introspection based, or provider-specific; configure one supported contract rather than guessing from token shape.</p>
 <h2 id="threat-model">Threat model</h2>
-<div class="language-text highlight"><pre><span></span><code>sequenceDiagram
+<pre class="mermaid"><code>sequenceDiagram
   participant U as User agent
   participant C as OIDC client
   participant AS as Authorization server
@@ -2817,8 +2819,7 @@
   AS-&gt;&gt;C: ID token, access token, optional refresh token
   C-&gt;&gt;C: Validate ID token issuer, audience/client, signature, time, nonce
   C-&gt;&gt;API: Access token
-  API-&gt;&gt;API: Validate issuer, API audience, signature/introspection, time, authorization
-</code></pre></div>
+  API-&gt;&gt;API: Validate issuer, API audience, signature/introspection, time, authorization</code></pre>
 <p>Material threats are redirect interception, authorization-code injection, CSRF, authorization-server mix-up, open redirectors, token substitution, bearer replay, refresh-token theft, algorithm/key confusion, discovery/JWKS SSRF, excessive scopes, and incorrect subject/account linking.</p>
 <h2 id="authorization-request-and-callback">Authorization request and callback</h2>
 <h3 id="exact-redirect-registration">Exact redirect registration</h3>
@@ -2940,18 +2941,16 @@ enforce tenant/object/business authorization using server-side data
       
       <a class="docs-related__item" href="/labs/oauth-oidc/">
         <span class="docs-related__type">Lab</span>
-        <strong>OAuth and OIDC</strong>
+        <strong><span class="docs-link-label">OAuth and OIDC <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
         <span>Exercises issuer, audience, time, nonce, state, redirects, PKCE, and key rotation against local boundary fixtures.</span>
-        <span class="docs-related__direction" aria-hidden="true">Explore →</span>
       </a>
       
     
       
       <a class="docs-related__item" href="/scripts/application-security/#oauth-pkce-verifier">
         <span class="docs-related__type">Script</span>
-        <strong>OAuth PKCE (S256) verifier and generator</strong>
+        <strong><span class="docs-link-label">OAuth PKCE (S256) verifier and generator <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
         <span>Implements RFC 7636 S256 verifier generation, challenge derivation, and constant-time verification.</span>
-        <span class="docs-related__direction" aria-hidden="true">Explore →</span>
       </a>
       
     
@@ -2961,8 +2960,8 @@ enforce tenant/object/business authorization using server-side data
     <aside class="docs-contribute" aria-label="Contribute to this article">
   <p><strong>Help improve this page</strong></p>
   <div>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20OAuth%202.0%20and%20OpenID%20Connect%20Security%20Engineering&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/oauth2-oidc-deep-dive/%0ASource%3A%20appsec/oauth2-oidc-deep-dive.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20OAuth%202.0%20and%20OpenID%20Connect%20Security%20Engineering&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/oauth2-oidc-deep-dive/%0ASource%3A%20appsec/oauth2-oidc-deep-dive.md%0A%0ADescribe%20the%20issue%3A">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20OAuth%202.0%20and%20OpenID%20Connect%20Security%20Engineering&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/oauth2-oidc-deep-dive/%0ASource%3A%20appsec/oauth2-oidc-deep-dive.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A"><span class="docs-link-label">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20OAuth%202.0%20and%20OpenID%20Connect%20Security%20Engineering&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/appsec/oauth2-oidc-deep-dive/%0ASource%3A%20appsec/oauth2-oidc-deep-dive.md%0A%0ADescribe%20the%20issue%3A"><span class="docs-link-label">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
   </div>
 </aside>
   

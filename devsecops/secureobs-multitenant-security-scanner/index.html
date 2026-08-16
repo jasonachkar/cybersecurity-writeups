@@ -64,6 +64,8 @@
     <meta name="twitter:description" content="Deep-dive research, threat models, and defensive architecture for cloud-native security">
   
   
+    <script src="../../js/vendor/mermaid.min.js"></script>
+  
 
   </head>
   
@@ -3027,7 +3029,7 @@
   <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
     <span data-focus-label>Focus</span>
   </button>
-  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/devsecops/secureobs-multitenant-security-scanner.md">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/devsecops/secureobs-multitenant-security-scanner.md"><span class="docs-link-label">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
 </nav>
   
 </header>
@@ -3109,21 +3111,20 @@
 </ul>
 <h2 id="implemented-today">Implemented today</h2>
 <h3 id="current-architecture">Current architecture</h3>
-<div class="language-text highlight"><pre><span></span><code>flowchart LR
-  D[&quot;Developer change&quot;] --&gt; CI[&quot;Customer GitHub Actions or Azure DevOps pipeline&quot;]
-  CI --&gt; SC[&quot;SecureObs scanner container in customer CI&quot;]
-  SC --&gt; CFG[&quot;SecureObs API: enabled-scanner configuration&quot;]
+<pre class="mermaid"><code>flowchart LR
+  D["Developer change"] --&gt; CI["Customer GitHub Actions or Azure DevOps pipeline"]
+  CI --&gt; SC["SecureObs scanner container in customer CI"]
+  SC --&gt; CFG["SecureObs API: enabled-scanner configuration"]
   CFG --&gt; SC
-  SC --&gt; S1[&quot;Seven bundled scanners execute locally&quot;]
-  S1 --&gt; N[&quot;Normalize findings in scanner boundary&quot;]
-  N --&gt; ING[&quot;SecureObs .NET 8 API: authorized findings ingestion&quot;]
-  ING --&gt; DD[&quot;Finding deduplication&quot;]
-  DD --&gt; DB[(&quot;PostgreSQL: application authorization + FORCE RLS&quot;)]
-  SC --&gt; G[&quot;SecureObs build-gate call&quot;]
+  SC --&gt; S1["Seven bundled scanners execute locally"]
+  S1 --&gt; N["Normalize findings in scanner boundary"]
+  N --&gt; ING["SecureObs .NET 8 API: authorized findings ingestion"]
+  ING --&gt; DD["Finding deduplication"]
+  DD --&gt; DB[("PostgreSQL: application authorization + FORCE RLS")]
+  SC --&gt; G["SecureObs build-gate call"]
   G --&gt; CI
-  UI[&quot;Angular 21 dashboard&quot;] --&gt; ING
-  ING --&gt; UI
-</code></pre></div>
+  UI["Angular 21 dashboard"] --&gt; ING
+  ING --&gt; UI</code></pre>
 <p>The diagram deliberately contains no central SecureObs scan queue or hosted scanner worker. Source checkout, scanner processes, runner filesystem, build credentials, and local intermediate output remain inside the customer-controlled CI environment. The SecureObs boundary begins when the scanner authenticates to retrieve configuration or submit data and when the dashboard calls the API.</p>
 <h3 id="current-execution-sequence">Current execution sequence</h3>
 <ol>
@@ -3311,18 +3312,17 @@
 <blockquote>
 <p><strong>Not implemented today.</strong> The services and flows in this section are a design option for future requirements. They must not be represented as the architecture currently running at <code>secureobs.com</code>.</p>
 </blockquote>
-<div class="language-text highlight"><pre><span></span><code>flowchart LR
-  U[&quot;Authorized tenant request or CI trigger&quot;] --&gt; API[&quot;Control-plane API&quot;]
-  API --&gt; J[&quot;Immutable tenant-bound job envelope&quot;]
-  J --&gt; Q[&quot;Tenant-aware queue&quot;]
-  Q --&gt; W[&quot;Ephemeral isolated SecureObs worker&quot;]
-  W --&gt; CB[&quot;Target-scoped credential broker&quot;]
-  W --&gt; R[&quot;Untrusted raw scanner output&quot;]
-  R --&gt; N[&quot;Independent schema/completeness normalizer&quot;]
-  N --&gt; P[&quot;Independent versioned policy evaluator&quot;]
-  P --&gt; D[&quot;Decision bound to job and artifact/source&quot;]
-  D --&gt; C[&quot;CI status, dashboard, or webhook&quot;]
-</code></pre></div>
+<pre class="mermaid"><code>flowchart LR
+  U["Authorized tenant request or CI trigger"] --&gt; API["Control-plane API"]
+  API --&gt; J["Immutable tenant-bound job envelope"]
+  J --&gt; Q["Tenant-aware queue"]
+  Q --&gt; W["Ephemeral isolated SecureObs worker"]
+  W --&gt; CB["Target-scoped credential broker"]
+  W --&gt; R["Untrusted raw scanner output"]
+  R --&gt; N["Independent schema/completeness normalizer"]
+  N --&gt; P["Independent versioned policy evaluator"]
+  P --&gt; D["Decision bound to job and artifact/source"]
+  D --&gt; C["CI status, dashboard, or webhook"]</code></pre>
 <p>This model may be justified if customers need centrally scheduled scans, passive cloud API posture checks, stronger hostile-source isolation, standardized execution evidence, or scanning outside CI. It would introduce new high-impact responsibilities:</p>
 <ul>
 <li>SecureObs would process customer source or target data in its own compute boundary;</li>
@@ -3385,8 +3385,8 @@
     <aside class="docs-contribute" aria-label="Contribute to this article">
   <p><strong>Help improve this page</strong></p>
   <div>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20SecureObs%3A%20Customer-side%20CI%20Security%20Scanning%20with%20a%20Multi-tenant%20Findings%20Platform&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/secureobs-multitenant-security-scanner/%0ASource%3A%20devsecops/secureobs-multitenant-security-scanner.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
-    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20SecureObs%3A%20Customer-side%20CI%20Security%20Scanning%20with%20a%20Multi-tenant%20Findings%20Platform&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/secureobs-multitenant-security-scanner/%0ASource%3A%20devsecops/secureobs-multitenant-security-scanner.md%0A%0ADescribe%20the%20issue%3A">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20SecureObs%3A%20Customer-side%20CI%20Security%20Scanning%20with%20a%20Multi-tenant%20Findings%20Platform&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/secureobs-multitenant-security-scanner/%0ASource%3A%20devsecops/secureobs-multitenant-security-scanner.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A"><span class="docs-link-label">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20SecureObs%3A%20Customer-side%20CI%20Security%20Scanning%20with%20a%20Multi-tenant%20Findings%20Platform&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/devsecops/secureobs-multitenant-security-scanner/%0ASource%3A%20devsecops/secureobs-multitenant-security-scanner.md%0A%0ADescribe%20the%20issue%3A"><span class="docs-link-label">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
   </div>
 </aside>
   
