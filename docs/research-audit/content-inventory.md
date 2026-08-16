@@ -1,6 +1,6 @@
 # Security Content Inventory
 
-Generated on 2026-08-15 by `node scripts/generate-content-inventory.js`.
+Generated on 2026-08-16 by `node scripts/generate-content-inventory.js`.
 
 > This inventory measures repository structure and triage signals. Keyword detection does not verify factual truth, source quality, or code correctness.
 
