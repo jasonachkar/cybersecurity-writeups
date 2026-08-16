@@ -11,5 +11,6 @@
   {% endif %}
   {% if page and page.content and 'class="mermaid"' in page.content %}
     <script src="{{ 'js/vendor/mermaid.min.js' | url }}"></script>
+    <script src="{{ 'js/mermaid-zoom.js' | url }}"></script>
   {% endif %}
 {% endblock %}
