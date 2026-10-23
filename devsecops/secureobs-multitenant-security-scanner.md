@@ -26,7 +26,7 @@ reviewIntervalDays: 90
 
 # SecureObs: Customer-side CI Security Scanning with a Multi-tenant Findings Platform
 
-> **A note on scope:** everything under **Implemented today** is what I can personally confirm about SecureObs, as of 2026-07-21. This public repo doesn't include the private SecureObs source, deployment records, customer data, or its commit history. Where I've reproduced a control here for demonstration, I've labeled it **reproduced**; recommendations are labeled **recommended**; anything I'm just considering for later lives under **Future control-plane architecture under consideration**.
+> **A note on scope:** everything under **Architecture and controls** is what I can personally confirm about SecureObs, as of 2026-07-21. This public repo doesn't include the private SecureObs source, deployment records, customer data, or its commit history. Where I've reproduced a control here for demonstration, I've labeled it **reproduced**; recommendations are labeled **recommended**.
 
 SecureObs does not currently pull customer repositories into a server-side worker fleet. Its scanner container runs inside the customer's GitHub Actions or Azure DevOps pipeline. That placement keeps source checkout and scanner execution in the customer's CI boundary while SecureObs provides scanner configuration, multitenant findings ingestion, deduplication, dashboard access, and a build-gate decision.
 
@@ -36,8 +36,6 @@ Treat the current product as two cooperating security boundaries:
 
 1. **Customer-side execution plane:** the customer pipeline starts the SecureObs scanner image, retrieves the enabled-scanner configuration, executes seven bundled scanners locally, normalizes their findings, uploads them, and calls the build gate.
 2. **SecureObs findings plane:** the .NET API authenticates and authorizes requests, stores tenant-scoped data in PostgreSQL with application authorization and `FORCE ROW LEVEL SECURITY`, deduplicates findings, serves the Angular dashboard, and returns the gate decision.
-
-Do not describe SecureObs as operating a central scan queue, ephemeral scanner workers, a credential broker, immutable server-side job envelopes, or independent policy-evaluation workers today. Those are possible future designs, not current production architecture.
 
 ## Evidence classification
 
@@ -50,7 +48,6 @@ Do not describe SecureObs as operating a central scan queue, ephemeral scanner w
 | Repository gate rejects failed/malformed reports and above-policy findings | **Reproduced** in `labs/secure-cicd`; not proof of identical private code |
 | Repository RLS lab rejects cross-tenant access, invalid context, pooled-session leakage, and bypass-role drift | **Reproduced** in `labs/postgresql-rls`; not proof of identical private schema |
 | A named historical SecureObs defect, incident, customer impact, or remediation date occurred | **Not claimed** unless I have an issue, commit, test, or incident record to point to |
-| Central queue, SecureObs-hosted scanner workers, credential broker, immutable job envelopes, independent policy workers | **Future architecture under consideration; not implemented today** |
 | Security or business outcomes improved by a quantified amount | **Not claimed**; no supporting dataset is present |
 
 ## Scope and non-goals
@@ -70,7 +67,7 @@ Not established by this case study:
 - that customer pipeline execution is equivalent to an isolated hostile-code sandbox;
 - a customer-specific compliance certification, penetration-test result, or guarantee that a passing build is vulnerability-free.
 
-## Implemented today
+## Architecture and controls
 
 ### Current architecture
 
@@ -236,46 +233,6 @@ Forced RLS protects covered PostgreSQL queries, not dashboard caches, logs, expo
 | Support/operator bypasses application layer | Private operations not verified | separate JIT role, case/approval, immutable audit, tests confirming direct store access is denied |
 | Scanner/API token leaks in logs | Integration exists | secret-redaction tests, short-lived/narrow token, revocation drill |
 | Oversized hostile report exhausts API | Normalized ingestion exists | byte/count/depth/decompression limits, streaming/quarantine, quota/rate tests |
-
-## Future control-plane architecture under consideration
-
-> **Not implemented today.** The services and flows in this section are a design option for future requirements. They must not be represented as the architecture currently running at `secureobs.com`.
-
-```mermaid
-flowchart LR
-  U["Authorized tenant request or CI trigger"] --> API["Control-plane API"]
-  API --> J["Immutable tenant-bound job envelope"]
-  J --> Q["Tenant-aware queue"]
-  Q --> W["Ephemeral isolated SecureObs worker"]
-  W --> CB["Target-scoped credential broker"]
-  W --> R["Untrusted raw scanner output"]
-  R --> N["Independent schema/completeness normalizer"]
-  N --> P["Independent versioned policy evaluator"]
-  P --> D["Decision bound to job and artifact/source"]
-  D --> C["CI status, dashboard, or webhook"]
-```
-
-This model may be justified if customers need centrally scheduled scans, passive cloud API posture checks, stronger hostile-source isolation, standardized execution evidence, or scanning outside CI. It would introduce new high-impact responsibilities:
-
-- SecureObs would process customer source or target data in its own compute boundary;
-- the platform would need job/tenant/target authorization at every transition;
-- workers would require isolation tiers, egress control, resource limits, secure deletion, image/plugin verification, and no cross-job cache trust by default;
-- a credential broker would need federation or short-lived target-specific grants and must never place reusable customer credentials in queue messages;
-- queue duplication/reordering, leases, retries, partial upload, cancellation, and reconciliation would require monotonic/idempotent state transitions;
-- policy evaluation should be independent from scanner success and bound to immutable evidence;
-- source/data residency, customer consent, retention, incident response, cost, and service ownership would materially expand.
-
-### Future migration gates
-
-Do not begin that migration merely because hosted workers look architecturally mature. Require an approved threat model and ADR that compares:
-
-1. current customer-side execution;
-2. customer-hosted runner/agent with stronger attested configuration;
-3. SecureObs-hosted container worker;
-4. stronger VM/microVM or dedicated-tenant worker; and
-5. passive API-only scanning that never executes customer code.
-
-Before production, prove cross-tenant job and credential denial, hostile-repository containment, metadata/private-network blocking, queue replay/reorder handling, worker loss, evidence binding, deletion/restore, operator access, and bulk credential revocation. Rollback must stop new hosted work, revoke worker/customer grants, quarantine uncertain evidence, and return customers to the documented CI execution path without silently reusing incomplete results.
 
 ## Validation evidence
 

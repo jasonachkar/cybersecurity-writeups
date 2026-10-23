@@ -1,0 +1,30 @@
+{% macro entry(item, nested=false) %}
+  {% if item.children %}
+    <li class="docs-sidebar__group">
+      <details open><summary>{{ item.title | e }}<span aria-hidden="true">⌄</span></summary>
+        <ul>{% for child in item.children %}{{ entry(child, true) }}{% endfor %}</ul>
+      </details>
+    </li>
+  {% else %}
+    <li><a href="{{ item.url | url }}"{% if item.active %} aria-current="page"{% endif %}>{{ item.title | e }}</a></li>
+  {% endif %}
+{% endmacro %}
+<aside id="docs-sidebar" class="docs-sidebar" aria-label="Documentation sidebar">
+  <nav class="docs-sidebar__nav" aria-label="Documentation">
+    <details class="docs-sidebar__start" open>
+      <summary>Start here<span aria-hidden="true">⌄</span></summary>
+      <ul><li><a href="{{ nav.homepage.url | url }}"{% if docs_home %} aria-current="page"{% endif %}>Welcome</a></li><li><a href="{{ 'research/' | url }}"{% if page.url == 'research/' %} aria-current="page"{% endif %}>Browse all research</a></li><li><a href="{{ 'about/' | url }}"{% if page.url == 'about/' %} aria-current="page"{% endif %}>About this site</a></li></ul>
+    </details>
+    <ul class="docs-sidebar__sections">
+      {% for item in nav %}
+        {% if item.title == 'Research' %}
+          {% for group in item.children %}{% if group.children %}{{ entry(group) }}{% endif %}{% endfor %}
+        {% elif item.children %}{{ entry(item) }}{% endif %}
+      {% endfor %}
+    </ul>
+  </nav>
+  <div class="docs-sidebar__utilities">
+    <a class="docs-github" href="{{ config.repo_url }}" aria-label="View repository on GitHub">{% include ".icons/fontawesome/brands/github.svg" %}</a>
+    <label class="docs-theme"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg><span class="docs-visually-hidden">Navigation color theme</span><select data-docs-theme aria-label="Navigation color theme"><option value="light">Light</option><option value="dark">Dark</option><option value="auto" selected>Auto</option></select></label>
+  </div>
+</aside>

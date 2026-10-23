@@ -30,7 +30,8 @@ test("catalog-managed research has canonical metadata, read-only source actions,
     assert.ok(html.includes(`href="${item.github.view}"`), `${item.url}: view source`);
     assert.doesNotMatch(html, /\/edit\/main\//, `${item.url}: editing must not be offered`);
     assert.doesNotMatch(html, />Edit on GitHub</);
-    assert.match(html, /class="docs-evidence"/);
+    assert.doesNotMatch(html, /class="docs-evidence"/);
+    assert.doesNotMatch(html, /On this page|docs-card__status|docs-lab-status/);
     assert.doesNotMatch(html, /<section class="docs-related"[^>]*>\s*<h2[^>]*>Related content<\/h2>\s*<div[^>]*>\s*<\/div>/);
   }
 });
@@ -99,4 +100,17 @@ test("the static artifact is self-contained and publishable", () => {
   assert.match(about, /js\/vendor\/mermaid\.min\.js/);
   assert.doesNotMatch(about, /(?:cdn\.jsdelivr\.net|cdnjs\.cloudflare\.com).*mermaid/i);
   assert.doesNotMatch(readPage("/"), /js\/vendor\/mermaid\.min\.js/);
+});
+
+test("scripts homepage renders category headings and working catalog links", () => {
+  const html = readPage("/scripts/");
+  assert.doesNotMatch(html, /## (?:Cloud Security|Application Security|DevSecOps|Threat Intelligence)/);
+  assert.doesNotMatch(html, /\[Open the .* category\]\(/);
+  for (const category of catalog.scriptCategories) {
+    assert.ok(html.includes(`href="/scripts/${category.id}/"`), `${category.id}: rendered category link`);
+    assert.match(html, new RegExp(`<h2[^>]*>${category.title}`));
+  }
+  for (const script of catalog.scripts) {
+    assert.ok(html.includes(`href="/scripts/${script.category}/#${script.id}"`), `${script.id}: rendered script link`);
+  }
 });

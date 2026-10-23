@@ -22,17 +22,19 @@ async function pageAt(url, viewport = {width: 1440, height: 900}) {
   return {context, page, errors};
 }
 
-test("article metadata, actions, relationships, breadcrumbs, and TOC match catalog", async () => {
+test("article metadata, actions, relationships, sidebar and footer match catalog", async () => {
   const item = catalog.research.find(candidate => candidate.id === "ai-agent-security");
   const {context, page, errors} = await pageAt(item.url);
   assert.equal(await page.locator("h1").textContent(), item.title);
   assert.equal(await page.locator(".docs-article-header__summary").textContent(), item.summary);
-  assert.equal(await page.locator(".docs-evidence__grid dd").nth(0).textContent(), item.implementationLabel);
+  assert.equal(await page.locator(".docs-evidence").count(), 0);
   assert.equal(await page.locator(`.docs-article-actions a[href='${item.github.view}']`).count(), 1);
   assert.equal(await page.locator("a[href*='/edit/main/']").count(), 0);
   assert.equal(await page.locator(".docs-related__item").count(), Object.values(item.related).flat().length);
-  assert.ok(await page.locator(".md-path").isVisible());
-  assert.ok(await page.locator(".md-sidebar--secondary").isVisible());
+  assert.ok(await page.locator(".docs-sidebar").isVisible());
+  assert.ok(await page.locator(".docs-pagination a").count() > 0);
+  assert.equal(await page.locator(".docs-sidebar a[aria-current=page]").textContent(), item.navTitle);
+  assert.equal(await page.locator(".docs-toc, .docs-mobile-toc").count(), 0);
   assert.equal(errors.length, 0, errors.join("\n"));
   await context.close();
 });
@@ -43,8 +45,7 @@ test("desktop Focus mode persists, hides both rails, and restores focus on exit"
   await button.click();
   assert.equal(await button.getAttribute("aria-pressed"), "true");
   assert.equal(await page.locator("body").evaluate(element => element.classList.contains("docs-focus-mode")), true);
-  assert.equal(await page.locator(".md-sidebar--primary").evaluate(element => getComputedStyle(element).display), "none");
-  assert.equal(await page.locator(".md-sidebar--secondary").evaluate(element => getComputedStyle(element).display), "none");
+  assert.equal(await page.locator(".docs-sidebar").evaluate(element => getComputedStyle(element).display), "none");
   await page.reload({waitUntil: "load"});
   assert.equal(await page.locator("body").evaluate(element => element.classList.contains("docs-focus-mode")), true);
   await page.locator("[data-docs-focus]").click();
@@ -78,10 +79,10 @@ test("homepage ordering, search trigger, and navigation are data-driven", async 
   assert.equal(await featuredCard.locator("p").evaluate(description => getComputedStyle(description).textDecorationLine), "none");
   const recentTitles = (await page.locator(".docs-recent strong").allTextContents()).map(title => title.replace(/\s+→$/, ""));
   assert.deepEqual(recentTitles, catalog.recent.map(item => item.navTitle));
-  await page.locator("[data-docs-search-open]").click();
+  await page.locator("[data-docs-search-open]").first().click();
   assert.equal(await page.locator("#__search").isChecked(), true);
   await page.keyboard.press("Escape");
-  assert.equal(await page.locator(".md-nav--primary a[href='appsec/'], .md-nav--primary a[href='/appsec/']").count() > 0, true);
+  assert.equal(await page.locator(".docs-sidebar a[href='appsec/'], .docs-sidebar a[href='/appsec/']").count() > 0, true);
   assert.equal(errors.length, 0, errors.join("\n"));
   await context.close();
 });
@@ -135,7 +136,7 @@ test("article Mermaid diagrams render locally and follow the selected theme", as
   assert.equal(await page.evaluate(() => typeof window.mermaid), "object");
   assert.equal(await page.evaluate(() => performance.getEntriesByType("resource").some(entry => entry.name.includes("unpkg.com/mermaid"))), false);
   const lightLabelColor = await diagram.evaluate(element => getComputedStyle(element).getPropertyValue("--md-mermaid-label-fg-color"));
-  await page.locator("label.md-header__button[for^='__palette']").first().click();
+  await page.locator("[data-docs-theme]").first().selectOption("dark");
   await page.waitForFunction(previous => {
     const current = document.querySelector("div.mermaid");
     return document.body.dataset.mdColorScheme === "slate" && current
@@ -149,8 +150,10 @@ test("article Mermaid diagrams render locally and follow the selected theme", as
 test("theme switching and representative layouts have no horizontal page overflow", async () => {
   for (const viewport of [{width: 390, height: 844}, {width: 1024, height: 768}, {width: 1440, height: 900}]) {
     const {context, page, errors} = await pageAt("/appsec/ai-agent-security/", viewport);
-    const palette = page.locator("label.md-header__button[for^='__palette']").first();
-    await palette.click();
+    const palette = page.locator(viewport.width < 800 ? ".docs-sidebar [data-docs-theme]" : ".docs-header [data-docs-theme]");
+    if (viewport.width < 800) await page.locator("[data-docs-menu]").click();
+    await palette.selectOption("dark");
+    if (viewport.width < 800) await page.keyboard.press("Escape");
     assert.equal(await page.locator("body").getAttribute("data-md-color-scheme"), "slate");
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
     assert.ok(overflow <= 1, `${viewport.width}: horizontal overflow ${overflow}px`);
@@ -160,7 +163,7 @@ test("theme switching and representative layouts have no horizontal page overflo
   }
 });
 
-test("new research is readable on narrow screens with navigable sections and rendered diagrams", async () => {
+test("new research is readable on narrow screens with rendered diagrams", async () => {
   for (const width of [320, 390, 768]) {
     for (const url of ["/ai-security/evidence-driven-agent-security/", "/linux-security/evidence-driven-host-analysis/", "/devsecops/evidence-preserving-security-pipelines/"]) {
       const {context, page, errors} = await pageAt(url, {width, height: 844});
@@ -168,15 +171,62 @@ test("new research is readable on narrow screens with navigable sections and ren
       for (const diagram of await page.locator("div.mermaid").all()) {
         assert.ok((await diagram.boundingBox()).height > 40);
       }
-      assert.ok(await page.locator(".docs-mobile-toc").isVisible());
-      await page.locator(".docs-mobile-toc summary").click();
-      const section = page.locator(".docs-mobile-toc a").first();
-      const target = await section.getAttribute("href");
-      await section.click();
-      assert.equal(new URL(page.url()).hash, target);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${url} overflows at ${width}px`);
       assert.equal(errors.length, 0, errors.join("\n"));
       await context.close();
     }
   }
+});
+
+test("mobile navigation fills the area below the header, collapses groups, and restores focus", async () => {
+  const {context, page, errors} = await pageAt("/appsec/ai-agent-security/", {width: 390, height: 844});
+  const menu = page.locator("[data-docs-menu]");
+  await menu.click();
+  assert.equal(await menu.getAttribute("aria-expanded"), "true");
+  const box = await page.locator(".docs-sidebar").boundingBox();
+  assert.equal(box.x, 0);
+  assert.equal(box.y, 64);
+  assert.equal(box.width, 390);
+  assert.equal(box.height, 780);
+  assert.equal(await page.locator(".md-content").evaluate(node => node.inert), true);
+  const group = page.locator(".docs-sidebar__start");
+  await group.locator("summary").click();
+  assert.equal(await group.getAttribute("open"), null);
+  await group.locator("summary").click();
+  assert.equal(await group.evaluate(node => node.open), true);
+  await page.keyboard.press("Escape");
+  assert.equal(await menu.getAttribute("aria-expanded"), "false");
+  assert.equal(await menu.evaluate(node => node === document.activeElement), true);
+  assert.equal(await page.locator(".md-content").evaluate(node => node.inert), false);
+  assert.equal(errors.length, 0, errors.join("\n"));
+  await context.close();
+});
+
+test("header search returns real results, is centered, and supports its keyboard shortcut", async () => {
+  const {context, page, errors} = await pageAt("/appsec/ai-agent-security/");
+  await page.keyboard.press("Control+k");
+  await page.locator(".md-search__input").fill("tenant isolation");
+  await page.waitForFunction(() => document.querySelectorAll(".md-search-result__item").length > 0);
+  const box = await page.locator(".md-search__inner").boundingBox();
+  assert.ok(Math.abs(box.x + box.width / 2 - 720) < 2);
+  await page.keyboard.press("Escape");
+  assert.equal(await page.locator("#__search").isChecked(), false);
+  assert.equal(errors.length, 0, errors.join("\n"));
+  await context.close();
+});
+
+test("theme selector remembers dark mode and auto follows the device preference", async () => {
+  const {context, page, errors} = await pageAt("/appsec/ai-agent-security/");
+  const theme = page.locator(".docs-header [data-docs-theme]");
+  await theme.selectOption("dark");
+  await page.reload();
+  assert.equal(await theme.inputValue(), "dark");
+  assert.equal(await page.locator("body").getAttribute("data-md-color-scheme"), "slate");
+  await theme.selectOption("auto");
+  await page.emulateMedia({colorScheme: "light"});
+  await page.waitForFunction(() => document.body.dataset.mdColorScheme === "default");
+  await page.emulateMedia({colorScheme: "dark"});
+  await page.waitForFunction(() => document.body.dataset.mdColorScheme === "slate");
+  assert.equal(errors.length, 0, errors.join("\n"));
+  await context.close();
 });

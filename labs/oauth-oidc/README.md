@@ -16,7 +16,7 @@ runCommands: [node --test labs/oauth-oidc/tests/oauth-security.test.js]
 
 # OAuth/OIDC token-boundary lab
 
-**Implementation status:** Tested locally on 2026-07-23 with Node.js 24.12.0 and Go 1.26.1. The JavaScript suite supports Node.js 22 or newer.
+The lab uses Node.js 24.12.0 and Go 1.26.1. The JavaScript suite supports Node.js 22 or newer.
 
 This dependency-free lab turns the most important OAuth/OIDC resource-server boundaries into executable acceptance and rejection checks. It is deliberately a small verifier model, not a replacement for a maintained JOSE/OIDC library.
 

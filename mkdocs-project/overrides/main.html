@@ -14,3 +14,23 @@
     <script src="{{ 'js/mermaid-zoom.js' | url }}"></script>
   {% endif %}
 {% endblock %}
+
+{% block header %}{% include "partials/docs-header.html" %}{% endblock %}
+
+{% block site_nav %}
+  {% include "partials/docs-sidebar.html" %}
+{% endblock %}
+
+{% block container %}
+  <div class="md-content{% if docs_home %} docs-home-content{% endif %}" data-md-component="content">
+    {% if page and not docs_home %}
+      <div class="docs-page-title"><h1 id="{{ docs_heading_id }}">{{ docs_layout_title | e }}</h1></div>
+    {% endif %}
+    <article class="md-content__inner md-typeset">
+      {% block content %}{% include "partials/content.html" %}{% endblock %}
+      {% include "partials/docs-page-footer.html" %}
+    </article>
+  </div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

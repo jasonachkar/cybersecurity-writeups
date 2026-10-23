@@ -53,7 +53,7 @@ const states = [
       window.scrollTo(0, documentTop - 250);
     }),
   },
-  {name: "mobile-drawer", url: "/appsec/ai-agent-security/", width: 390, height: 844, action: async page => page.locator(".md-header label[for='__drawer']").click()},
+  {name: "mobile-drawer", url: "/appsec/ai-agent-security/", width: 390, height: 844, action: async page => page.locator("[data-docs-menu]").click()},
   {name: "source-expanded", url: "/labs/ai-agent-security/", width: 1440, height: 900, action: async page => page.locator("[data-expand-source]").click()},
   {
     name: "mermaid",

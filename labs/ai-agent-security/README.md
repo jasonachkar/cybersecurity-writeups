@@ -16,7 +16,7 @@ runCommands: [node --test labs/ai-agent-security/tests/broker.test.js]
 
 # AI Agent External Tool-Broker Lab
 
-Status: **tested teaching implementation**. The surrounding production architecture in [`appsec/ai-agent-security.md`](../../appsec/ai-agent-security.md) is **conceptual and partially tested**.
+This teaching implementation demonstrates the broker boundary. The surrounding production architecture in [`appsec/ai-agent-security.md`](../../appsec/ai-agent-security.md) is **conceptual and partially tested**.
 
 This dependency-free Node.js lab demonstrates one narrow security boundary: a model may propose an action, but a broker outside the model decides whether a fake executor receives it. The executor stores an in-memory record and returns `status: simulated`; it performs no network, filesystem, financial, cloud, or other external action.
 

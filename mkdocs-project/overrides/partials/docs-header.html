@@ -1,0 +1,19 @@
+<header class="md-header docs-header" data-md-component="header">
+  <nav class="docs-header__inner" aria-label="Site header">
+    <a class="docs-brand" href="{{ nav.homepage.url | url }}">
+      <svg viewBox="0 0 24 24" width="28" height="28" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" d="m12 2 8 3v6c0 5-4 8-8 11-4-3-8-6-8-11V5z"/><path fill="none" stroke="currentColor" stroke-width="1.6" d="m8 12 3 3 5-6"/></svg>
+      <span>Cybersecurity Writeups</span>
+    </a>
+    <button class="docs-search-trigger" type="button" data-docs-search-open aria-label="Search documentation">
+      <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="m16 16 5 5" stroke="currentColor" stroke-width="1.7"/></svg>
+      <span>Search</span><kbd data-search-shortcut>Ctrl K</kbd>
+    </button>
+    <div class="docs-header__utilities">
+      <a class="docs-github" href="{{ config.repo_url }}" aria-label="View repository on GitHub">{% include ".icons/fontawesome/brands/github.svg" %}</a>
+      <label class="docs-theme"><svg class="docs-theme__icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8m-4-4v4"/></svg><span class="docs-visually-hidden">Color theme</span><select data-docs-theme aria-label="Color theme"><option value="light">Light</option><option value="dark">Dark</option><option value="auto" selected>Auto</option></select></label>
+    </div>
+    <button class="docs-menu-button" type="button" data-docs-menu aria-label="Open navigation" aria-expanded="false" aria-controls="docs-sidebar"><span aria-hidden="true"></span></button>
+    <label for="__search" hidden data-docs-search-toggle></label>
+    {% include "partials/search.html" %}
+  </nav>
+</header>

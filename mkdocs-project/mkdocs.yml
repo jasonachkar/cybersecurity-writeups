@@ -40,7 +40,6 @@ theme:
   features:
     - navigation.tracking
     - navigation.top
-    - navigation.path
     - navigation.indexes
     - navigation.footer
     - search.suggest
@@ -48,6 +47,7 @@ theme:
 
 extra_css:
   - css/custom.css
+  - css/docs-shell.css
 
 extra_javascript:
   - js/docs-ui.js

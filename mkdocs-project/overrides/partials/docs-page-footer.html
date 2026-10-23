@@ -1,0 +1,16 @@
+<footer class="docs-page-footer">
+  {% if docs_page and docs_page.kind == "research" %}
+    {% include "partials/article-actions.html" %}
+  {% elif docs_page and docs_page.github %}
+    <a class="docs-page-source" href="{{ docs_page.github.view }}"><span aria-hidden="true">↗</span> View page source</a>
+  {% else %}
+    <a class="docs-page-source" href="{{ config.repo_url }}"><span aria-hidden="true">↗</span> View repository</a>
+  {% endif %}
+  {% if page.previous_page or page.next_page %}
+  <nav class="docs-pagination" aria-label="Previous and next pages">
+    {% if page.previous_page %}<a class="docs-pagination__previous" href="{{ page.previous_page.url | url }}"><span aria-hidden="true">←</span><span><small>Previous</small><strong>{{ page.previous_page.title | e }}</strong></span></a>{% endif %}
+    {% if page.next_page %}<a class="docs-pagination__next" href="{{ page.next_page.url | url }}"><span><small>Next</small><strong>{{ page.next_page.title | e }}</strong></span><span aria-hidden="true">→</span></a>{% endif %}
+  </nav>
+  {% endif %}
+  <p class="docs-page-footer__copyright">&copy; 2026 Jason Achkardiab. All rights reserved.</p>
+</footer>

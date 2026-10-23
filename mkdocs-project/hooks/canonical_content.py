@@ -8,6 +8,7 @@ import subprocess
 from pathlib import Path
 
 from mkdocs.structure.files import File, Files
+from markdown.extensions.toc import slugify
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[2]
@@ -179,6 +180,10 @@ def on_page_markdown(markdown: str, page, config, files) -> str:
         page.meta["description"] = config.site_description
         return ""
     if not item:
+        lines = markdown.splitlines()
+        if lines and lines[0].startswith("# "):
+            page.meta["docs_layout_title"] = lines[0][2:].strip()
+            return "\n".join(lines[1:]).lstrip()
         return markdown
     title = str(item["title"])
     expected = f"# {title}"
@@ -201,6 +206,9 @@ def on_page_context(context, page, config, nav):
     context["docs_catalog"] = DOCS_CATALOG
     context["docs_page"] = DOCS_CATALOG.get("pageMap", {}).get(source)
     context["docs_home"] = source == "index.md"
+    item = context["docs_page"]
+    context["docs_layout_title"] = item["title"] if item else page.meta.get("docs_layout_title", page.title)
+    context["docs_heading_id"] = item["headingId"] if item else slugify(context["docs_layout_title"], "-")
     return context
 
 
