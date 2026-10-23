@@ -6,7 +6,7 @@ const path = require("node:path");
 
 const ROOT = path.resolve(__dirname, "..");
 const OUTPUT = path.join(ROOT, "docs", "research-audit", "content-inventory.md");
-const CONTENT_ROOTS = ["appsec", "cloud-security", "devsecops", "threat-intel", "docs"];
+const CONTENT_ROOTS = ["appsec", "cloud-security", "ai-security", "linux-security", "devsecops", "threat-intel", "docs"];
 const EXCLUDED_PREFIXES = [
   "docs/research-audit/",
   "docs/standards/",

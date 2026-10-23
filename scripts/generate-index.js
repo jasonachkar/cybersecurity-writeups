@@ -45,6 +45,8 @@ const TYPE_ORDER = [
   "cloud-security",
   "appsec",
   "devsecops",
+  "ai-security",
+  "linux-security",
   "threat-intel",
   "tutorial",
   "research",
@@ -54,6 +56,8 @@ const TYPE_LABELS = {
   "cloud-security": "☁️ Cloud Security",
   appsec: "💻 Application Security",
   devsecops: "🛡️ DevSecOps",
+  "ai-security": "AI Security",
+  "linux-security": "Linux Security",
   "threat-intel": "🕵️ Threat Intelligence",
   tutorial: "📘 Tutorials",
   research: "🔬 Research",
@@ -344,6 +348,8 @@ function generateIndexMarkdown(items) {
     "cloud-security": [],
     appsec: [],
     devsecops: [],
+    "ai-security": [],
+    "linux-security": [],
     "threat-intel": [],
     tutorial: [],
     research: [],
@@ -465,7 +471,7 @@ function main() {
   }
 
   // 2. Process new domain directories containing individual .md files
-  const newDomains = ["cloud-security", "appsec", "devsecops", "threat-intel"];
+  const newDomains = ["cloud-security", "appsec", "ai-security", "linux-security", "devsecops", "threat-intel"];
   for (const domain of newDomains) {
     const domainDir = path.join(REPO_ROOT, domain);
     if (fs.existsSync(domainDir)) {

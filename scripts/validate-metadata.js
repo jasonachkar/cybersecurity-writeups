@@ -5,8 +5,8 @@ const path = require("node:path");
 const { ROOT, isIndexed, markdownFiles, parseDocument, relative } = require("./content-lib");
 
 const REQUIRED = ["title", "type", "tags", "date", "lastReviewed", "reviewStatus", "validatedAgainst", "sourceQuality", "implementationStatus", "reviewIntervalDays"];
-const PRIMARY_RESEARCH = /^(appsec|cloud-security|devsecops|threat-intel)\/[^/]+\.md$/;
-const TYPES = new Set(["cloud-security", "appsec", "devsecops", "threat-intel", "tutorial", "research", "certification-notes"]);
+const PRIMARY_RESEARCH = /^(appsec|cloud-security|ai-security|linux-security|devsecops|threat-intel)\/[^/]+\.md$/;
+const TYPES = new Set(["cloud-security", "appsec", "ai-security", "linux-security", "devsecops", "threat-intel", "tutorial", "research", "certification-notes"]);
 const REVIEW = new Set(["verified", "partially-verified", "requires-review", "historical"]);
 const QUALITY = new Set(["primary-sources-reviewed", "mixed-sources", "requires-review"]);
 const IMPLEMENTATION = new Set(["tested", "partially-tested", "illustrative", "pseudocode"]);

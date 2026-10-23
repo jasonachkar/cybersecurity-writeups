@@ -30,7 +30,7 @@ test("article metadata, actions, relationships, breadcrumbs, and TOC match catal
   assert.equal(await page.locator(".docs-evidence__grid dd").nth(0).textContent(), item.implementationLabel);
   assert.equal(await page.locator(`.docs-article-actions a[href='${item.github.view}']`).count(), 1);
   assert.equal(await page.locator("a[href*='/edit/main/']").count(), 0);
-  assert.equal(await page.locator(".docs-related__item").count(), 1);
+  assert.equal(await page.locator(".docs-related__item").count(), Object.values(item.related).flat().length);
   assert.ok(await page.locator(".md-path").isVisible());
   assert.ok(await page.locator(".md-sidebar--secondary").isVisible());
   assert.equal(errors.length, 0, errors.join("\n"));
@@ -157,5 +157,26 @@ test("theme switching and representative layouts have no horizontal page overflo
     if (viewport.width < 1220) assert.equal(await page.locator("[data-docs-focus]").isVisible(), false);
     assert.equal(errors.length, 0, errors.join("\n"));
     await context.close();
+  }
+});
+
+test("new research is readable on narrow screens with navigable sections and rendered diagrams", async () => {
+  for (const width of [320, 390, 768]) {
+    for (const url of ["/ai-security/evidence-driven-agent-security/", "/linux-security/evidence-driven-host-analysis/", "/devsecops/evidence-preserving-security-pipelines/"]) {
+      const {context, page, errors} = await pageAt(url, {width, height: 844});
+      await page.waitForFunction(() => document.querySelectorAll("div.mermaid").length === 3 && document.querySelectorAll("pre.mermaid").length === 0);
+      for (const diagram of await page.locator("div.mermaid").all()) {
+        assert.ok((await diagram.boundingBox()).height > 40);
+      }
+      assert.ok(await page.locator(".docs-mobile-toc").isVisible());
+      await page.locator(".docs-mobile-toc summary").click();
+      const section = page.locator(".docs-mobile-toc a").first();
+      const target = await section.getAttribute("href");
+      await section.click();
+      assert.equal(new URL(page.url()).hash, target);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${url} overflows at ${width}px`);
+      assert.equal(errors.length, 0, errors.join("\n"));
+      await context.close();
+    }
   }
 });

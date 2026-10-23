@@ -6,7 +6,7 @@ const path = require("node:path");
 const YAML = require("yaml");
 const { ROOT, parseDocument } = require("./content-lib");
 
-const DOMAINS = new Set(["appsec", "cloud-security", "devsecops", "threat-intel"]);
+const DOMAINS = new Set(["appsec", "cloud-security", "ai-security", "linux-security", "devsecops", "threat-intel"]);
 const SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function parseArguments(argv) {
