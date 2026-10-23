@@ -32,7 +32,7 @@ reviewIntervalDays: 180
 | `id` | Stable, globally unique lowercase kebab-case ID for a primary research article. Do not change it when a title changes. |
 | `navTitle` | Concise label used in navigation and relationship cards. |
 | `order` | Positive integer controlling the article's order inside its domain. Use gaps of 10. |
-| `type` | `cloud-security`, `appsec`, `devsecops`, `threat-intel`, `tutorial`, `research`, or `certification-notes`. |
+| `type` | `cloud-security`, `appsec`, `ai-security`, `linux-security`, `devsecops`, `threat-intel`, `tutorial`, `research`, or `certification-notes`. |
 | `tags` | Nonempty list of lowercase topics. |
 | `date` | Original publication or substantial-rewrite date, `YYYY-MM-DD`. |
 | `lastReviewed` | Date evidence and examples were last evaluated, `YYYY-MM-DD`. |

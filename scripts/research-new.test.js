@@ -9,7 +9,7 @@ const { createResearch, parseArguments } = require("./research-new");
 
 function fixture() {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "research-new-"));
-  for (const domain of ["appsec", "cloud-security", "devsecops", "threat-intel"]) fs.mkdirSync(path.join(root, domain));
+  for (const domain of ["appsec", "cloud-security", "ai-security", "linux-security", "devsecops", "threat-intel"]) fs.mkdirSync(path.join(root, domain));
   fs.writeFileSync(path.join(root, "appsec", "existing.md"), "---\norder: 20\n---\n\n# Existing\n");
   return root;
 }
@@ -30,3 +30,13 @@ test("creates safe requires-review metadata at the next domain order", () => {
   assert.match(fs.readFileSync(result.target, "utf8"), /# Secure Token Exchange/);
   assert.throws(() => createResearch(["--domain", "appsec", "--slug", "secure-token-exchange", "--title", "Secure Token Exchange"], root), /already exists/);
 });
+
+for (const domain of ["ai-security", "linux-security"]) {
+  test(`creates research in ${domain}`, () => {
+    const root = fixture();
+    const result = createResearch(["--domain", domain, "--slug", "evidence-boundary", "--title", "Evidence Boundary"], root, "2026-10-22");
+    assert.equal(result.metadata.type, domain);
+    assert.equal(result.metadata.order, 10);
+    assert.ok(fs.existsSync(result.target));
+  });
+}

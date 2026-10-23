@@ -1671,5 +1671,70 @@
       "A short overview and link list; it makes no claim about the pages it links to."
     ],
     "reviewIntervalDays": 90
+  },
+  "/ai-security/": {
+    "title": "\"AI Security overview",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-10-22",
+    "evidence": [
+      "Source-level research synthesis; full review pending."
+    ],
+    "limitations": [
+      "Illustrative guidance; external project tests and production behavior not reproduced."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/ai-security/evidence-driven-agent-security/": {
+    "title": "\"Evidence-Driven AI Agent and MCP Security",
+    "status": "current",
+    "indexable": true,
+    "lastReviewed": "2026-10-22",
+    "evidence": [
+      "Source-level research synthesis; full review pending."
+    ],
+    "limitations": [
+      "Illustrative guidance; external project tests and production behavior not reproduced."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/devsecops/evidence-preserving-security-pipelines/": {
+    "title": "\"Evidence-Preserving Security Scanning and Release Gates",
+    "status": "current",
+    "indexable": true,
+    "lastReviewed": "2026-10-22",
+    "evidence": [
+      "Source-level research synthesis; full review pending."
+    ],
+    "limitations": [
+      "Illustrative guidance; external project tests and production behavior not reproduced."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/linux-security/": {
+    "title": "\"Linux Security overview",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-10-22",
+    "evidence": [
+      "Source-level research synthesis; full review pending."
+    ],
+    "limitations": [
+      "Illustrative guidance; external project tests and production behavior not reproduced."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/linux-security/evidence-driven-host-analysis/": {
+    "title": "\"Linux Host Analysis Without Invented Attack Paths",
+    "status": "current",
+    "indexable": true,
+    "lastReviewed": "2026-10-22",
+    "evidence": [
+      "Source-level research synthesis; full review pending."
+    ],
+    "limitations": [
+      "Illustrative guidance; external project tests and production behavior not reproduced."
+    ],
+    "reviewIntervalDays": 90
   }
 }

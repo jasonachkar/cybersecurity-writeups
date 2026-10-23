@@ -30,6 +30,14 @@
       "destination": "cloud-security"
     },
     {
+      "source": "ai-security",
+      "destination": "ai-security"
+    },
+    {
+      "source": "linux-security",
+      "destination": "linux-security"
+    },
+    {
       "source": "devsecops",
       "destination": "devsecops"
     },

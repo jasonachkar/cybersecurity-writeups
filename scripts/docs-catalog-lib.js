@@ -6,10 +6,12 @@ const YAML = require("yaml");
 const { ROOT, parseDocument } = require("./content-lib");
 
 const REPOSITORY = "https://github.com/jasonachkar/cybersecurity-writeups";
-const DOMAIN_ORDER = ["cloud-security", "appsec", "devsecops", "threat-intel"];
+const DOMAIN_ORDER = ["cloud-security", "appsec", "ai-security", "linux-security", "devsecops", "threat-intel"];
 const DOMAINS = Object.freeze({
   "cloud-security": { title: "Cloud Security", description: "Identity, network, platform, detection, and cloud control-plane architecture." },
   appsec: { title: "Application Security", description: "Authorization, tenant isolation, identity protocols, APIs, and runtime boundaries." },
+  "ai-security": { title: "AI Security", description: "Agent permissions, MCP trust boundaries, evidence, and bounded assessment." },
+  "linux-security": { title: "Linux Security", description: "Host privilege, namespace identity, metadata collection, and runtime evidence." },
   devsecops: { title: "DevSecOps", description: "CI/CD trust, infrastructure policy, software supply chain, and secrets engineering." },
   "threat-intel": { title: "Threat Intelligence", description: "Evidence-backed attack paths, incident chronology, and defensive lessons." },
 });
@@ -35,7 +37,7 @@ const STATUS_DESCRIPTIONS = Object.freeze({
   illustrative: "Examples communicate a design and have not been exercised as a complete implementation.",
   pseudocode: "The example is explanatory pseudocode rather than runnable implementation.",
 });
-const PRIMARY_RESEARCH = /^(appsec|cloud-security|devsecops|threat-intel)\/[^/]+\.md$/;
+const PRIMARY_RESEARCH = /^(appsec|cloud-security|ai-security|linux-security|devsecops|threat-intel)\/[^/]+\.md$/;
 const RELATION_TYPES = Object.freeze({ research: "research", labs: "lab", scripts: "script" });
 
 function fail(message) { throw new Error(`docs catalog: ${message}`); }

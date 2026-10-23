@@ -1,6 +1,7 @@
 {% if docs_home %}
   {% include "partials/home.html" %}
 {% elif docs_page %}
+  {% include "partials/mobile-toc.html" %}
   {% include "partials/article-meta.html" %}
   {% if docs_page.kind == "research" %}{% include "partials/key-takeaway.html" %}{% endif %}
   {% if docs_page.kind == "lab" %}
