@@ -31,7 +31,7 @@ for (const file of markdownFiles()) {
   const registryMetadata = registry[rel] || {};
   if (registry[rel]) seenRegistry.add(rel);
   const metadata = { ...registryMetadata, ...(document.metadata || {}) };
-  const primaryResearch = PRIMARY_RESEARCH.test(rel) && !rel.endsWith("/index.md");
+  const primaryResearch = (PRIMARY_RESEARCH.test(rel) && !rel.endsWith("/index.md")) || /^vulnerability-research\/[^/]+\/index\.md$/.test(rel);
   for (const field of REQUIRED) {
     if (metadata[field] === undefined || metadata[field] === null || metadata[field] === "") error(file, `missing required field ${field}`);
   }

@@ -53,7 +53,7 @@ test("catalog navigation and output are deterministic", () => {
   assert.equal(first.featured.length, 4);
   assert.equal(first.recent.length, 5);
   assert.deepEqual(first.navigation.researchGroups.map(group => group.title), [
-    "Cloud Security", "Application Security", "AI Security", "Linux Security", "DevSecOps", "Threat Intelligence",
+    "Cloud Security", "Application Security", "AI Security", "Linux Security", "DevSecOps", "Threat Intelligence", "Vulnerability Research",
   ]);
   for (const group of first.navigation.researchGroups) {
     const orders = group.children.map(child => first.research.find(item => item.sourcePath === child.path).order);

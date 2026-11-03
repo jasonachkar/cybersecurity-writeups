@@ -6,7 +6,7 @@ const YAML = require("yaml");
 const { ROOT, parseDocument } = require("./content-lib");
 
 const REPOSITORY = "https://github.com/jasonachkar/cybersecurity-writeups";
-const DOMAIN_ORDER = ["cloud-security", "appsec", "ai-security", "linux-security", "devsecops", "threat-intel"];
+const DOMAIN_ORDER = ["cloud-security", "appsec", "ai-security", "linux-security", "devsecops", "threat-intel", "vulnerability-research"];
 const DOMAINS = Object.freeze({
   "cloud-security": { title: "Cloud Security", description: "Identity, network, platform, detection, and cloud control-plane architecture." },
   appsec: { title: "Application Security", description: "Authorization, tenant isolation, identity protocols, APIs, and runtime boundaries." },
@@ -14,6 +14,7 @@ const DOMAINS = Object.freeze({
   "linux-security": { title: "Linux Security", description: "Host privilege, namespace identity, metadata collection, and runtime evidence." },
   devsecops: { title: "DevSecOps", description: "CI/CD trust, infrastructure policy, software supply chain, and secrets engineering." },
   "threat-intel": { title: "Threat Intelligence", description: "Evidence-backed attack paths, incident chronology, and defensive lessons." },
+  "vulnerability-research": { title: "Vulnerability Research", description: "Owned local targets, paired misuse tests, remediation evidence, and explicit limits." },
 });
 const STATUS_LABELS = Object.freeze({
   verified: "Verified",
@@ -107,10 +108,13 @@ function loadResearch() {
   const result = [];
   for (const domain of DOMAIN_ORDER) {
     const directory = path.join(ROOT, domain);
-    for (const name of fs.readdirSync(directory).filter(item => item.endsWith(".md") && item !== "index.md").sort()) {
+    const names = domain === "vulnerability-research"
+      ? fs.readdirSync(directory, {withFileTypes: true}).filter(item => item.isDirectory() && fs.existsSync(path.join(directory, item.name, "index.md"))).map(item => `${item.name}/index.md`).sort()
+      : fs.readdirSync(directory).filter(item => item.endsWith(".md") && item !== "index.md").sort();
+    for (const name of names) {
       const absolute = path.join(directory, name);
       const sourcePath = rel(absolute);
-      if (!PRIMARY_RESEARCH.test(sourcePath)) continue;
+      if (domain !== "vulnerability-research" && !PRIMARY_RESEARCH.test(sourcePath)) continue;
       const document = parseDocument(absolute);
       if (/<span id="__span-|<div class="language-[^"]+ highlight">/.test(document.body)) {
         fail(`${sourcePath}: rendered syntax-highlighting HTML must be restored to a fenced code block`);
@@ -119,7 +123,7 @@ function loadResearch() {
       const id = metadata.id;
       const item = commonItem({
         kind: "research", id, title: metadata.title, navTitle: metadata.navTitle,
-        order: metadata.order, domain, sourcePath, url: `/${domain}/${name.slice(0, -3)}/`,
+        order: metadata.order, domain, sourcePath, url: domain === "vulnerability-research" ? `/${domain}/${name.replace(/index\.md$/, "")}` : `/${domain}/${name.slice(0, -3)}/`,
         metadata, body: document.body,
       });
       Object.assign(item, {

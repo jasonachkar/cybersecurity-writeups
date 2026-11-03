@@ -35,12 +35,45 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
 
+      - name: Set up Python for owned-target tests
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+
       - name: Validate content and examples
         run: npm run validate
 
       - name: Check external links on scheduled runs
         if: github.event_name == 'schedule'
         run: npm run links:external
+
+  native-research-labs:
+    needs: validate
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out owned targets
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: "24.12.0"
+          cache: npm
+      - name: Set up Python
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.13"
+      - name: Set up Terraform without cloud credentials
+        uses: hashicorp/setup-terraform@b9cd54a3c349d3f38e8881555d616ced269862dd # v3
+        with:
+          terraform_version: "1.16.5"
+          terraform_wrapper: false
+      - name: Run local services, native Rego and mocked Terraform plans
+        run: |
+          npm ci --ignore-scripts
+          npm run verify:native-labs
 
   docs-build:
     needs: validate
@@ -127,6 +160,7 @@ jobs:
       - validate
       - docs-build
       - secret-scan
+      - native-research-labs
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     permissions:

@@ -41,7 +41,7 @@ I want to be upfront about what backs this write-up, because it's easy to blur "
 
 - **The design:** the end-to-end architecture, the operational procedures, the deployment patterns, and most of the evaluation cases below are engineering guidance I've worked through carefully — but I haven't validated any of it against a production agent, a real identity provider, a real model, a sandbox, a vector database, or an actual MCP implementation.
 - **What I actually ran:** the dependency-free [`labs/ai-agent-security`](../labs/ai-agent-security/README.md) lab, where I execute a local, fake tool through an external broker. I wrote tests that cover both cases that should succeed and cases that should fail — tenant checks, tool checks, amount limits, approval flow, replay, and the kill switch. It makes no network request and does nothing real.
-- **What I checked against sources:** I checked the standards and protocol statements against the primary sources listed under `References`, on 2026-07-23. Given how broad the design is and how small the lab intentionally is, I'm tagging this `implementationStatus: partially-tested` and `reviewStatus: partially-verified` — that's just the honest read of where it stands.
+- **Historical source-review record:** the preceding revision recorded a primary-source check on 2026-07-23. The 2026-11-02 protocol audit retains that record and keeps `implementationStatus: partially-tested`, while setting `reviewStatus: requires-review` pending renewed review of the complete design. Local broker tests establish the bounded behavior described below.
 
 ## The core decision
 

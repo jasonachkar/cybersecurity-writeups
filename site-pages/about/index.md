@@ -28,6 +28,11 @@ itself proof that the guidance is correct: material remains marked
 `requires-review` until it has been checked against its declared
 `validatedAgainst` sources.
 
+The [research methodology](../research-methodology/index.md) defines evidence
+tiers, claim scope, measurements and testable open questions. The
+[vulnerability studies](../vulnerability-research/index.md) compare owned local
+targets and fixes without claiming third-party product findings.
+
 Passing repository checks means the documented local tests behaved as expected.
 It does not claim that every design was deployed to a live environment.
 

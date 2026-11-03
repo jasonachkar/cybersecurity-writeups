@@ -7,6 +7,7 @@ export const SOURCE_LANGUAGE_DEFINITIONS = Object.freeze({
   json: Object.freeze({id: "json", displayName: "JSON", mode: "shiki", aliases: []}),
   bicep: Object.freeze({id: "bicep", displayName: "Bicep", mode: "shiki", aliases: []}),
   rego: Object.freeze({id: "rego", displayName: "Rego", mode: "plaintext", aliases: []}),
+  terraform: Object.freeze({id: "terraform", displayName: "Terraform", mode: "shiki", aliases: ["hcl"]}),
 });
 
 const aliases = new Map();

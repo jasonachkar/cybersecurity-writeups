@@ -1,4 +1,17 @@
 {
+  "/": {
+    "title": "Cybersecurity research, labs, and scripts.",
+    "status": "conceptual",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Curated entry points map to page-level evidence disclosures."
+    ],
+    "limitations": [
+      "The landing page summarizes evidence; each investigation defines its own trust and test boundaries."
+    ],
+    "reviewIntervalDays": 90
+  },
   "/404.html": {
     "title": "Page not found",
     "status": "site-utility",
@@ -49,6 +62,45 @@
     ],
     "reviewIntervalDays": 365
   },
+  "/ai-security/": {
+    "title": "\"AI Security overview",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-10-22",
+    "evidence": [
+      "Source-level research synthesis; full review pending."
+    ],
+    "limitations": [
+      "Illustrative guidance; external project tests and production behavior not reproduced."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/ai-security/evidence-driven-agent-security/": {
+    "title": "\"Evidence-Driven AI Agent and MCP Security",
+    "status": "current",
+    "indexable": true,
+    "lastReviewed": "2026-10-22",
+    "evidence": [
+      "Source-level research synthesis; full review pending."
+    ],
+    "limitations": [
+      "Illustrative guidance; external project tests and production behavior not reproduced."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/appsec/": {
+    "title": "Application Security",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on application security is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
   "/appsec/ai-agent-security/": {
     "title": "Threat-Driven Security Architecture for AI Agents",
     "status": "partially-verified",
@@ -75,19 +127,6 @@
     ],
     "limitations": [
       "No service mesh, token service, or production resource server is deployed."
-    ],
-    "reviewIntervalDays": 90
-  },
-  "/appsec/": {
-    "title": "Application Security",
-    "status": "reference",
-    "indexable": true,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "Links come straight from NAV_TREE; nothing on application security is inferred separately."
-    ],
-    "limitations": [
-      "A short overview and link list; it makes no claim about the pages it links to."
     ],
     "reviewIntervalDays": 90
   },
@@ -131,6 +170,19 @@
     ],
     "reviewIntervalDays": 90
   },
+  "/cloud-security/": {
+    "title": "Cloud Security",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on cloud security is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
   "/cloud-security/cloud-detection-and-response/": {
     "title": "Cloud Detection Engineering: Durable Telemetry, High-Signal Analytics and Safe Response",
     "status": "partially-verified",
@@ -167,19 +219,6 @@
     ],
     "limitations": [
       "The evaluator is not AWS IAM's production authorization engine and no cloud resources are deployed."
-    ],
-    "reviewIntervalDays": 90
-  },
-  "/cloud-security/": {
-    "title": "Cloud Security",
-    "status": "reference",
-    "indexable": true,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "Links come straight from NAV_TREE; nothing on cloud security is inferred separately."
-    ],
-    "limitations": [
-      "A short overview and link list; it makes no claim about the pages it links to."
     ],
     "reviewIntervalDays": 90
   },
@@ -222,19 +261,6 @@
     ],
     "reviewIntervalDays": 90
   },
-  "/devsecops/iac-security-and-policy-as-code/": {
-    "title": "Infrastructure as Code Security and Policy Engineering",
-    "status": "partially-verified",
-    "indexable": true,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "Terraform plan fixtures cover secure, insecure, unknown, and deleted-control states."
-    ],
-    "limitations": [
-      "No cloud deployment is authorized; provider-side behavior is not exercised."
-    ],
-    "reviewIntervalDays": 90
-  },
   "/devsecops/": {
     "title": "DevSecOps",
     "status": "reference",
@@ -245,6 +271,32 @@
     ],
     "limitations": [
       "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/devsecops/evidence-preserving-security-pipelines/": {
+    "title": "\"Evidence-Preserving Security Scanning and Release Gates",
+    "status": "current",
+    "indexable": true,
+    "lastReviewed": "2026-10-22",
+    "evidence": [
+      "Source-level research synthesis; full review pending."
+    ],
+    "limitations": [
+      "Illustrative guidance; external project tests and production behavior not reproduced."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/devsecops/iac-security-and-policy-as-code/": {
+    "title": "Infrastructure as Code Security and Policy Engineering",
+    "status": "partially-verified",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Terraform plan fixtures cover secure, insecure, unknown, and deleted-control states."
+    ],
+    "limitations": [
+      "No cloud deployment is authorized; provider-side behavior is not exercised."
     ],
     "reviewIntervalDays": 90
   },
@@ -365,6 +417,19 @@
     ],
     "reviewIntervalDays": 365
   },
+  "/docs/certification-notes/az-900/": {
+    "title": "Microsoft AZ-900: Azure Fundamentals Overview",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Microsoft study guide last updated 2026-06-22; skills measured from 2026-07-20."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
   "/docs/certification-notes/az-900/domain-1-concepts/": {
     "title": "AZ-900 Domain 1: Describe Cloud Concepts",
     "status": "study-notes",
@@ -404,19 +469,6 @@
     ],
     "reviewIntervalDays": 90
   },
-  "/docs/certification-notes/az-900/": {
-    "title": "Microsoft AZ-900: Azure Fundamentals Overview",
-    "status": "study-notes",
-    "indexable": true,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "Microsoft study guide last updated 2026-06-22; skills measured from 2026-07-20."
-    ],
-    "limitations": [
-      "Study notes summarize an owner-published outline and are not implementation evidence."
-    ],
-    "reviewIntervalDays": 90
-  },
   "/docs/certification-notes/google-cybersecurity/": {
     "title": "Google Cybersecurity Professional Certificate",
     "status": "study-notes",
@@ -424,6 +476,19 @@
     "lastReviewed": "2026-07-25",
     "evidence": [
       "Google's official curriculum was checked 2026-07-23; Google does not publish a dated exam study guide for this course certificate."
+    ],
+    "limitations": [
+      "Study notes summarize an owner-published outline and are not implementation evidence."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/docs/certification-notes/sc-500/": {
+    "title": "Microsoft SC-500 study notes",
+    "status": "study-notes",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
     ],
     "limitations": [
       "Study notes summarize an owner-published outline and are not implementation evidence."
@@ -508,13 +573,13 @@
     ],
     "reviewIntervalDays": 90
   },
-  "/docs/certification-notes/sc-500/": {
-    "title": "Microsoft SC-500 study notes",
+  "/docs/certification-notes/security-plus/": {
+    "title": "CompTIA Security+ SY0-701 study notes",
     "status": "study-notes",
     "indexable": true,
     "lastReviewed": "2026-07-25",
     "evidence": [
-      "Microsoft study guide last updated 2026-05-13; current four-domain grouping checked 2026-07-24."
+      "CompTIA's official Security+ page and SY0-701 objectives were checked 2026-07-23; no page-level update date is invented."
     ],
     "limitations": [
       "Study notes summarize an owner-published outline and are not implementation evidence."
@@ -559,19 +624,6 @@
       "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
     ],
     "reviewIntervalDays": 365
-  },
-  "/docs/certification-notes/security-plus/": {
-    "title": "CompTIA Security+ SY0-701 study notes",
-    "status": "study-notes",
-    "indexable": true,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "CompTIA's official Security+ page and SY0-701 objectives were checked 2026-07-23; no page-level update date is invented."
-    ],
-    "limitations": [
-      "Study notes summarize an owner-published outline and are not implementation evidence."
-    ],
-    "reviewIntervalDays": 90
   },
   "/docs/certification-notes/security-plus/labs/lab-iam/": {
     "title": "Old page: Security+ Lab: Identity & Access Management (IAM) - Enterprise-Style (Local Lab)",
@@ -716,6 +768,19 @@
     ],
     "reviewIntervalDays": 365
   },
+  "/docs/research/enterprise-cloud-security-engineering/": {
+    "title": "Old page: Advanced Cloud Security Engineering",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
   "/docs/research/enterprise-cloud-security-engineering/cloud-security-architecture/": {
     "title": "Old page: 3. Cloud Security Architecture & Enterprise Infrastructure",
     "status": "archived",
@@ -768,19 +833,6 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/docs/research/enterprise-cloud-security-engineering/": {
-    "title": "Old page: Advanced Cloud Security Engineering",
-    "status": "archived",
-    "indexable": false,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "The public URL is retained to avoid a broken historical link."
-    ],
-    "limitations": [
-      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
-    ],
-    "reviewIntervalDays": 365
-  },
   "/docs/research/enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security/": {
     "title": "Old page: Kubernetes Multi-Tenancy and Platform Security",
     "status": "archived",
@@ -796,6 +848,19 @@
   },
   "/docs/research/enterprise-cloud-security-engineering/multi-account-landing-zones-and-iam/": {
     "title": "Old page: Multi-Account Landing Zones and IAM at Scale",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/research/oauth-misconfigurations/": {
+    "title": "Old page: Common OAuth 2.0 Misconfigurations and Exploits",
     "status": "archived",
     "indexable": false,
     "lastReviewed": "2026-07-25",
@@ -833,19 +898,6 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/docs/research/oauth-misconfigurations/": {
-    "title": "Old page: Common OAuth 2.0 Misconfigurations and Exploits",
-    "status": "archived",
-    "indexable": false,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "The public URL is retained to avoid a broken historical link."
-    ],
-    "limitations": [
-      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
-    ],
-    "reviewIntervalDays": 365
-  },
   "/docs/research/oauth-misconfigurations/mitigations/": {
     "title": "Old page: OAuth/OIDC Misconfiguration Mitigations",
     "status": "archived",
@@ -859,8 +911,8 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/docs/research/threat-modeling-saas/data-flow-diagrams/": {
-    "title": "Old page: Data Flow Diagrams (DFDs) for SaaS Applications",
+  "/docs/research/threat-modeling-saas/": {
+    "title": "Old page: Threat Modeling for Multi-Tenant SaaS Applications",
     "status": "archived",
     "indexable": false,
     "lastReviewed": "2026-07-25",
@@ -872,8 +924,8 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/docs/research/threat-modeling-saas/": {
-    "title": "Old page: Threat Modeling for Multi-Tenant SaaS Applications",
+  "/docs/research/threat-modeling-saas/data-flow-diagrams/": {
+    "title": "Old page: Data Flow Diagrams (DFDs) for SaaS Applications",
     "status": "archived",
     "indexable": false,
     "lastReviewed": "2026-07-25",
@@ -1015,6 +1067,19 @@
     ],
     "reviewIntervalDays": 365
   },
+  "/docs/tutorials/azure-landing-zone/": {
+    "title": "Old page: Azure Landing Zone Security Engineering Guide",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
   "/docs/tutorials/azure-landing-zone/architecture/": {
     "title": "Old page: Azure Landing Zone: Architecture Overview",
     "status": "archived",
@@ -1054,19 +1119,6 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/docs/tutorials/azure-landing-zone/": {
-    "title": "Old page: Azure Landing Zone Security Engineering Guide",
-    "status": "archived",
-    "indexable": false,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "The public URL is retained to avoid a broken historical link."
-    ],
-    "limitations": [
-      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
-    ],
-    "reviewIntervalDays": 365
-  },
   "/docs/tutorials/azure-landing-zone/networking/": {
     "title": "Old page: Azure Landing Zone: Networking and Connectivity",
     "status": "archived",
@@ -1082,6 +1134,19 @@
   },
   "/docs/tutorials/azure-landing-zone/policy-governance/": {
     "title": "Old page: Azure Landing Zone: Policy and Governance",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
+  "/docs/tutorials/ci-cd-gates/": {
+    "title": "Old page: Implementing Security Gates in CI/CD Pipelines",
     "status": "archived",
     "indexable": false,
     "lastReviewed": "2026-07-25",
@@ -1119,8 +1184,8 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/docs/tutorials/ci-cd-gates/": {
-    "title": "Old page: Implementing Security Gates in CI/CD Pipelines",
+  "/docs/tutorials/ci-cd-gates/tools/": {
+    "title": "Old page: Security Tools Reference",
     "status": "archived",
     "indexable": false,
     "lastReviewed": "2026-07-25",
@@ -1132,8 +1197,8 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/docs/tutorials/ci-cd-gates/tools/": {
-    "title": "Old page: Security Tools Reference",
+  "/docs/tutorials/detection-engineering-sentinel/": {
+    "title": "Old page: Detection Engineering with Microsoft Sentinel",
     "status": "archived",
     "indexable": false,
     "lastReviewed": "2026-07-25",
@@ -1158,8 +1223,8 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/docs/tutorials/detection-engineering-sentinel/": {
-    "title": "Old page: Detection Engineering with Microsoft Sentinel",
+  "/docs/tutorials/owasp-api-security-top-10/": {
+    "title": "Old page: OWASP API Security Top 10 (2023)",
     "status": "archived",
     "indexable": false,
     "lastReviewed": "2026-07-25",
@@ -1210,19 +1275,6 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/docs/tutorials/owasp-api-security-top-10/": {
-    "title": "Old page: OWASP API Security Top 10 (2023)",
-    "status": "archived",
-    "indexable": false,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "The public URL is retained to avoid a broken historical link."
-    ],
-    "limitations": [
-      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
-    ],
-    "reviewIntervalDays": 365
-  },
   "/docs/tutorials/owasp-api-security-top-10/mitigation-node/": {
     "title": "Old page: Mitigating API Vulnerabilities in Node.js (Express)",
     "status": "archived",
@@ -1262,6 +1314,19 @@
     ],
     "reviewIntervalDays": 365
   },
+  "/docs/tutorials/securing-entra-id/": {
+    "title": "Old page: Securing Azure Entra ID (formerly Azure AD): A Zero Trust Approach",
+    "status": "archived",
+    "indexable": false,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "The public URL is retained to avoid a broken historical link."
+    ],
+    "limitations": [
+      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
+    ],
+    "reviewIntervalDays": 365
+  },
   "/docs/tutorials/securing-entra-id/conditional-access-policies/": {
     "title": "Old page: Conditional Access Policy Reference",
     "status": "archived",
@@ -1277,19 +1342,6 @@
   },
   "/docs/tutorials/securing-entra-id/identity-protection/": {
     "title": "Old page: Identity Protection Configuration Guide",
-    "status": "archived",
-    "indexable": false,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "The public URL is retained to avoid a broken historical link."
-    ],
-    "limitations": [
-      "This page is not current authoritative guidance and is excluded from navigation, search, and sitemap."
-    ],
-    "reviewIntervalDays": 365
-  },
-  "/docs/tutorials/securing-entra-id/": {
-    "title": "Old page: Securing Azure Entra ID (formerly Azure AD): A Zero Trust Approach",
     "status": "archived",
     "indexable": false,
     "lastReviewed": "2026-07-25",
@@ -1327,16 +1379,16 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/": {
-    "title": "Cybersecurity research, labs, and scripts.",
-    "status": "conceptual",
+  "/labs/": {
+    "title": "Labs",
+    "status": "reference",
     "indexable": true,
     "lastReviewed": "2026-07-25",
     "evidence": [
-      "Curated entry points map to page-level evidence disclosures."
+      "Links come straight from NAV_TREE; nothing on labs is inferred separately."
     ],
     "limitations": [
-      "The landing page summarizes evidence; each investigation defines its own trust and test boundaries."
+      "A short overview and link list; it makes no claim about the pages it links to."
     ],
     "reviewIntervalDays": 90
   },
@@ -1355,6 +1407,19 @@
     ],
     "reviewIntervalDays": 30
   },
+  "/labs/api-bola-multi-tenant/": {
+    "title": "Multi-tenant API authorization comparison lab",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Linked local lab implementation and tests."
+    ],
+    "limitations": [
+      "See bounded implementation status and limitations."
+    ],
+    "reviewIntervalDays": 90
+  },
   "/labs/azure-landing-zone/": {
     "title": "Azure landing-zone hierarchy and policy lab",
     "status": "partially-tested",
@@ -1366,6 +1431,19 @@
     ],
     "limitations": [
       "No Azure authentication or resource deployment occurs."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/cicd-identity-escalation/": {
+    "title": "CI/CD identity escalation policy lab",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Linked local lab implementation and tests."
+    ],
+    "limitations": [
+      "See bounded implementation status and limitations."
     ],
     "reviewIntervalDays": 90
   },
@@ -1396,19 +1474,6 @@
     ],
     "reviewIntervalDays": 90
   },
-  "/labs/": {
-    "title": "Labs",
-    "status": "reference",
-    "indexable": true,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "Links come straight from NAV_TREE; nothing on labs is inferred separately."
-    ],
-    "limitations": [
-      "A short overview and link list; it makes no claim about the pages it links to."
-    ],
-    "reviewIntervalDays": 90
-  },
   "/labs/kubernetes-security/": {
     "title": "Kubernetes admission, network, and image-policy lab",
     "status": "partially-tested",
@@ -1421,6 +1486,19 @@
     ],
     "limitations": [
       "Image-signature policy remains schema/offline only; signature, certificate, registry, transparency, digest resolution, and live admission are not executed end to end."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/mcp-tool-ssrf/": {
+    "title": "MCP-style SSRF comparison lab",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Linked local lab implementation and tests."
+    ],
+    "limitations": [
+      "See bounded implementation status and limitations."
     ],
     "reviewIntervalDays": 90
   },
@@ -1451,6 +1529,19 @@
     ],
     "reviewIntervalDays": 90
   },
+  "/labs/request-lifecycle/": {
+    "title": "Event context and secret-cache lifetime lab",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Linked local lab implementation and tests."
+    ],
+    "limitations": [
+      "See bounded implementation status and limitations."
+    ],
+    "reviewIntervalDays": 90
+  },
   "/labs/secure-cicd/": {
     "title": "Secure CI/CD boundary and fail-closed gate lab",
     "status": "validated-lab",
@@ -1477,6 +1568,110 @@
     ],
     "reviewIntervalDays": 90
   },
+  "/linux-security/": {
+    "title": "\"Linux Security overview",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-10-22",
+    "evidence": [
+      "Source-level research synthesis; full review pending."
+    ],
+    "limitations": [
+      "Illustrative guidance; external project tests and production behavior not reproduced."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/linux-security/evidence-driven-host-analysis/": {
+    "title": "\"Linux Host Analysis Without Invented Attack Paths",
+    "status": "current",
+    "indexable": true,
+    "lastReviewed": "2026-10-22",
+    "evidence": [
+      "Source-level research synthesis; full review pending."
+    ],
+    "limitations": [
+      "Illustrative guidance; external project tests and production behavior not reproduced."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/publishing/deployment-review/": {
+    "title": "Deployment review \u2014 2026-11-02",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/research-methodology/": {
+    "title": "Research methodology",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/research-methodology/evidence-standards/": {
+    "title": "Evidence standards",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/research-methodology/lab-audit/": {
+    "title": "Lab reproducibility audit \u2014 2026-11-02",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Recorded local validation; see per-command evidence boundary."
+    ],
+    "limitations": [
+      "No production or cloud deployment."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/research-methodology/open-questions/": {
+    "title": "Open research questions",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/research-methodology/research-index/": {
+    "title": "Research index and evidence coverage",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
   "/research/": {
     "title": "Research",
     "status": "reference",
@@ -1487,6 +1682,19 @@
     ],
     "limitations": [
       "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/scripts/": {
+    "title": "Security scripts, packages, and small utilities",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Lists exactly the scripts catalogued in scripts/catalog.mjs; nothing here is inferred from a directory listing."
+    ],
+    "limitations": [
+      "A script not listed in the catalogue is not yet documented, even if it exists in the repository."
     ],
     "reviewIntervalDays": 90
   },
@@ -1581,16 +1789,16 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/scripts/": {
-    "title": "Security scripts, packages, and small utilities",
-    "status": "reference",
+  "/scripts/threat-intelligence/": {
+    "title": "Threat Intelligence scripts",
+    "status": "tool",
     "indexable": true,
     "lastReviewed": "2026-07-25",
     "evidence": [
-      "Lists exactly the scripts catalogued in scripts/catalog.mjs; nothing here is inferred from a directory listing."
+      "Lists exactly the Threat Intelligence scripts catalogued in scripts/catalog.mjs."
     ],
     "limitations": [
-      "A script not listed in the catalogue is not yet documented, even if it exists in the repository."
+      "Lists only the scripts catalogued under this category."
     ],
     "reviewIntervalDays": 90
   },
@@ -1607,19 +1815,6 @@
     ],
     "reviewIntervalDays": 365
   },
-  "/scripts/threat-intelligence/": {
-    "title": "Threat Intelligence scripts",
-    "status": "tool",
-    "indexable": true,
-    "lastReviewed": "2026-07-25",
-    "evidence": [
-      "Lists exactly the Threat Intelligence scripts catalogued in scripts/catalog.mjs."
-    ],
-    "limitations": [
-      "Lists only the scripts catalogued under this category."
-    ],
-    "reviewIntervalDays": 90
-  },
   "/study-notes/": {
     "title": "Study notes",
     "status": "reference",
@@ -1627,6 +1822,19 @@
     "lastReviewed": "2026-07-25",
     "evidence": [
       "Links come straight from NAV_TREE; nothing on study notes is inferred separately."
+    ],
+    "limitations": [
+      "A short overview and link list; it makes no claim about the pages it links to."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/threat-intel/": {
+    "title": "Threat Intelligence",
+    "status": "reference",
+    "indexable": true,
+    "lastReviewed": "2026-07-25",
+    "evidence": [
+      "Links come straight from NAV_TREE; nothing on threat intelligence is inferred separately."
     ],
     "limitations": [
       "A short overview and link list; it makes no claim about the pages it links to."
@@ -1659,81 +1867,120 @@
     ],
     "reviewIntervalDays": 90
   },
-  "/threat-intel/": {
-    "title": "Threat Intelligence",
-    "status": "reference",
+  "/vulnerability-research/": {
+    "title": "Vulnerability research",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Links come straight from NAV_TREE; nothing on threat intelligence is inferred separately."
+      "Owned repository source; see page-level claim ledger."
     ],
     "limitations": [
-      "A short overview and link list; it makes no claim about the pages it links to."
+      "Local test evidence does not establish full production effectiveness."
     ],
     "reviewIntervalDays": 90
   },
-  "/ai-security/": {
-    "title": "\"AI Security overview",
-    "status": "reference",
+  "/vulnerability-research/api-bola-multi-tenant/": {
+    "title": "Multi-tenant BOLA: One Authorization Predicate Across Every Data Path",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-10-22",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Source-level research synthesis; full review pending."
+      "Owned repository source; see page-level claim ledger."
     ],
     "limitations": [
-      "Illustrative guidance; external project tests and production behavior not reproduced."
+      "Local test evidence does not establish full production effectiveness."
     ],
     "reviewIntervalDays": 90
   },
-  "/ai-security/evidence-driven-agent-security/": {
-    "title": "\"Evidence-Driven AI Agent and MCP Security",
-    "status": "current",
+  "/vulnerability-research/api-bola-multi-tenant/lab/": {
+    "title": "Reproduce the multi-tenant authorization experiment",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-10-22",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Source-level research synthesis; full review pending."
+      "Owned repository source; see page-level claim ledger."
     ],
     "limitations": [
-      "Illustrative guidance; external project tests and production behavior not reproduced."
+      "Local test evidence does not establish full production effectiveness."
     ],
     "reviewIntervalDays": 90
   },
-  "/devsecops/evidence-preserving-security-pipelines/": {
-    "title": "\"Evidence-Preserving Security Scanning and Release Gates",
-    "status": "current",
+  "/vulnerability-research/cicd-identity-escalation/": {
+    "title": "CI/CD Workload Identity: Trust Binding, Permission Ceilings and Persistence",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-10-22",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Source-level research synthesis; full review pending."
+      "Owned repository source; see page-level claim ledger."
     ],
     "limitations": [
-      "Illustrative guidance; external project tests and production behavior not reproduced."
+      "Local test evidence does not establish full production effectiveness."
     ],
     "reviewIntervalDays": 90
   },
-  "/linux-security/": {
-    "title": "\"Linux Security overview",
-    "status": "reference",
+  "/vulnerability-research/cicd-identity-escalation/lab/": {
+    "title": "Reproduce CI/CD identity policy decisions without cloud access",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-10-22",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Source-level research synthesis; full review pending."
+      "Owned repository source; see page-level claim ledger."
     ],
     "limitations": [
-      "Illustrative guidance; external project tests and production behavior not reproduced."
+      "Local test evidence does not establish full production effectiveness."
     ],
     "reviewIntervalDays": 90
   },
-  "/linux-security/evidence-driven-host-analysis/": {
-    "title": "\"Linux Host Analysis Without Invented Attack Paths",
-    "status": "current",
+  "/vulnerability-research/mcp-tool-ssrf/": {
+    "title": "MCP-style URL-fetch SSRF: Destination and Egress Boundaries",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-10-22",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Source-level research synthesis; full review pending."
+      "Owned repository source; see page-level claim ledger."
     ],
     "limitations": [
-      "Illustrative guidance; external project tests and production behavior not reproduced."
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/mcp-tool-ssrf/lab/": {
+    "title": "Reproduce the URL-fetch SSRF experiment",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/methodology/": {
+    "title": "Vulnerability-research methodology",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/verification/": {
+    "title": "Verification record \u2014 2026-11-02",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Recorded local validation; see per-command evidence boundary."
+    ],
+    "limitations": [
+      "No production or cloud deployment."
     ],
     "reviewIntervalDays": 90
   }

@@ -59,7 +59,7 @@ variable "allowed_rdp_source_ip" {
   description = "Explicit reviewer-approved single source IPv4 /32; no wildcard default."
   type        = string
   validation {
-    condition     = can(cidrhost(var.allowed_rdp_source_ip, 0)) && endswith(var.allowed_rdp_source_ip, "/32")
+    condition     = can(cidrhost(var.allowed_rdp_source_ip, 0)) && can(regex("^[0-9.]+/32$", var.allowed_rdp_source_ip))
     error_message = "Provide an explicit single-host IPv4 /32; broad sources are not accepted."
   }
 }

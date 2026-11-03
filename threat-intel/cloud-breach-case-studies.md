@@ -19,7 +19,7 @@ validatedAgainst:
   - "US Department of Justice: United States v. Paige Thompson — https://www.justice.gov/usao-wdwa/united-states-v-paige-thompson"
   - "DOJ arrest announcement describing the WAF access path — https://www.justice.gov/usao-wdwa/pr/seattle-tech-worker-arrested-data-theft-involving-large-financial-services-company"
   - "AWS launch of IMDSv2 on November 19, 2019 — https://aws.amazon.com/blogs/security/defense-in-depth-open-firewalls-reverse-proxies-ssrf-vulnerabilities-ec2-instance-metadata-service/"
-  - "Uber September 2022 security update — https://www.uber.com/newsroom/security-update/"
+  - "Uber September 2022 security update — https://www.sec.gov/Archives/edgar/data/1543151/000155278122000558/e22427_ex99-1.htm"
   - "CircleCI January 2023 incident report — https://circleci.com/blog/jan-4-2023-incident-report/"
 sourceQuality: "requires-review"
 implementationStatus: "illustrative"
@@ -65,6 +65,10 @@ AWS launched IMDSv2 on November 19, 2019 - months after the March incident. Requ
 IMDSv2 reduces important SSRF/metadata attack paths but does not repair an overly privileged role, arbitrary command execution, compromised host, exposed credentials, or sensitive-data access that the role is authorized to perform.
 
 ## Uber, September 2022
+
+Source continuity: the former Uber newsroom URL returned 404 during this audit.
+The linked SEC Exhibit 99.1 preserves Uber’s September 19 statement and was
+consulted on 2026-11-02. This changes source availability, not the incident scope.
 
 ### Confirmed chronology and access path
 
@@ -221,6 +225,6 @@ Which material access or containment details remain unknown because the owner di
 - [US Department of Justice: United States v. Paige Thompson](https://www.justice.gov/usao-wdwa/united-states-v-paige-thompson)
 - [DOJ arrest announcement describing the WAF access path](https://www.justice.gov/usao-wdwa/pr/seattle-tech-worker-arrested-data-theft-involving-large-financial-services-company)
 - [AWS launch of IMDSv2 on November 19, 2019](https://aws.amazon.com/blogs/security/defense-in-depth-open-firewalls-reverse-proxies-ssrf-vulnerabilities-ec2-instance-metadata-service/)
-- [Uber September 2022 security update](https://www.uber.com/newsroom/security-update/)
+- [Uber September 2022 security update](https://www.sec.gov/Archives/edgar/data/1543151/000155278122000558/e22427_ex99-1.htm)
 - [CircleCI January 2023 incident report](https://circleci.com/blog/jan-4-2023-incident-report/)
 - [CircleCI January 4, 2023 security alert](https://circleci.com/blog/january-4-2023-security-alert/)

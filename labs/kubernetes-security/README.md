@@ -14,7 +14,7 @@ sourceFiles:
   - { path: labs/kubernetes-security/policies/verify-release-images.yaml, label: Image-verification policy, language: yaml }
   - { path: labs/kubernetes-security/tests/run-tests.js, label: Decision-model tests, language: javascript }
 runCommands:
-  - kyverno test labs/kubernetes-security
+  - bash labs/kubernetes-security/validate-kyverno.sh
   - node labs/kubernetes-security/tests/run-tests.js
 ---
 
@@ -41,6 +41,13 @@ Run the native Kyverno tests:
 ```text
 kyverno test labs/kubernetes-security --remove-color
 ```
+
+For a complete copy-and-run setup without an installed CLI, use
+`bash labs/kubernetes-security/validate-kyverno.sh`. The script downloads the pinned
+1.18.2 platform archive, compares its SHA-256 with the reviewed release checksum,
+runs the seven-case suite and removes its temporary binary. It supports Linux and
+macOS ARM64/x86-64 and requires Python, curl and tar. This verifies a checksum,
+not the release's Sigstore signature. No cluster is contacted or modified.
 
 On 2026-07-23, the official Kyverno v1.18.2 Windows CLI asset (SHA-256 `b5c9d1cb75587a312dc8334537a5773bdedb1a985deae9d89a5251385afb831f`) ran the native hardened-pod suite: `7 tests passed and 0 tests failed`. This native run does not include `verify-release-images.yaml`.
 

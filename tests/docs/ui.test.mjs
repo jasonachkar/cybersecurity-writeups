@@ -180,3 +180,19 @@ test("new research is readable on narrow screens with navigable sections and ren
     }
   }
 });
+
+test("vulnerability studies expose their evidence limits, diagrams and runnable labs", async () => {
+  for (const width of [390, 1440]) {
+    for (const slug of ["mcp-tool-ssrf", "api-bola-multi-tenant", "cicd-identity-escalation"]) {
+      const item = catalog.research.find(candidate => candidate.id === slug);
+      const {context, page, errors} = await pageAt(item.url, {width, height: 900});
+      await page.waitForFunction(() => document.querySelectorAll("div.mermaid").length === 1 && !document.querySelector("pre.mermaid"));
+      assert.equal(await page.locator("h1").textContent(), item.title);
+      assert.equal(await page.locator(".docs-evidence").count(), 1);
+      assert.ok(await page.locator(`a[href*='labs/${slug}/']`).count() > 0);
+      assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${slug} overflows at ${width}px`);
+      assert.equal(errors.length, 0, errors.join("\n"));
+      await context.close();
+    }
+  }
+});

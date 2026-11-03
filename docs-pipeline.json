@@ -58,6 +58,21 @@
       "source": "site-pages",
       "destination": ".",
       "virtual": true
+    },
+    {
+      "source": "research-methodology",
+      "destination": "research-methodology",
+      "virtual": true
+    },
+    {
+      "source": "vulnerability-research",
+      "destination": "vulnerability-research",
+      "virtual": true
+    },
+    {
+      "source": "publishing",
+      "destination": "publishing",
+      "virtual": true
     }
   ]
 }

@@ -586,7 +586,7 @@ func validateMount(root, docsDir string, item mount) ([]sourceFile, error) {
 			return walkErr
 		}
 		if entry.IsDir() {
-			if current != source && (entry.Name() == ".git" || entry.Name() == "node_modules" || entry.Name() == ".terraform") {
+			if current != source && (entry.Name() == ".git" || entry.Name() == "node_modules" || entry.Name() == ".terraform" || entry.Name() == "__pycache__") {
 				return filepath.SkipDir
 			}
 			return nil
