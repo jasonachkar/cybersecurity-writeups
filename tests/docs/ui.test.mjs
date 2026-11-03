@@ -22,29 +22,29 @@ async function pageAt(url, viewport = {width: 1440, height: 900}) {
   return {context, page, errors};
 }
 
-test("article metadata, actions, relationships, breadcrumbs, and TOC match catalog", async () => {
+test("article metadata, actions, relationships, and breadcrumbs match catalog without status panels", async () => {
   const item = catalog.research.find(candidate => candidate.id === "ai-agent-security");
   const {context, page, errors} = await pageAt(item.url);
   assert.equal(await page.locator("h1").textContent(), item.title);
   assert.equal(await page.locator(".docs-article-header__summary").textContent(), item.summary);
-  assert.equal(await page.locator(".docs-evidence__grid dd").nth(0).textContent(), item.implementationLabel);
+  assert.equal(await page.locator(".docs-evidence, .docs-mobile-toc, .docs-lab-status").count(), 0);
   assert.equal(await page.locator(`.docs-article-actions a[href='${item.github.view}']`).count(), 1);
   assert.equal(await page.locator("a[href*='/edit/main/']").count(), 0);
   assert.equal(await page.locator(".docs-related__item").count(), Object.values(item.related).flat().length);
   assert.ok(await page.locator(".md-path").isVisible());
-  assert.ok(await page.locator(".md-sidebar--secondary").isVisible());
+  assert.equal(await page.locator(".md-sidebar--secondary").count(), 0);
   assert.equal(errors.length, 0, errors.join("\n"));
   await context.close();
 });
 
-test("desktop Focus mode persists, hides both rails, and restores focus on exit", async () => {
+test("desktop Focus mode persists, hides navigation, and restores focus on exit", async () => {
   const {context, page, errors} = await pageAt("/appsec/ai-agent-security/");
   const button = page.locator("[data-docs-focus]");
   await button.click();
   assert.equal(await button.getAttribute("aria-pressed"), "true");
   assert.equal(await page.locator("body").evaluate(element => element.classList.contains("docs-focus-mode")), true);
   assert.equal(await page.locator(".md-sidebar--primary").evaluate(element => getComputedStyle(element).display), "none");
-  assert.equal(await page.locator(".md-sidebar--secondary").evaluate(element => getComputedStyle(element).display), "none");
+  assert.equal(await page.locator(".md-sidebar--secondary").count(), 0);
   await page.reload({waitUntil: "load"});
   assert.equal(await page.locator("body").evaluate(element => element.classList.contains("docs-focus-mode")), true);
   await page.locator("[data-docs-focus]").click();
@@ -78,7 +78,7 @@ test("homepage ordering, search trigger, and navigation are data-driven", async 
   assert.equal(await featuredCard.locator("p").evaluate(description => getComputedStyle(description).textDecorationLine), "none");
   const recentTitles = (await page.locator(".docs-recent strong").allTextContents()).map(title => title.replace(/\s+→$/, ""));
   assert.deepEqual(recentTitles, catalog.recent.map(item => item.navTitle));
-  await page.locator("[data-docs-search-open]").click();
+  await page.locator(".docs-hero-search").click();
   assert.equal(await page.locator("#__search").isChecked(), true);
   await page.keyboard.press("Escape");
   assert.equal(await page.locator(".md-nav--primary a[href='appsec/'], .md-nav--primary a[href='/appsec/']").count() > 0, true);
@@ -103,6 +103,10 @@ test("source viewer switches files, wraps, expands, and updates canonical links"
     return styles.borderBottomColor === styles.color;
   }), true);
   const lightTokenColors = await viewer.locator(".docs-source-viewer__line-content span[style*='--shiki-light']").evaluateAll(tokens => [...new Set(tokens.map(token => getComputedStyle(token).color))]);
+  assert.ok(lightTokenColors.some(color => {
+    const rgb = color.match(/\d+/g).map(Number);
+    return rgb[0] !== rgb[1] || rgb[1] !== rgb[2];
+  }), "source syntax highlighting must retain chromatic colors");
   assert.ok(lightTokenColors.length >= 3, `expected a light syntax palette, received ${lightTokenColors.join(", ")}`);
   await page.locator("body").evaluate(body => body.setAttribute("data-md-color-scheme", "slate"));
   const darkTokenColors = await viewer.locator(".docs-source-viewer__line-content span[style*='--shiki-dark']").evaluateAll(tokens => [...new Set(tokens.map(token => getComputedStyle(token).color))]);
@@ -134,6 +138,9 @@ test("article Mermaid diagrams render locally and follow the selected theme", as
   assert.equal(await page.locator("pre.mermaid").count(), 0);
   assert.equal(await page.evaluate(() => typeof window.mermaid), "object");
   assert.equal(await page.evaluate(() => performance.getEntriesByType("resource").some(entry => entry.name.includes("unpkg.com/mermaid"))), false);
+  assert.equal(await diagram.evaluate(element => getComputedStyle(element).filter), "none");
+  const nodeColor = await diagram.evaluate(element => getComputedStyle(element).getPropertyValue("--md-mermaid-node-bg-color").trim());
+  assert.equal(nodeColor, "#e0e7ff", "diagram node palette stays colorful independently of interface accents");
   const lightLabelColor = await diagram.evaluate(element => getComputedStyle(element).getPropertyValue("--md-mermaid-label-fg-color"));
   await page.locator("label.md-header__button[for^='__palette']").first().click();
   await page.waitForFunction(previous => {
@@ -168,9 +175,8 @@ test("new research is readable on narrow screens with navigable sections and ren
       for (const diagram of await page.locator("div.mermaid").all()) {
         assert.ok((await diagram.boundingBox()).height > 40);
       }
-      assert.ok(await page.locator(".docs-mobile-toc").isVisible());
-      await page.locator(".docs-mobile-toc summary").click();
-      const section = page.locator(".docs-mobile-toc a").first();
+      assert.equal(await page.locator(".docs-mobile-toc").count(), 0);
+      const section = page.locator("h2 .headerlink").first();
       const target = await section.getAttribute("href");
       await section.click();
       assert.equal(new URL(page.url()).hash, target);
@@ -188,11 +194,74 @@ test("vulnerability studies expose their evidence limits, diagrams and runnable 
       const {context, page, errors} = await pageAt(item.url, {width, height: 900});
       await page.waitForFunction(() => document.querySelectorAll("div.mermaid").length === 1 && !document.querySelector("pre.mermaid"));
       assert.equal(await page.locator("h1").textContent(), item.title);
-      assert.equal(await page.locator(".docs-evidence").count(), 1);
+      assert.equal(await page.locator(".docs-evidence").count(), 0);
       assert.ok(await page.locator(`a[href*='labs/${slug}/']`).count() > 0);
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${slug} overflows at ${width}px`);
       assert.equal(errors.length, 0, errors.join("\n"));
       await context.close();
     }
+  }
+});
+
+
+test("sidebar groups collapse with the keyboard and pagination links follow the current article", async () => {
+  const {context, page, errors} = await pageAt("/appsec/ai-agent-security/");
+  const current = page.locator("#docs-navigation a[aria-current='page']");
+  assert.equal(await current.count(), 1);
+  assert.equal(await current.textContent(), catalog.research.find(item => item.id === "ai-agent-security").navTitle);
+  const group = current.locator("xpath=ancestor::details[1]");
+  const summary = group.locator(":scope > summary");
+  await summary.focus();
+  await page.keyboard.press("Enter");
+  assert.equal(await group.getAttribute("open"), null);
+  assert.equal(await current.isVisible(), false);
+  await page.keyboard.press("Enter");
+  assert.equal(await current.isVisible(), true);
+  const next = page.locator(".md-footer__link--next");
+  const nextUrl = new URL(await next.getAttribute("href"), page.url()).pathname;
+  assert.ok(await page.locator(".md-footer__link--prev").count() === 1);
+  await next.click();
+  assert.equal(new URL(page.url()).pathname, nextUrl);
+  const previousUrl = new URL(await page.locator(".md-footer__link--prev").getAttribute("href"), page.url()).pathname;
+  assert.equal(previousUrl, "/appsec/ai-agent-security/");
+  assert.equal(errors.length, 0, errors.join("\n"));
+  await context.close();
+});
+
+test("mobile menu and search are keyboard operable", async () => {
+  const {context, page, errors} = await pageAt("/appsec/ai-agent-security/", {width: 390, height: 844});
+  const menu = page.locator(".docs-menu");
+  await menu.focus();
+  await page.keyboard.press("Enter");
+  assert.equal(await menu.getAttribute("aria-expanded"), "true");
+  assert.equal(await page.locator("#__drawer").isChecked(), true);
+  assert.equal(await page.locator("#docs-navigation a[aria-current='page']").isVisible(), true);
+  await page.keyboard.press("Escape");
+  assert.equal(await menu.getAttribute("aria-expanded"), "false");
+  assert.equal(await menu.evaluate(element => element === document.activeElement), true);
+  await page.keyboard.press("Control+k");
+  assert.equal(await page.locator("#__search").isChecked(), true);
+  await page.keyboard.press("Escape");
+  assert.equal(errors.length, 0, errors.join("\n"));
+  await context.close();
+});
+
+test("interface colors are neutral in both themes", async () => {
+  for (const url of ["/", "/appsec/ai-agent-security/", "/labs/ai-agent-security/", "/scripts/devsecops/"]) {
+    const {context, page} = await pageAt(url);
+    for (const scheme of ["default", "slate"]) {
+      await page.locator("body").evaluate((body, value) => body.setAttribute("data-md-color-scheme", value), scheme);
+      const colored = await page.locator(".md-header, .docs-brand, .md-search__form, .md-sidebar--primary, .docs-nav-heading, .md-nav__link, .docs-card, .docs-button, .docs-action, .docs-key-takeaway, .md-footer, .md-footer__link").evaluateAll(elements => elements.flatMap(element => {
+        const styles = getComputedStyle(element);
+        return ["color", "backgroundColor", "borderTopColor"].flatMap(property => {
+          const value = styles[property];
+          const rgb = value.match(/^rgba?\((\d+), (\d+), (\d+)/);
+          return rgb && (rgb[1] !== rgb[2] || rgb[2] !== rgb[3]) ? [`${element.className}: ${property}=${value}`] : [];
+        });
+      }));
+      assert.deepEqual(colored, [], `${url} ${scheme}`);
+      assert.equal(await page.locator("body").evaluate(body => getComputedStyle(body).backgroundColor), scheme === "slate" ? "rgb(0, 0, 0)" : "rgb(255, 255, 255)");
+    }
+    await context.close();
   }
 });

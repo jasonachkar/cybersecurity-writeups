@@ -7,7 +7,9 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: "line",
-  snapshotPathTemplate: "{testDir}/tests/docs/visual-baselines/{arg}{ext}",
+  // Native fonts and SVG rounding differ across macOS and Linux. Review both
+  // baselines instead of weakening the pixel comparison.
+  snapshotPathTemplate: `{testDir}/tests/docs/visual-baselines/${process.platform}/{arg}{ext}`,
   outputDir: ".artifacts/playwright",
   use: {locale: "en-CA", timezoneId: "America/Toronto", reducedMotion: "reduce"},
 });

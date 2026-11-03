@@ -53,11 +53,11 @@ const states = [
       window.scrollTo(0, documentTop - 250);
     }),
   },
-  {name: "mobile-drawer", url: "/appsec/ai-agent-security/", width: 390, height: 844, action: async page => page.locator(".md-header label[for='__drawer']").click()},
+  {name: "mobile-drawer", url: "/appsec/ai-agent-security/", width: 390, height: 844, action: async page => page.locator(".docs-menu").click()},
+  {name: "pagination", url: "/appsec/ai-agent-security/", width: 1440, height: 900, action: async page => page.locator(".md-footer").scrollIntoViewIfNeeded()},
   {name: "source-expanded", url: "/labs/ai-agent-security/", width: 1440, height: 900, action: async page => page.locator("[data-expand-source]").click()},
   {
     name: "mermaid",
-    platformSpecific: true,
     url: "/devsecops/secure-cicd-pipeline-design/",
     width: 1440,
     height: 900,
@@ -71,10 +71,7 @@ for (const state of states) {
   test(`${state.name} state`, async ({page}) => {
     await prepare(page, state.url, state.width, state.height, state.scheme || "light");
     await state.action(page);
-    // Native font metrics and SVG rounding differ between macOS and Linux.
-    // Keep Mermaid's baseline explicit instead of weakening pixel thresholds.
-    const platform = state.platformSpecific ? `-${process.platform}` : "";
-    await expect(state.target ? page.locator(state.target) : page).toHaveScreenshot(`${state.name}${platform}.png`);
+    await expect(state.target ? page.locator(state.target) : page).toHaveScreenshot(`${state.name}.png`);
     if (process.env.CAPTURE_REVIEW === "1") {
       const output = path.join(ARTIFACTS, "..", "ui-review", "after", `${state.name}.png`);
       fs.mkdirSync(path.dirname(output), {recursive: true});

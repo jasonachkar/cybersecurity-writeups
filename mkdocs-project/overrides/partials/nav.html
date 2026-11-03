@@ -1,0 +1,26 @@
+{# Native disclosure groups follow the ModelFence / Starlight sidebar pattern. #}
+{% macro entry(item) %}
+  {% if item.children %}
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section" open>
+        <summary class="docs-nav-heading">{{ item.title }}<span class="md-icon docs-nav-caret" aria-hidden="true">{% include ".icons/material/chevron-right.svg" %}</span></summary>
+        <ul class="md-nav__list">{% for child in item.children %}{{ entry(child) }}{% endfor %}</ul>
+      </details>
+    </li>
+  {% else %}
+    <li class="md-nav__item"><a href="{{ item.url | url }}" class="md-nav__link{% if item.active %} md-nav__link--active{% endif %}"{% if item.active %} aria-current="page"{% endif %}>{{ item.title }}</a></li>
+  {% endif %}
+{% endmacro %}
+<nav id="docs-navigation" class="md-nav md-nav--primary" aria-label="Documentation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">{{ config.site_name }}</label>
+  <ul class="md-nav__list">
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section" open>
+        <summary class="docs-nav-heading">Start here<span class="md-icon docs-nav-caret" aria-hidden="true">{% include ".icons/material/chevron-right.svg" %}</span></summary>
+        <ul class="md-nav__list">{{ entry(nav.items[0]) }}{{ entry(nav.items[1].children[0]) }}</ul>
+      </details>
+    </li>
+    {% for item in nav.items[1].children[1:] %}{{ entry(item) }}{% endfor %}
+    {% for item in nav.items[2:] %}{{ entry(item) }}{% endfor %}
+  </ul>
+</nav>
