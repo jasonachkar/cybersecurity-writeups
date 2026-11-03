@@ -73,6 +73,57 @@ The twelfth case proves only that a tag such as `:latest` matches the reviewed t
 
 Use `observe → audit → warn → enforce → measure bypasses`. Track policy evaluation errors, denials, exceptions and expiry, unsigned-image attempts, registry/rekor availability, admission latency, and workloads that require a separate runtime class or cluster. Keep a reviewed break-glass path outside tenant administrator control.
 
+## Reproducibility and threat-model audit — 2026-11-02
+
+| Element | Bounded experiment |
+| --- | --- |
+| Actor | Tenant controlling workload spec or image evidence |
+| Assets | node isolation, service account and verified image decisions |
+| Entry points | pod manifest, image reference and network policy |
+| Boundary | Fixture input → native admission policy or local image model → expected result |
+| Safety | Owned synthetic fixtures; no production data or cloud credentials; no cloud deployment |
+
+```mermaid
+flowchart LR
+  I[Controlled input] --> B[Tested boundary]
+  B --> A[Expected allowed case]
+  B --> D[Expected denied case]
+  A --> E[Assertions and sanitized evidence]
+  D --> E
+```
+
+### Complete local setup
+
+Use a fresh repository checkout and the prerequisites above. From repository root:
+
+```sh
+npm ci --ignore-scripts
+node labs/kubernetes-security/tests/run-tests.js
+kyverno test labs/kubernetes-security --remove-color
+```
+
+Native policy testing needs Kyverno CLI 1.18.2; the dependency-free structural check can run without it. The complete policy and pod/network manifests are tracked beside this README. No existing cluster is used or modified.
+
+This is a local decision experiment, so the complete implementation is its tracked code, fixtures and policy files. It needs no Terraform deployment, service account or publicly exposed server. Never relocate fixture workflows into an active CI directory without a separate environment review.
+
+### Evidence, expected output and interpretation
+
+The documented command exits zero only when its assertions pass; an unexpected
+allow/deny, schema or state result is a failure. Preserve the full command output
+under ignored `.artifacts/research/` with runtime/tool versions and exit status.
+Use the specific expected markers above rather than inventing example output.
+The [lab audit](../../research-methodology/lab-audit.md) records the validation run.
+
+Native CLI pod-policy tests do not prove live cluster admission, signature verification, image mutation or CNI packet enforcement. Local finite-case coverage is not a production false-positive or
+false-negative estimate. TTD/TTC, representative pipeline overhead and monthly
+cloud cost are **not measured in this lab**.
+
+### Teardown and resources
+
+The processes exit and remove their temporary test files. There is no cloud destroy command. Retained evidence, optional provider downloads and local Docker image cache are your only persistent outputs; remove them after review. Node dependencies can remain for subsequent runs.
+
+Local CPU, memory, dependency downloads and optional image disk space are the resource cost. There is no measured cloud bill. Related research links above define which claims the experiment supports.
+
 ## References
 
 - [Kyverno v1.18.2 release and official CRD/CLI assets](https://github.com/kyverno/kyverno/releases/tag/v1.18.2)
@@ -82,3 +133,8 @@ Use `observe → audit → warn → enforce → measure bypasses`. Track policy 
 - [Kubernetes ValidatingAdmissionPolicy](https://kubernetes.io/docs/reference/access-authn-authz/validating-admission-policy/)
 - [Kubernetes NetworkPolicy](https://kubernetes.io/docs/concepts/services-networking/network-policies/)
 - [Kubernetes service-account token projection](https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/)
+
+## Related maintained investigations
+
+- [kubernetes multi tenancy](../../cloud-security/kubernetes-multi-tenancy.md)
+- [evidence driven host analysis](../../linux-security/evidence-driven-host-analysis.md)

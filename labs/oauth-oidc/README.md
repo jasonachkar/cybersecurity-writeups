@@ -39,7 +39,7 @@ From the repository root:
 
 ```text
 node labs/oauth-oidc/tests/oauth-security.test.js
-go test ./appsec/scripts/oauth-pkce
+go -C appsec/scripts/oauth-pkce test ./...
 ```
 
 Expected results are 14 passing Node.js checks and 8 passing Go checks. The Go program covers the RFC 7636 Appendix B vector, generated-verifier round trip, wrong verifier, `plain` downgrade, method case, length, syntax, and malformed challenge. It never prints verifier or challenge values.
@@ -53,7 +53,58 @@ Expected results are 14 passing Node.js checks and 8 passing Go checks. The Go p
 - The lab does not implement authorization-code redemption, nonce/state persistence, DPoP, mTLS, introspection, revocation, or refresh-token rotation.
 - Neither raw tokens nor PKCE verifiers should be written to logs.
 
-## Related guidance
+## Reproducibility and threat-model audit — 2026-11-02
+
+| Element | Bounded experiment |
+| --- | --- |
+| Actor | Presenter of a signed token from the wrong context |
+| Assets | API audience, trusted keys and tenant scope |
+| Entry points | JWT header/claims, registered redirect and PKCE verifier |
+| Boundary | Locally generated signing key → resource-server checks → scoped context |
+| Safety | Owned synthetic fixtures; no production data or cloud credentials; no cloud deployment |
+
+```mermaid
+flowchart LR
+  I[Controlled input] --> B[Tested boundary]
+  B --> A[Expected allowed case]
+  B --> D[Expected denied case]
+  A --> E[Assertions and sanitized evidence]
+  D --> E
+```
+
+### Complete local setup
+
+Use a fresh repository checkout and the prerequisites above. From repository root:
+
+```sh
+npm ci --ignore-scripts
+node --test labs/oauth-oidc/tests/oauth-security.test.js
+go -C appsec/scripts/oauth-pkce test ./...
+```
+
+The Go package has its own module; `go -C` selects it while the command is run from the repository root.
+
+This is a local decision experiment, so the complete implementation is its tracked code, fixtures and policy files. It needs no Terraform deployment, service account or publicly exposed server. Never relocate fixture workflows into an active CI directory without a separate environment review.
+
+### Evidence, expected output and interpretation
+
+The documented command exits zero only when its assertions pass; an unexpected
+allow/deny, schema or state result is a failure. Preserve the full command output
+under ignored `.artifacts/research/` with runtime/tool versions and exit status.
+Use the specific expected markers above rather than inventing example output.
+The [lab audit](../../research-methodology/lab-audit.md) records the validation run.
+
+No authorization server, JWKS discovery, code redemption, refresh-token rotation or browser session is deployed. Local finite-case coverage is not a production false-positive or
+false-negative estimate. TTD/TTC, representative pipeline overhead and monthly
+cloud cost are **not measured in this lab**.
+
+### Teardown and resources
+
+The processes exit and remove their temporary test files. There is no cloud destroy command. Retained evidence, optional provider downloads and local Docker image cache are your only persistent outputs; remove them after review. Node dependencies can remain for subsequent runs.
+
+Local CPU, memory, dependency downloads and optional image disk space are the resource cost. There is no measured cloud bill. Related research links above define which claims the experiment supports.
+
+## References
 
 - [OAuth 2.0 and OpenID Connect Security Engineering](../../appsec/oauth2-oidc-deep-dive.md)
 - [S256-only PKCE verifier](../../appsec/scripts/oauth-pkce/pkce.go)
@@ -61,3 +112,7 @@ Expected results are 14 passing Node.js checks and 8 passing Go checks. The Go p
 - [RFC 7636: Proof Key for Code Exchange](https://www.rfc-editor.org/rfc/rfc7636.html)
 - [OpenID Connect Core 1.0](https://openid.net/specs/openid-connect-core-1_0.html)
 - [RFC 8725: JSON Web Token Best Current Practices](https://www.rfc-editor.org/rfc/rfc8725.html)
+
+## Related maintained investigations
+
+- [oauth2 oidc deep dive](../../appsec/oauth2-oidc-deep-dive.md)

@@ -64,3 +64,60 @@ This is not a production authorization library. In particular:
 - The lab does not implement MCP, OAuth, token exchange, downstream reauthorization, idempotency reconciliation, a sandbox, secret delivery, egress control, rate limiting, or durable incident evidence.
 
 For production, derive identity and tenant outside the model, use a maintained authorization implementation, bind short-lived credentials to the selected resource, make the downstream service authorize again, and test fail-closed behavior at every boundary.
+
+## Reproducibility and threat-model audit — 2026-11-02
+
+| Element | Bounded experiment |
+| --- | --- |
+| Actor | Model controlling tool proposal and approval ID |
+| Assets | tool authority, tenant/action binding and approval consumption |
+| Entry points | JSON call and replayed approval |
+| Boundary | Authenticated context → external broker → atomic in-memory consume → fake executor |
+| Safety | Owned synthetic fixtures; no production data or cloud credentials; no cloud deployment |
+
+```mermaid
+flowchart LR
+  I[Controlled input] --> B[Tested boundary]
+  B --> A[Expected allowed case]
+  B --> D[Expected denied case]
+  A --> E[Assertions and sanitized evidence]
+  D --> E
+```
+
+### Complete local setup
+
+Use a fresh repository checkout and the prerequisites above. From repository root:
+
+```sh
+npm ci --ignore-scripts
+node --test labs/ai-agent-security/tests/broker.test.js
+```
+
+This is a local decision experiment, so the complete implementation is its tracked code, fixtures and policy files. It needs no Terraform deployment, service account or publicly exposed server. Never relocate fixture workflows into an active CI directory without a separate environment review.
+
+### Evidence, expected output and interpretation
+
+The documented command exits zero only when its assertions pass; an unexpected
+allow/deny, schema or state result is a failure. Preserve the full command output
+under ignored `.artifacts/research/` with runtime/tool versions and exit status.
+Use the specific expected markers above rather than inventing example output.
+The [lab audit](../../research-methodology/lab-audit.md) records the validation run.
+
+No model, MCP transport, durable approval store or real downstream tool is executed. Local finite-case coverage is not a production false-positive or
+false-negative estimate. TTD/TTC, representative pipeline overhead and monthly
+cloud cost are **not measured in this lab**.
+
+### Teardown and resources
+
+The processes exit and remove their temporary test files. There is no cloud destroy command. Retained evidence, optional provider downloads and local Docker image cache are your only persistent outputs; remove them after review. Node dependencies can remain for subsequent runs.
+
+Local CPU, memory, dependency downloads and optional image disk space are the resource cost. There is no measured cloud bill. Related research links above define which claims the experiment supports.
+
+## References
+
+- [Evidence contract](../../research-methodology/evidence-standards.md)
+
+## Related maintained investigations
+
+- [ai agent security](../../appsec/ai-agent-security.md)
+- [evidence driven agent security](../../ai-security/evidence-driven-agent-security.md)

@@ -63,9 +63,61 @@ Every request and background job must establish the tenant inside the same datab
 
 The test connects as the local database administrator and uses `SET ROLE` to exercise non-bypass identities. It does not model managed-service administrator roles, network controls, connection-pool middleware, migration orchestration, replication, backups, side channels, or application authorization. PostgreSQL superusers and roles with `BYPASSRLS` bypass RLS by design; they require separate administrative controls and monitoring.
 
+## Reproducibility and threat-model audit — 2026-11-02
+
+| Element | Bounded experiment |
+| --- | --- |
+| Actor | Caller exploiting omitted tenant scope or reused database connection |
+| Assets | tenant rows and runtime database identity |
+| Entry points | queries, writes and transaction context |
+| Boundary | Transaction-scoped context → FORCE RLS → USING and WITH CHECK |
+| Safety | Owned synthetic fixtures; no production data or cloud credentials; no cloud deployment |
+
+```mermaid
+flowchart LR
+  I[Controlled input] --> B[Tested boundary]
+  B --> A[Expected allowed case]
+  B --> D[Expected denied case]
+  A --> E[Assertions and sanitized evidence]
+  D --> E
+```
+
+### Complete local setup
+
+Use a fresh repository checkout and the prerequisites above. From repository root:
+
+```sh
+npm ci --ignore-scripts
+sh labs/postgresql-rls/run-tests.sh
+```
+
+Docker publishes PostgreSQL only on loopback. The script generates a local password at runtime, uses disposable tmpfs storage and removes containers on exit. Run this on an isolated workstation; do not override it with production credentials.
+
+### Evidence, expected output and interpretation
+
+The documented command exits zero only when its assertions pass; an unexpected
+allow/deny, schema or state result is a failure. Preserve the full command output
+under ignored `.artifacts/research/` with runtime/tool versions and exit status.
+Use the specific expected markers above rather than inventing example output.
+The [lab audit](../../research-methodology/lab-audit.md) records the validation run.
+
+The Docker integration executes PostgreSQL and pooling behavior. No managed database, production schema or administrative recovery process is tested. Local finite-case coverage is not a production false-positive or
+false-negative estimate. TTD/TTC, representative pipeline overhead and monthly
+cloud cost are **not measured in this lab**.
+
+### Teardown and resources
+
+The default runner removes services and volumes automatically. If you used `--keep`, run `docker compose --project-directory labs/postgresql-rls down --volumes --remove-orphans` with the same temporary environment. No data is retained in tracked files.
+
+Local CPU, memory, dependency downloads and optional image disk space are the resource cost. There is no measured cloud bill. Related research links above define which claims the experiment supports.
+
 ## References
 
 - [PostgreSQL row security policies](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)
 - [PostgreSQL system administration functions](https://www.postgresql.org/docs/current/functions-admin.html)
 - [PostgreSQL `pg_class` catalog](https://www.postgresql.org/docs/current/catalog-pg-class.html)
 - [PostgreSQL role attributes](https://www.postgresql.org/docs/current/role-attributes.html)
+
+## Related maintained investigations
+
+- [saas multitenancy isolation](../../appsec/saas-multitenancy-isolation.md)

@@ -90,6 +90,55 @@ The policy suite is intentionally dependency-free static analysis over controlle
 
 The lab creates no persistent resources. It reads fixtures and starts child Node.js processes only.
 
+## Reproducibility and threat-model audit — 2026-11-02
+
+| Element | Bounded experiment |
+| --- | --- |
+| Actor | Untrusted PR/report producer |
+| Assets | release authority and exact scanner result |
+| Entry points | PR workflow and normalized report |
+| Boundary | Read-only PR execution → report gate → separately privileged release |
+| Safety | Owned synthetic fixtures; no production data or cloud credentials; no cloud deployment |
+
+```mermaid
+flowchart LR
+  I[Controlled input] --> B[Tested boundary]
+  B --> A[Expected allowed case]
+  B --> D[Expected denied case]
+  A --> E[Assertions and sanitized evidence]
+  D --> E
+```
+
+### Complete local setup
+
+Use a fresh repository checkout and the prerequisites above. From repository root:
+
+```sh
+npm ci --ignore-scripts
+node labs/secure-cicd/tests/run-tests.js
+node labs/secure-cicd/tests/policy-tests.js
+```
+
+This is a local decision experiment, so the complete implementation is its tracked code, fixtures and policy files. It needs no Terraform deployment, service account or publicly exposed server. Never relocate fixture workflows into an active CI directory without a separate environment review.
+
+### Evidence, expected output and interpretation
+
+The documented command exits zero only when its assertions pass; an unexpected
+allow/deny, schema or state result is a failure. Preserve the full command output
+under ignored `.artifacts/research/` with runtime/tool versions and exit status.
+Use the specific expected markers above rather than inventing example output.
+The [lab audit](../../research-methodology/lab-audit.md) records the validation run.
+
+No hosted runner, GitHub environment review, attestation service or cloud exchange is executed. Local finite-case coverage is not a production false-positive or
+false-negative estimate. TTD/TTC, representative pipeline overhead and monthly
+cloud cost are **not measured in this lab**.
+
+### Teardown and resources
+
+The processes exit and remove their temporary test files. There is no cloud destroy command. Retained evidence, optional provider downloads and local Docker image cache are your only persistent outputs; remove them after review. Node dependencies can remain for subsequent runs.
+
+Local CPU, memory, dependency downloads and optional image disk space are the resource cost. There is no measured cloud bill. Related research links above define which claims the experiment supports.
+
 ## References
 
 - [GitHub secure use reference](https://docs.github.com/en/actions/reference/security/secure-use)
@@ -98,3 +147,9 @@ The lab creates no persistent resources. It reads fixtures and starts child Node
 - [GitHub artifact attestations](https://docs.github.com/en/actions/concepts/security/artifact-attestations)
 - [GitHub OIDC security hardening for Azure](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure)
 - [GitHub dependency caching reference](https://docs.github.com/en/actions/reference/workflows-and-actions/dependency-caching)
+
+## Related maintained investigations
+
+- [secure cicd pipeline design](../../devsecops/secure-cicd-pipeline-design.md)
+- [evidence preserving security pipelines](../../devsecops/evidence-preserving-security-pipelines.md)
+- [secureobs multitenant security scanner](../../devsecops/secureobs-multitenant-security-scanner.md)
