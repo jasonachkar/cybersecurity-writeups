@@ -68,6 +68,6 @@ entry without canonical Markdown fails the pipeline.
 
 Do not automate HTML-to-Markdown scraping. Content that exists only on
 `gh-pages` must be reviewed and migrated once into Markdown or classified as an
-intentional archived route. Deployment from `main` remains disabled until that
-gap inventory is empty and the current post-processing behavior is reproducible
-from files committed on `main`.
+intentional archived route. The migration gate is now enforced by the canonical build. The current workflow
+publishes from `main` only after content, secret and documentation checks pass;
+it copies the exact verified artifact into `gh-pages` without rebuilding.

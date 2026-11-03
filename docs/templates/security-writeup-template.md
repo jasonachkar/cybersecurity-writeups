@@ -28,6 +28,11 @@ residual risk.
 
 Define systems, identities, data classes, environments, and excluded concerns.
 
+## Research question and falsifiable hypothesis
+
+State one disputed boundary and the exact observable result that would disprove
+the hypothesis. Distinguish research from sourced documentation or a tutorial.
+
 ## Assumptions and constraints
 
 List the conditions on which the design depends.
@@ -68,6 +73,17 @@ data-migration implications.
 Link runnable tests. Include expected results, negative cases, tool versions, and
 validation gaps.
 
+## Method and claim ledger
+
+Provide reproducible commands, state resets, versions, positive and negative cases.
+For every major claim record its T0–T4 tier, artifact and evidence boundary using
+the [evidence standards](../../research-methodology/evidence-standards.md).
+
+## Findings and interpretation
+
+Separate observed behavior from likely impact, assumed prerequisites and outcomes
+not established by the evidence. Never promote configuration to enforcement proof.
+
 ## Observability and operations
 
 Define logs, metrics, alerts, runbooks, review cadence, and incident-response hooks.
@@ -79,6 +95,13 @@ Be explicit about what remains possible and which trade-offs were accepted.
 ## Limitations
 
 Record evidence gaps and conditions in which the guidance does not apply.
+
+Explicitly state **what was not tested**. Mark metrics not measured when the
+required clocks, denominator, workload or integration are absent.
+
+## Open questions
+
+Define the next experiment that could change the conclusion.
 
 ## References
 
