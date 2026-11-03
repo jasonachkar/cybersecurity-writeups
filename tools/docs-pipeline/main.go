@@ -820,6 +820,9 @@ func collectInput(root, value, label string) ([]sourceFile, error) {
 			return walkErr
 		}
 		if entry.IsDir() {
+			if current != path && entry.Name() == "__pycache__" {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 		entryInfo, err := entry.Info()

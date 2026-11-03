@@ -39,6 +39,36 @@ func TestResolveInsideRejectsEscape(t *testing.T) {
 	}
 }
 
+func TestInputHashesDoNotDependOnInterpreterCaches(t *testing.T) {
+	t.Parallel()
+	root, err := filepath.EvalSymlinks(t.TempDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	directory := filepath.Join(root, "hooks")
+	cache := filepath.Join(directory, "__pycache__")
+	if err := os.MkdirAll(cache, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(directory, "source.py"), []byte("# canonical input\n"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	first, err := collectInput(root, "hooks", "test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(cache, "source.pyc"), []byte("machine-specific cache"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	second, err := collectInput(root, "hooks", "test")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(first) != 1 || !reflect.DeepEqual(first, second) {
+		t.Fatalf("interpreter cache changed canonical inputs: %#v vs %#v", first, second)
+	}
+}
+
 func TestSafeArtifactPath(t *testing.T) {
 	t.Parallel()
 	root := t.TempDir()
