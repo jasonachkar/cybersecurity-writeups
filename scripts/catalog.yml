@@ -1,0 +1,116 @@
+schemaVersion: 1
+categories:
+  - id: cloud-security
+    title: Cloud Security
+    order: 10
+  - id: application-security
+    title: Application Security
+    order: 20
+  - id: devsecops
+    title: DevSecOps
+    order: 30
+  - id: threat-intelligence
+    title: Threat Intelligence
+    order: 40
+scripts:
+  - id: k8s-rbac-auditor
+    category: cloud-security
+    title: Kubernetes RBAC privilege-escalation auditor
+    language: Go
+    order: 10
+    sourceFiles:
+      - { path: cloud-security/scripts/k8s-rbac/auditor.go, label: Implementation, language: go, primary: true }
+      - { path: cloud-security/scripts/k8s-rbac/auditor_test.go, label: Tests, language: go }
+    related:
+      research: [kubernetes-multi-tenancy]
+      labs: [kubernetes-security]
+    modifiesState: false
+    testStatus: Go test suite (48 cases)
+    purpose: "Checks exported Kubernetes RBAC objects for scope mismatches and special verbs that can enable privilege escalation."
+    why: "The Kubernetes isolation research needed a repeatable answer to whether a binding grants more than it appears to grant."
+    usage: go test ./cloud-security/scripts/k8s-rbac/...
+    permissions: "None. It evaluates supplied in-memory objects and never calls the Kubernetes API."
+    tested: "Forty-eight positive and negative Go test cases cover ordinary resources, special verbs, and unresolved bindings."
+    limitations:
+      - It is a bounded static heuristic, not a complete effective-permissions engine.
+      - It does not perform live API discovery or evaluate admission policy.
+  - id: oauth-pkce-verifier
+    category: application-security
+    title: OAuth PKCE (S256) verifier and generator
+    language: Go
+    order: 10
+    sourceFiles:
+      - { path: appsec/scripts/oauth-pkce/pkce.go, label: Implementation, language: go, primary: true }
+      - { path: appsec/scripts/oauth-pkce/pkce_test.go, label: Tests, language: go }
+    related:
+      research: [oauth2-oidc-deep-dive]
+      labs: [oauth-oidc]
+    modifiesState: false
+    testStatus: Go test suite
+    purpose: "Implements RFC 7636 S256 verifier generation, challenge derivation, and constant-time verification."
+    why: "The OAuth/OIDC research needed a runnable PKCE reference implementation behind its boundary tests."
+    usage: go test ./appsec/scripts/oauth-pkce/...
+    permissions: "None. It performs no filesystem, network, or credential access."
+    tested: "The suite covers successful round trips, wrong verifiers, downgrade attempts, invalid lengths and characters, and malformed challenges."
+    limitations:
+      - It covers PKCE mechanics only, not the complete OAuth authorization flow.
+      - It is a package rather than a standalone CLI.
+  - id: kyverno-policy-schema-check
+    category: devsecops
+    title: Kyverno policy schema validator
+    language: Python
+    order: 10
+    sourceFiles:
+      - { path: scripts/validate-kyverno-policy.py, label: Implementation, language: python, primary: true }
+    related:
+      research: [kubernetes-multi-tenancy]
+      labs: [kubernetes-security]
+    modifiesState: false
+    testStatus: Pinned Kyverno v1.18.2 CRD validation
+    purpose: "Validates a Kyverno policy against a pinned CRD structural schema without requiring a live cluster."
+    why: "The Kubernetes lab needs a deterministic structural check for its admission-policy examples."
+    usage: python scripts/validate-kyverno-policy.py <crd.yaml> <policy.yaml>
+    permissions: "None. It reads two local files and never contacts a cluster."
+    tested: "CI checks the published Kubernetes lab policy against the pinned CRD."
+    limitations:
+      - Schema validity does not prove signature verification or live admission behavior.
+      - Results apply to the pinned CRD version only.
+  - id: tetragon-policy-schema-check
+    category: devsecops
+    title: Tetragon policy schema validator
+    language: Python
+    order: 20
+    sourceFiles:
+      - { path: scripts/validate-tetragon-policy.py, label: Implementation, language: python, primary: true }
+    related:
+      research: [runtime-protection-rasp-waf]
+    modifiesState: false
+    testStatus: Pinned Tetragon v1.7.0 CRD validation
+    purpose: "Validates a namespaced Tetragon tracing policy against a pinned CRD structural schema."
+    why: "The runtime-protection research needs an offline structural check before any live enforcement test."
+    usage: python scripts/validate-tetragon-policy.py <crd.yaml> <policy.yaml>
+    permissions: "None. It reads local files and never contacts a cluster."
+    tested: "CI checks the published policy against the pinned Tetragon CRD."
+    limitations:
+      - Schema validity does not prove live eBPF enforcement behavior.
+      - Results apply to the pinned CRD version only.
+  - id: cloudtrail-analyzer
+    category: threat-intelligence
+    title: CloudTrail suspicious-activity analyzer
+    language: Go
+    order: 10
+    sourceFiles:
+      - { path: threat-intel/scripts/cloudtrail/analyze.go, label: Implementation, language: go, primary: true }
+      - { path: threat-intel/scripts/cloudtrail/analyze_test.go, label: Tests, language: go }
+    related:
+      research: [cloud-breach-case-studies]
+    modifiesState: false
+    testStatus: Go test suite (9 cases)
+    purpose: "Finds selected suspicious patterns in exported AWS CloudTrail events for human review."
+    why: "The incident research benefits from a repeatable first-pass analysis of high-volume event data."
+    usage: go test ./threat-intel/scripts/cloudtrail/...
+    permissions: "None. It accepts exported data and does not call AWS APIs."
+    tested: "Nine Go cases cover each supported analysis and quiet events that should not produce findings."
+    limitations:
+      - Findings require human correlation and do not establish compromise.
+      - The implementation has not been run against a live account trail.

@@ -1,0 +1,98 @@
+name: Trusted build and protected release example
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      id-token: write
+      attestations: write
+    steps:
+      - name: Check out the protected revision without persistent credentials
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.2.0
+        with:
+          persist-credentials: false
+
+      - name: Create one immutable release subject and its digest
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          printf 'reviewed release from %s\n' "$GITHUB_SHA" > dist/release.txt
+          (
+            cd dist
+            sha256sum release.txt > release.txt.sha256
+          )
+
+      - name: Attest the exact release subject
+        uses: actions/attest-build-provenance@96278af6caaf10aea03fd8d33a09a777ca52d62f # v3.2.0
+        with:
+          subject-path: dist/release.txt
+
+      - name: Upload the release subject and digest
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-${{ github.sha }}
+          path: |
+            dist/release.txt
+            dist/release.txt.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  release-verification:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    environment:
+      name: production
+    permissions:
+      contents: read
+      actions: read
+      attestations: read
+      id-token: write
+    steps:
+      - name: Download only this protected revision's artifact
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: release-${{ github.sha }}
+          path: dist
+
+      - name: Verify the artifact digest before cloud authentication
+        shell: bash
+        run: |
+          set -euo pipefail
+          (
+            cd dist
+            sha256sum --check release.txt.sha256
+          )
+
+      - name: Verify GitHub provenance before cloud authentication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: >-
+          gh attestation verify dist/release.txt
+          --repo "$GITHUB_REPOSITORY"
+          --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/trusted-build-release.yml"
+          --source-ref "refs/heads/main"
+          --source-digest "$GITHUB_SHA"
+
+      - name: Exchange GitHub OIDC identity for a narrow Azure session
+        uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Demonstrate authenticated validation without deploying
+        shell: bash
+        run: az account show --output none

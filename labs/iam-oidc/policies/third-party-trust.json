@@ -1,0 +1,40 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AssumeWithCustomerExternalId",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::444455556666:role/vendor-exporter"
+      },
+      "Action": "sts:AssumeRole",
+      "Condition": {
+        "StringEquals": {
+          "sts:ExternalId": "example-tenant-a-7a7a7a7a-0000-4000-8000-000000000000",
+          "aws:RequestTag/tenant-id": "tenant-a",
+          "aws:RequestTag/workload": "billing-export"
+        }
+      }
+    },
+    {
+      "Sid": "ConstrainSessionTags",
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "arn:aws:iam::444455556666:role/vendor-exporter"
+      },
+      "Action": "sts:TagSession",
+      "Condition": {
+        "StringEquals": {
+          "aws:RequestTag/tenant-id": "tenant-a",
+          "aws:RequestTag/workload": "billing-export"
+        },
+        "ForAllValues:StringEquals": {
+          "aws:TagKeys": [
+            "tenant-id",
+            "workload"
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,16 +1,14 @@
 # =============================================================================
 # Azure Firewall Demo - Terraform Configuration
 # =============================================================================
-# This Terraform config provisions the exact same resources demonstrated in the
-# portal walkthrough video. It deploys an Azure Firewall with UDR-based traffic
-# control, network/application/DNAT rules, and a workload VM for testing.
+# Illustrative historical template; syntax validated, no cloud deployment tested.
+# Azure Firewall, VM and public IP resources require separate human authorization.
 #
 # Usage:
 #   terraform init
 #   terraform plan -out=tfplan
-#   terraform apply tfplan
 #
-# Cleanup (important because a Firewall costs ~$1.25/hr):
+# Cleanup after a separately authorized deployment (consult current Azure pricing):
 #   terraform destroy
 # =============================================================================
 
@@ -20,7 +18,7 @@ terraform {
   required_providers {
     azurerm = {
       source  = "hashicorp/azurerm"
-      version = "~> 4.0"
+      version = "4.50.0"
     }
   }
 }
@@ -58,9 +56,12 @@ variable "vm_admin_password" {
 }
 
 variable "allowed_rdp_source_ip" {
-  description = "Your public IP for RDP access via DNAT (use 'curl ifconfig.me' to find it)"
+  description = "Explicit reviewer-approved single source IPv4 /32; no wildcard default."
   type        = string
-  default     = "*"
+  validation {
+    condition     = can(cidrhost(var.allowed_rdp_source_ip, 0)) && can(regex("^[0-9.]+/32$", var.allowed_rdp_source_ip))
+    error_message = "Provide an explicit single-host IPv4 /32; broad sources are not accepted."
+  }
 }
 
 # =============================================================================
@@ -244,8 +245,8 @@ resource "azurerm_firewall_policy_rule_collection_group" "demo" {
     action   = "Allow"
 
     rule {
-      name             = "Allow-Google"
-      source_addresses = ["10.0.3.0/24"]
+      name              = "Allow-Google"
+      source_addresses  = ["10.0.3.0/24"]
       destination_fqdns = ["www.google.com"]
 
       protocols {

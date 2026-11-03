@@ -1,0 +1,86 @@
+{
+  "kind": "aws-authorization",
+  "identityPolicy": "delegated-role-admin.json",
+  "cases": [
+    {
+      "name": "create delegated role with the approved boundary",
+      "request": {
+        "action": "iam:CreateRole",
+        "resource": "arn:aws:iam::111122223333:role/delegated/app-a",
+        "context": {
+          "iam:PermissionsBoundary": "arn:aws:iam::111122223333:policy/DelegatedWorkloadBoundary"
+        }
+      },
+      "expectedAllowed": true
+    },
+    {
+      "name": "create delegated role without a boundary",
+      "request": {
+        "action": "iam:CreateRole",
+        "resource": "arn:aws:iam::111122223333:role/delegated/app-a",
+        "context": {}
+      },
+      "expectedAllowed": false
+    },
+    {
+      "name": "create delegated role with another boundary",
+      "request": {
+        "action": "iam:CreateRole",
+        "resource": "arn:aws:iam::111122223333:role/delegated/app-a",
+        "context": {
+          "iam:PermissionsBoundary": "arn:aws:iam::111122223333:policy/AdministratorBoundary"
+        }
+      },
+      "expectedAllowed": false
+    },
+    {
+      "name": "create role outside the delegated path",
+      "request": {
+        "action": "iam:CreateRole",
+        "resource": "arn:aws:iam::111122223333:role/security-admin",
+        "context": {
+          "iam:PermissionsBoundary": "arn:aws:iam::111122223333:policy/DelegatedWorkloadBoundary"
+        }
+      },
+      "expectedAllowed": false
+    },
+    {
+      "name": "remove the approved permissions boundary",
+      "request": {
+        "action": "iam:DeleteRolePermissionsBoundary",
+        "resource": "arn:aws:iam::111122223333:role/delegated/app-a",
+        "context": {}
+      },
+      "expectedAllowed": false
+    },
+    {
+      "name": "replace the approved permissions boundary",
+      "request": {
+        "action": "iam:PutRolePermissionsBoundary",
+        "resource": "arn:aws:iam::111122223333:role/delegated/app-a",
+        "context": {
+          "iam:PermissionsBoundary": "arn:aws:iam::111122223333:policy/AdministratorBoundary"
+        }
+      },
+      "expectedAllowed": false
+    },
+    {
+      "name": "manage an inline policy on a role in the delegated path",
+      "request": {
+        "action": "iam:PutRolePolicy",
+        "resource": "arn:aws:iam::111122223333:role/delegated/app-a",
+        "context": {}
+      },
+      "expectedAllowed": true
+    },
+    {
+      "name": "manage an inline policy outside the delegated path",
+      "request": {
+        "action": "iam:PutRolePolicy",
+        "resource": "arn:aws:iam::111122223333:role/security-admin",
+        "context": {}
+      },
+      "expectedAllowed": false
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+name: Intentionally unsafe cross-boundary cache example
+
+on:
+  pull_request:
+  workflow_run:
+    workflows:
+      - Untrusted pull request validation
+    types:
+      - completed
+
+permissions: write-all
+
+jobs:
+  pr-cache-producer:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v4
+        with:
+          path: .pipeline-tools
+          key: shared-release-tools
+      - run: cp ./pull-request-owned/promote .pipeline-tools/promote
+
+  privileged-cache-consumer:
+    if: github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache@v4
+        with:
+          path: .pipeline-tools
+          key: shared-release-tools
+          restore-keys: shared-release-
+      - run: ./.pipeline-tools/promote

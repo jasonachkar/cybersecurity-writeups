@@ -1,0 +1,78 @@
+apiVersion: policies.kyverno.io/v1
+kind: ValidatingPolicy
+metadata:
+  name: hardened-pods
+  annotations:
+    policies.kyverno.io/title: Hardened Pod baseline
+    policies.kyverno.io/category: Pod Security
+    policies.kyverno.io/severity: high
+spec:
+  validationActions:
+    - Deny
+  failurePolicy: Fail
+  evaluation:
+    admission:
+      enabled: true
+    background:
+      enabled: true
+    mode: Kubernetes
+  webhookConfiguration:
+    timeoutSeconds: 10
+  matchConstraints:
+    resourceRules:
+      - apiGroups:
+          - ""
+        apiVersions:
+          - v1
+        operations:
+          - CREATE
+          - UPDATE
+        resources:
+          - pods
+  variables:
+    - name: allContainers
+      expression: >-
+        object.spec.containers
+        + object.spec.?initContainers.orValue([])
+        + object.spec.?ephemeralContainers.orValue([])
+  validations:
+    - message: Host PID, IPC, and network namespaces are not allowed.
+      expression: >-
+        !object.spec.?hostPID.orValue(false)
+        && !object.spec.?hostIPC.orValue(false)
+        && !object.spec.?hostNetwork.orValue(false)
+    - message: hostPath volumes are not allowed by this workload baseline.
+      expression: >-
+        !has(object.spec.volumes)
+        || object.spec.volumes.all(volume, !has(volume.hostPath))
+    - message: Service-account token automount must be explicitly disabled.
+      expression: object.spec.?automountServiceAccountToken.orValue(true) == false
+    - message: Containers must run as non-root without privileged mode or privilege escalation.
+      expression: >-
+        variables.allContainers.all(container,
+          has(container.securityContext)
+          && container.securityContext.?runAsNonRoot.orValue(false) == true
+          && container.securityContext.?privileged.orValue(false) == false
+          && container.securityContext.?allowPrivilegeEscalation.orValue(true) == false)
+    - message: Containers must use a read-only root filesystem and drop all capabilities.
+      expression: >-
+        variables.allContainers.all(container,
+          container.securityContext.?readOnlyRootFilesystem.orValue(false) == true
+          && has(container.securityContext.capabilities)
+          && container.securityContext.capabilities.?drop.orValue([]).exists(capability, capability == "ALL")
+          && size(container.securityContext.capabilities.?add.orValue([])) == 0)
+    - message: A RuntimeDefault or Localhost seccomp profile is required.
+      expression: >-
+        has(object.spec.securityContext)
+        && has(object.spec.securityContext.seccompProfile)
+        && object.spec.securityContext.seccompProfile.type in ["RuntimeDefault", "Localhost"]
+    - message: CPU and memory requests and limits are required for every container.
+      expression: >-
+        variables.allContainers.all(container,
+          has(container.resources)
+          && has(container.resources.requests)
+          && has(container.resources.requests.cpu)
+          && has(container.resources.requests.memory)
+          && has(container.resources.limits)
+          && has(container.resources.limits.cpu)
+          && has(container.resources.limits.memory))

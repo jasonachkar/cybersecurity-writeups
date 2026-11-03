@@ -1,0 +1,19 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ExactPaymentsReconcilerServiceAccount",
+      "Effect": "Allow",
+      "Principal": {
+        "Federated": "arn:aws:iam::111122223333:oidc-provider/oidc.eks.ca-central-1.amazonaws.com/id/EXAMPLECLUSTERID"
+      },
+      "Action": "sts:AssumeRoleWithWebIdentity",
+      "Condition": {
+        "StringEquals": {
+          "oidc.eks.ca-central-1.amazonaws.com/id/EXAMPLECLUSTERID:aud": "sts.amazonaws.com",
+          "oidc.eks.ca-central-1.amazonaws.com/id/EXAMPLECLUSTERID:sub": "system:serviceaccount:payments:reconciler"
+        }
+      }
+    }
+  ]
+}
