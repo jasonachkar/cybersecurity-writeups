@@ -150,6 +150,12 @@ Threat models should inform what to monitor and what automated checks to impleme
 
 ---
 
+
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../appsec/saas-multitenancy-isolation.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
 # Advanced OAuth 2.0 / OIDC Security in SaaS
 
 > Status: OUTLINE DRAFT – to be expanded with full research

@@ -36,6 +36,12 @@ Infrastructure-as-Code (IaC) lets a single misconfiguration replicate across hun
 Goal: **deny any Azure Storage account that allows public blob access or is not behind a private endpoint pattern.** Conftest evaluates Rego against the Terraform plan (in JSON).
 
 ```rego
+
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../devsecops/secure-cicd-pipeline-design.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
 # policy/azure_storage.rego
 package main
 

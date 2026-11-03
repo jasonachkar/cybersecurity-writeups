@@ -11,16 +11,17 @@ tags:
   - case
   - studies
 date: "2026-07-25"
-lastReviewed: "2026-07-25"
-reviewStatus: "partially-verified"
+lastReviewed: "2026-11-02"
+reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "Capital One 2019 incident facts — https://www.capitalone.com/digital/facts2019/"
   - "US Department of Justice: United States v. Paige Thompson — https://www.justice.gov/usao-wdwa/united-states-v-paige-thompson"
   - "DOJ arrest announcement describing the WAF access path — https://www.justice.gov/usao-wdwa/pr/seattle-tech-worker-arrested-data-theft-involving-large-financial-services-company"
   - "AWS launch of IMDSv2 on November 19, 2019 — https://aws.amazon.com/blogs/security/defense-in-depth-open-firewalls-reverse-proxies-ssrf-vulnerabilities-ec2-instance-metadata-service/"
   - "Uber September 2022 security update — https://www.uber.com/newsroom/security-update/"
   - "CircleCI January 2023 incident report — https://circleci.com/blog/jan-4-2023-incident-report/"
-sourceQuality: "primary-sources-reviewed"
+sourceQuality: "requires-review"
 implementationStatus: "illustrative"
 reviewIntervalDays: 90
 ---
@@ -143,6 +144,76 @@ New vendor/court disclosures trigger review rather than silent narrative drift.
 ## Limitations
 
 These are public-source case studies, not forensic reports. They do not assign legal liability, evaluate controls unavailable in private evidence, or claim that listed recommendations would certainly have prevented the incidents.
+
+## Research question and hypothesis
+
+**Question:** Can public incident disclosures support control lessons without inventing the missing exploit details?
+
+**Falsifiable hypothesis (bounded experiment):** Every incident-specific statement maps to an owner/court source; a detail supported only by an analogous lab must remain a hypothesis rather than incident fact.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Actor described by the incident owner; local caller only for the separate teaching experiment |
+| Assets | Published chronology, confirmed access scope and retrospective control assumptions |
+| Entry points | Owner disclosures, court records and a separately owned synthetic URL target |
+| Trust boundaries | Historical public evidence → analysis → future control proposal |
+| Impact under investigation | Misstated causality, scope or claim that a later control certainly prevented an earlier incident |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/mcp-tool-ssrf/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+python3 vulnerability-research/mcp-tool-ssrf/lab/test_fetcher.py
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: The related lab illustrates a generic request boundary only. It does not reenact Capital One, Uber or CircleCI or validate any private forensic detail. |
+| Architecture guidance below | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Preserve disclosed uncertainty and date controls relative to the incident. A source-reported result is T0 in this portfolio, not a locally reproduced result.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+Which material access or containment details remain unknown because the owner did not disclose them?
 
 ## References
 

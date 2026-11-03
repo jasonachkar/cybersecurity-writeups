@@ -6,6 +6,12 @@ date: 2026-06
 readingTime: 55
 ---
 
+
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../cloud-security/cloud-network-segmentation.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
 # Advanced Cloud Security Engineering
 
 > A production-grade research report covering **Identity & Access Management**, **DevSecOps & pipeline hardening**, **Cloud Security architecture**, and **Detection engineering & threat hunting** across modern enterprise cloud environments (Azure, AWS, and multi-cloud).

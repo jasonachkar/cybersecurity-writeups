@@ -1,0 +1,27 @@
+# Illustrative: CRD schema validation only; no live kernel enforcement.
+apiVersion: cilium.io/v1alpha1
+kind: TracingPolicyNamespaced
+metadata:
+  name: detect-shell-from-web-runtime
+  namespace: prod
+spec:
+  podSelector:
+    matchLabels:
+      app: web
+  kprobes:
+    - call: sys_execve
+      syscall: true
+      args:
+        - index: 0
+          type: string
+      selectors:
+        - matchArgs:
+            - index: 0
+              operator: Equal
+              values:
+                - /bin/sh
+                - /bin/bash
+                - /usr/bin/sh
+                - /usr/bin/bash
+          matchActions:
+            - action: Sigkill

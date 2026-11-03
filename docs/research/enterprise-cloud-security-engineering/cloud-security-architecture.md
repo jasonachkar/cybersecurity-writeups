@@ -1,5 +1,11 @@
 # 3. Cloud Security Architecture & Enterprise Infrastructure
 
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../cloud-security/cloud-network-segmentation.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
+
 > A secure landing zone gets you a baseline; modern threats require **defense in depth inside the network** and **cryptographic control over data**. This section covers **immutable infrastructure and micro-segmentation** (constraining where workloads can talk and reducing exfiltration paths) and **cloud data protection** (envelope encryption, customer-managed keys, secret management, and classification).
 
 **Contents**

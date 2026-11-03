@@ -1,5 +1,11 @@
 # Kubernetes Multi-Tenancy and Platform Security
 
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../cloud-security/kubernetes-multi-tenancy.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
+
 > Status: IN PROGRESS – deep-dive draft
 
 ## Executive Summary

@@ -1,5 +1,11 @@
 # OAuth/OIDC Misconfiguration Mitigations
 
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../appsec/oauth2-oidc-deep-dive.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
+
 This document outlines comprehensive mitigation strategies for each OAuth 2.0 / OpenID Connect misconfiguration scenario described in **attack-scenarios.md**. For each real-world case study, we provide targeted defenses — including secure configuration examples, code snippets, and monitoring guidance — to harden **Authorization Servers (AS)**, **Client applications**, and **Resource Servers (RS)** against similar vulnerabilities.
 
 An Appendix of fictional demo scenarios is included to illustrate additional pitfalls and their mitigations.

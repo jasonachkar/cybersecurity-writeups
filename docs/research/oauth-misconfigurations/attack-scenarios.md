@@ -1,5 +1,11 @@
 # OAuth & OpenID Connect Misconfigurations: Real-World Attack Scenarios
 
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../appsec/oauth2-oidc-deep-dive.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
+
 ## 1) OAuth CSRF (Missing `state` Parameter)
 
 ### Description

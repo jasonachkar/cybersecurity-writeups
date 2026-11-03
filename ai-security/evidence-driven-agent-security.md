@@ -12,9 +12,10 @@ tags:
   - agent-permissions
   - evidence
 date: "2026-10-22"
-lastReviewed: "2026-10-22"
+lastReviewed: "2026-11-02"
 reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "Source inspection of agent discovery, assessment, evidence, and telemetry implementation"
 sourceQuality: "requires-review"
 implementationStatus: "illustrative"
@@ -150,6 +151,76 @@ Configuration formats evolve, secret redaction is incomplete, and absence of a
 finding is meaningful only within the declared parser and rule coverage. Full source
 review and protocol-version confirmation remain required before promoting this
 article's review status.
+
+## Research question and hypothesis
+
+**Question:** Can an assessment keep configured capability, attempted activity and executed authority distinct?
+
+**Falsifiable hypothesis (bounded experiment):** A proposed call rejected by the broker has no executor side effect and is recorded as a denial; any report that calls it execution overstates the evidence.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Malicious tool output or actor controlling assessment input |
+| Assets | Agent permissions, durable evidence and tenant-bound tool authority |
+| Entry points | Repository settings, tool definitions, proposed calls and logs |
+| Trust boundaries | Discovered configuration → verified context → authorization → execution evidence |
+| Impact under investigation | Unsupported compromise claims, excessive tool authority or sensitive report retention |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/ai-agent-security/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+node --test labs/ai-agent-security/tests/broker.test.js
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: The broker test provides a local decision/execution distinction. The SSRF study supplies a separate URL-tool boundary and does not establish real model exploitability. |
+| Architecture guidance below | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Preserve unknown states and source revisions rather than deriving exploitability from a graph edge. Apply minimization before durable storage, and scope active tests independently.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+Can a real MCP/agent integration propagate bounded user purpose and correlate tool denials without retaining prompts or bearer tokens?
 
 ## References
 

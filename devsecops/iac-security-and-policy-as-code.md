@@ -11,16 +11,17 @@ tags:
   - and
   - policy
 date: "2026-07-25"
-lastReviewed: "2026-07-25"
-reviewStatus: "partially-verified"
+lastReviewed: "2026-11-02"
+reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "Terraform S3 backend — https://developer.hashicorp.com/terraform/language/backend/s3"
   - "Terraform state and sensitive data — https://developer.hashicorp.com/terraform/language/state/sensitive-data"
   - "Terraform dependency lock file — https://developer.hashicorp.com/terraform/language/files/dependency-lock"
   - "Terraform saved plan options and security warning — https://developer.hashicorp.com/terraform/cli/commands/plan"
   - "Terraform JSON output format — https://developer.hashicorp.com/terraform/internals/json-format"
   - "OPA policy testing — https://www.openpolicyagent.org/docs/policy-testing"
-sourceQuality: "primary-sources-reviewed"
+sourceQuality: "requires-review"
 implementationStatus: "partially-tested"
 reviewIntervalDays: 90
 ---
@@ -191,6 +192,76 @@ Runtime evidence and state recovery are tested.
 The backend examples are not deployable baselines. They omit organization-specific bucket creation, public-access block, versioning, logging, KMS key/resource policy, replication, network, identity, retention, and disaster-recovery controls. Terraform offline validation checks syntax and internal consistency only; it does not establish backend reachability, permissions, locking behavior, provider semantics, or cloud runtime state.
 
 The Rego policy intentionally supports a small set of AWS resource shapes from reviewed fixtures. It is not a complete control catalog, a general Terraform JSON validator, or evidence that an independently generated plan is authentic and bound to the reviewed commit. OPA evaluation does not replace SCPs/cloud policy, configuration monitoring, or drift investigation. OpenTofu was not executed by this lab.
+
+## Research question and hypothesis
+
+**Question:** Can unknown plan values and deletion of a modeled security control escape the policy gate?
+
+**Falsifiable hypothesis (bounded experiment):** The insecure, unknown and deleted-control fixtures yield policy denial while the reviewed fixture passes; a negative fixture passing native Rego evaluation refutes the policy contract.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Infrastructure contributor or compromised plan producer |
+| Assets | Serialized plan, remote state, backend, policy and apply identity |
+| Entry points | HCL changes, plan JSON and policy exemptions |
+| Trust boundaries | Source review → plan generation → policy → apply artifact |
+| Impact under investigation | Misconfigured resource, state disclosure or plan substitution |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/iac-policy/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+node labs/iac-policy/tests/run-tests.js
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: The Node harness checks structure only. Run the native OPA commands in the lab to establish actual Rego decisions; Terraform validate is separate T1 evidence. |
+| Architecture guidance below | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Authenticate and bind the plan artifact to the reviewed revision; keep backend and apply permissions independent. Unknown security values should block or enter an explicit deferred decision, never silently pass.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+Can the chosen provider encode a security-relevant unknown in a resource shape the policy does not recognize?
 
 ## References
 

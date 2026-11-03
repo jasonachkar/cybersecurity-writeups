@@ -9,16 +9,17 @@ tags:
   - serverless
   - security
 date: "2026-07-25"
-lastReviewed: "2026-07-25"
-reviewStatus: "partially-verified"
+lastReviewed: "2026-11-02"
+reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "API Gateway Lambda proxy integration — https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html"
   - "API Gateway private HTTP integrations and VPC links — https://docs.aws.amazon.com/apigateway/latest/developerguide/private-integration.html"
   - "API Gateway API keys and usage plans — https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-api-usage-plans.html"
   - "AWS Lambda execution roles and role sharing — https://docs.aws.amazon.com/lambda/latest/dg/concepts-basics.html"
   - "AWS Lambda execution-environment lifecycle and `/tmp` reuse — https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html"
   - "AWS Lambda security and execution-environment best practices — https://docs.aws.amazon.com/lambda/latest/dg/best-practices.html"
-sourceQuality: "primary-sources-reviewed"
+sourceQuality: "requires-review"
 implementationStatus: "illustrative"
 reviewIntervalDays: 90
 ---
@@ -152,6 +153,76 @@ Rollback to a previously reviewed version and permission set. Do not restore ava
 ## What's still not solved
 
 Compromised deployment principals, a dependency or layer supply-chain issue, confused-deputy resource policies, a producer that's valid but malicious, cross-tenant bugs in the app itself, replay inside the idempotency window, stale secret caches, warm-state leakage, a service or region outage, downstream saturation, event loss past the retention window, and telemetry gaps — all still possible. Managed isolation and short-lived execution environments cut down some exposure, but they don't prove tenant isolation or that the application logic is correct.
+
+## Research question and hypothesis
+
+**Question:** Can tenant context, event idempotency and secret freshness survive reuse of one handler process?
+
+**Falsifiable hypothesis (bounded experiment):** Foreign/stale/schema-invalid events produce no simulated side effect, duplicate IDs do not repeat execution, and cache refresh failure after expiry never returns the stale value.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Authenticated but malicious event producer |
+| Assets | Tenant event data, downstream operation, cache and idempotency state |
+| Entry points | Event payload, duplicate delivery and stale cached material |
+| Trust boundaries | Verified producer context → handler → scoped execution → secret provider |
+| Impact under investigation | Cross-tenant action, repeated side effect or stale credential use |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/request-lifecycle/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+node --test labs/request-lifecycle/lifecycle.test.js
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: Six local test methods cover producer/context rejection, duplicate/concurrent duplicate, tenant reuse, changed payload and exact cache refresh timing. |
+| Architecture guidance below | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Use durable idempotency and downstream reconciliation for real side effects. Do not retain request tenant in warm shared state or fall back to expired credentials.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+How does a real event source retry after a downstream side effect succeeds but the idempotency write fails?
 
 ## References
 

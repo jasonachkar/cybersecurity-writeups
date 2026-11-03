@@ -9,16 +9,17 @@ tags:
   - secrets
   - management
 date: "2026-07-25"
-lastReviewed: "2026-07-25"
-reviewStatus: "partially-verified"
+lastReviewed: "2026-11-02"
+reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "Kubernetes Secrets — https://kubernetes.io/docs/concepts/configuration/secret/"
   - "Kubernetes Secret volumes and tmpfs behavior — https://kubernetes.io/docs/concepts/storage/volumes/#secret"
   - "Kubernetes `emptyDir` and `medium: Memory` — https://kubernetes.io/docs/concepts/storage/volumes/#emptydir"
   - "Kubernetes Linux-node protection for memory-backed secret data — https://kubernetes.io/docs/concepts/security/linux-security/#protection-for-secret-data-on-nodes"
   - "Secrets Store CSI Driver architecture and security boundary — https://secrets-store-csi-driver.sigs.k8s.io/concepts.html"
   - "HashiCorp Vault lease, renewal and revocation — https://developer.hashicorp.com/vault/docs/concepts/lease"
-sourceQuality: "primary-sources-reviewed"
+sourceQuality: "requires-review"
 implementationStatus: "illustrative"
 reviewIntervalDays: 90
 ---
@@ -171,6 +172,76 @@ Rollback should select a known valid secret version and restore the correspondin
 ## What's still not solved
 
 A compromised authorized workload, a compromised secret manager or identity control plane, privileged node/debug access, plaintext sitting in process memory, stale caches and sessions, target systems that don't support modern federation or rotation, revocation that silently fails, backups and crash dumps, operator abuse, cross-tenant policy mistakes, and incomplete audit trails — none of that is solved by this design. Good secret management cuts down uncontrolled distribution; it doesn't make a compromised consumer safe.
+
+## Research question and hypothesis
+
+**Question:** Does a warm secret cache fail closed after its freshness window when the provider is unavailable?
+
+**Falsifiable hypothesis (bounded experiment):** The old synthetic version is returned only before the configured expiry; refresh failure at/after expiry rejects and cannot execute a protected event.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Compromised consumer or actor triggering stale-cache use |
+| Assets | Secret value/version, cache freshness, provider and downstream session |
+| Entry points | Retrieval, cache hit/miss, rotation and provider outage |
+| Trust boundaries | Workload identity → secret provider → process cache → downstream authorization |
+| Impact under investigation | Stale access, excessive runtime exposure or unsafe availability fallback |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/request-lifecycle/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+node --test labs/request-lifecycle/lifecycle.test.js
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: Injected-clock tests establish old version at 999 ms, new version at 1000 ms, and failure without stale fallback. They do not establish Vault revocation or target-session termination. |
+| Architecture guidance below | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Treat cache expiry, credential expiry and downstream-session revocation separately. Minimize copies and require a target-side revocation canary; a process compromise can still access values it legitimately uses.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+Does revoking a real lease terminate already authenticated database sessions or only prevent new logins?
 
 ## References
 

@@ -11,16 +11,17 @@ tags:
   - deep
   - dive
 date: "2026-07-25"
-lastReviewed: "2026-07-25"
-reviewStatus: "partially-verified"
+lastReviewed: "2026-11-02"
+reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "RFC 9700: OAuth 2.0 Security Best Current Practice — https://www.rfc-editor.org/rfc/rfc9700.html"
   - "OpenID Connect Core 1.0 — https://openid.net/specs/openid-connect-core-1_0-18.html"
   - "RFC 9449: Demonstrating Proof of Possession — https://www.rfc-editor.org/info/rfc9449/"
   - "RFC 8705: OAuth mutual TLS — https://www.rfc-editor.org/info/rfc8705/"
   - "RFC 9126: Pushed Authorization Requests — https://www.rfc-editor.org/rfc/rfc9126.html"
   - "RFC 9207: OAuth authorization server issuer identification — https://www.rfc-editor.org/rfc/rfc9207.html"
-sourceQuality: "primary-sources-reviewed"
+sourceQuality: "requires-review"
 implementationStatus: "partially-tested"
 reviewIntervalDays: 90
 ---
@@ -187,6 +188,76 @@ PAR/FAPI/sender constraint is evaluated for high-value APIs.
 ## Limitations
 
 Providers add profile-specific claims, logout, token exchange, device authorization, dynamic registration, and key-rotation behavior. Validate the provider's conformance and current documentation. Pseudocode is intentionally not a drop-in token validator. The executable model does not perform discovery, network JWKS retrieval, provider integration, library interoperability, session persistence, or deployment validation.
+
+## Research question and hypothesis
+
+**Question:** Can token authenticity, audience, time, tenant and scope fail independently rather than collapsing into decoded-token acceptance?
+
+**Falsifiable hypothesis (bounded experiment):** A wrong signature, issuer, audience, lifetime, tenant or scope is rejected despite otherwise valid claims; accepting one refutes the configured verifier contract.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Token presenter with a wrong key or authentic token for a different context |
+| Assets | API session, tenant authority, redirect registration and trusted keys |
+| Entry points | Access token, kid, redirect and PKCE challenge |
+| Trust boundaries | Issuer/key trust → token profile → API audience → tenant/object authorization |
+| Impact under investigation | Token substitution, confused client flow or cross-context access |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/oauth-oidc/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+node --test labs/oauth-oidc/tests/oauth-security.test.js
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: The suite generates RSA keys and executes local signature/claim/redirect decisions. The linked Go package separately checks S256 PKCE. |
+| Architecture guidance below | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Configure the exact token profile and trusted issuer; keep key lookup bounded. Object authorization still applies after token validation and remote discovery is a separate SSRF boundary.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+How does bounded JWKS caching behave during issuer key rotation and a concurrent discovery outage?
 
 ## References
 

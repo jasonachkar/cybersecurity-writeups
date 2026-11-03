@@ -10,16 +10,17 @@ tags:
   - network
   - segmentation
 date: "2026-07-25"
-lastReviewed: "2026-07-25"
-reviewStatus: "partially-verified"
+lastReviewed: "2026-11-02"
+reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "AWS Transit Gateway route tables, associations and propagation — https://docs.aws.amazon.com/vpc/latest/tgw/tgw-route-tables.html"
   - "How AWS Transit Gateway routing and appliance mode work — https://docs.aws.amazon.com/vpc/latest/tgw/how-transit-gateways-work.html"
   - "AWS Transit Gateway asymmetric routing and appliance mode — https://docs.aws.amazon.com/prescriptive-guidance/latest/inline-traffic-inspection-third-party-appliances/transit-gateway-asymmetric-routing.html"
   - "AWS gateway endpoints for Amazon S3 — https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-s3.html"
   - "AWS VPC endpoint policies and interaction with identity/resource policies — https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints-access.html"
   - "Route 53 Resolver DNS Firewall behavior — https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resolver-dns-firewall-overview.html"
-sourceQuality: "primary-sources-reviewed"
+sourceQuality: "requires-review"
 implementationStatus: "illustrative"
 reviewIntervalDays: 90
 ---
@@ -148,6 +149,76 @@ Rollback should restore the last reviewed route and policy set. Do not “fix”
 ## What's still not solved
 
 A compromised destination that's on your allowlist, traffic hidden inside an allowed protocol, missing workload/application identity, drift between regions or accounts, hitting route-scale limits, provider service paths outside your telemetry, bugs in the inspection appliance itself, DNS cache effects, IPv6 gaps, privileged admins, and outages caused by the centralized chokepoints you just built — all still real. Segmentation limits what can reach what; it doesn't replace identity, resource, tenant, or application authorization.
+
+## Research question and hypothesis
+
+**Question:** Does a separate gateway prevent a fetch tool from using a direct internal path after URL controls are bypassed?
+
+**Falsifiable hypothesis (bounded experiment):** The secure tool cannot directly connect to the mock metadata service and rejects redirect-based access while permitting the intended origin; any successful direct connection refutes this local topology.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Caller controlling a tool URL; separately, compromised tool process |
+| Assets | Internal destination, gateway policy and reachability evidence |
+| Entry points | URL, redirect response and direct socket connection |
+| Trust boundaries | Tool network → gateway network → target network |
+| Impact under investigation | Internal service retrieval or routing around inspection |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/mcp-tool-ssrf/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+python3 vulnerability-research/mcp-tool-ssrf/lab/test_fetcher.py
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: The linked study additionally runs real Docker TCP and paired HTTP tests. Unit resolver results alone are not network enforcement. |
+| Architecture guidance below | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Treat DNS, routes and application authorization as separate controls. Keep gateway ownership separate and fail closed on dependency errors; an allowed destination remains a disclosure path.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+Do IPv6, alternate proxies or failover routes bypass the equivalent production egress decision?
 
 ## References
 
