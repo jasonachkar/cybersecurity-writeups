@@ -20,6 +20,14 @@ of the changes in this branch. The read-only Pages settings check was:
 gh api repos/jasonachkar/cybersecurity-writeups/pages
 ```
 
+## Workflow activation
+
+The workflow registry reported `content-quality.yml` as `disabled_inactivity`
+before hosted verification. It was re-enabled for branch validation as part of
+this work. A `workflow_dispatch` against `research-depth-upgrade` exercises the
+checks; the publication job still requires a push to `main`. The separate legacy
+Pages workflow serves the generated `gh-pages` branch.
+
 ## Change routing
 
 | Change | Destination |
