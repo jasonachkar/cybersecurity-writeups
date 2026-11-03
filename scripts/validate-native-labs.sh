@@ -12,7 +12,7 @@ trap cleanup EXIT
 "${ssrf[@]}" config --quiet
 "${bola[@]}" config --quiet
 "${ssrf[@]}" up -d --build vulnerable secure gateway public metadata
-"${ssrf[@]}" run --rm tests
+"${ssrf[@]}" run --build --rm tests
 "${ssrf[@]}" exec -T secure python test_egress.py
 "${bola[@]}" run --build --rm lab
 sh labs/postgresql-rls/run-tests.sh
