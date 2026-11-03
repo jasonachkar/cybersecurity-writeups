@@ -2,7 +2,7 @@ mock_provider "azurerm" {}
 
 variables {
   subscription_id       = "00000000-0000-0000-0000-000000000000"
-  vm_admin_password     = "<runtime-generated-lab-Password>"
+  vm_admin_password     = "Placeholder-${uuid()}"
   allowed_rdp_source_ip = "192.0.2.1/32"
 }
 

@@ -206,7 +206,7 @@ not enforcement proof. Do not deploy cloud resources from repository validation.
 | Claim class | Evidence tier and boundary |
 | --- | --- |
 | Observed local result | T2/T3 within the linked harness: Nine synthetic events yield a finite confusion matrix. They do not exercise Sentinel scheduling, log delivery or alert routing. |
-| Architecture guidance below | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Architecture explanation in this article | T0: sourced explanation or engineering judgment under its stated assumptions |
 | Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
 | Production effectiveness | Not established by this repository's local result |
 

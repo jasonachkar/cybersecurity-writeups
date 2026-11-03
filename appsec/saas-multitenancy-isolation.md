@@ -293,7 +293,7 @@ not enforcement proof. Do not deploy cloud resources from repository validation.
 | Claim class | Evidence tier and boundary |
 | --- | --- |
 | Observed local result | T2/T3 within the linked harness: The container integration executes SQL and pg pooled-client boundary tests, including rollback/cancellation. HTTP authorization is tested separately in the BOLA study. |
-| Architecture guidance below | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Architecture explanation in this article | T0: sourced explanation or engineering judgment under its stated assumptions |
 | Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
 | Production effectiveness | Not established by this repository's local result |
 

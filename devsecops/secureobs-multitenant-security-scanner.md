@@ -356,7 +356,7 @@ not enforcement proof. Do not deploy cloud resources from repository validation.
 | Claim class | Evidence tier and boundary |
 | --- | --- |
 | Observed local result | T2/T3 within the linked harness: Repository-owned gate tests supply only bounded normalized-report evidence. Previously documented external project implementation/history is not independently re-executed by this work. |
-| Architecture guidance below | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Architecture explanation in this article | T0: sourced explanation or engineering judgment under its stated assumptions |
 | Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
 | Production effectiveness | Not established by this repository's local result |
 

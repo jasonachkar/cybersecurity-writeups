@@ -190,7 +190,7 @@ not enforcement proof. Do not deploy cloud resources from repository validation.
 | Claim class | Evidence tier and boundary |
 | --- | --- |
 | Observed local result | T2/T3 within the linked harness: The broker test provides a local decision/execution distinction. The SSRF study supplies a separate URL-tool boundary and does not establish real model exploitability. |
-| Architecture guidance below | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Architecture explanation in this article | T0: sourced explanation or engineering judgment under its stated assumptions |
 | Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
 | Production effectiveness | Not established by this repository's local result |
 

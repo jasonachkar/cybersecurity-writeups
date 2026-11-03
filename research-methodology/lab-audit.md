@@ -19,7 +19,7 @@ resource deployment.
 | [IaC policy](../labs/iac-policy/README.md) | `bash labs/iac-policy/validate-opa.sh`; `npm run verify:terraform` | Native Rego fixture decisions and Terraform schema, no cloud resources |
 | [Azure landing zone](../labs/azure-landing-zone/README.md) | `bash labs/azure-landing-zone/validate.sh` | AzureRM 4.50.0 schema and three mocked plan tests, no inheritance/API proof |
 | [Event/secret lifecycle](../labs/request-lifecycle/README.md) | `node --test labs/request-lifecycle/lifecycle.test.js` | Six local methods, deterministic cache clock; no provider lease revocation |
-| [Tool SSRF](../labs/mcp-tool-ssrf/README.md) | Canonical Compose setup and `test_egress.py` | Five paired HTTP cases, six unit methods and actual isolated TCP-path test |
+| [Tool SSRF](../labs/mcp-tool-ssrf/README.md) | Canonical Compose setup and `test_egress.py` | Six paired HTTP cases, six unit methods and actual isolated TCP-path test |
 | [API BOLA](../labs/api-bola-multi-tenant/README.md) | `python3 vulnerability-research/api-bola-multi-tenant/lab/test_api.py` | 14 paired real HTTP cases plus session/role/state checks |
 | [CI/CD identity](../labs/cicd-identity-escalation/README.md) | `bash vulnerability-research/cicd-identity-escalation/lab/validate.sh` | Three mock-plan tests and 28 policy/assertion decisions, no cloud exchange |
 
