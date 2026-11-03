@@ -11,13 +11,13 @@
     "generated:check": "node scripts/check-generated.js",
     "metadata:check": "node scripts/validate-metadata.js",
     "freshness:check": "node scripts/check-freshness.js",
-    "research:check": "node scripts/validate-research-structure.js",
+    "research:check": "node scripts/validate-research-structure.js && npm run research:coverage",
     "code:check": "node scripts/validate-code-examples.js",
     "actions:check": "node scripts/check-action-pins.js",
     "links:check": "node scripts/check-links.js",
     "links:external": "node scripts/check-links.js --external",
     "markdown:check": "markdownlint-cli2 \"**/*.md\" \"#**/node_modules\" \"#mkdocs-project/docs\" \"#qa\" \"#qa-artifacts\" \"#.artifacts\"",
-    "labs:test": "node labs/secure-cicd/tests/run-tests.js && node labs/supply-chain/tests/run-tests.js",
+    "labs:test": "node labs/secure-cicd/tests/run-tests.js && node --test labs/secure-cicd/tests/policy-tests.js && node labs/supply-chain/tests/run-tests.js && node labs/iam-oidc/tests/run-tests.js && node --test labs/oauth-oidc/tests/oauth-security.test.js labs/ai-agent-security/tests/broker.test.js labs/request-lifecycle/lifecycle.test.js && node labs/kubernetes-security/tests/run-tests.js && node labs/iac-policy/tests/run-tests.js && python3 vulnerability-research/mcp-tool-ssrf/lab/test_fetcher.py && python3 vulnerability-research/api-bola-multi-tenant/lab/test_api.py && python3 vulnerability-research/detection.py --test",
     "docs:pipeline:test": "cd tools/docs-pipeline && go test ./...",
     "docs:inventory": "go run ./tools/docs-pipeline/main.go inventory",
     "docs:audit": "go run ./tools/docs-pipeline/main.go audit -published-ref origin/gh-pages",
@@ -33,9 +33,14 @@
     "docs:update-snapshots": "playwright test tests/docs/visual.spec.mjs --update-snapshots",
     "research:new": "node scripts/research-new.js",
     "research:new:test": "node --test scripts/research-new.test.js",
-    "verify:docs": "npm run docs:pipeline:test && npm run docs:catalog && npm run docs:build && npm run docs:test:html && npm run docs:test:ui && npm run docs:test:a11y && npm run docs:test:visual",
+    "verify:docs": "npm run docs:pipeline:test && npm run docs:catalog && npm run docs:build && npm run docs:links && npm run docs:test:html && npm run docs:test:ui && npm run docs:test:a11y && npm run docs:test:visual",
     "verify:all": "npm run validate && npm run verify:docs",
-    "validate": "npm run markdown:check && npm run generated:check && npm run metadata:check && npm run freshness:check && npm run research:check && npm run actions:check && npm run code:check && npm run links:check && npm run labs:test && npm run research:new:test && npm run docs:catalog:test && npm run docs:catalog"
+    "validate": "npm run markdown:check && npm run generated:check && npm run metadata:check && npm run freshness:check && npm run research:check && npm run actions:check && npm run code:check && npm run links:check && npm run labs:test && npm run research:new:test && npm run docs:catalog:test && npm run docs:catalog",
+    "verify:terraform": "bash scripts/validate-terraform.sh",
+    "verify:opa": "bash labs/iac-policy/validate-opa.sh",
+    "verify:native-labs": "bash scripts/validate-native-labs.sh",
+    "research:coverage": "node scripts/validate-research-coverage.js",
+    "docs:links": "python3 scripts/check-built-links.py .artifacts/site"
   },
   "devDependencies": {
     "axe-core": "4.12.1",
@@ -45,5 +50,9 @@
     "playwright": "1.61.1",
     "shiki": "4.4.3",
     "yaml": "2.9.0"
+  },
+  "overrides": {
+    "markdown-it": "15.0.3",
+    "smol-toml": "1.9.1"
   }
 }

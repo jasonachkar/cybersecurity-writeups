@@ -5,8 +5,8 @@ const path = require("node:path");
 const YAML = require("yaml");
 
 const ROOT = path.resolve(__dirname, "..");
-const CONTENT_ROOTS = ["appsec", "cloud-security", "ai-security", "linux-security", "devsecops", "threat-intel", "docs"];
-const EXCLUDED_DIRECTORIES = new Set([".git", "node_modules", "site", ".venv"]);
+const CONTENT_ROOTS = ["appsec", "cloud-security", "ai-security", "linux-security", "devsecops", "threat-intel", "docs", "research-methodology", "vulnerability-research", "labs", "publishing"];
+const EXCLUDED_DIRECTORIES = new Set([".git", "node_modules", "site", ".venv", ".terraform", ".artifacts", "__pycache__"]);
 
 function walk(directory, predicate = () => true) {
   if (!fs.existsSync(directory)) return [];
@@ -55,6 +55,7 @@ function isIndexed(file, document) {
   const rel = relative(file);
   if (!document.metadata) return false;
   if (/^(appsec|cloud-security|ai-security|linux-security|devsecops|threat-intel)\/[^/]+\.md$/.test(rel)) return true;
+  if (/^vulnerability-research\/[^/]+\/index\.md$/.test(rel)) return true;
   return /^docs\/.+\/README\.md$/.test(rel);
 }
 

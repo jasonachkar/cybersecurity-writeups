@@ -14,16 +14,17 @@ tags:
   - pipeline
   - design
 date: "2026-07-25"
-lastReviewed: "2026-07-25"
-reviewStatus: "partially-verified"
+lastReviewed: "2026-11-02"
+reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "GitHub secure use reference — https://docs.github.com/en/actions/reference/security/secure-use"
   - "GitHub events that trigger workflows — https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows"
   - "GitHub script injection guidance — https://docs.github.com/en/actions/concepts/security/script-injections"
   - "GitHub OIDC security hardening for AWS — https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws"
   - "GitHub OIDC security hardening for Azure — https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure"
   - "GitHub artifact attestations — https://docs.github.com/en/actions/concepts/security/artifact-attestations"
-sourceQuality: "primary-sources-reviewed"
+sourceQuality: "requires-review"
 implementationStatus: "partially-tested"
 reviewIntervalDays: 90
 ---
@@ -261,6 +262,76 @@ What can still go wrong: malicious code that passed review anyway, a compromised
 ## Limitations
 
 Repository fixtures validate offline structure and gate behavior. GitHub/Azure DevOps settings, cloud identities, organization policies, hosted runner images, and network controls are outside this repository and require environment-specific verification.
+
+## Research question and hypothesis
+
+**Question:** Can malformed or incomplete scanner evidence ever satisfy release authorization?
+
+**Falsifiable hypothesis (bounded experiment):** Only a completed, schema-valid report within policy passes; missing, failed or malformed evidence and unsafe workflow patterns block.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Untrusted pull-request author or compromised report producer |
+| Assets | Release credentials, source revision, artifacts, caches and gate evidence |
+| Entry points | PR code, workflow context, reports, caches and artifact handoff |
+| Trust boundaries | Untrusted execution → evidence parser → trusted release identity |
+| Impact under investigation | Privileged execution or an unauthorized release decision |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/secure-cicd/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+node labs/secure-cicd/tests/run-tests.js
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: The gate/YAML suite tests controlled fixtures and exit semantics. The companion policy suite checks protected-boundary patterns; no hosted job or environment approval is executed. |
+| Architecture explanation in this article | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Bind source, producer and artifact verification before credential exchange. Treat verifier output and caches as separate trust boundaries; an approved workflow compromise remains possible.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+Will the real published workflow retain a failing gate exit code through every wrapper and dependent job?
 
 ## References
 

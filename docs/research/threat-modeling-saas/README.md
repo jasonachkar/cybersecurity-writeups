@@ -6,6 +6,12 @@ date: "2026-06"
 readingTime: 22
 ---
 
+
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../appsec/saas-multitenancy-isolation.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
 # Threat Modeling for Multi-Tenant SaaS Applications
 
 A comprehensive guide to identifying, analyzing, and mitigating security threats in multi-tenant Software-as-a-Service architectures using STRIDE and other methodologies.

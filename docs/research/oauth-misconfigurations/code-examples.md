@@ -509,6 +509,12 @@ async function authMiddleware(req: any, res: any, next: any) {
 ### Server-Side (Python)
 
 ```python
+
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../appsec/oauth2-oidc-deep-dive.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
 # redirect_uri_validator.py - Secure Redirect URI Validation
 
 from urllib.parse import urlparse, parse_qs, urlencode

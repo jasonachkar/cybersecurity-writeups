@@ -61,6 +61,8 @@ watch:
   - ../devsecops
   - ../threat-intel
   - ../labs
+  - ../research-methodology
+  - ../vulnerability-research
   - ../site-pages
   - ../scripts
 

@@ -51,12 +51,13 @@
   },
   "/appsec/ai-agent-security/": {
     "title": "Threat-Driven Security Architecture for AI Agents",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
       "Local broker fixtures cover authorized low-impact calls, missing/expired/mismatched approvals, sequential and concurrent replay, kill-switch, and unknown-argument denial.",
-      "ApprovalStore.consumeIfUnused enforces one successful consumption under concurrent tests via an in-memory compare-and-set that models a durable conditional write."
+      "ApprovalStore.consumeIfUnused enforces one successful consumption under concurrent tests via an in-memory compare-and-set that models a durable conditional write.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "In-memory ApprovalStore is a teaching model, not a distributed durable store.",
@@ -67,11 +68,12 @@
   },
   "/appsec/api-microservices-threat-modeling/": {
     "title": "API and Microservice Trust Boundaries: Workload Identity, User Context and Downstream Authorization",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Workload identity, end-user context, token audience, direct-service bypass, and authorization failure cases are explicitly modeled."
+      "Workload identity, end-user context, token audience, direct-service bypass, and authorization failure cases are explicitly modeled.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "No service mesh, token service, or production resource server is deployed."
@@ -93,11 +95,12 @@
   },
   "/appsec/oauth2-oidc-deep-dive/": {
     "title": "OAuth 2.0 and OpenID Connect Security Engineering",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Issuer, audience, time, nonce, state, PKCE, redirect, and key-rotation cases have local fixtures."
+      "Issuer, audience, time, nonce, state, PKCE, redirect, and key-rotation cases have local fixtures.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "No commercial identity provider conformance suite or production authorization server is exercised."
@@ -106,12 +109,13 @@
   },
   "/appsec/runtime-protection-rasp-waf/": {
     "title": "Layered Runtime Application Protection: WAF, In-Process Controls and eBPF Enforcement",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
       "WAF, in-process, and eBPF controls are compared by enforcement point, context, bypass, and failure behavior.",
-      "The TracingPolicyNamespaced manifest was validated against the pinned Tetragon v1.7.0 CRD structural schema in this review."
+      "The TracingPolicyNamespaced manifest was validated against the pinned Tetragon v1.7.0 CRD structural schema in this review.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "No live cluster enforcement test was run; the Tetragon example is schema-validated only."
@@ -120,11 +124,12 @@
   },
   "/appsec/saas-multitenancy-isolation/": {
     "title": "Engineering Tenant Isolation for a Multi-tenant SaaS Platform",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "PostgreSQL RLS boundary cases, role attributes, and pooled-client session lifecycle are exercised in a disposable database lab."
+      "PostgreSQL RLS boundary cases, role attributes, and pooled-client session lifecycle are exercised in a disposable database lab.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "API authorization, queues, caches, object storage, and telemetry boundaries are not exercised by the database lab."
@@ -133,11 +138,12 @@
   },
   "/cloud-security/cloud-detection-and-response/": {
     "title": "Cloud Detection Engineering: Durable Telemetry, High-Signal Analytics and Safe Response",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Sentinel KQL columns are mapped to the documented AWSCloudTrail schema and response controls are bounded."
+      "Sentinel KQL columns are mapped to the documented AWSCloudTrail schema and response controls are bounded.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "No live Sentinel workspace executed the query; data delivery and connector health remain environment-specific."
@@ -146,11 +152,12 @@
   },
   "/cloud-security/cloud-network-segmentation/": {
     "title": "Cloud Network Segmentation and Egress Control: Routing, Private Endpoints and Failure Domains",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Routing, endpoint-policy, centralized/distributed egress, IPv6, DNS, and inspection failure modes are explicitly separated."
+      "Routing, endpoint-policy, centralized/distributed egress, IPv6, DNS, and inspection failure modes are explicitly separated.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "Illustrative network configurations are not applied to AWS accounts."
@@ -159,11 +166,12 @@
   },
   "/cloud-security/iam-at-scale/": {
     "title": "AWS IAM at Scale: Federation, Delegation, and Guardrails",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Federation, delegation, PassRole, external-ID, and boundary decisions have runnable local policy cases."
+      "Federation, delegation, PassRole, external-ID, and boundary decisions have runnable local policy cases.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "The evaluator is not AWS IAM's production authorization engine and no cloud resources are deployed."
@@ -185,11 +193,12 @@
   },
   "/cloud-security/kubernetes-multi-tenancy/": {
     "title": "Kubernetes Multi-tenancy: Boundaries, Isolation, and Operations",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Pod, network-policy, and image-decision fixtures exercise positive and negative cases."
+      "Pod, network-policy, and image-decision fixtures exercise positive and negative cases.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "Image signature, certificate, registry, transparency, and live admission verification were not executed end to end."
@@ -198,11 +207,12 @@
   },
   "/cloud-security/multi-account-landing-zones/": {
     "title": "AWS Multi-Account Landing Zones: Guardrails and Control-Plane Isolation",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Organization, account-vending, guardrail, identity, logging, and recovery boundaries are primary-source reviewed."
+      "Organization, account-vending, guardrail, identity, logging, and recovery boundaries are primary-source reviewed.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "No AWS organization or Control Tower landing zone is deployed."
@@ -211,11 +221,12 @@
   },
   "/cloud-security/serverless-security/": {
     "title": "Serverless Security Engineering: Event Trust, Function Identity and Runtime Reuse",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Event identity, authorizers, Lambda integration, execution reuse, IAM roles, secrets, networking, and WAF decisions are separated."
+      "Event identity, authorizers, Lambda integration, execution reuse, IAM roles, secrets, networking, and WAF decisions are separated.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "No Lambda function, API Gateway, VPC path, or WAF policy is deployed."
@@ -224,11 +235,12 @@
   },
   "/devsecops/iac-security-and-policy-as-code/": {
     "title": "Infrastructure as Code Security and Policy Engineering",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Terraform plan fixtures cover secure, insecure, unknown, and deleted-control states."
+      "Terraform plan fixtures cover secure, insecure, unknown, and deleted-control states.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "No cloud deployment is authorized; provider-side behavior is not exercised."
@@ -250,11 +262,12 @@
   },
   "/devsecops/secrets-management/": {
     "title": "Secrets Management Engineering: Identity, Delivery, Rotation and Runtime Exposure",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Identity, delivery, rotation, runtime exposure, revocation, and failure semantics are threat-modelled separately."
+      "Identity, delivery, rotation, runtime exposure, revocation, and failure semantics are threat-modelled separately.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "No Vault cluster, Secrets Store CSI provider, or production rotation workflow is executed."
@@ -263,11 +276,12 @@
   },
   "/devsecops/secure-cicd-pipeline-design/": {
     "title": "Secure CI/CD Pipeline Architecture and Trust Boundaries",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Trust boundaries and fail-closed gate fixtures are documented and locally exercised."
+      "Trust boundaries and fail-closed gate fixtures are documented and locally exercised.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "The fixture does not deploy; attestation verification depends on GitHub's service and expected signer workflow."
@@ -276,11 +290,12 @@
   },
   "/devsecops/secureobs-multitenant-security-scanner/": {
     "title": "SecureObs: Customer-side CI Security Scanning with a Multi-tenant Findings Platform",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Owner-confirmed architecture is separated from repository-reproduced patterns and recommendations."
+      "Owner-confirmed architecture is separated from repository-reproduced patterns and recommendations.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "Sanitized design does not disclose proprietary detail or claim customer use, uptime, compliance, or complete isolation."
@@ -289,11 +304,12 @@
   },
   "/devsecops/supply-chain-sbom-signing/": {
     "title": "Software Supply-chain Evidence: SBOMs, Provenance, Signing, and Verification",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Artifact digest, SBOM linkage, provenance fields, and verifier-adapter contract have offline tests."
+      "Artifact digest, SBOM linkage, provenance fields, and verifier-adapter contract have offline tests.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "No production DSSE envelope, certificate chain, Rekor/transparency, or cryptographic signature verification is executed."
@@ -1635,11 +1651,12 @@
   },
   "/threat-intel/attack-path-analysis/": {
     "title": "Attack Path Analysis: Preconditions, Reachability and Evidence-Backed Control Breaks",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Three scenarios enumerate foothold, preconditions, edges, evidence, break points, negative tests, and residual risk."
+      "Three scenarios enumerate foothold, preconditions, edges, evidence, break points, negative tests, and residual risk.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "Graph reachability is not asserted as exploitability; live tenant graph data is not ingested."
@@ -1648,11 +1665,12 @@
   },
   "/threat-intel/cloud-breach-case-studies/": {
     "title": "Cloud Incident Case Studies: Evidence, Chronology, and Control Lessons",
-    "status": "partially-verified",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Chronologies distinguish incident-owner disclosure from inference and control lessons."
+      "Chronologies distinguish incident-owner disclosure from inference and control lessons.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "Public reporting cannot establish undisclosed facts or complete root cause."
@@ -1687,11 +1705,12 @@
   },
   "/ai-security/evidence-driven-agent-security/": {
     "title": "\"Evidence-Driven AI Agent and MCP Security",
-    "status": "current",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-10-22",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Source-level research synthesis; full review pending."
+      "Source-level research synthesis; full review pending.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "Illustrative guidance; external project tests and production behavior not reproduced."
@@ -1700,11 +1719,12 @@
   },
   "/devsecops/evidence-preserving-security-pipelines/": {
     "title": "\"Evidence-Preserving Security Scanning and Release Gates",
-    "status": "current",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-10-22",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Source-level research synthesis; full review pending."
+      "Source-level research synthesis; full review pending.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "Illustrative guidance; external project tests and production behavior not reproduced."
@@ -1726,14 +1746,262 @@
   },
   "/linux-security/evidence-driven-host-analysis/": {
     "title": "\"Linux Host Analysis Without Invented Attack Paths",
-    "status": "current",
+    "status": "requires-review",
     "indexable": true,
-    "lastReviewed": "2026-10-22",
+    "lastReviewed": "2026-11-02",
     "evidence": [
-      "Source-level research synthesis; full review pending."
+      "Source-level research synthesis; full review pending.",
+      "2026-11-02: article-specific protocol and bounded local lab audit; retained product claims require renewed independent review."
     ],
     "limitations": [
       "Illustrative guidance; external project tests and production behavior not reproduced."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/api-bola-multi-tenant/": {
+    "title": "Multi-tenant API authorization comparison lab",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Linked local lab implementation and tests."
+    ],
+    "limitations": [
+      "See bounded implementation status and limitations."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/cicd-identity-escalation/": {
+    "title": "CI/CD identity escalation policy lab",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Linked local lab implementation and tests."
+    ],
+    "limitations": [
+      "See bounded implementation status and limitations."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/mcp-tool-ssrf/": {
+    "title": "MCP-style SSRF comparison lab",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Linked local lab implementation and tests."
+    ],
+    "limitations": [
+      "See bounded implementation status and limitations."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/request-lifecycle/": {
+    "title": "Event context and secret-cache lifetime lab",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Linked local lab implementation and tests."
+    ],
+    "limitations": [
+      "See bounded implementation status and limitations."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/publishing/deployment-review/": {
+    "title": "Deployment review \u2014 2026-11-02",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/research-methodology/": {
+    "title": "Research methodology",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/research-methodology/evidence-standards/": {
+    "title": "Evidence standards",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/research-methodology/lab-audit/": {
+    "title": "Lab reproducibility audit \u2014 2026-11-02",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Recorded local validation; see per-command evidence boundary."
+    ],
+    "limitations": [
+      "No production or cloud deployment."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/research-methodology/open-questions/": {
+    "title": "Open research questions",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/research-methodology/research-index/": {
+    "title": "Research index and evidence coverage",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/": {
+    "title": "Vulnerability research",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/api-bola-multi-tenant/": {
+    "title": "Multi-tenant BOLA: One Authorization Predicate Across Every Data Path",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/api-bola-multi-tenant/lab/": {
+    "title": "Reproduce the multi-tenant authorization experiment",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/cicd-identity-escalation/": {
+    "title": "CI/CD Workload Identity: Trust Binding, Permission Ceilings and Persistence",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/cicd-identity-escalation/lab/": {
+    "title": "Reproduce CI/CD identity policy decisions without cloud access",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/mcp-tool-ssrf/": {
+    "title": "MCP-style URL-fetch SSRF: Destination and Egress Boundaries",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/mcp-tool-ssrf/lab/": {
+    "title": "Reproduce the URL-fetch SSRF experiment",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/methodology/": {
+    "title": "Vulnerability-research methodology",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Owned repository source; see page-level claim ledger."
+    ],
+    "limitations": [
+      "Local test evidence does not establish full production effectiveness."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/vulnerability-research/verification/": {
+    "title": "Verification record \u2014 2026-11-02",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-02",
+    "evidence": [
+      "Recorded local validation; see per-command evidence boundary."
+    ],
+    "limitations": [
+      "No production or cloud deployment."
     ],
     "reviewIntervalDays": 90
   }

@@ -21,7 +21,11 @@ for (const file of allRepositoryFiles((candidate) => /\.(json|ya?ml)$/i.test(can
   try {
     const source = fs.readFileSync(file, "utf8");
     if (file.endsWith(".json")) JSON.parse(source);
-    else YAML.parse(source, { uniqueKeys: true, logLevel: "silent" });
+    else {
+      const documents = YAML.parseAllDocuments(source, { uniqueKeys: true, logLevel: "silent" });
+      const parseErrors = documents.flatMap(document => document.errors);
+      if (parseErrors.length) throw parseErrors[0];
+    }
   } catch (error) {
     errors.push(`${rel}: ${error.message}`);
   }
@@ -32,8 +36,13 @@ for (const file of allRepositoryFiles((candidate) => candidate.endsWith(".js")))
 
 const terraformFiles = allRepositoryFiles((candidate) => candidate.endsWith(".tf"));
 if (terraformFiles.length) {
-  const result = run(process.platform === "win32" ? "terraform.exe" : "terraform", ["fmt", "-check", "-recursive", "labs"]);
+  const result = run(process.platform === "win32" ? "terraform.exe" : "terraform", ["fmt", "-check", "-recursive", "."]);
   if (result.missing) notes.push("Terraform CLI unavailable; Terraform formatting was not validated.");
+}
+const pythonFiles = allRepositoryFiles((candidate) => candidate.endsWith(".py"));
+if (pythonFiles.length) {
+  const result = run("python3", ["-c", "import ast, pathlib, sys; [ast.parse(pathlib.Path(p).read_text(), filename=p) for p in sys.argv[1:]]", ...pythonFiles]);
+  if (result.missing) notes.push("Python unavailable; Python syntax was not validated.");
 }
 const bicepFiles = allRepositoryFiles((candidate) => candidate.endsWith(".bicep"));
 if (bicepFiles.length) {

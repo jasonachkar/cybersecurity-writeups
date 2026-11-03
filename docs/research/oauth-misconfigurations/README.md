@@ -6,6 +6,12 @@ date: "2026-06"
 readingTime: 13
 ---
 
+
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../appsec/oauth2-oidc-deep-dive.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
 # Common OAuth 2.0 Misconfigurations and Exploits
 
 ## Introduction

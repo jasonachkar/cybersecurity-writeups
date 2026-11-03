@@ -99,6 +99,54 @@ IAM Access Analyzer policy validation and external-access findings are valuable 
 
 The test reads tracked JSON and starts one Node.js process. It creates no temporary files, credentials, containers, or cloud resources, so no cleanup is required.
 
+## Reproducibility and threat-model audit — 2026-11-02
+
+| Element | Bounded experiment |
+| --- | --- |
+| Actor | Foreign workload identity or delegated role author |
+| Assets | trust policy, role permissions and boundary |
+| Entry points | authenticity fixture, subject and requested action |
+| Boundary | External-verifier fixture → claims → trust → effective permission model |
+| Safety | Owned synthetic fixtures; no production data or cloud credentials; no cloud deployment |
+
+```mermaid
+flowchart LR
+  I[Controlled input] --> B[Tested boundary]
+  B --> A[Expected allowed case]
+  B --> D[Expected denied case]
+  A --> E[Assertions and sanitized evidence]
+  D --> E
+```
+
+### Complete local setup
+
+Use a fresh repository checkout and the prerequisites above. From repository root:
+
+```sh
+npm ci --ignore-scripts
+node labs/iam-oidc/tests/run-tests.js
+```
+
+This is a local decision experiment, so the complete implementation is its tracked code, fixtures and policy files. It needs no Terraform deployment, service account or publicly exposed server. Never relocate fixture workflows into an active CI directory without a separate environment review.
+
+### Evidence, expected output and interpretation
+
+The documented command exits zero only when its assertions pass; an unexpected
+allow/deny, schema or state result is a failure. Preserve the full command output
+under ignored `.artifacts/research/` with runtime/tool versions and exit status.
+Use the specific expected markers above rather than inventing example output.
+The [lab audit](../../research-methodology/lab-audit.md) records the validation run.
+
+No real JWT verification, STS exchange or provider API is executed. See the CI/CD identity study for Terraform-exported policy tests. Local finite-case coverage is not a production false-positive or
+false-negative estimate. TTD/TTC, representative pipeline overhead and monthly
+cloud cost are **not measured in this lab**.
+
+### Teardown and resources
+
+The processes exit and remove their temporary test files. There is no cloud destroy command. Retained evidence, optional provider downloads and local Docker image cache are your only persistent outputs; remove them after review. Node dependencies can remain for subsequent runs.
+
+Local CPU, memory, dependency downloads and optional image disk space are the resource cost. There is no measured cloud bill. Related research links above define which claims the experiment supports.
+
 ## References
 
 - [AWS: Create a role for OIDC federation, including GitHub conditions](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html)
@@ -115,3 +163,7 @@ The test reads tracked JSON and starts one Node.js process. It creates no tempor
 - [GitHub: OpenID Connect reference and subject formats](https://docs.github.com/en/actions/reference/security/oidc)
 - [GitHub: Configure OIDC in AWS](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws)
 - [GitHub: Configure OIDC in Azure](https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-azure)
+
+## Related maintained investigations
+
+- [iam at scale](../../cloud-security/iam-at-scale.md)

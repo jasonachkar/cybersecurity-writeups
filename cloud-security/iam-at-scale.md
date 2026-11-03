@@ -12,16 +12,17 @@ tags:
   - iam
   - scale
 date: "2026-07-25"
-lastReviewed: "2026-07-25"
-reviewStatus: "partially-verified"
+lastReviewed: "2026-11-02"
+reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "AWS IAM security best practices — https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html"
   - "Create an OIDC role for GitHub Actions — https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html"
   - "Create an IAM OIDC identity provider — https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_providers_create_oidc.html"
   - "GitHub OIDC reference — https://docs.github.com/en/actions/reference/security/oidc"
   - "GitHub OIDC in AWS — https://docs.github.com/en/actions/how-tos/secure-your-work/security-harden-deployments/oidc-in-aws"
   - "Configure a Microsoft Entra federated identity credential — https://learn.microsoft.com/entra/workload-id/workload-identity-federation-create-trust"
-sourceQuality: "primary-sources-reviewed"
+sourceQuality: "requires-review"
 implementationStatus: "partially-tested"
 reviewIntervalDays: 90
 ---
@@ -226,6 +227,76 @@ Trust/policy/role/access-key changes and unexpected sessions alert centrally.
 ## Limitations
 
 Policy snippets require account/partition/service-specific review. AWS adds services, condition keys, workload-identity capabilities, and Organizations controls over time; revalidate before production changes. The offline lab implements a documented subset of policy behavior, not AWS IAM or Azure RBAC, and does not establish cloud execution.
+
+## Research question and hypothesis
+
+**Question:** Can subject-bound federation and immutable delegation boundaries separate token acceptance from effective API authority?
+
+**Falsifiable hypothesis (bounded experiment):** Wrong repository, audience, environment, external ID or boundary mutation is denied at the intended decision stage; one admitted negative case refutes the local model contract.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Compromised CI job or delegated role administrator |
+| Assets | Role trust, workload role, boundary and downstream data |
+| Entry points | OIDC assertions, AssumeRole, session tags and PassRole |
+| Trust boundaries | Issuer authentication → trust authorization → role permissions → service execution |
+| Impact under investigation | Unauthorized role assumption, broader downstream access or removal of the permission ceiling |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/iam-oidc/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+node labs/iam-oidc/tests/run-tests.js
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: The 45-case fixture suite distinguishes signature, claims, trust and permission failure. It does not exchange a real token. |
+| Architecture explanation in this article | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Protect the bootstrap administrator separately; narrow PassRole and its destination API together. An accepted workflow can still misuse every API legitimately granted to it.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+Can a resource policy grant to a session change the intended ceiling under the target account policies?
 
 ## References
 

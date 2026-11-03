@@ -1,5 +1,11 @@
 # 4. Detection Engineering & Threat Hunting
 
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../cloud-security/cloud-detection-and-response.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
+
 > The first three sections reduce *attack surface*. Detection engineering verifies they're holding and catches the residual risk. The discipline is: **get the right telemetry, shape it efficiently, write high-signal analytics as code, map them to adversary behavior, and validate they actually fire.** This section uses **Microsoft Sentinel + Azure Monitor** and **Kusto Query Language (KQL)**.
 
 > ⚠️ **Tuning note:** the KQL below is written as **hunting starting points**. Table and column names vary by connector and by whether logs land in resource-specific tables (e.g., `StorageBlobLogs`) or `AzureDiagnostics`. Validate against *your* schema and baseline thresholds before promoting any query to an alerting rule.

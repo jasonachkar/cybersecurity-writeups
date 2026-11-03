@@ -64,6 +64,12 @@ The cloud validates the JWT signature against the issuer's **JWKS** (published a
 **Step 2 — Register a federated credential** mapping GitHub's OIDC token to the app. Note the tight `subject`:
 
 ```bash
+
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../cloud-security/iam-at-scale.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
 # Federate a specific environment ("prod") of one repo. Nothing else can mint a token.
 az ad app federated-credential create \
   --id "$APP_OBJECT_ID" \

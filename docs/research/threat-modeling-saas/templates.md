@@ -422,6 +422,12 @@ For each component/data flow in your DFD, ask the STRIDE questions below.
 
 **Implementation Guidance:**
 ```python
+
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../appsec/saas-multitenancy-isolation.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
 # Required checks for every resource endpoint:
 # 1. Authenticate the user
 # 2. Resolve the tenant context

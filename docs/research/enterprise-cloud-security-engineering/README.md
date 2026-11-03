@@ -6,7 +6,17 @@ date: 2026-06
 readingTime: 55
 ---
 
+
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../cloud-security/cloud-network-segmentation.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
 # Advanced Cloud Security Engineering
+
+Current experiments and limitations are indexed in the
+[research methodology](../../../research-methodology/research-index.md). This
+historical overview is not an independently renewed review of its original claims.
 
 > A production-grade research report covering **Identity & Access Management**, **DevSecOps & pipeline hardening**, **Cloud Security architecture**, and **Detection engineering & threat hunting** across modern enterprise cloud environments (Azure, AWS, and multi-cloud).
 
@@ -130,3 +140,12 @@ This report's controls map to widely adopted standards so they can be evidenced 
 ---
 
 *This document is part of the `cybersecurity-writeups` knowledge base and is intended for educational and defensive purposes only.*
+
+## References
+
+These sources were consulted for the maintained replacements; they do not validate
+all historical claims or examples retained above.
+
+- [AWS OIDC role trust documentation](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_create_for-idp_oidc.html)
+- [Microsoft management-group design guidance](https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/landing-zone/design-area/resource-org-management-groups)
+- [Maintained research and local evidence index](../../../research-methodology/research-index.md)

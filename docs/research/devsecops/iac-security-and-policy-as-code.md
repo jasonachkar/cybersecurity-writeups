@@ -1,5 +1,11 @@
 # IaC Security and Policy-as-Code
 
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../devsecops/iac-security-and-policy-as-code.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
+
 > Status: IN PROGRESS – deep-dive draft
 
 ## Executive Summary

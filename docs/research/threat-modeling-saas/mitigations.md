@@ -1,5 +1,11 @@
 # Threat Modeling Mitigations for SaaS
 
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../appsec/saas-multitenancy-isolation.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
+
 Once threats are identified via STRIDE and mapped on Data Flow Diagrams, they must be addressed. Mitigations in a SaaS environment heavily focus on enforcing tenant boundaries, securing APIs, and ensuring robust auditing.
 
 ---

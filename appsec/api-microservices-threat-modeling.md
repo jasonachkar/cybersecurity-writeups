@@ -11,16 +11,17 @@ tags:
   - threat
   - modeling
 date: "2026-07-25"
-lastReviewed: "2026-07-25"
-reviewStatus: "partially-verified"
+lastReviewed: "2026-11-02"
+reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "NIST SP 800-204 - Security Strategies for Microservices-based Application Systems — https://csrc.nist.gov/pubs/sp/800/204/final"
   - "NIST SP 800-204A - Building Secure Microservices-based Applications Using Service-Mesh Architecture — https://csrc.nist.gov/pubs/sp/800/204/a/final"
   - "RFC 9700 - Best Current Practice for OAuth 2.0 Security — https://www.rfc-editor.org/rfc/rfc9700.html"
   - "RFC 8693 - OAuth 2.0 Token Exchange — https://www.rfc-editor.org/rfc/rfc8693.html"
   - "OpenID Connect Core 1.0 incorporating errata set 2 — https://openid.net/specs/openid-connect-core-1_0.html"
   - "Kubernetes Network Policies — https://kubernetes.io/docs/concepts/services-networking/network-policies/"
-sourceQuality: "primary-sources-reviewed"
+sourceQuality: "requires-review"
 implementationStatus: "illustrative"
 reviewIntervalDays: 90
 ---
@@ -178,6 +179,76 @@ Rollback should restore the previous validated token path, not plaintext identit
 ## What's still not solved
 
 Even with this in place: a compromised gateway or token service, a stolen bearer token used within its validity window, plain old authorization bugs in the app, stale relationship data, a compromised signing key or identity provider, policy exceptions people forgot to clean up, side channels, and asynchronous paths I haven't modeled here all remain open problems. Sender-constrained tokens cut down on replay by a different client, but they don't prove business authorization on their own.
+
+## Research question and hypothesis
+
+**Question:** Does downstream authorization survive an authenticated direct request, alternate export endpoint and agent wrapper?
+
+**Falsifiable hypothesis (bounded experiment):** Every endpoint uses the same verified user/tenant/object predicate; a foreign row returned or mutated through any tested path refutes consistency.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Authenticated user with known foreign object IDs |
+| Assets | Documents, customer links and refund authority |
+| Entry points | CRUD routes, tenant headers, export and agent calls |
+| Trust boundaries | Session authentication → data access → related object and action |
+| Impact under investigation | Cross-tenant disclosure, mutation or unintended sensitive action |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/api-bola-multi-tenant/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+python3 vulnerability-research/api-bola-multi-tenant/lab/test_api.py
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: The owned HTTP target tests 14 paired cases with state assertions. It does not implement mTLS, token exchange or a service mesh. |
+| Architecture explanation in this article | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Reauthorize at the service that owns the data and keep workload/user authority distinct. Do not let an agent or gateway manufacture a more privileged user context.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+Can a background job or cached export bypass the same repository scope under asynchronous execution?
 
 ## References
 

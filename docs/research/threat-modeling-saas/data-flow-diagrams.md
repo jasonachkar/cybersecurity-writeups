@@ -1,5 +1,11 @@
 # Data Flow Diagrams (DFDs) for SaaS Applications
 
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../appsec/saas-multitenancy-isolation.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
+
 Data Flow Diagrams (DFDs) are a visual representation of how data moves through a system. In threat modeling, they are used to map out the system architecture, identify trust boundaries, and pinpoint where threats from the STRIDE model could materialize.
 
 ---

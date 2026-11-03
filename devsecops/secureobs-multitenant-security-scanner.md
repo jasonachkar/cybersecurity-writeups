@@ -11,15 +11,16 @@ tags:
   - security
   - scanner
 date: "2026-07-25"
-lastReviewed: "2026-07-25"
-reviewStatus: "partially-verified"
+lastReviewed: "2026-11-02"
+reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "PostgreSQL row security policies — https://www.postgresql.org/docs/current/ddl-rowsecurity.html"
   - "GitHub secure use reference — https://docs.github.com/en/actions/reference/security/secure-use"
   - "Azure Pipelines security guidance — https://learn.microsoft.com/en-us/azure/devops/pipelines/security/overview"
   - "NIST Secure Software Development Framework — https://csrc.nist.gov/pubs/sp/800/218/final"
   - "OWASP ASVS project — https://owasp.org/www-project-application-security-verification-standard/"
-sourceQuality: "primary-sources-reviewed"
+sourceQuality: "requires-review"
 implementationStatus: "partially-tested"
 reviewIntervalDays: 90
 ---
@@ -316,6 +317,76 @@ What's still not solved: a compromised customer runner, scanner blind spots or a
 ## What I'd still want to check
 
 The current-implementation statements above come from my own architecture correction, not from inspecting the private code independently. Before I'd call this `verified` instead of `partially-verified`, I'd want to review sanitized architecture/sequence diagrams, API authorization tests, RLS migration/policy tests, integration fixtures, scanner completion semantics, gate failure behavior, and operational evidence. Any historical defect claims need their own records I can point to. I'm not adding customer identity, private findings, secrets, or outcomes I can't back up.
+
+## Research question and hypothesis
+
+**Question:** Which findings-platform claims require full integration evidence beyond a passing local build gate?
+
+**Falsifiable hypothesis (bounded experiment):** A report must bind tenant/project/revision/run/policy and all required scanner outcomes before release; cross-run or incomplete acceptance would refute that design requirement.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Malicious tenant, compromised customer runner or findings-service operator |
+| Assets | Source confidentiality, tenant findings, gate evidence and integration credentials |
+| Entry points | Scanner reports, findings ingestion, templates and dashboard exports |
+| Trust boundaries | Customer runner → authenticated ingestion → tenant store → gate consumer |
+| Impact under investigation | Cross-tenant findings, forged completeness or release evidence substitution |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/secure-cicd/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+node labs/secure-cicd/tests/run-tests.js
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: Repository-owned gate tests supply only bounded normalized-report evidence. Previously documented external project implementation/history is not independently re-executed by this work. |
+| Architecture explanation in this article | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Keep customer-side execution, findings management and future hosted-worker proposals distinct. Review every storage/export path; a dashboard count is not scanner coverage evidence.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+Can a tenant submit a valid report for another project or replay a successful gate decision after the policy changes?
 
 ## References
 

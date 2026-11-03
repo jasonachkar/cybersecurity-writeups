@@ -12,9 +12,10 @@ tags:
   - ebpf
   - evidence
 date: "2026-10-22"
-lastReviewed: "2026-10-22"
+lastReviewed: "2026-11-02"
 reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "Source inspection of Linux collection, evidence semantics, rule evaluation, and sensor limitations"
 sourceQuality: "requires-review"
 implementationStatus: "illustrative"
@@ -167,6 +168,76 @@ runtime tests belong on isolated authorized VMs; this article ran none of them.
 The reviewed design deliberately stops short of exploit execution, enforcement,
 whole-enterprise lateral movement, and universal effective-access modeling. Those
 limits are essential to interpreting its output accurately.
+
+## Research question and hypothesis
+
+**Question:** Can configuration-level host privilege observations avoid becoming unverified exploitability claims?
+
+**Falsifiable hypothesis (bounded experiment):** Missing namespace/process identity or incomplete collection leaves reachability unknown; one unconditional privilege claim based only on a mode bit or PID refutes the evidence contract.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Unprivileged process or a compromised collector input source |
+| Assets | Process identity, namespace attribution, host metadata and report confidentiality |
+| Entry points | Procfs strings, file metadata, runtime events and saved reports |
+| Trust boundaries | Kernel metadata → bounded collector → correlation → human interpretation |
+| Impact under investigation | Incorrect privilege attribution, secret retention or resource exhaustion |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/kubernetes-security/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+node labs/kubernetes-security/tests/run-tests.js
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: The related lab validates workload configuration shapes only. It does not reproduce host collector races or live eBPF attachment. |
+| Architecture explanation in this article | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Require stable object/process identity and explicit collection completeness. Use authorized isolated VMs for privileged runtime checks; do not grant broad capability just to hide a readiness failure.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+Can a PID-reuse or overmount race produce an incorrectly linked event despite before/after identity checks?
 
 ## References
 

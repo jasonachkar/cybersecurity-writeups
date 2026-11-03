@@ -16,6 +16,9 @@ MERMAID_RUNTIME_PATH = REPOSITORY_ROOT / "node_modules" / "mermaid" / "dist" / "
 MERMAID_RUNTIME_DESTINATION = "js/vendor/mermaid.min.js"
 VIRTUAL_MOUNTS = (
     (REPOSITORY_ROOT / "labs", Path("labs")),
+    (REPOSITORY_ROOT / "research-methodology", Path("research-methodology")),
+    (REPOSITORY_ROOT / "vulnerability-research", Path("vulnerability-research")),
+    (REPOSITORY_ROOT / "publishing", Path("publishing")),
     (REPOSITORY_ROOT / "site-pages", Path(".")),
 )
 DOCS_CATALOG: dict[str, object] = {}
@@ -42,9 +45,17 @@ def _generated_nav(catalog: dict[str, object]) -> list[object]:
     navigation = catalog["navigation"]
     research = ["research/index.md"]
     for group in navigation["researchGroups"]:
+        if group["index"] == "vulnerability-research/index.md":
+            continue
         children: list[object] = [group["index"]]
         children.extend({item["title"]: item["path"]} for item in group["children"])
         research.append({group["title"]: children})
+    research.append({"Research methodology": [
+        "research-methodology/index.md",
+        {"Evidence standards": "research-methodology/evidence-standards.md"},
+        {"Research index": "research-methodology/research-index.md"},
+        {"Open questions": "research-methodology/open-questions.md"},
+    ]})
 
     labs: list[object] = ["labs/index.md"]
     labs.extend({item["title"]: item["path"]} for item in navigation["labs"])
@@ -53,6 +64,13 @@ def _generated_nav(catalog: dict[str, object]) -> list[object]:
     return [
         {"Home": "index.md"},
         {"Research": research},
+        {"Vulnerability research": [
+            "vulnerability-research/index.md",
+            {"Methodology": "vulnerability-research/methodology.md"},
+            {"MCP-style tool SSRF": "vulnerability-research/mcp-tool-ssrf/index.md"},
+            {"Multi-tenant BOLA": "vulnerability-research/api-bola-multi-tenant/index.md"},
+            {"CI/CD identity escalation": "vulnerability-research/cicd-identity-escalation/index.md"},
+        ]},
         {"Labs": labs},
         {"Scripts": scripts},
         {"Study notes": [
@@ -106,9 +124,17 @@ def on_files(files: Files, config) -> Files:
         )
     )
     existing.add(MERMAID_RUNTIME_DESTINATION)
+    # Preserve the published lifecycle endpoint consumed by docs:audit. Both
+    # branches receive the same canonical registry; it is never hand-maintained.
+    if "content-status.json" in existing:
+        raise RuntimeError("canonical lifecycle endpoint collides: content-status.json")
+    files.append(File.generated(config, "content-status.json", content=LIFECYCLE_PATH.read_text(encoding="utf-8")))
+    existing.add("content-status.json")
     for source_root, destination_root in VIRTUAL_MOUNTS:
-        for source in sorted(source_root.rglob("*.md")):
-            if any(part in {"node_modules", ".venv", ".terraform"} for part in source.parts):
+        for source in sorted(source_root.rglob("*")):
+            if not source.is_file() or any(part in {"node_modules", ".venv", ".terraform", "__pycache__"} for part in source.parts):
+                continue
+            if source.suffix not in {".md", ".py", ".js", ".json", ".yaml", ".yml", ".sh", ".ps1", ".sql", ".tf", ".hcl", ".txt", ".kql"} and source.name != "Dockerfile":
                 continue
             relative = source.relative_to(source_root)
             destination = (destination_root / relative).as_posix()

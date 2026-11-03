@@ -93,6 +93,7 @@ test("the static artifact is self-contained and publishable", () => {
   assert.equal(fs.readFileSync(path.join(SITE, "CNAME"), "utf8").trim(), "docs.jasonachkardiab.com");
   assert.doesNotMatch(readPage("/"), /fonts\.(?:googleapis|gstatic)\.com/);
   assert.ok(fs.existsSync(path.join(SITE, "js/vendor/mermaid.min.js")));
+  assert.deepEqual(JSON.parse(fs.readFileSync(path.join(SITE, "content-status.json"), "utf8")), lifecycle);
   const about = readPage("/about/");
   assert.match(about, /class="mermaid"/);
   assert.match(about, /data-diagram-label="Canonical documentation publishing flow"/);

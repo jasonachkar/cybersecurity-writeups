@@ -1,0 +1,149 @@
+[
+  {
+    "article": "cloud-security/iam-at-scale.md",
+    "lab": "labs/iam-oidc/README.md",
+    "question": "Can subject-bound federation and immutable delegation boundaries separate token acceptance from effective API authority?",
+    "command": "node labs/iam-oidc/tests/run-tests.js",
+    "claimBoundary": "The 45-case fixture suite distinguishes signature, claims, trust and permission failure. It does not exchange a real token."
+  },
+  {
+    "article": "cloud-security/kubernetes-multi-tenancy.md",
+    "lab": "labs/kubernetes-security/README.md",
+    "question": "Which tenant isolation claims are supported by admission fixtures, and which require a real cluster and CNI?",
+    "command": "node labs/kubernetes-security/tests/run-tests.js",
+    "claimBoundary": "The local suite checks manifest structure and an image-evidence model. Native Kyverno testing is a separate command and cluster admission/network enforcement is not inferred."
+  },
+  {
+    "article": "cloud-security/cloud-network-segmentation.md",
+    "lab": "labs/mcp-tool-ssrf/README.md",
+    "question": "Does a separate gateway prevent a fetch tool from using a direct internal path after URL controls are bypassed?",
+    "command": "python3 vulnerability-research/mcp-tool-ssrf/lab/test_fetcher.py",
+    "claimBoundary": "The linked study additionally runs real Docker TCP and paired HTTP tests. Unit resolver results alone are not network enforcement."
+  },
+  {
+    "article": "cloud-security/cloud-detection-and-response.md",
+    "lab": "labs/cicd-identity-escalation/README.md",
+    "question": "Can a detector preserve the distinction between a failed privilege-change attempt and a reported successful change?",
+    "command": "python3 vulnerability-research/detection.py --test",
+    "claimBoundary": "Nine synthetic events yield a finite confusion matrix. They do not exercise Sentinel scheduling, log delivery or alert routing."
+  },
+  {
+    "article": "cloud-security/serverless-security.md",
+    "lab": "labs/request-lifecycle/README.md",
+    "question": "Can tenant context, event idempotency and secret freshness survive reuse of one handler process?",
+    "command": "node --test labs/request-lifecycle/lifecycle.test.js",
+    "claimBoundary": "Six local test methods cover producer/context rejection, duplicate/concurrent duplicate, tenant reuse, changed payload and exact cache refresh timing."
+  },
+  {
+    "article": "cloud-security/multi-account-landing-zones.md",
+    "lab": "labs/azure-landing-zone/README.md",
+    "question": "Which hierarchy and audit assumptions can a static landing-zone plan establish before provider-side policy testing?",
+    "command": "bash labs/azure-landing-zone/validate.sh",
+    "claimBoundary": "The Azure mock suite checks its Terraform inputs and resource shape. It is not evidence for AWS SCP evaluation or Azure runtime inheritance."
+  },
+  {
+    "article": "appsec/api-microservices-threat-modeling.md",
+    "lab": "labs/api-bola-multi-tenant/README.md",
+    "question": "Does downstream authorization survive an authenticated direct request, alternate export endpoint and agent wrapper?",
+    "command": "python3 vulnerability-research/api-bola-multi-tenant/lab/test_api.py",
+    "claimBoundary": "The owned HTTP target tests 14 paired cases with state assertions. It does not implement mTLS, token exchange or a service mesh."
+  },
+  {
+    "article": "appsec/oauth2-oidc-deep-dive.md",
+    "lab": "labs/oauth-oidc/README.md",
+    "question": "Can token authenticity, audience, time, tenant and scope fail independently rather than collapsing into decoded-token acceptance?",
+    "command": "node --test labs/oauth-oidc/tests/oauth-security.test.js",
+    "claimBoundary": "The suite generates RSA keys and executes local signature/claim/redirect decisions. The linked Go package separately checks S256 PKCE."
+  },
+  {
+    "article": "appsec/saas-multitenancy-isolation.md",
+    "lab": "labs/postgresql-rls/README.md",
+    "question": "Does the database enforce tenant visibility and writes when an application query lacks or reuses tenant context?",
+    "command": "sh labs/postgresql-rls/run-tests.sh",
+    "claimBoundary": "The container integration executes SQL and pg pooled-client boundary tests, including rollback/cancellation. HTTP authorization is tested separately in the BOLA study."
+  },
+  {
+    "article": "appsec/ai-agent-security.md",
+    "lab": "labs/ai-agent-security/README.md",
+    "question": "Can a model-proposed action acquire authority without independently bound approval and policy?",
+    "command": "node --test labs/ai-agent-security/tests/broker.test.js",
+    "claimBoundary": "The Node suite asserts executor invocation counts and bounded approval semantics. It does not execute an LLM, MCP server or real financial action."
+  },
+  {
+    "article": "appsec/runtime-protection-rasp-waf.md",
+    "lab": "labs/mcp-tool-ssrf/README.md",
+    "question": "Does application-level destination enforcement reject the same internal-fetch requests even when edge filtering is absent?",
+    "command": "python3 vulnerability-research/mcp-tool-ssrf/lab/test_fetcher.py",
+    "claimBoundary": "This is application destination-policy evidence only. The retained Tetragon example remains schema evidence, not a live kernel prevention result."
+  },
+  {
+    "article": "ai-security/evidence-driven-agent-security.md",
+    "lab": "labs/ai-agent-security/README.md",
+    "question": "Can an assessment keep configured capability, attempted activity and executed authority distinct?",
+    "command": "node --test labs/ai-agent-security/tests/broker.test.js",
+    "claimBoundary": "The broker test provides a local decision/execution distinction. The SSRF study supplies a separate URL-tool boundary and does not establish real model exploitability."
+  },
+  {
+    "article": "linux-security/evidence-driven-host-analysis.md",
+    "lab": "labs/kubernetes-security/README.md",
+    "question": "Can configuration-level host privilege observations avoid becoming unverified exploitability claims?",
+    "command": "node labs/kubernetes-security/tests/run-tests.js",
+    "claimBoundary": "The related lab validates workload configuration shapes only. It does not reproduce host collector races or live eBPF attachment."
+  },
+  {
+    "article": "devsecops/secure-cicd-pipeline-design.md",
+    "lab": "labs/secure-cicd/README.md",
+    "question": "Can malformed or incomplete scanner evidence ever satisfy release authorization?",
+    "command": "node labs/secure-cicd/tests/run-tests.js",
+    "claimBoundary": "The gate/YAML suite tests controlled fixtures and exit semantics. The companion policy suite checks protected-boundary patterns; no hosted job or environment approval is executed."
+  },
+  {
+    "article": "devsecops/iac-security-and-policy-as-code.md",
+    "lab": "labs/iac-policy/README.md",
+    "question": "Can unknown plan values and deletion of a modeled security control escape the policy gate?",
+    "command": "node labs/iac-policy/tests/run-tests.js",
+    "claimBoundary": "The Node harness checks structure only. Run the native OPA commands in the lab to establish actual Rego decisions; Terraform validate is separate T1 evidence."
+  },
+  {
+    "article": "devsecops/supply-chain-sbom-signing.md",
+    "lab": "labs/supply-chain/README.md",
+    "question": "Can valid-looking provenance or a verifier result be replayed for changed bytes, source or builder?",
+    "command": "node labs/supply-chain/tests/run-tests.js",
+    "claimBoundary": "The local suite checks digest and policy/model binding; its external-verifier fixture is an adapter contract, not observed Sigstore or GitHub cryptographic verification."
+  },
+  {
+    "article": "devsecops/secrets-management.md",
+    "lab": "labs/request-lifecycle/README.md",
+    "question": "Does a warm secret cache fail closed after its freshness window when the provider is unavailable?",
+    "command": "node --test labs/request-lifecycle/lifecycle.test.js",
+    "claimBoundary": "Injected-clock tests establish old version at 999 ms, new version at 1000 ms, and failure without stale fallback. They do not establish Vault revocation or target-session termination."
+  },
+  {
+    "article": "devsecops/evidence-preserving-security-pipelines.md",
+    "lab": "labs/secure-cicd/README.md",
+    "question": "Can an outage or scanner failure silently become a clean release report?",
+    "command": "node labs/secure-cicd/tests/run-tests.js",
+    "claimBoundary": "The local gate fixtures exercise failure states. Historical external integration/source-inspection descriptions are retained but were not rerun in this audit."
+  },
+  {
+    "article": "devsecops/secureobs-multitenant-security-scanner.md",
+    "lab": "labs/secure-cicd/README.md",
+    "question": "Which findings-platform claims require full integration evidence beyond a passing local build gate?",
+    "command": "node labs/secure-cicd/tests/run-tests.js",
+    "claimBoundary": "Repository-owned gate tests supply only bounded normalized-report evidence. Previously documented external project implementation/history is not independently re-executed by this work."
+  },
+  {
+    "article": "threat-intel/attack-path-analysis.md",
+    "lab": "labs/cicd-identity-escalation/README.md",
+    "question": "Does a policy-backed graph path correspond to an admitted sequence of authority transitions?",
+    "command": "bash vulnerability-research/cicd-identity-escalation/lab/validate.sh",
+    "claimBoundary": "The exported-policy model makes the distinction between graph possibility and local decision explicit. The BOLA study separately reproduces an application path; no combined cloud chain is claimed."
+  },
+  {
+    "article": "threat-intel/cloud-breach-case-studies.md",
+    "lab": "labs/mcp-tool-ssrf/README.md",
+    "question": "Can public incident disclosures support control lessons without inventing the missing exploit details?",
+    "command": "python3 vulnerability-research/mcp-tool-ssrf/lab/test_fetcher.py",
+    "claimBoundary": "The related lab illustrates a generic request boundary only. It does not reenact Capital One, Uber or CircleCI or validate any private forensic detail."
+  }
+]

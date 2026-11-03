@@ -11,16 +11,17 @@ tags:
   - and
   - response
 date: "2026-07-25"
-lastReviewed: "2026-07-25"
-reviewStatus: "partially-verified"
+lastReviewed: "2026-11-02"
+reviewStatus: "requires-review"
 validatedAgainst:
+  - "2026-11-02 research-protocol and local-test audit; retained product claims require independent renewed source review"
   - "Microsoft Azure Monitor `AWSCloudTrail` table schema — https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/awscloudtrail"
   - "Microsoft `AWSCloudTrail` sample queries — https://learn.microsoft.com/en-us/azure/azure-monitor/reference/queries/awscloudtrail"
   - "AWS CloudTrail operation and trail delivery — https://docs.aws.amazon.com/awscloudtrail/latest/userguide/how-cloudtrail-works.html"
   - "AWS CloudTrail organization-trail delivery troubleshooting — https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudtrail-troubleshooting.html"
   - "AWS CloudTrail data-event selectors — https://docs.aws.amazon.com/awscloudtrail/latest/userguide/logging-data-events-with-cloudtrail.html"
   - "Amazon S3 Object Lock behavior and retention modes — https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-lock.html"
-sourceQuality: "primary-sources-reviewed"
+sourceQuality: "requires-review"
 implementationStatus: "illustrative"
 reviewIntervalDays: 90
 ---
@@ -166,6 +167,76 @@ Rollback detection content by version, not by disabling the entire detection cat
 ## What's still not solved
 
 Gaps in what the cloud provider even logs, activity that was intentionally left unlogged, delayed delivery, a compromised admin who's supposed to be independent, encrypted archives you can no longer read, admin abuse that looks just like routine maintenance, schema changes, blind spots across regions or accounts, a SIEM that goes down, and containment actions that knock out something critical — all of that is still on the table. Detection shortens how long it takes to find out something happened; it's not a reason to skip preventive controls.
+
+## Research question and hypothesis
+
+**Question:** Can a detector preserve the distinction between a failed privilege-change attempt and a reported successful change?
+
+**Falsifiable hypothesis (bounded experiment):** The labeled synthetic corpus flags the selected role-change/authorization events, keeps benign cases quiet and labels API errors as failed attempts; any contrary verdict refutes the predicate contract.
+
+## Research threat model
+
+| Element | Declared scope |
+| --- | --- |
+| Actor | Compromised deployment session or actor disabling telemetry |
+| Assets | Event generation, archive, SIEM parser, alerts and response identity |
+| Entry points | Cloud audit events, connector delivery and rule changes |
+| Trust boundaries | Source control plane → independent archive → SIEM → response operator |
+| Impact under investigation | Undetected change, misleading clean dashboard or excessive automated containment |
+| Trusted assumptions | Owned test host, reviewed fixture/code and independently established identity context; deployment administrators remain outside the local attacker model |
+
+## Method and evidence requirements
+
+Follow the [evidence standards](../research-methodology/evidence-standards.md).
+The [related lab](../labs/cicd-identity-escalation/README.md) owns setup, prerequisites, expected
+output, safety, evidence collection and teardown. From repository root:
+
+```sh
+python3 vulnerability-research/detection.py --test
+```
+
+This command is a **tested local check**, with the scope below. Review test inputs
+and failure assertions before interpreting a pass. For a deployment study, capture
+exact versions/configuration, one allowed control, every intended denial, state
+before/after and independent audit evidence. A policy file or syntax check is T1,
+not enforcement proof. Do not deploy cloud resources from repository validation.
+
+## Findings and interpretation
+
+| Claim class | Evidence tier and boundary |
+| --- | --- |
+| Observed local result | T2/T3 within the linked harness: Nine synthetic events yield a finite confusion matrix. They do not exercise Sentinel scheduling, log delivery or alert routing. |
+| Architecture explanation in this article | T0: sourced explanation or engineering judgment under its stated assumptions |
+| Configuration/schema examples | At most T1 unless a linked runtime test explicitly covers that example |
+| Production effectiveness | Not established by this repository's local result |
+
+## Practical guidance and failure containment
+
+Keep archive/readability and source freshness independent of analytic success. Require bounded, reversible response and a human decision for broad containment.
+
+Count exercised allow/deny cases against the declared corpus, keeping structural,
+native-policy and runtime results separate. Preserve failure, unknown and missing
+telemetry states. Roll back the exact reviewed control change while retaining
+evidence; broad privilege or global bypass is not an automatic recovery path.
+
+## Limitations and what was not tested
+
+The local experiment does not validate the complete reference architecture, live
+cloud enforcement, hosted CI, production data, independent audit storage or
+representative adversarial coverage. Retained implementation and historical
+source-inspection descriptions are not newly reproduced results. Review status
+remains `requires-review` until a reviewer rechecks the retained product claims
+against `validatedAgainst` and the linked evidence.
+
+Time to detect, time to contain, population false-positive/negative rates, pipeline
+impact and monthly operational cost are **not measured in this article**. Use the
+[measurement contract](../research-methodology/evidence-standards.md#measurement-contract)
+to define clocks, denominators, repeated workloads and residual capabilities before
+claiming those outcomes. Report local fixture counts separately from live coverage.
+
+## Open questions
+
+Can an independent canary identify missing source events while the query continues to run successfully?
 
 ## References
 

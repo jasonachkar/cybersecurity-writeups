@@ -1,5 +1,11 @@
 # STRIDE Analysis for SaaS Multi-Tenancy
 
+> **Historical reference — requires review.** This retained material is not
+> newly validated implementation evidence. Use the [maintained investigation](../../../appsec/saas-multitenancy-isolation.md)
+> for the current research question, threat model, reproducible lab and limitations.
+> Examples below are **illustrative unless a specific linked test establishes otherwise**.
+
+
 STRIDE is a threat modeling methodology developed by Microsoft that categorizes different types of threats. When analyzing a SaaS application, especially one that is multi-tenant, STRIDE provides a structured framework to identify potential vulnerabilities in how data and processes flow through the system.
 
 ---
