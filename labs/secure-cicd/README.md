@@ -19,7 +19,7 @@ runCommands:
 
 # Secure CI/CD boundary and fail-closed gate lab
 
-**Evidence status:** partially tested. The local tests evaluate fixture structure and fail-closed gate behavior; they do not execute a hosted workflow, authenticate to Azure, or inspect repository environment settings.
+The local tests evaluate fixture structure and fail-closed gate behavior; they do not execute a hosted workflow, authenticate to Azure, or inspect repository environment settings.
 
 This lab makes CI/CD trust-boundary decisions reproducible. It keeps untrusted pull- request code away from privileged workflow context, rejects unsafe workflow patterns, and blocks when scanner evidence is missing, malformed, incomplete, or above policy.
 

@@ -27,7 +27,7 @@ reviewIntervalDays: 90
 
 # Kubernetes Multi-tenancy: Boundaries, Isolation, and Operations
 
-**Evidence status:** partially tested engineering investigation. Native Kyverno v1.18.2 testing covers the hardened-pod fixture only. The image policy is schema-validated and its offline selector/evidence model is tested, but no registry, Sigstore, transparency service, admission webhook, CNI, or live cluster was exercised.
+Native Kyverno v1.18.2 testing covers the hardened-pod fixture only. The image policy is schema-validated and its offline selector/evidence model is tested, but no registry, Sigstore, transparency service, admission webhook, CNI, or live cluster was exercised.
 
 Kubernetes multi-tenancy is a spectrum. Namespaces are an administrative and policy scope inside one control plane, not a hard security boundary by themselves. Containers on a node share a kernel. Network connectivity is allowed by default unless policy and the network implementation enforce restrictions. Cloud workload identities, node credentials, admission, RBAC, secrets, storage, DNS, observability, and operator access must be designed together.
 

@@ -1,0 +1,17 @@
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="{{ lang.t('header') }}">
+    <a class="docs-brand" href="{{ nav.homepage.url | url }}" aria-label="{{ config.site_name }} home" data-md-component="logo">Cybersecurity<span>Writeups</span></a>
+    {% if "material/search" in config.plugins and config.plugins["material/search"].config.enabled %}
+      <button type="button" class="md-header__button md-icon docs-mobile-search" data-docs-search-open aria-label="{{ lang.t('search') }}">{% include ".icons/material/magnify.svg" %}</button>
+      {% include "partials/search.html" %}
+    {% endif %}
+    <div class="docs-header-tools">
+      <a class="docs-header-source md-icon" href="{{ config.repo_url }}" aria-label="Source code on GitHub" title="Source code">{% include ".icons/fontawesome/brands/github.svg" %}</a>
+      {% if config.theme.palette and not config.theme.palette is mapping %}
+        {% include "partials/palette.html" %}
+        {% include "partials/javascripts/palette.html" %}
+      {% endif %}
+      <button type="button" class="md-header__button md-icon docs-menu" aria-label="Toggle navigation" aria-controls="docs-navigation" aria-expanded="false">{% include ".icons/material/menu.svg" %}</button>
+    </div>
+  </nav>
+</header>

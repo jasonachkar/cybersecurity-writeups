@@ -30,7 +30,7 @@ test("catalog-managed research has canonical metadata, read-only source actions,
     assert.ok(html.includes(`href="${item.github.view}"`), `${item.url}: view source`);
     assert.doesNotMatch(html, /\/edit\/main\//, `${item.url}: editing must not be offered`);
     assert.doesNotMatch(html, />Edit on GitHub</);
-    assert.match(html, /class="docs-evidence"/);
+    assert.doesNotMatch(html, /class="docs-evidence"/);
     assert.doesNotMatch(html, /<section class="docs-related"[^>]*>\s*<h2[^>]*>Related content<\/h2>\s*<div[^>]*>\s*<\/div>/);
   }
 });
@@ -100,4 +100,14 @@ test("the static artifact is self-contained and publishable", () => {
   assert.match(about, /js\/vendor\/mermaid\.min\.js/);
   assert.doesNotMatch(about, /(?:cdn\.jsdelivr\.net|cdnjs\.cloudflare\.com).*mermaid/i);
   assert.doesNotMatch(readPage("/"), /js\/vendor\/mermaid\.min\.js/);
+});
+
+
+test("all indexable pages omit status panels and page TOCs while retaining navigation", () => {
+  for (const url of indexableUrls) {
+    const html = readPage(url);
+    assert.doesNotMatch(html, /class="(?:docs-evidence|docs-mobile-toc|docs-lab-status|docs-card__status)|md-sidebar--secondary/, url);
+    assert.match(html, /id="docs-navigation"/, url);
+    assert.match(html, /class="docs-nav-section"/, url);
+  }
 });

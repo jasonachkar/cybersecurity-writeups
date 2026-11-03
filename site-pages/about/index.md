@@ -21,9 +21,9 @@ Markdown, metadata, examples, and the documentation build are validated on
 `main`. The staged site includes a source-and-artifact manifest, and publication
 is blocked whenever canonical routes or lifecycle classifications drift.
 
-The evidence rows on research pages distinguish repository-tested examples from
-illustrative architecture, record the article's review state, and describe the
-quality of sources used for consequential claims. A current review date is not
+Article source metadata records the implementation scope, review state, and
+source quality. The articles and linked labs describe what was tested and what
+remains illustrative. A current review date is not
 itself proof that the guidance is correct: material remains marked
 `requires-review` until it has been checked against its declared
 `validatedAgainst` sources.

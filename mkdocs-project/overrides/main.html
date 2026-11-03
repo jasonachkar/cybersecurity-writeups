@@ -1,5 +1,29 @@
 {% extends "base.html" %}
 
+{% block site_nav %}
+  {% if nav %}
+    <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation"{% if page.meta and 'navigation' in page.meta.get('hide', []) %} hidden{% endif %}>
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          {% include "partials/nav.html" %}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{# Keep pagination in the reading column, following the reference documentation. #}
+{% block container %}
+  <div class="md-content" data-md-component="content">
+    {% if "navigation.path" in features %}{% include "partials/path.html" %}{% endif %}
+    <article class="md-content__inner md-typeset">
+      {% block content %}{% include "partials/content.html" %}{% endblock %}
+    </article>
+    {% include "partials/footer.html" %}
+  </div>
+{% endblock %}
+{% block footer %}{% endblock %}
+
 {% block extrahead %}
   {{ super() }}
   {% if page and page.meta and page.meta.robots %}
