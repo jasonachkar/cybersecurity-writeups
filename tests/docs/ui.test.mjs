@@ -251,7 +251,7 @@ test("interface colors are neutral in both themes", async () => {
     const {context, page} = await pageAt(url);
     for (const scheme of ["default", "slate"]) {
       await page.locator("body").evaluate((body, value) => body.setAttribute("data-md-color-scheme", value), scheme);
-      const colored = await page.locator(".md-header, .docs-brand, .md-search__form, .md-sidebar--primary, .docs-nav-heading, .md-nav__link, .docs-card, .docs-button, .docs-action, .docs-key-takeaway, .md-footer, .md-footer__link").evaluateAll(elements => elements.flatMap(element => {
+      const colored = await page.locator(".md-header, .docs-brand, .md-search__form, .md-sidebar--primary, .docs-nav-heading, .md-nav__link, .docs-card, .docs-button, .docs-action, .docs-key-takeaway, .md-footer, .md-footer__link, .md-option, .md-typeset table:not([class]) td").evaluateAll(elements => elements.flatMap(element => {
         const styles = getComputedStyle(element);
         return ["color", "backgroundColor", "borderTopColor"].flatMap(property => {
           const value = styles[property];

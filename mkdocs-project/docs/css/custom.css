@@ -330,6 +330,8 @@ body[data-md-color-scheme] {
   --md-typeset-a-color: var(--docs-text);
   --md-typeset-color: var(--docs-text);
   --md-typeset-mark-color: #88888833;
+  --md-typeset-table-color: var(--docs-border);
+  --md-typeset-table-color--light: var(--docs-surface);
   --md-typeset-kbd-color: var(--docs-surface);
   --md-typeset-kbd-accent-color: var(--docs-border);
   --md-typeset-kbd-border-color: var(--docs-border);
@@ -463,3 +465,5 @@ body[data-md-color-scheme="slate"] {
 
 .md-typeset h1 { font-size: clamp(1.8rem, 3.2vw, 2.1rem); }
 [dir] .md-nav--primary a.md-nav__link { margin: 0; padding: .35rem .4rem; line-height: 1.4; }
+
+.md-header .md-option { color: var(--docs-text); }
