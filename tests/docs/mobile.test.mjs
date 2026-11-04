@@ -84,11 +84,36 @@ for (const engine of engines) {
     await expect(page.locator(".md-sidebar--primary")).toHaveAttribute("aria-modal", "true");
     await expect(page.locator(".docs-nav-close")).toBeFocused();
     assert.equal(await page.locator(".md-content").evaluate(element => element.inert), true);
+    assert.equal(await page.locator("#docs-navigation details[open]").count(), 0);
+    const start = page.locator(".docs-nav-heading").filter({hasText: "Start here"});
+    async function assertStartVisible() {
+      await expect.poll(() => page.locator(".md-sidebar--primary").evaluate(element => element.getBoundingClientRect().left)).toBeGreaterThanOrEqual(0);
+      await expect.poll(async () => {
+        const header = await page.locator(".docs-nav-mobile-header").boundingBox();
+        const heading = await start.boundingBox();
+        return heading.y - (header.y + header.height);
+      }).toBeGreaterThanOrEqual(0);
+      assert.equal(await start.evaluate(element => {
+        const box = element.getBoundingClientRect();
+        return element.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2));
+      }), true, "Start here must not be covered by the drawer heading");
+    }
+    await assertStartVisible();
     await capture(page, engine, "drawer");
     await page.keyboard.press("Shift+Tab");
     assert.equal(await page.evaluate(() => document.getElementById("docs-navigation").contains(document.activeElement)), true);
     await page.keyboard.press("Tab");
     await expect(page.locator(".docs-nav-close")).toBeFocused();
+    for (const title of ["Start here", "Cloud Security", "Application Security"]) {
+      await page.locator(".docs-nav-heading").filter({hasText: title}).first().tap();
+    }
+    const list = page.locator("#docs-navigation > .md-nav__list");
+    await list.evaluate(element => { element.scrollTop = element.scrollHeight; });
+    assert.ok(await list.evaluate(element => element.scrollTop) > 0);
+    await page.locator(".docs-nav-close").tap();
+    await closedDrawer(page);
+    await page.locator(".docs-menu").tap();
+    await assertStartVisible();
     await page.locator(".docs-nav-close").tap();
     await closedDrawer(page);
     await expect(page.locator(".docs-menu")).toBeFocused();

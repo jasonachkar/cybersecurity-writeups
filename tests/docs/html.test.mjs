@@ -109,5 +109,6 @@ test("all indexable pages omit status panels and page TOCs while retaining navig
     assert.doesNotMatch(html, /class="(?:docs-evidence|docs-mobile-toc|docs-lab-status|docs-card__status)|md-sidebar--secondary/, url);
     assert.match(html, /id="docs-navigation"/, url);
     assert.match(html, /class="docs-nav-section"/, url);
+    assert.doesNotMatch(html, /<details class="docs-nav-section" open/, url);
   }
 });

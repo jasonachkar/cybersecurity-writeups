@@ -212,12 +212,14 @@ test("sidebar groups collapse with the keyboard and pagination links follow the 
   assert.equal(await current.textContent(), catalog.research.find(item => item.id === "ai-agent-security").navTitle);
   const group = current.locator("xpath=ancestor::details[1]");
   const summary = group.locator(":scope > summary");
+  assert.equal(await group.getAttribute("open"), null);
+  assert.equal(await current.isVisible(), false);
   await summary.focus();
+  await page.keyboard.press("Enter");
+  assert.equal(await current.isVisible(), true);
   await page.keyboard.press("Enter");
   assert.equal(await group.getAttribute("open"), null);
   assert.equal(await current.isVisible(), false);
-  await page.keyboard.press("Enter");
-  assert.equal(await current.isVisible(), true);
   const next = page.locator(".md-footer__link--next");
   const nextUrl = new URL(await next.getAttribute("href"), page.url()).pathname;
   assert.ok(await page.locator(".md-footer__link--prev").count() === 1);
@@ -236,6 +238,8 @@ test("mobile menu and search are keyboard operable", async () => {
   await page.keyboard.press("Enter");
   assert.equal(await menu.getAttribute("aria-expanded"), "true");
   assert.equal(await page.locator("#__drawer").isChecked(), true);
+  assert.equal(await page.locator("#docs-navigation details[open]").count(), 0);
+  await page.locator(".docs-nav-heading").filter({hasText: "Application Security"}).click();
   assert.equal(await page.locator("#docs-navigation a[aria-current='page']").isVisible(), true);
   await page.keyboard.press("Escape");
   assert.equal(await menu.getAttribute("aria-expanded"), "false");
