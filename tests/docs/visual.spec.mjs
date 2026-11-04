@@ -8,8 +8,8 @@ test.beforeAll(async () => { server = await serveSite(); });
 test.afterAll(async () => { await server.close(); });
 
 const pages = [
-  {name: "home", url: "/", viewports: [[390, 844], [1440, 900]]},
-  {name: "ai-agent", url: "/appsec/ai-agent-security/", viewports: [[390, 844], [1024, 768], [1440, 900]]},
+  {name: "home", url: "/", viewports: [[320, 740], [390, 844], [430, 932], [1440, 900]]},
+  {name: "ai-agent", url: "/appsec/ai-agent-security/", viewports: [[320, 740], [390, 844], [430, 932], [768, 1024], [844, 390], [1024, 768], [1440, 900]]},
   {name: "scripts", url: "/scripts/devsecops/", viewports: [[390, 844], [1440, 900]]},
   {name: "lab", url: "/labs/ai-agent-security/", viewports: [[390, 844], [1440, 900]]},
 ];
@@ -28,6 +28,10 @@ async function prepare(page, url, width, height, scheme) {
     *, *::before, *::after { animation: none !important; transition: none !important; caret-color: transparent !important; }
   `});
   await page.evaluate(() => document.fonts.ready);
+  if (width < 1220) {
+    // Snapshot updates must never bless a drawer covering the article.
+    await expect.poll(() => page.locator(".md-sidebar--primary").evaluate(element => element.getBoundingClientRect().right)).toBeLessThanOrEqual(1);
+  }
 }
 
 for (const entry of pages) {
@@ -54,6 +58,13 @@ const states = [
     }),
   },
   {name: "mobile-drawer", url: "/appsec/ai-agent-security/", width: 390, height: 844, action: async page => page.locator(".docs-menu").click()},
+  {name: "mobile-search", url: "/", width: 390, height: 844, action: async page => {
+    await page.locator(".docs-mobile-search").click();
+    await page.locator(".md-search__input").fill("AI agent");
+    await page.locator(".md-search-result__link").first().waitFor();
+  }},
+  {name: "mobile-pagination", url: "/appsec/ai-agent-security/", width: 390, height: 844, action: async page => page.locator(".md-footer").scrollIntoViewIfNeeded()},
+  {name: "mobile-diagram", url: "/devsecops/secure-cicd-pipeline-design/", width: 390, height: 844, scheme: "dark", target: ".docs-mermaid", action: async page => page.locator(".docs-mermaid").scrollIntoViewIfNeeded()},
   {name: "pagination", url: "/appsec/ai-agent-security/", width: 1440, height: 900, action: async page => page.locator(".md-footer").scrollIntoViewIfNeeded()},
   {name: "source-expanded", url: "/labs/ai-agent-security/", width: 1440, height: 900, action: async page => page.locator("[data-expand-source]").click()},
   {
