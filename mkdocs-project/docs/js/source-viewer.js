@@ -39,6 +39,7 @@
     const expand = viewer.querySelector("[data-expand-source]");
     expand.hidden = !panel.hasAttribute("data-source-expandable");
     expand.setAttribute("aria-expanded", "false");
+    expand.textContent = "Expand";
     viewer.classList.remove("is-expanded");
     if (moveFocus && tab) tab.focus();
   }

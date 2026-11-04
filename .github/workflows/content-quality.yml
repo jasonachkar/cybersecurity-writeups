@@ -110,7 +110,7 @@ jobs:
           python -m venv .venv
           .venv/bin/python -m pip install --disable-pip-version-check -r requirements-docs.txt
           npm ci --ignore-scripts
-          npx playwright install --with-deps chromium
+          npx playwright install --with-deps chromium webkit
 
       - name: Build and verify canonical documentation product
         run: npm run verify:docs

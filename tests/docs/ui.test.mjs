@@ -80,7 +80,8 @@ test("homepage ordering, search trigger, and navigation are data-driven", async 
   assert.deepEqual(recentTitles, catalog.recent.map(item => item.navTitle));
   await page.locator(".docs-hero-search").click();
   assert.equal(await page.locator("#__search").isChecked(), true);
-  await page.keyboard.press("Escape");
+  await page.locator(".docs-search-back").click();
+  assert.equal(await page.locator("#__search").isChecked(), false);
   assert.equal(await page.locator(".md-nav--primary a[href='appsec/'], .md-nav--primary a[href='/appsec/']").count() > 0, true);
   assert.equal(errors.length, 0, errors.join("\n"));
   await context.close();

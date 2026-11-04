@@ -2,7 +2,8 @@
   "use strict";
 
   const MIN_SCALE = 0.5;
-  const MAX_SCALE = 4;
+  const MAX_SCALE = 8;
+  const ZOOM_LEVELS = [0.5, 0.75, 1, 1.5, 2, 3, 4, 6, 8];
   const SCALE_STEP = 0.25;
   const PAN_STEP = 60;
   const PAN_KEYS = {ArrowLeft: [PAN_STEP, 0], ArrowRight: [-PAN_STEP, 0], ArrowUp: [0, PAN_STEP], ArrowDown: [0, -PAN_STEP]};
@@ -35,11 +36,11 @@
       <button type="button" data-mermaid-zoom-in aria-label="Zoom in">+</button>
       <button type="button" data-mermaid-reset aria-label="Reset diagram view">Reset</button>
     `;
-    wrapper.append(controls);
+    wrapper.insertBefore(controls, viewport);
 
     const hint = document.createElement("p");
     hint.className = "docs-mermaid__hint";
-    hint.textContent = "Drag to pan. Hold Ctrl and scroll, or pinch, to zoom.";
+    hint.textContent = "Use the buttons to zoom. Drag an enlarged diagram to pan; Reset to fit.";
     wrapper.append(hint);
 
     const zoomLevel = controls.querySelector("[data-mermaid-zoom-level]");
@@ -52,11 +53,15 @@
 
     function apply() {
       mermaidEl.style.transform = (scale === 1 && x === 0 && y === 0) ? "" : `translate(${x}px, ${y}px) scale(${scale})`;
+      viewport.classList.toggle("is-zoomed", scale > 1);
+      controls.querySelector("[data-mermaid-zoom-out]").disabled = scale <= MIN_SCALE;
+      controls.querySelector("[data-mermaid-zoom-in]").disabled = scale >= MAX_SCALE;
       zoomLevel.textContent = `${Math.round(scale * 100)}%`;
     }
 
     function setScale(next) {
       scale = clamp(next, MIN_SCALE, MAX_SCALE);
+      if (scale <= 1) { x = 0; y = 0; }
       apply();
     }
 
@@ -67,8 +72,8 @@
       apply();
     }
 
-    controls.querySelector("[data-mermaid-zoom-in]").addEventListener("click", () => setScale(scale + SCALE_STEP));
-    controls.querySelector("[data-mermaid-zoom-out]").addEventListener("click", () => setScale(scale - SCALE_STEP));
+    controls.querySelector("[data-mermaid-zoom-in]").addEventListener("click", () => setScale(ZOOM_LEVELS.find(level => level > scale) ?? MAX_SCALE));
+    controls.querySelector("[data-mermaid-zoom-out]").addEventListener("click", () => setScale([...ZOOM_LEVELS].reverse().find(level => level < scale) ?? MIN_SCALE));
     controls.querySelector("[data-mermaid-reset]").addEventListener("click", reset);
 
     viewport.addEventListener("wheel", event => {
@@ -78,6 +83,7 @@
     }, {passive: false});
 
     viewport.addEventListener("pointerdown", event => {
+      if (event.pointerType === "touch" && scale <= 1) return;
       if (event.button !== 0) return;
       panning = true;
       startX = event.clientX - x;
