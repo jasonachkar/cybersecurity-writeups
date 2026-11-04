@@ -467,3 +467,58 @@ body[data-md-color-scheme="slate"] {
 [dir] .md-nav--primary a.md-nav__link { margin: 0; padding: .35rem .4rem; line-height: 1.4; }
 
 .md-header .md-option { color: var(--docs-text); }
+
+/* Mobile controls, overlays, and locally scrollable examples. */
+.docs-brand { min-height: 44px; }
+.docs-nav-close { display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 44px; height: 44px; padding: 10px; border: 1px solid var(--docs-border); border-radius: .4rem; color: var(--docs-text); background: var(--docs-bg); cursor: pointer; }
+.docs-search-back { position: absolute; top: 0; left: 0; z-index: 3; display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; padding: 8px; box-sizing: border-box; }
+.docs-search-back svg:first-child { display: block; }
+.docs-search-back svg:last-child { display: none; }
+[data-md-toggle="search"]:checked ~ .md-header .docs-search-back svg:first-child { display: none; }
+[data-md-toggle="search"]:checked ~ .md-header .docs-search-back svg:last-child { display: block; }
+body.docs-search-open { overflow: hidden; }
+@media (max-width: 76.234375em) {
+  [dir="ltr"] .md-sidebar--primary { left: 0; transform: translateX(-100%); }
+  [dir="ltr"] [data-md-toggle="drawer"]:checked ~ .md-container .md-sidebar--primary { transform: translateX(0); }
+  body.docs-drawer-open { overflow: hidden; }
+  .md-nav--primary .docs-nav-mobile-header { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .6rem 1rem; border-bottom: 1px solid var(--docs-border); }
+  .docs-nav-heading { min-height: 44px; }
+  .docs-nav-heading, .md-nav--primary a.md-nav__link { box-sizing: border-box; }
+  [dir] .md-nav--primary a.md-nav__link { display: flex; align-items: center; min-height: 44px; padding: .5rem .4rem; font-size: .75rem; }
+  .md-sidebar--primary .md-sidebar__scrollwrap { overscroll-behavior-y: contain; padding-bottom: env(safe-area-inset-bottom); }
+}
+@media (max-width: 59.984375em) {
+  [dir] .md-header .md-search__input { width: 100%; margin: 0; padding-inline: 2.8rem; font-size: 16px; box-sizing: border-box; }
+  .md-search__form { min-height: 48px; }
+  .md-search__form > .md-search__icon { top: 2px; width: 44px; height: 44px; padding: 10px; box-sizing: border-box; }
+  [dir="ltr"] .md-search__form > .md-search__icon { left: 2px; }
+  .md-search__options { top: 2px; right: 2px; height: 44px; z-index: 3; }
+  .md-search__options .md-search__icon { display: flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; height: 44px; padding: 10px; box-sizing: border-box; }
+  .md-header .md-search__suggest { display: none; }
+  .md-search-result__article > p { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+}
+@media (max-width: 44.984375em) {
+  .md-header__inner { padding-inline: max(.6rem, env(safe-area-inset-left)) max(.6rem, env(safe-area-inset-right)); }
+  .docs-source-viewer__panel { max-height: min(60svh, 28rem); overscroll-behavior-x: contain; overscroll-behavior-y: auto; }
+  .docs-source-viewer.is-expanded .docs-source-viewer__panel { max-height: none; }
+  .docs-source-viewer__code { font-size: .7rem; }
+  .md-typeset .docs-source-viewer__code code { font-size: inherit; }
+  .docs-source-viewer__code .line { grid-template-columns: 2.4rem minmax(0, 1fr); }
+  .docs-source-viewer__line-number { padding-right: .6rem; }
+  .docs-contribute div { gap: .25rem; }
+  .docs-contribute a { display: inline-flex; align-items: center; min-height: 44px; }
+  .docs-mermaid { display: flex; flex-direction: column; }
+  .docs-mermaid__controls { position: static; justify-content: flex-end; margin-bottom: .4rem; box-shadow: none; }
+  .docs-mermaid__controls button { min-width: 44px; min-height: 44px; }
+  .docs-mermaid__zoom-level { font-size: .7rem; }
+  .docs-mermaid__viewport { display: grid; align-items: center; min-height: 9rem; max-height: 60svh; }
+  .docs-mermaid .mermaid { border: 0; background: transparent; }
+  .docs-mermaid__viewport, .docs-mermaid .mermaid { touch-action: pan-y pinch-zoom; }
+  .docs-mermaid__viewport.is-zoomed, .docs-mermaid__viewport.is-zoomed .mermaid { touch-action: none; }
+  .docs-mermaid__hint { display: block; }
+  .md-footer .md-footer__link--prev .md-footer__title { display: block; }
+}
+@media (max-width: 29.984375em) {
+  .md-footer .md-footer__inner:not([hidden]) { grid-template-columns: minmax(0, 1fr); gap: .6rem; }
+  .md-footer__link--next { grid-column: 1; }
+}
