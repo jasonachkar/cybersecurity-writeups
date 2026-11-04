@@ -1175,12 +1175,12 @@
     {
       "path": "mkdocs-project/docs/css/custom.css",
       "destination": "mkdocs-project/docs/css/custom.css",
-      "sha256": "a4f40d5b99776797d29ef2011fd57e3017a0369d441faa87b2174ddfceb09b3d"
+      "sha256": "740a32b424956fe101c7b48380f419c6eb38f27635dd81ac0186b80360c0590b"
     },
     {
       "path": "mkdocs-project/docs/js/docs-ui.js",
       "destination": "mkdocs-project/docs/js/docs-ui.js",
-      "sha256": "7cd9ae6fad09afeae91e8517f137535dea127821c7604dd5ea8f56a726c5fcc3"
+      "sha256": "7c35d52dd17b1e1aedeacf88e6d5f4870cccacd6bd03b356def2b06f3a910708"
     },
     {
       "path": "mkdocs-project/docs/js/mermaid-zoom.js",
@@ -1250,7 +1250,7 @@
     {
       "path": "mkdocs-project/overrides/partials/nav.html",
       "destination": "mkdocs-project/overrides/partials/nav.html",
-      "sha256": "ab8a0069b9c00d1990c113db1fd83018a72973112b98e4b4c353a610fce6b1dc"
+      "sha256": "bbde6b54da1b522709cf6b72d0636d6ef803e8e245e5788f2752a3f411a83db6"
     },
     {
       "path": "mkdocs-project/overrides/partials/related-content.html",
@@ -2779,7 +2779,7 @@
     },
     {
       "path": "404.html",
-      "sha256": "5e3c6e8f1c6f3021f70d1f4088fedbd89a506de0ebafab3e51673392e0f94f16"
+      "sha256": "4e37a98896d495e9b26fea2f4bd5530d269ab228c4bac4eeff6c83995261c75a"
     },
     {
       "path": "CNAME",
@@ -2787,47 +2787,47 @@
     },
     {
       "path": "about/index.html",
-      "sha256": "3f46aa05339e29ac71b0bd5de86f4430c827905a59a0be4bb74a6a06b73544e3"
+      "sha256": "c5a1b96b3c8fcee4c94c0cf7ae0fe4031929a2850b95b4f1911fd5bff95e0819"
     },
     {
       "path": "about/quality-methodology/index.html",
-      "sha256": "aa429da3e3af4666d0d321e5d5a17c98551d588e2c142ad6d56fb5efafcdc811"
+      "sha256": "8b17faa54807b3d988f97f246167888a4d66e0fb13d8d79002e7c543feecddf6"
     },
     {
       "path": "about/site-provenance/index.html",
-      "sha256": "d8c68af049cb37aac14a79a34da6ccf5d83f10ad0da2dba5f104f19a03a5e3b5"
+      "sha256": "cc462362e2acdff084b4bbe05efb801c01ed83290a3ed7610f2d3381906c81dc"
     },
     {
       "path": "ai-security/evidence-driven-agent-security/index.html",
-      "sha256": "0d52d774a35ce316f2911cc2d31f8de1eb436712e21d0b2e8b4aeab0f85e2953"
+      "sha256": "ae2deefeabbffc230f551376f6fe4b22344bfa53c90d8e187c3f54a2f67ff299"
     },
     {
       "path": "ai-security/index.html",
-      "sha256": "89847ab82e8a3e122493bbea6f9e4452a40eb253d0c3e5ac0f7cf1391e15fab1"
+      "sha256": "223b536f0b16e582fac5776166008617ac0941cdf4709a674ad13e0204597abe"
     },
     {
       "path": "appsec/ai-agent-security/index.html",
-      "sha256": "182120629560893695e9fbc3949e7ac8465143102950d5ced39ad167945bff96"
+      "sha256": "c99cf64722657cbbabcf8a8a8a01df820b79084f816e3cdf8966e71cd910de6e"
     },
     {
       "path": "appsec/api-microservices-threat-modeling/index.html",
-      "sha256": "60ef0837435d324feefe401f6b12ad2f6425c01038097daf26358bfc06eecf58"
+      "sha256": "3aec32477786050bbe5e05f4a78b8f31a6798b34214878bf842965fd5ae5ed6d"
     },
     {
       "path": "appsec/index.html",
-      "sha256": "cc543d2d70282ff2559a941170199f2034e926e94d8f966478b36e93a8e699bd"
+      "sha256": "13d84cb93f15063d44d3bfb2c81342b03d926f148933edab84675a3de00803ee"
     },
     {
       "path": "appsec/oauth2-oidc-deep-dive/index.html",
-      "sha256": "f891906cdc2d90fd46ae5f4a192c333d7e27e1c10add27dc986d99e318ebf5c2"
+      "sha256": "43a1290dd53921486552c7ad14dc17e5297a9472622f2a8781db521d990d5707"
     },
     {
       "path": "appsec/runtime-protection-rasp-waf/index.html",
-      "sha256": "71208b500f9a5317733550815bb62dc4ba9f67f8465e2330431eb53260ced880"
+      "sha256": "af6048a8537bb9021ca0871aa74da4358e5d9deb8b3517ef7b0edac33a5866a0"
     },
     {
       "path": "appsec/saas-multitenancy-isolation/index.html",
-      "sha256": "58c406c4f0a420a25c9f0f233d898c224451577091c2ea8af475f4c6a150ffc0"
+      "sha256": "cf94a2c26afd54f5e70a298f5f4d45c1d78b0dd4204e7c2c2c2349566a7fc63c"
     },
     {
       "path": "appsec/scripts/oauth-pkce/go.mod",
@@ -3019,27 +3019,27 @@
     },
     {
       "path": "cloud-security/cloud-detection-and-response/index.html",
-      "sha256": "1ef2bc9c94be352c902196248f8d494d7be6d64e44c635de51c13da62888c7d1"
+      "sha256": "436e15662d985d11933d28f7fd06ad50d65dd47855748ff72a921857b962bc8b"
     },
     {
       "path": "cloud-security/cloud-network-segmentation/index.html",
-      "sha256": "0b88c231d49d1e213df6e046e9ae174ca755ee176aa5c7a0dfeeccc26d96c1af"
+      "sha256": "b6a3e00eb3ee3c1d4e490e9745869b0c529937957f4ffecd514ca5e027afb74c"
     },
     {
       "path": "cloud-security/iam-at-scale/index.html",
-      "sha256": "ca04b285e29769cbc7f6b133d39a6dbc5cc62a2457590a37a03226d8e9b07cbe"
+      "sha256": "e292cf769eee94d19bc5080758d981bcba8a580ece67c54963f8f7a4772f02e5"
     },
     {
       "path": "cloud-security/index.html",
-      "sha256": "63f6e36b260e6c7134ad5dc1b8b2b377688fd284c4b25e904d5b9cf0f0eeda5e"
+      "sha256": "e804e2228f6814aba9f6c346a8a2627a4d67413b4592e76ae2fd2836772434d8"
     },
     {
       "path": "cloud-security/kubernetes-multi-tenancy/index.html",
-      "sha256": "31c6078aa8bf1b0795aa5814a3d6d0b488c618acc0f58b472d44d2cf1b43af48"
+      "sha256": "ac51538b4d3d3ef86304e068d8e0dc26a1786cc17314d5bcbe641690cf1f28f4"
     },
     {
       "path": "cloud-security/multi-account-landing-zones/index.html",
-      "sha256": "21fe83294c09de4d4d27c676a170973e214ca9eb9a8bc8121a1dc1aedbb2dce1"
+      "sha256": "ae3c21575d3697e091f4565a11d207b13589949b600f2f9c69598bfe69aa4032"
     },
     {
       "path": "cloud-security/scripts/k8s-rbac/auditor.go",
@@ -3055,7 +3055,7 @@
     },
     {
       "path": "cloud-security/serverless-security/index.html",
-      "sha256": "e9d3bb540970513aef31069957d67d3f7d6f8583bfa2e404e45f30651628d32b"
+      "sha256": "468c3b2ad5a74f38b155263de13e0e3b73d11bc14c15608d124bcdc162320901"
     },
     {
       "path": "content-status.json",
@@ -3063,19 +3063,19 @@
     },
     {
       "path": "css/custom.css",
-      "sha256": "a4f40d5b99776797d29ef2011fd57e3017a0369d441faa87b2174ddfceb09b3d"
+      "sha256": "740a32b424956fe101c7b48380f419c6eb38f27635dd81ac0186b80360c0590b"
     },
     {
       "path": "devsecops/evidence-preserving-security-pipelines/index.html",
-      "sha256": "0c4e087cd0c18ded491301d9b63617577a0931825867dc413cae4bc2e22fa986"
+      "sha256": "59182444e69f77bd3588a4822853a4ea92160403a03df8e6e8d5f1c6959b4067"
     },
     {
       "path": "devsecops/iac-security-and-policy-as-code/index.html",
-      "sha256": "cfebf8551225056c1794f7ea674c082d71f3b189a87e4dca56a1e9a02967b647"
+      "sha256": "28dbfab217e4e39dd38c5a84e13c6c8878e25411260c6c3ffb41955c4c49c354"
     },
     {
       "path": "devsecops/index.html",
-      "sha256": "e65caacd6192364d2a9346e3f5d3b597c998539b0d64f03cb19e7a10e0dcd043"
+      "sha256": "e3611255b589cdaf7a7d35d86f34c700f41692b66b3cface859a81a7af8561a2"
     },
     {
       "path": "devsecops/scripts/pipeline-gate.go",
@@ -3091,39 +3091,39 @@
     },
     {
       "path": "devsecops/secrets-management/index.html",
-      "sha256": "ea8c1bfb1772affc41f656e1444c444d7e4bfa31a6e01ee48757425e99e1deb3"
+      "sha256": "7e71ed6aa6fa3ca2d71e761226e6bec6969595edb9956bde8e2f2d9162dd980e"
     },
     {
       "path": "devsecops/secure-cicd-pipeline-design/index.html",
-      "sha256": "909933769183e42922f8a47335063d9eb75a6d0e0535749df669b77008a1db45"
+      "sha256": "bf580c16eee5977ca2a4ec7ab84bca6a041b36fb68369683e0ceee809e33ee04"
     },
     {
       "path": "devsecops/secureobs-multitenant-security-scanner/index.html",
-      "sha256": "4d61cad82383e128038143a4a4bf488236d75fda7207154fa4e4b711a8808db6"
+      "sha256": "ec45f622b5ff0e18f6365750a79c730b98939d631872acc7c3aacb1752b23ace"
     },
     {
       "path": "devsecops/supply-chain-sbom-signing/index.html",
-      "sha256": "0f5d6080f20e848120162600a299d12c33954ffb69bc3e451727aa62408e404b"
+      "sha256": "5197e6f3c5a71ccc410907e4772f0a6bbf5d2858ff7f3a207f7662a6a275acb2"
     },
     {
       "path": "docs/AUTHORING_GUIDE/index.html",
-      "sha256": "21cbf3d7c9f8b88de685d2956ad4edb835055811f85fc2fb094841099473a0c1"
+      "sha256": "6b594707c6df159064775754477d44f22300bc03b736fa241d0e70a09f147510"
     },
     {
       "path": "docs/CONTRIBUTING_SECURITY_CONTENT/index.html",
-      "sha256": "f355e29fbef25626793faf910799094fedd4f9fd09d5385113f4c962bc68e533"
+      "sha256": "ebd70635ff3fe00520d81909f25875de7ab473b2521714f0b2e34b43b519e370"
     },
     {
       "path": "docs/METADATA/index.html",
-      "sha256": "1befd34fc79d80b9e7b8b5505f2bd7b7b3e0e82fefd8e080c3640221ec727639"
+      "sha256": "f1529c06915b799da96e993204575991d9ced39e6a4666d6e995aaa1ce63ec7d"
     },
     {
       "path": "docs/METADATA_MIGRATION/index.html",
-      "sha256": "e648f2a08554f601b63977f2f113438b0d0cca70d3a34a7e822c34d1ace3c836"
+      "sha256": "60e5cdaff1af67ceccd8fd088849dca5954574db33a347bf78a7f2f36b381fdb"
     },
     {
       "path": "docs/RESEARCH_POLICY/index.html",
-      "sha256": "85d54d02d0500b6b63571d8d65f54a3f6563b12f012f807c776daecd41da4400"
+      "sha256": "7ec20ef476b2f05daf652d0ff680fc4edc5730ba500ba8c2d973ca9ace8ca85f"
     },
     {
       "path": "docs/assets/images/azure-logo.svg",
@@ -3139,83 +3139,83 @@
     },
     {
       "path": "docs/certification-notes/az-900/domain-1-concepts/index.html",
-      "sha256": "5fcf7134812d97fe8388dbc860b973029d50b4639b8d93a0aee5532e83e6a28f"
+      "sha256": "4b687005af15f56daf0f58fcbda93e49cdc617aff55b5d418cf4ac75c278ea36"
     },
     {
       "path": "docs/certification-notes/az-900/domain-2-architecture-services/index.html",
-      "sha256": "311b39f8c5503cb167629b6e8d73f39326cf8aebf50277b0fc7fa2770955595c"
+      "sha256": "b1ba334d806d80134f90aca1011f5a60ec6a03c626bd64ecc4323a696aaccd05"
     },
     {
       "path": "docs/certification-notes/az-900/domain-3-management-governance/index.html",
-      "sha256": "9ba4be34e0f9da51f694a7b034367e8ea05bf1dbdf0fb68af639920bdc9eaa22"
+      "sha256": "c3c376631eda1a19acff63e2a328cf234fdb54cef641e487ef437bc6b93eedbe"
     },
     {
       "path": "docs/certification-notes/az-900/index.html",
-      "sha256": "649d84c6c7ac56b18d7a7746395aeceaf1c7324ff1b64b63d76131d3f94e3883"
+      "sha256": "7110210d7d14d60e09a479f300b7e77dce16d2c0c39589b6e3def4e3c6f7c9f6"
     },
     {
       "path": "docs/certification-notes/google-cybersecurity/index.html",
-      "sha256": "1f77ac59179e2e50ed9b6ce5288098c2c32fb0470c37ad1af3f693b42b6e392b"
+      "sha256": "05f48dba28e6d1667500b8560fc9cea8217f7068ebb2de3694b1f21def043818"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-1-identity/index.html",
-      "sha256": "ce642baae7df8629a54dd7e443b3a7d9dc2f2ee8bf2c047bc7c3632ae51fbdd2"
+      "sha256": "948d7489e0ddd60b1af559c1e5774979934eb40a40991099ac08e84982800b12"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-2-storage-networking/index.html",
-      "sha256": "cc8e8bbc8adad793f360a1f5cf0e67d910103e837d2ef8110d372bcd277ce8ef"
+      "sha256": "ec5871519809fe58aa3a7a322b4edffae5df79da700bae67b77651e667b173c3"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-3-compute-posture/index.html",
-      "sha256": "6419ab7a2112365e10be4c6df4cf0cf8f89be01d85414ebf6d81b0154af54d05"
+      "sha256": "673a29631918f442ff053cbc5f2ebe826e016a5847fc131956e95585dbc13ba3"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-3-secure-compute/index.html",
-      "sha256": "26d453f539b4c9c1e3a3325feb9ba137172e3ff17cd52e69561fc4168ce96ff1"
+      "sha256": "b2957b9117ff239a1503cc31780271527a44fb812c63e58e0a630e041918a457"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-4-ai-security/index.html",
-      "sha256": "2764eb1042d462307ded4860a1061b475578f92b1cfac905b1ec8ad3f37a3c1c"
+      "sha256": "1741f3eb7e556915bc74804d13a2ac87965f05cb84734bfb0c76c300116a871d"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-4-manage-monitor-posture/index.html",
-      "sha256": "7db7f53b79209b79751b6fce9ae55b5e5ac9c56e0aadda95bac1821edc21959e"
+      "sha256": "c1f1fec5e9aff9d78a9e11f46cca68593acaa535a9bab02faf62c40d55d7d565"
     },
     {
       "path": "docs/certification-notes/sc-500/index.html",
-      "sha256": "2d89d3d069948283bcafd3eb5bc911b4656702c9d85a17c68bfd6663dba303ed"
+      "sha256": "9872a29a68f9a4abab72c08ad13f0eb5311befc16c94ac1fdc150ef6e6c6ea69"
     },
     {
       "path": "docs/certification-notes/security-plus/domain-1-threats/index.html",
-      "sha256": "745f377e75242dd82486bc02b4cab815dc0e511ed2e69a69715f785b9203065e"
+      "sha256": "20c2f53dd1ed53634cd90442e920bf7f95744e84827695461e20237f5e274090"
     },
     {
       "path": "docs/certification-notes/security-plus/domain-2-architecture/index.html",
-      "sha256": "b1608b3c4c9467e61a7fa8a7e6dca7c5976b669de6aaa0ac7a60dd652021090a"
+      "sha256": "34596ed8c2b3e0a19046bb0d76b0d8e62b04ad87c28db192701e0e62650ea5cd"
     },
     {
       "path": "docs/certification-notes/security-plus/domain-3-operations/index.html",
-      "sha256": "4771a63cd7da2e01f944f427bb8c23708de7e823f4ee5c2b5b9b8b7770212422"
+      "sha256": "f822360d7979da5cd1784d5a0e12f191399f31a9d90d30ee0120800b46dea244"
     },
     {
       "path": "docs/certification-notes/security-plus/index.html",
-      "sha256": "498c28344e0c84469415a6a466014aa60a4481596a3bea74e43efd4bc91cba8d"
+      "sha256": "9ac4fd2a3542dda193f7bab899440cdcf2f253110b1c8b50be31a476f465e9d8"
     },
     {
       "path": "docs/certification-notes/security-plus/labs/lab-iam/index.html",
-      "sha256": "16d944c6041dcdbf6526b50df4595f5e12331f19518b80ccdae1f4b65dbd0f8c"
+      "sha256": "8ac34312d378fa53cbd567daba9e2039a15e41dda41e435e2b96e4ea5e577635"
     },
     {
       "path": "docs/certification-notes/security-plus/labs/lab-network-security/index.html",
-      "sha256": "bee44b0690a2f3ea7e21676c49f968954d90032653a2a22950f24a08c944f735"
+      "sha256": "0fb7cbba4b6db2a10f94e2e4edefee7915253caa3f8dee1a52a7f62bc72219de"
     },
     {
       "path": "docs/certification-notes/security-plus/practice-questions/index.html",
-      "sha256": "2904009c06f632670776521ce1d0314a7c22a1e611623b8444209b59cec600ef"
+      "sha256": "d5b147753cc5354dccbd090a83a05a1ae17aa3d11a07b2a813b3a561ecc95cd2"
     },
     {
       "path": "docs/certification-notes/security-plus/quick-reference/index.html",
-      "sha256": "d670cf6c5036c992fc7f3c3293ca3a450bb51f636b06d80631920d51e9a8baa0"
+      "sha256": "c07e80752928aa4ffd3251842c73465674419bd1d63e882d8d65a4dc798dcdeb"
     },
     {
       "path": "docs/content-metadata.json",
@@ -3223,123 +3223,123 @@
     },
     {
       "path": "docs/research-audit/content-inventory/index.html",
-      "sha256": "efeb19bcd7f3248e6d34eaf38e09bd7b99ae6efc4dabfeb4445f6d9555d3b237"
+      "sha256": "d32b232a85f2a273de12c105e1570cabd956088e9e3aeddfb917d16b052c4e05"
     },
     {
       "path": "docs/research-audit/modernization-completion-report/index.html",
-      "sha256": "ef1e4cbcbe442367b1f03a4979307e009afa2d1833cf2eb33c7083b94c3ee293"
+      "sha256": "adaacbac2171de8b311052ed5a14545b2180ab66a5e1873a954424623f82e3e0"
     },
     {
       "path": "docs/research-audit/security-content-audit/index.html",
-      "sha256": "7d8c1d2e7f2db70e1c7d3114d9d3407be6b7581e293a993d36bbc70ce521b065"
+      "sha256": "86f52274ab0e2890c8d23fc22633d781fcd98f820b6d5fb4489bad07422916c8"
     },
     {
       "path": "docs/research-audit/strong-claim-review/index.html",
-      "sha256": "54841a64ae6f50651e027dd554ccb744419547e41b80ec2e28e19cd0b4f7667a"
+      "sha256": "6df3e6924ed8286c94679fc058ee0f6d3c46e23df2ecc32d0e4a14f3763168fa"
     },
     {
       "path": "docs/research/appsec/api-microservices-oauth-saas-multitenancy/index.html",
-      "sha256": "39d744c727dfa86d5c7ad580698fcf1ae227658bb9bf7b88af18e6934d2d7330"
+      "sha256": "3007cbcb8e1b059e25b047790da2063e23612440ec9515fa095ad270f16202b0"
     },
     {
       "path": "docs/research/devsecops/iac-security-and-policy-as-code/index.html",
-      "sha256": "680e57dc7d1044054b4c3059b2d508196ebb321f40bf134737186bc0039d84e7"
+      "sha256": "8b81f6bc327345c30a9fb8aa2ffb580e64a1922bc86616e27e857d4a9ca61aac"
     },
     {
       "path": "docs/research/devsecops/secure-cicd-pipelines-and-environments/index.html",
-      "sha256": "b25833392ac311cc2b23fdc6eadc11fceb8ef40a19a1cf1b1688cd9d760154fc"
+      "sha256": "4b5da99d5df79a4695769cac989d547c983561cd85ef30743de1aa107bb93d05"
     },
     {
       "path": "docs/research/enterprise-cloud-security-engineering/cloud-security-architecture/index.html",
-      "sha256": "b4e4ac534b400c8756c745f822b6bfc79b750313104e8a938618304c187c5df1"
+      "sha256": "625eda4e06732c8dae4920acfb942667d0e240524ffa2740a235b5f30a89e1f9"
     },
     {
       "path": "docs/research/enterprise-cloud-security-engineering/detection-engineering/index.html",
-      "sha256": "3012a03b827bafb0bce35cb7cf81e3d23ad9c08632ede0385d910b93897a7201"
+      "sha256": "a3acf5a2421a00aeb5a7933160dfd5f9719bc46177f4fcb7892a170306d97305"
     },
     {
       "path": "docs/research/enterprise-cloud-security-engineering/devsecops-pipeline-hardening/index.html",
-      "sha256": "834c8f83f07ce579a805b79db54e75fc3230ab6c4ceb1e9799c954c6095975a2"
+      "sha256": "5ec003c5db354fb8143c52d19c22871a2a40dd5b0891ea305ff1d49a11d182d1"
     },
     {
       "path": "docs/research/enterprise-cloud-security-engineering/iam-workload-identity/index.html",
-      "sha256": "e38d8b019939f35811623ca470ca24aa43f16a59a4c3689badafec5d4ceb9422"
+      "sha256": "f8b55ca937835baba49b3e5eb787a46900c9cb26cee6a3333a92071d7887845b"
     },
     {
       "path": "docs/research/enterprise-cloud-security-engineering/index.html",
-      "sha256": "5ddd51a00b0d8a20e4c4b3e0b1ee3c94848c2eb2b9ca95d94c521176aaf25883"
+      "sha256": "682d9e3569d41dc5def6e5426fa07a459291c50090498e3c2086b4de84a95d04"
     },
     {
       "path": "docs/research/enterprise-cloud-security-engineering/kubernetes-multi-tenancy-and-platform-security/index.html",
-      "sha256": "f05c6c088ff483c4fb1c1ab9c132ed21b9cb6a2e56ef784f454ae0d1edc1ddd1"
+      "sha256": "728540322043f79bbd9da3c7dc712afff9f620ed66f9be0a08c4a4d5120b8933"
     },
     {
       "path": "docs/research/enterprise-cloud-security-engineering/multi-account-landing-zones-and-iam/index.html",
-      "sha256": "b7c257bd756e40c9456abcfb7e2507bf1958af19f16430a7396baac669f5829d"
+      "sha256": "a78f8f1e124eaab192bd3062dcb20cd27894432d0a4da436a91919ef581bfa8e"
     },
     {
       "path": "docs/research/oauth-misconfigurations/attack-scenarios/index.html",
-      "sha256": "0da00b2fdf097ce85d6d76774438e13d3b8c24278be1f69b9fd6f3095a05341d"
+      "sha256": "a081e2d823527b60c4652964ed974af142b90611a7bb135262d41e0b5047a404"
     },
     {
       "path": "docs/research/oauth-misconfigurations/code-examples/index.html",
-      "sha256": "a70058bcbe514b87e0aef395f56aa6c9e918babd93897d29bc075366eef41d1c"
+      "sha256": "d4ca6240fa9c69a55fef1dccb3cc82427298cf01eee815a999df34cf9f52faff"
     },
     {
       "path": "docs/research/oauth-misconfigurations/index.html",
-      "sha256": "158faa8743d98b279b518f07535584d3c28f7af85468425104e7096359883792"
+      "sha256": "03de305524fa18462e571085fa177876a1b6e89a66c48be849d54acca28b76c3"
     },
     {
       "path": "docs/research/oauth-misconfigurations/mitigations/index.html",
-      "sha256": "67e1600dc48e63abea5b7c8b8a640492015e729cefad93b3f3aa70978dbdc1bf"
+      "sha256": "e8c3fdf4d2303cbddd16eb482d7bc64c8f78a5306c4f17af531986cdd4224d0f"
     },
     {
       "path": "docs/research/threat-modeling-saas/data-flow-diagrams/index.html",
-      "sha256": "58960e46756329b8a0cf83d838493a406b089f190416ce2772563acbee23299d"
+      "sha256": "2579660dba2be7f3eb6c3bbb197619e89e2fda0d9e83b7cf08597d9a1af1557e"
     },
     {
       "path": "docs/research/threat-modeling-saas/index.html",
-      "sha256": "ee83fd13e2f4dbebf80a04c1d1a8701f9bdaa5b6df3d0543a77eec11e0eac569"
+      "sha256": "6c8269e7c3357d74f4bda4f572afea11d71df5854a70b6d3cf25389c561f26c1"
     },
     {
       "path": "docs/research/threat-modeling-saas/mitigations/index.html",
-      "sha256": "6d52e6d6392bc5b65734d58c91574f593aab961ab06c6925ba5641bce89dd1ad"
+      "sha256": "e0f0d42101b368afb6fcb580d7abd9133d65f59d02f949b39008d463e49117ed"
     },
     {
       "path": "docs/research/threat-modeling-saas/stride-analysis/index.html",
-      "sha256": "36e9a653042eb6661471535d9042eb34cc1c13a4b79e149d3c51ee35a869e953"
+      "sha256": "20e016ce84fb70d1e91277f65f97252cebb9c4807ad239de9ef1e5a921fce919"
     },
     {
       "path": "docs/research/threat-modeling-saas/templates/index.html",
-      "sha256": "59d328767c12b11dbc26c0ec68efa1ef992e9551d486fcd0eea5e913fec99cd0"
+      "sha256": "9f5be656157bea4637881862c04d87e368db024a5179e8ceb49b9fa152ab61ac"
     },
     {
       "path": "docs/scripts/app-security/index.html",
-      "sha256": "9db7adaf5c389afa1de282ac1f12068c0f8eefcfcdb7a1c3c74c820301d5f10b"
+      "sha256": "f8b28cfbc429b7281d74a7e8e21def9af96c12f85d823ceaed8988e049cf356a"
     },
     {
       "path": "docs/scripts/cloud-security/index.html",
-      "sha256": "07797e23fa20a85dc58f217851644e72b637078f73d3b18f019e1360bd46644b"
+      "sha256": "d3384948976d4b979846b0149773b68e1f709078a1fa08d81c667ac8af5b21d6"
     },
     {
       "path": "docs/scripts/devsecops/index.html",
-      "sha256": "9afa19d95999d1fa40271c9f2a265df1e1c6e7563fbf89a00723efb63751d082"
+      "sha256": "a8c404c8488ab2a80ba2f25ee481451ebf276108059b1af5c0403c2f68783ce7"
     },
     {
       "path": "docs/scripts/threat-intel/index.html",
-      "sha256": "6a5d9eea715b2c42ced313c3564c44b2149fc652d9d98457a808f13c9d2c0bd0"
+      "sha256": "9d2c866365d01a231ea11bba4ae5993f1e5a29fbbcd19ff19e6bdd4a6d9b00b1"
     },
     {
       "path": "docs/standards/security-standards-review/index.html",
-      "sha256": "a33387ba290cef630f424f7e25573d1e12a3385644a004b81be0711269ecd72c"
+      "sha256": "2178afa28f42dcb92600d27f1bbe7acb8694863824acea3006f8ad347976aaf2"
     },
     {
       "path": "docs/templates/security-writeup-template/index.html",
-      "sha256": "05fa32a800ab9d7a01b787c19d37b5155292bbd86b95071026300f68f0229549"
+      "sha256": "8c46af9d48cc76dfd61837009b0507b76f3ea02ce8f86c61b2e1771413bce95f"
     },
     {
       "path": "docs/tutorials/azure-firewall-walkthrough/index.html",
-      "sha256": "135189d82522335db41a36902e1360443a707f17c25d2399f33047507a2fb5a7"
+      "sha256": "97d54d703232430226ee5c47c73a6b12ac9e42ac934200f976dd876ee88f49ef"
     },
     {
       "path": "docs/tutorials/azure-firewall-walkthrough/main.tf",
@@ -3351,107 +3351,107 @@
     },
     {
       "path": "docs/tutorials/azure-landing-zone/architecture/index.html",
-      "sha256": "f2c670196c77bf6aee67082a8e2358f2cada48e7a344feca3f8daf49df545bb6"
+      "sha256": "f6e01b1f4fe2ffb53629896c9bd6655d81a917812647fd73a0c8c1222019a523"
     },
     {
       "path": "docs/tutorials/azure-landing-zone/iam/index.html",
-      "sha256": "a25db73023b1f24828bfece768faf93471b884948f1596f552aac9b339e1fe79"
+      "sha256": "12decbfac8f99d469929cef926c56e8af4929386f8661306f25a3c7e9bbc1b8b"
     },
     {
       "path": "docs/tutorials/azure-landing-zone/implementation-templates/index.html",
-      "sha256": "0200ba1459980edd57875cd42c42966bda4ccb74e1adecca962f48aa4556125b"
+      "sha256": "f4ef1353fbb619335309965fa8ca72532ff15516970bed46c1c6fb975fe8592b"
     },
     {
       "path": "docs/tutorials/azure-landing-zone/index.html",
-      "sha256": "d1271acdee7024f3c110ef61bdbe90f361c2eb2e9b43122b707c9dc00aba1171"
+      "sha256": "49a3c3c4e480736c70a944d4ef12dac4e99320ddd2afa83b8dba4676390c55a1"
     },
     {
       "path": "docs/tutorials/azure-landing-zone/networking/index.html",
-      "sha256": "4f4425f841edf3e16ab6472c7a909a05e4acc1444398cc1004ee93198ee47c0a"
+      "sha256": "aa976cb142388e50193a3ecd681c6b98def600add951622883458d671b73efea"
     },
     {
       "path": "docs/tutorials/azure-landing-zone/policy-governance/index.html",
-      "sha256": "cc83f0239d60454c720f2ed4a0d3bd756dbb5cc6e167797bf9f72ff30b835a24"
+      "sha256": "0a8c91c98252a670b95f72100c791de83e8d0084fbfd7c3a5e63d0afd1d0afdb"
     },
     {
       "path": "docs/tutorials/ci-cd-gates/azure-devops/index.html",
-      "sha256": "ca5eb1926f87647076f6fb94263ac98f958f57c85475941f683550c6f2664f5a"
+      "sha256": "6c3fc9133570e4b11f26158d6238baec21000d9735742b1ad6e7757e064fc173"
     },
     {
       "path": "docs/tutorials/ci-cd-gates/github-actions/index.html",
-      "sha256": "5ef2dc8a6ea00555daf93572eee5565c0fd729331e5aa94b6e16495c878c560c"
+      "sha256": "97cdc9c17caefaec3c5fc58cdbffccdd39d08231831df852739d57faf56d730f"
     },
     {
       "path": "docs/tutorials/ci-cd-gates/index.html",
-      "sha256": "c28caddcd58e38b99bb6af5657ada6d9b4dca713d147f408669eb68c8caad022"
+      "sha256": "536ab0bfaf5884da9de6e8c01d02337d4432106cadf30827c935fb434704ba9f"
     },
     {
       "path": "docs/tutorials/ci-cd-gates/tools/index.html",
-      "sha256": "97a116b2d282b8ec29b1b2ad9b2695d0a82de62baffd3ac0e7600130e56d17e8"
+      "sha256": "9aa11acac54a693b9d6b00fa08d862b1d0eeab259213ee2e324808579fd9b89d"
     },
     {
       "path": "docs/tutorials/detection-engineering-sentinel/detection-templates/index.html",
-      "sha256": "a29e0bc382fbb21b22a141ea2cc40ef45c31d4c34250db27b8290030dacc007a"
+      "sha256": "fa51635ee94e9792cc640a23ce775768f8341456e79c7684c4427d956cda54f1"
     },
     {
       "path": "docs/tutorials/detection-engineering-sentinel/index.html",
-      "sha256": "dbd9778ff2f076e5229c2ec77008b5270951ace97690d0e35568c05c064c5b1f"
+      "sha256": "e02be93d57b788f38c4e245e116c3e94605eb1d53a7e62f7f0e752bc8265d4b2"
     },
     {
       "path": "docs/tutorials/owasp-api-security-top-10/code-examples/index.html",
-      "sha256": "077200135096a2645868dc10dffd2dfe4384b2ffa0fd39ae77d3956d1a36b610"
+      "sha256": "a95835ff80acd568b024a14efef58b98ff1ade566fbaa71f2f60dbd088f92594"
     },
     {
       "path": "docs/tutorials/owasp-api-security-top-10/examples/insecure-example/index.html",
-      "sha256": "4a80863bb34acf84c9cada2978ddbe7c92e7e857743c84440e62ad7eb96b8d94"
+      "sha256": "ee585ff6c3d4b9dd014910dd324cd278473e48793133043f8bc184cde9122a20"
     },
     {
       "path": "docs/tutorials/owasp-api-security-top-10/examples/secure-example/index.html",
-      "sha256": "113fa7f177b6ad8865c54f006d9b195a98a32652bb74967b915a88993270d081"
+      "sha256": "d8135fcb8235dfe1e6e9e740e9e0a5bb30e1f5b5fe1db4f1caafa99f9e9cb62a"
     },
     {
       "path": "docs/tutorials/owasp-api-security-top-10/index.html",
-      "sha256": "e370acc21126a87c40508a1fe3c1f3de6e37288cfbadabedd95c9ca8a0c0701c"
+      "sha256": "81c07af8c36b08ee53ecdf031273a4ca53341375ab1e39484a0880db2ca1b170"
     },
     {
       "path": "docs/tutorials/owasp-api-security-top-10/mitigation-node/index.html",
-      "sha256": "19f628f325a182df49f7cfc66b6633bd69c0acb5c75be03da3e55cc8cbc6631a"
+      "sha256": "465954f198cc65d84459a8e3f52f60edb9b55f535c12e587c5015b14b1f8f7d8"
     },
     {
       "path": "docs/tutorials/owasp-api-security-top-10/mitigations-dotnet/index.html",
-      "sha256": "e9ca721dda10627fcc13d378aeec9fb217b5348a40989012583396d35e41def6"
+      "sha256": "a032a37daaf17e4dd9dd5abd039a7828c823b6ee0297df361c13484aab07f762"
     },
     {
       "path": "docs/tutorials/owasp-api-security-top-10/vulnerabilities/index.html",
-      "sha256": "0a4f5ab6c8d9a565361c544049c94bb4cbd8e2eeb8b9a5ca6eae7c085fa9eb73"
+      "sha256": "d0a720ba6aa6a6745f10e382b8507e9d74eec72ef7f1197c967004b4d0c13800"
     },
     {
       "path": "docs/tutorials/securing-entra-id/conditional-access-policies/index.html",
-      "sha256": "afb4d296993a4bebab00209a8703dac6a79291d73833d7f0a6d14d8be106c0b8"
+      "sha256": "bdb403207d2262a76024f705df36edf2c8493a4e81b4d06db4e1c7437f178cf3"
     },
     {
       "path": "docs/tutorials/securing-entra-id/identity-protection/index.html",
-      "sha256": "c3d9ce2a83cff40a439cfd32d0555c09f8fab192f08cf4161ac1542cfa93495b"
+      "sha256": "c47b72fb590fd3868f80fef4e94672e2a6b13e76b350a4cac9f3a762e7d3d7d1"
     },
     {
       "path": "docs/tutorials/securing-entra-id/index.html",
-      "sha256": "8eb28c415b725d30fe57a961bead70f2c4f37184ed10915dece85f5dbb685a04"
+      "sha256": "3964dbd84a4a5bcb5d6ba161950dc2f78955ef4db804ec83641fd16fa9205eb5"
     },
     {
       "path": "docs/tutorials/securing-entra-id/monitoring-alerts/index.html",
-      "sha256": "796e00493c6d45448ccedcd94826c2c9b9dd9e661f182e4084e2d2fdf191bf23"
+      "sha256": "3d03bee0f1d224dfe08fd3c8d87bd415a6e6838e2c99ec1ad7131906bd432c16"
     },
     {
       "path": "docs/tutorials/securing-entra-id/pim-configuration/index.html",
-      "sha256": "821becb066a2cd4c4a62432e47c69d23b37e528e6c3cda8752a9349ac1664c97"
+      "sha256": "caaf53a4064ab439ca662476689619e669cc64428b606e62dc115e13a7de6acd"
     },
     {
       "path": "index.html",
-      "sha256": "04f08938968e1ef2d8feb9af7ad608d2a84eea0dbc1c59c226b7a5b99254875c"
+      "sha256": "23e177259d9a28237b2ed460a17ce826e17b49ab55fa4847578d909198ad2e6b"
     },
     {
       "path": "js/docs-ui.js",
-      "sha256": "7cd9ae6fad09afeae91e8517f137535dea127821c7604dd5ea8f56a726c5fcc3"
+      "sha256": "7c35d52dd17b1e1aedeacf88e6d5f4870cccacd6bd03b356def2b06f3a910708"
     },
     {
       "path": "js/mermaid-zoom.js",
@@ -3471,7 +3471,7 @@
     },
     {
       "path": "labs/ai-agent-security/index.html",
-      "sha256": "df306a210ac7c89e1910ed4390631332892e4cbc3552e298d60697a058bdbd9b"
+      "sha256": "cb9b394e49332248833e01fd62e4be14230f05e19f6590f00be90f6ae4ebd460"
     },
     {
       "path": "labs/ai-agent-security/package.json",
@@ -3483,7 +3483,7 @@
     },
     {
       "path": "labs/api-bola-multi-tenant/index.html",
-      "sha256": "17c63dc64186d45c7bcbd1b348035d538dc8ba79287f6e3783a51312ca7d1840"
+      "sha256": "3d4363a0f9ed1bb452a076978c3dc0646f6b94fe9dc4bc30b550b0695b464175"
     },
     {
       "path": "labs/azure-landing-zone/federated-validation.workflow.yml",
@@ -3491,7 +3491,7 @@
     },
     {
       "path": "labs/azure-landing-zone/index.html",
-      "sha256": "4c545d8d1cba397891f69c3929937907995c70c0a0f6b696807a8b8158e48aeb"
+      "sha256": "232a4a473fa204846547288c389efeea225f9229c76d0fd22b4d29c117e71600"
     },
     {
       "path": "labs/azure-landing-zone/parameters.example.json",
@@ -3511,7 +3511,7 @@
     },
     {
       "path": "labs/cicd-identity-escalation/index.html",
-      "sha256": "f1e8c6ffd826795b5a39850cc7c2dfcaf108dc3445efe664e78dbc40698dc9d4"
+      "sha256": "8f12317a15e5c0966e709ed62afde461e8de7e17d5c160389ba500ae089adf4b"
     },
     {
       "path": "labs/iac-policy/fixtures/deleted_control_plan.json",
@@ -3531,7 +3531,7 @@
     },
     {
       "path": "labs/iac-policy/index.html",
-      "sha256": "0e44d7f5140d46306e4a56ffcafa40773b55ddae81c48d8f96ff6f0533fa9663"
+      "sha256": "e7a32e19376403d21d4b01f5e6abe9ecf4ad56b8d5fef4c0854b3059d0a75cbb"
     },
     {
       "path": "labs/iac-policy/package.json",
@@ -3583,7 +3583,7 @@
     },
     {
       "path": "labs/iam-oidc/index.html",
-      "sha256": "de8a1b93e21d056d49ec62190ffa7f9cf33fdad41be23a9e20a1a2744a9feaad"
+      "sha256": "82436f1a2679fead610272f88fb1a9a6fecdd54e870cfc3b161358683301aa79"
     },
     {
       "path": "labs/iam-oidc/package.json",
@@ -3639,7 +3639,7 @@
     },
     {
       "path": "labs/index.html",
-      "sha256": "719054da0afa01a33779ddb491873c8da09341e56d0e210d1834a41a423915e4"
+      "sha256": "a4ea785247e061b3d500b08005acfd1cb449e1f2b16f82d2635d513ff2118b28"
     },
     {
       "path": "labs/kubernetes-security/fixtures/image-cases.json",
@@ -3655,7 +3655,7 @@
     },
     {
       "path": "labs/kubernetes-security/index.html",
-      "sha256": "7db50e37969543d10e6dc855943f3fae1d27abf9e618bdcc3bf5be5937c5de1e"
+      "sha256": "61a89b609df05f32b896d2a77c6f4644744b9ea8b7e320ec5dfe1cd4475727ab"
     },
     {
       "path": "labs/kubernetes-security/kyverno-test.yaml",
@@ -3687,11 +3687,11 @@
     },
     {
       "path": "labs/mcp-tool-ssrf/index.html",
-      "sha256": "3f5540050710ad0afbbdbfb07217a4bb4c24873913592df0b57411533bdf3a06"
+      "sha256": "c22bcbed470d293aa1f45ff0a0efc7a842ab6d61df81b830e21ff4de1c92b1e2"
     },
     {
       "path": "labs/oauth-oidc/index.html",
-      "sha256": "af1f2baad33925f6f5506e55105f5607830bcd64d69b219898f2465fed92a673"
+      "sha256": "a180f650d6cbbbf60bfa7a99d347b6737fd74898f5158082d2fdea24dfca7d1b"
     },
     {
       "path": "labs/oauth-oidc/oauth-security.js",
@@ -3711,7 +3711,7 @@
     },
     {
       "path": "labs/postgresql-rls/index.html",
-      "sha256": "33130bbfb3c8ef6d07e67fd2273f16d4d3094125b8d1e9ab0e514ea2e7a00102"
+      "sha256": "cecccc3241b955b8a064e52ab27f74e690adcbfc066eff9f06ff0f33b0657a58"
     },
     {
       "path": "labs/postgresql-rls/init/001-schema.sql",
@@ -3751,7 +3751,7 @@
     },
     {
       "path": "labs/request-lifecycle/index.html",
-      "sha256": "fde9b9a2a51a4c93440bd3f8f6cd4b9e256fe65d80fe8468a03931b19868ab39"
+      "sha256": "7c60bd224eb161f6556f2b67d95719c925b9d453df90831fc45f249ece21d39d"
     },
     {
       "path": "labs/request-lifecycle/lifecycle.js",
@@ -3815,7 +3815,7 @@
     },
     {
       "path": "labs/secure-cicd/index.html",
-      "sha256": "81a82d4ac5add71815e0195262f8985b81d2861ac1d70e229ec79a1662e56b04"
+      "sha256": "eb2d4f9d02ca9cd23d99bf36580dcd0ce1a00796568e85a75b4ba090acd079dd"
     },
     {
       "path": "labs/secure-cicd/package-lock.json",
@@ -3839,7 +3839,7 @@
     },
     {
       "path": "labs/supply-chain/index.html",
-      "sha256": "0dfea796b5ddf18b29ea10f6a1eedad53b48cd6f0962e7fa2be80989aa8d5a6c"
+      "sha256": "ac594ae547816f1c399adccd46077fa7b4af47f48c4ae50c08172a4c97035191"
     },
     {
       "path": "labs/supply-chain/package-lock.json",
@@ -3895,11 +3895,11 @@
     },
     {
       "path": "linux-security/evidence-driven-host-analysis/index.html",
-      "sha256": "4dacd1618f51391dc82a6a4abd1945c6f337f4ad7ceb84bb16ad10651bccbd6c"
+      "sha256": "4413591f8844ac11dd85684af80e029eadc7d4852dc47904a6b464ac2fabf157"
     },
     {
       "path": "linux-security/index.html",
-      "sha256": "fb659f5b3aae766fb1c916531c1d2b348b471e8fe1de7925b54918e7f503b991"
+      "sha256": "606ec8fffd6eb3e43f50a62da7303f675960c2f64ceb0227c405ac6e0c5bd193"
     },
     {
       "path": "publishing/content-status.json",
@@ -3907,23 +3907,23 @@
     },
     {
       "path": "publishing/deployment-review/index.html",
-      "sha256": "c6ed0d75ebba71ccd6791db58ffb9572361ff8546d5e790cf579649288cc4f89"
+      "sha256": "4fa1ea968856d7c8321769e39f65583332a9b9289c1d94dc5b3d4a8031fb836f"
     },
     {
       "path": "research-methodology/evidence-standards/index.html",
-      "sha256": "319e30ead3890c8a99588737405fe26cdf20145fa2059ac0dd1bba318fda2986"
+      "sha256": "e0c6528fbb05de4cbe22542266ac90b7de1f73cad7475025ff75c46f05ec9406"
     },
     {
       "path": "research-methodology/index.html",
-      "sha256": "05e720609a5ac856d24ffb9801d0b16de66aecb24265ba3b22aa8cc6a5dac45c"
+      "sha256": "dc97823f038ab6510ebd702133a5084c08239d7e3c9fc472fd1abbd7ea749b6d"
     },
     {
       "path": "research-methodology/lab-audit/index.html",
-      "sha256": "179ec31405de860f71014ac6b8fca4586cdddcdf3fefae378d00a2795c22bce6"
+      "sha256": "5ff041e74820a7df0e9bdb10901b2f64351a726e5b28831cd2bd413031a1b916"
     },
     {
       "path": "research-methodology/open-questions/index.html",
-      "sha256": "e0ad472559946f5f71802778d46383f88ce3474634f6d432e88371cf414ee860"
+      "sha256": "1002b01c6fbbf70cbee8b8ea122acbfba7bf74bf64982750832104ba3cf53d9d"
     },
     {
       "path": "research-methodology/research-coverage.json",
@@ -3931,19 +3931,19 @@
     },
     {
       "path": "research-methodology/research-index/index.html",
-      "sha256": "7e3a798665fe23f1f18aef9e6dabe39c23c629ed16edad32955c69ade4270368"
+      "sha256": "5d8c4cdee2fc8b80b783074885e69417c2d63b6eb5ee130c28bc33d7833066aa"
     },
     {
       "path": "research/index.html",
-      "sha256": "e1d18879852537f0049652de97b3cc8aa5a272b3937e10eec3a91bb2bf4f1256"
+      "sha256": "5c3ba35c493054c42cfa8ae38ee78183fa3ebd477a88118d81064d0296a421a6"
     },
     {
       "path": "scripts/application-security/index.html",
-      "sha256": "967e1616c15c4d85d060e9e66c672750177c2f69194e19b0932df1ca32fa1cee"
+      "sha256": "59438af6c64e71a8f2643e53713989b4003c72fa5b3c6754ef177b037ba0b740"
     },
     {
       "path": "scripts/application-security/oauth-pkce-verifier/index.html",
-      "sha256": "4074f941c90b290cfe938996c3c1c6155d872486f21328b52acb581b92a899e4"
+      "sha256": "453805bc216977e2b7592f00dd7583661723eb6eeb44994fcae7f3c6bbb963c9"
     },
     {
       "path": "scripts/catalog.yml",
@@ -3951,35 +3951,35 @@
     },
     {
       "path": "scripts/cloud-security/index.html",
-      "sha256": "8b838b9cf6c20acda02706b4a9cba8040c618dac968a2ff086aec11d8c63f971"
+      "sha256": "dae162f7d2c10487cd4b388d8ffc1f6e3df1528ecc121ede3683e2d491dc52f0"
     },
     {
       "path": "scripts/cloud-security/k8s-rbac-auditor/index.html",
-      "sha256": "490e85f45c88759852ae6eecdf905ca5012faeb0dcad483664f7f199ca3f2384"
+      "sha256": "b6164498d0f2e475465283a45bb988825cbd705964d834aa60752dc24daa2514"
     },
     {
       "path": "scripts/devsecops/index.html",
-      "sha256": "b0b586a2e1e0cecc83f15ee7c1cece505b87cad0d4ae6a13e24d61c33ab042fd"
+      "sha256": "0c6978ad43fd6741c21384f74a4a55c4b927f7c181f92d652f6cbb81cdcfdc1b"
     },
     {
       "path": "scripts/devsecops/kyverno-policy-schema-check/index.html",
-      "sha256": "f0db3dad54e1dca1aed1c1e8897571a2a51281db98b22bc099a3bf18d27d32bd"
+      "sha256": "0785f358cdb85e89ecd46c18705c803afd4abd41028a0656dc7c2238c302607f"
     },
     {
       "path": "scripts/devsecops/tetragon-policy-schema-check/index.html",
-      "sha256": "334f97d77de47d2f3c2ff890ebf46bd4a0cd3cf9c5b4664a8cba66323911ce40"
+      "sha256": "b1f984985cf6bc4f72127f0baba7935e45331002b7ba06b9c204f42e2794b50a"
     },
     {
       "path": "scripts/index.html",
-      "sha256": "6db27b9f4e1c8fda633836a37e0b830785057f7d07a7a8b812025db18660a14d"
+      "sha256": "75d3be47cb2a17af9d44352b266c21fdc574b35eec0c6fcc4769cc9c739e78d9"
     },
     {
       "path": "scripts/threat-intelligence/cloudtrail-analyzer/index.html",
-      "sha256": "9885f5080db31b65872a27fd926b1efb1eca0009b45c3d65e3f3b06a41a20988"
+      "sha256": "ee341b29962c40d03ed8e6a12d02b94dc1cd39e2f98c018e575f4292bc77b4ad"
     },
     {
       "path": "scripts/threat-intelligence/index.html",
-      "sha256": "6a3135b6618d8a854af2c223bcf0d29ee472db9651c50a10b156eaed7e670697"
+      "sha256": "308f837fb6848652aef078dcf34298f5eee5c1285b3a7bef299996367c2e9d85"
     },
     {
       "path": "search/search_index.json",
@@ -3995,19 +3995,19 @@
     },
     {
       "path": "study-notes/index.html",
-      "sha256": "933544c91d880c78e7cd7630a8be11b01f4687674692969d7237900a4906e125"
+      "sha256": "11bbbd372d8e2af80ae47afa53be188d3337a0d8b2fdf6f954bb8fbd77e8052e"
     },
     {
       "path": "threat-intel/attack-path-analysis/index.html",
-      "sha256": "bd2db034454afcd8cb23f5032467af7133d06d4c92ebfe07537c41372c900d67"
+      "sha256": "838caae37c3bcddd9918aa85c843e124a9092aa270204679e7d519231a195c4f"
     },
     {
       "path": "threat-intel/cloud-breach-case-studies/index.html",
-      "sha256": "b3830797914767acbc347d96c7f49806a8918d1de2764ecc11cefda04de63e67"
+      "sha256": "82626f2710c714826ca9d9910034d29e3ddd59ed7ead16e6fcadb651f8962e6a"
     },
     {
       "path": "threat-intel/index.html",
-      "sha256": "481df695ca1210c36e4a3eb374f3afee378468d486d8459fe57ffe12d7ea5d89"
+      "sha256": "5c69474b5052f13ad4c33128cfdbd61f27a475fc8f8b7427e46d1b873c6ebcaf"
     },
     {
       "path": "threat-intel/scripts/cloudtrail/analyze.go",
@@ -4023,7 +4023,7 @@
     },
     {
       "path": "vulnerability-research/api-bola-multi-tenant/index.html",
-      "sha256": "c8d19fedccae249b22013b92d7b666efc2cccba7122a6cb76242971ae94d39d2"
+      "sha256": "1c2e98ddd2e3416eff2ba9ed5f565c553fb9d7eeb41a8c2ee6b3a82ae8830086"
     },
     {
       "path": "vulnerability-research/api-bola-multi-tenant/lab/Dockerfile",
@@ -4039,7 +4039,7 @@
     },
     {
       "path": "vulnerability-research/api-bola-multi-tenant/lab/index.html",
-      "sha256": "1eb22376525d3ea8ca0001fd71bcbaacad24d2d2aab6c03406a5a0c9ae5af67a"
+      "sha256": "a0e2bf52c207d2bc2304d852a10c4bb48ceaf69637ecab1f7bbff2660decb05d"
     },
     {
       "path": "vulnerability-research/api-bola-multi-tenant/lab/test_api.py",
@@ -4047,7 +4047,7 @@
     },
     {
       "path": "vulnerability-research/cicd-identity-escalation/index.html",
-      "sha256": "41d3c65de36e782b9f0fdd27552098e9fe633c03d14d0544ae20de0a265e61a4"
+      "sha256": "10dd257feaed5e1ba5ccf536b9a39d259f984ec1a4a012b863f415ec9da7249a"
     },
     {
       "path": "vulnerability-research/cicd-identity-escalation/lab/detection.kql",
@@ -4059,7 +4059,7 @@
     },
     {
       "path": "vulnerability-research/cicd-identity-escalation/lab/index.html",
-      "sha256": "26660b64e4f0d99936a6ea7385d9f9b2b7217fe3bbc975113ce96e16b7fd466b"
+      "sha256": "981916ce1996d464e4a4cbca14df343e3fdc860aa00a7a103dd340e8e0d4f6a3"
     },
     {
       "path": "vulnerability-research/cicd-identity-escalation/lab/main.tf",
@@ -4083,11 +4083,11 @@
     },
     {
       "path": "vulnerability-research/index.html",
-      "sha256": "ee80b530f0b4e58c0c30971feaf8821f23fd24421c00ad53e4773dc64aea6ebe"
+      "sha256": "40fca913e9696bc1740a55812fe2f6d6dab423b0972b415a45199625bd916e15"
     },
     {
       "path": "vulnerability-research/mcp-tool-ssrf/index.html",
-      "sha256": "16bf5248a45b434eb611d8f92a36bbdaff43d82583352edd96fda04a09837115"
+      "sha256": "4d789fc0fb98104fd521c2fd4108014dfd046b42da94ff66c8eac14286b1cc72"
     },
     {
       "path": "vulnerability-research/mcp-tool-ssrf/lab/Dockerfile",
@@ -4107,7 +4107,7 @@
     },
     {
       "path": "vulnerability-research/mcp-tool-ssrf/lab/index.html",
-      "sha256": "70d91807452f0086e125ff25e789e9e101c9c549ce0cbb6f6396e40b89254f37"
+      "sha256": "5d45e0e411146b911a5e8b7c7e53abc5228f79cc6a1d5ad907b9603545f39795"
     },
     {
       "path": "vulnerability-research/mcp-tool-ssrf/lab/test_compose.py",
@@ -4123,11 +4123,11 @@
     },
     {
       "path": "vulnerability-research/methodology/index.html",
-      "sha256": "2197608c19c84e2968766608e87f38c42ce05db0afb700c3e9077deda4ff9438"
+      "sha256": "03579c5304539667b3d992789eb45ee2cd9c56ec20528e18f88a0707aa710a1f"
     },
     {
       "path": "vulnerability-research/verification/index.html",
-      "sha256": "99da6f95c26034736b8797ae7d5c557ef6c3895718cbb30dfc989fffe126d268"
+      "sha256": "d9b46e21ed1f9d80af28f21028832ed21158384ccef74afd614b1998d44ca5de"
     }
   ]
 }
