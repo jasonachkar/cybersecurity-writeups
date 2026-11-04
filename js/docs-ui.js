@@ -22,8 +22,8 @@
   }
 
   function openSearch() {
-    const toggle = document.querySelector("label[for='__search']");
-    if (toggle) toggle.click();
+    const toggle = document.getElementById("__search");
+    if (toggle && !toggle.checked) toggle.click();
   }
 
   function initialize() {
@@ -46,10 +46,28 @@
       setFocusMode(enabled);
     }));
     document.querySelectorAll("[data-docs-search-open]").forEach(button => button.addEventListener("click", openSearch));
+    const drawer = document.getElementById("__drawer");
+    const menu = document.querySelector(".docs-menu");
+    const syncDrawer = () => menu?.setAttribute("aria-expanded", String(drawer?.checked || false));
+    drawer?.addEventListener("change", syncDrawer);
+    syncDrawer();
+    menu?.addEventListener("click", () => {
+      drawer?.click();
+    });
     setFocusMode(sessionStorage.getItem(focusKey) === "true", false);
   }
 
   addEventListener("keydown", event => {
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") {
+      event.preventDefault();
+      openSearch();
+    }
+    if (event.key === "Escape" && document.getElementById("__drawer")?.checked) {
+      const drawer = document.getElementById("__drawer");
+      drawer.checked = false;
+      drawer.dispatchEvent(new Event("change"));
+      document.querySelector(".docs-menu")?.focus();
+    }
     if (event.key === "Escape" && document.body.classList.contains("docs-focus-mode")) {
       setFocusMode(false);
     }
