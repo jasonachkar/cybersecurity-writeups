@@ -481,6 +481,7 @@ body.docs-search-open { overflow: hidden; }
   [dir="ltr"] .md-sidebar--primary { left: 0; transform: translateX(-100%); }
   [dir="ltr"] [data-md-toggle="drawer"]:checked ~ .md-container .md-sidebar--primary { transform: translateX(0); }
   body.docs-drawer-open { overflow: hidden; }
+  .md-nav--primary .docs-nav-mobile-header ~ .md-nav__list { scroll-snap-type: none; }
   .md-nav--primary .docs-nav-mobile-header { display: flex; align-items: center; justify-content: space-between; gap: .6rem; padding: .6rem 1rem; border-bottom: 1px solid var(--docs-border); }
   .docs-nav-heading { min-height: 44px; }
   .docs-nav-heading, .md-nav--primary a.md-nav__link { box-sizing: border-box; }

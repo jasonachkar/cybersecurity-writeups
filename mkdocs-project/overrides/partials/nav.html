@@ -2,7 +2,7 @@
 {% macro entry(item) %}
   {% if item.children %}
     <li class="md-nav__item docs-nav-group">
-      <details class="docs-nav-section" open>
+      <details class="docs-nav-section">
         <summary class="docs-nav-heading">{{ item.title }}<span class="md-icon docs-nav-caret" aria-hidden="true">{% include ".icons/material/chevron-right.svg" %}</span></summary>
         <ul class="md-nav__list">{% for child in item.children %}{{ entry(child) }}{% endfor %}</ul>
       </details>
@@ -15,7 +15,7 @@
   <div class="md-nav__title docs-nav-mobile-header"><span>{{ config.site_name }}</span><button type="button" class="docs-nav-close md-icon" aria-label="Close navigation">{% include ".icons/material/close.svg" %}</button></div>
   <ul class="md-nav__list">
     <li class="md-nav__item docs-nav-group">
-      <details class="docs-nav-section" open>
+      <details class="docs-nav-section">
         <summary class="docs-nav-heading">Start here<span class="md-icon docs-nav-caret" aria-hidden="true">{% include ".icons/material/chevron-right.svg" %}</span></summary>
         <ul class="md-nav__list">{{ entry(nav.items[0]) }}{{ entry(nav.items[1].children[0]) }}</ul>
       </details>

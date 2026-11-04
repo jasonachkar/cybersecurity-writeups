@@ -96,7 +96,13 @@
         sidebar?.setAttribute("role", "dialog");
         sidebar?.setAttribute("aria-modal", "true");
         sidebar?.setAttribute("aria-label", "Documentation navigation");
-        if (!wasOpen) closeMenu?.focus({preventScroll: true});
+        if (!wasOpen) {
+          const resetNavigationScroll = () => sidebar?.querySelectorAll(".md-sidebar__scrollwrap, #docs-navigation > .md-nav__list").forEach(element => { element.scrollTop = 0; });
+          resetNavigationScroll();
+          closeMenu?.focus({preventScroll: true});
+          // Keep the first group visible after the drawer finishes its initial layout.
+          requestAnimationFrame(() => { if (drawer?.checked) resetNavigationScroll(); });
+        }
       } else {
         sidebar?.removeAttribute("role");
         sidebar?.removeAttribute("aria-modal");
