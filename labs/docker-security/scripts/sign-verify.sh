@@ -63,7 +63,7 @@ mkdir "$work/other"
 (cd "$work/other" && COSIGN_PASSWORD="$(od -An -N16 -tx1 /dev/urandom | tr -d ' \n')" cosign generate-key-pair >/dev/null 2>&1)
 cosign signing-config create --out "$work/local-signing-config.json" >/dev/null
 echo "signing config (no Fulcio, Rekor or TSA services):" | tee -a "$log"
-cat "$work/local-signing-config.json" | tee -a "$log"
+tee -a "$log" <"$work/local-signing-config.json"
 
 verify() { cosign verify --key "$1" --insecure-ignore-tlog=true "$2" >>"$log" 2>&1; }
 
