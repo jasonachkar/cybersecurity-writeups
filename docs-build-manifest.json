@@ -250,7 +250,7 @@
     {
       "path": "docs/certification-notes/sc-500/domain-3-secure-compute.md",
       "destination": "docs/certification-notes/sc-500/domain-3-secure-compute.md",
-      "sha256": "32623a1122d461fd5b9bf662c141d7c21692ad6a7767236f148e82146a478efc"
+      "sha256": "9cdcfe9f2c0a9d62c4b22a132542b38c60002e029e208ad08adf80910a21d365"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-4-ai-security.md",
@@ -260,7 +260,7 @@
     {
       "path": "docs/certification-notes/sc-500/domain-4-manage-monitor-posture.md",
       "destination": "docs/certification-notes/sc-500/domain-4-manage-monitor-posture.md",
-      "sha256": "6bec68ef497d81a0cb026893f867e145c043f6f375679f68f9c1b8c15965e72d"
+      "sha256": "f923cf27c052d2713a0ac69165ecdfbf50998b30941c00d9651f99fd4185b646"
     },
     {
       "path": "docs/certification-notes/security-plus/README.md",
@@ -310,7 +310,7 @@
     {
       "path": "docs/research-audit/content-inventory.md",
       "destination": "docs/research-audit/content-inventory.md",
-      "sha256": "0f7b79ed58b99076b6c6ae29d46e70168c012fc427a4b30d44eb7a0e854da05a"
+      "sha256": "6a702e468c4d2a24e2e35bedc0d847f3175c58b1004a4351fe09b3242839eec2"
     },
     {
       "path": "docs/research-audit/security-content-audit.md",
@@ -1200,7 +1200,7 @@
     {
       "path": "mkdocs-project/mkdocs.yml",
       "destination": "mkdocs-project/mkdocs.yml",
-      "sha256": "f55d466d8497f6c895c6dfddde97a35796e2e248e7296e36139ac1aa234c0581"
+      "sha256": "5031f55e5443a85205a5bf5d6bf7e724e204f80236fe8d19e870d8915a2901cb"
     },
     {
       "path": "mkdocs-project/overrides/main.html",
@@ -1510,7 +1510,7 @@
     {
       "path": "site-pages/scripts/index.md",
       "destination": "scripts/index.md",
-      "sha256": "d3259e429eebe7a9c52f3dcfde79deeb5ee01654def4944f2bdb9be606e3e09a"
+      "sha256": "ceb3f33eb24c82d37e9f713ce652eb353e6d02e249e91e0814283245c7e6483c"
     },
     {
       "path": "site-pages/scripts/threat-intelligence.md",
@@ -3171,7 +3171,7 @@
     },
     {
       "path": "docs/certification-notes/sc-500/domain-3-secure-compute/index.html",
-      "sha256": "b2957b9117ff239a1503cc31780271527a44fb812c63e58e0a630e041918a457"
+      "sha256": "1e7aa4c0ce66ccd10de3f30d2557c417ce755c2497a1dd424f944bdbec3e6fe0"
     },
     {
       "path": "docs/certification-notes/sc-500/domain-4-ai-security/index.html",
@@ -3179,7 +3179,7 @@
     },
     {
       "path": "docs/certification-notes/sc-500/domain-4-manage-monitor-posture/index.html",
-      "sha256": "c1f1fec5e9aff9d78a9e11f46cca68593acaa535a9bab02faf62c40d55d7d565"
+      "sha256": "2a9059974c28aea518eec42d47ef84468510ff924e7d30b0d62aacdbf3d299be"
     },
     {
       "path": "docs/certification-notes/sc-500/index.html",
@@ -3971,7 +3971,7 @@
     },
     {
       "path": "scripts/index.html",
-      "sha256": "75d3be47cb2a17af9d44352b266c21fdc574b35eec0c6fcc4769cc9c739e78d9"
+      "sha256": "fc9920fa339fd47e53ffc0d7980b45df6de8dba5b6e72113c34c1389b62b46d2"
     },
     {
       "path": "scripts/threat-intelligence/cloudtrail-analyzer/index.html",
@@ -3983,15 +3983,15 @@
     },
     {
       "path": "search/search_index.json",
-      "sha256": "3c49bcf4cb1e31bb548e929c5542fe56815bf9e61d7009e3544dedf9e81692f3"
+      "sha256": "f92b202df8e9f233e5acc3631c46b7af32d589657eb2f43468d5d5bddd4d7233"
     },
     {
       "path": "sitemap.xml",
-      "sha256": "52c1f1f382909ade7934afbdcb1545d494ae990230486454c505c8d362b2ca33"
+      "sha256": "3d21dbcc423d6d28799145a2c587450db62d8762033e618f1af222fbf4ee5bde"
     },
     {
       "path": "sitemap.xml.gz",
-      "sha256": "f4faf20cae00d9bcc7327f70331811ef1e7c944e95f660e94f1497e5f4170198"
+      "sha256": "71e862aab95e0d3c78efeff40927f78d226686593c18f66cdb87d981beb6e309"
     },
     {
       "path": "study-notes/index.html",
