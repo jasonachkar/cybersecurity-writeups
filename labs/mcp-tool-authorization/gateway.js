@@ -67,7 +67,22 @@ class StdioClient {
     this.nextId = 1;
     this.closed = false;
     this.child = spawn(command, args, { stdio: ["pipe", "pipe", onStderrLine ? "pipe" : "ignore"], env: { ...process.env, ...env } });
-    if (onStderrLine) readline.createInterface({ input: this.child.stderr }).on("line", onStderrLine);
+    this.observesStderr = Boolean(onStderrLine);
+    this.barriers = new Map();
+    this.barrierSeq = 0;
+    this.stderrClosed = Promise.resolve();
+    if (onStderrLine) {
+      const stderrLines = readline.createInterface({ input: this.child.stderr });
+      this.stderrClosed = new Promise((resolve) => stderrLines.on("close", resolve));
+      stderrLines.on("line", (line) => {
+        if (line.startsWith("BARRIER ")) {
+          const release = this.barriers.get(line.slice(8));
+          if (release) { this.barriers.delete(line.slice(8)); release(); }
+          return;
+        }
+        onStderrLine(line);
+      });
+    }
     this.child.on("exit", () => {
       this.closed = true;
       for (const { reject, timer } of this.pending.values()) { clearTimeout(timer); reject(new Deny("UPSTREAM_FAILURE", "server exited")); }
@@ -99,6 +114,24 @@ class StdioClient {
 
   notify(method, params) { this.child.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", method, params })}\n`); }
   stop() { this.child.kill(); }
+
+  /**
+   * Test seam. Resolves once every stderr line the upstream wrote before this call has been delivered
+   * to the stderr observer. Responses (stdout) and side-effect reports (stderr) are separate pipes with
+   * no ordering guarantee between them, so "the response arrived" does not mean "its effect line has".
+   * A positive assertion would flake; worse, a negative one ("nothing happened") would pass vacuously.
+   * The barrier is a marker on the single ordered stderr pipe, so it is a proof, not a delay.
+   */
+  async barrier(timeoutMs = this.timeoutMs) {
+    if (!this.observesStderr) return;
+    if (this.closed) return this.stderrClosed;
+    const token = `b${this.barrierSeq++}`;
+    const seen = new Promise((resolve) => this.barriers.set(token, resolve));
+    this.child.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", id: `barrier-${token}`, method: "lab/barrier", params: { token } })}\n`);
+    let timer;
+    const expired = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error(`stderr barrier not observed within ${timeoutMs} ms`)), timeoutMs); });
+    try { await Promise.race([seen, this.stderrClosed, expired]); } finally { clearTimeout(timer); this.barriers.delete(token); }
+  }
 }
 
 class Gateway {
@@ -123,6 +156,9 @@ class Gateway {
   }
 
   stop() { if (this.#client) this.#client.stop(); }
+
+  /** Test seam, not reachable from an agent: see StdioClient.barrier. A no-op unless a stderr observer is configured. */
+  upstreamStderrBarrier() { return this.#client ? this.#client.barrier() : Promise.resolve(); }
 
   /** Re-read tools/list and compare each descriptor with its pin. Unreviewed or changed tools are not callable. */
   async #refresh() {

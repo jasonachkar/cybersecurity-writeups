@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Run the MCP tool-authorization lab: pin check, 33 mechanism tests, then the scenario matrix.
+# Run the MCP tool-authorization lab: pin check, 35 mechanism tests, then the scenario matrix.
 #   bash labs/mcp-tool-authorization/scripts/run-lab.sh [--publish-evidence]
 # Needs only Node.js 22+. No network, no model, no credentials, no Docker. The tool server is a local
 # child process whose every effect is an in-memory array append.

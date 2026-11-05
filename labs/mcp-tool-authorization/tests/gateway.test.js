@@ -43,6 +43,14 @@ async function withGateway(options, body) {
     onUpstreamStderr: (line) => { if (line.startsWith("EFFECT ")) effects.push(JSON.parse(line.slice(7))); },
   });
   await gateway.start();
+  if (options.settle !== false) {
+    // Responses arrive on stdout and side-effect lines on stderr: two pipes, no ordering guarantee. Without
+    // this, a positive assertion flakes and a negative one ("nothing happened") can pass vacuously because
+    // the effect line simply has not been read yet. Settling after every call makes `effects` complete
+    // by construction at the point any test reads it.
+    const call = gateway.callTool.bind(gateway);
+    gateway.callTool = async (...args) => { try { return await call(...args); } finally { await gateway.upstreamStderrBarrier(); } };
+  }
   try { return await body({ gateway, effects, audit, clock }); } finally { gateway.stop(); }
 }
 const seen = (outcome) => { observedReasons.add(outcome.reason); return outcome; };
@@ -88,6 +96,33 @@ test("allowed: an untrusted-free session may create a ticket without approval", 
     const out = seen(await gateway.callTool(makeCtx(), "create_ticket", { title: "docs", body: "update the docs" }));
     assert.equal(out.decision, "allow");
     assert.deepEqual(effects.map((e) => e.kind), ["ticket"]);
+  });
+});
+
+test("observation: after the stderr barrier every effect of every earlier call is visible, so 'nothing happened' is a proof", async () => {
+  // settle:false uses the raw gateway, where a response can arrive before its effect line. Each iteration
+  // jumps the fake clock past the rate-limit window so every call executes.
+  await withGateway({ settle: false }, async ({ gateway, effects, clock }) => {
+    for (let i = 1; i <= 120; i++) {
+      clock.t += 3_600_000;
+      const out = await gateway.callTool(makeCtx(), "create_ticket", { title: `ticket ${i}` });
+      assert.equal(out.executed, true);
+      await gateway.upstreamStderrBarrier();
+      assert.equal(effects.length, i, `effect of call ${i} must be visible once the barrier has returned`);
+    }
+  });
+});
+
+test("observation: the barrier returns instead of hanging when there is no observer or the upstream is gone", async () => {
+  const silent = new Gateway({ policy: POLICY, audit: new AuditLog(), args: [SERVER], timeoutMs: 1500 });
+  await silent.start();
+  try { await silent.upstreamStderrBarrier(); } finally { silent.stop(); }
+
+  await withGateway({ settle: false, mode: "crash" }, async ({ gateway, clock }) => {
+    clock.t += 3_600_000;
+    const out = await gateway.callTool(makeCtx(), "create_ticket", { title: "kills the server" }).catch((e) => e);
+    assert.ok(out, "the crashing call resolves or rejects; it does not hang");
+    await gateway.upstreamStderrBarrier();
   });
 });
 

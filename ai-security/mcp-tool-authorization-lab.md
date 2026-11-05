@@ -15,7 +15,7 @@ date: "2026-11-05"
 lastReviewed: "2026-11-05"
 reviewStatus: "requires-review"
 validatedAgainst:
-  - "Local lab run 2026-11-05: 33 mechanism tests and a 16-scenario decision matrix against a real spawned stdio child process (see the linked lab and its evidence folder)"
+  - "Local lab run 2026-11-05: 35 mechanism tests and a 16-scenario decision matrix against a real spawned stdio child process (see the linked lab and its evidence folder)"
   - "MCP specification revision 2025-11-25 source for Tools and Transports read for message shapes and the stated security considerations"
 sourceQuality: "mixed-sources"
 implementationStatus: "partially-tested"
@@ -56,7 +56,7 @@ sandboxing the tool server, and any real model behaviour.
 ## What I built
 
 The code is in the [mcp-tool-authorization lab](../labs/mcp-tool-authorization/README.md): a mock stdio server (`tools/list`, `tools/call`; five tools; five failure modes), the
-gateway, a hash-chained audit log, a stand-in agent, 33 mechanism tests and a 16-scenario decision matrix.
+gateway, a hash-chained audit log, a stand-in agent, 35 mechanism tests and a 16-scenario decision matrix.
 
 ```mermaid
 flowchart LR
@@ -173,7 +173,7 @@ Recorded run (`evidence/versions.txt`): Node.js v22.23.4, Linux 6.18.44, policy 
 | Command | Observed |
 | --- | --- |
 | `node scripts/pin.js` | `all pins match` for five tools |
-| `node --test labs/mcp-tool-authorization/tests/gateway.test.js` | `tests 33, pass 33, fail 0` |
+| `node --test labs/mcp-tool-authorization/tests/gateway.test.js` | `tests 35, pass 35, fail 0` |
 | `node labs/mcp-tool-authorization/scripts/run-scenarios.js` | 16 scenarios, 31 proposed calls: 11 allow, 5 approval required, 15 deny; `all expectations met`; audit chains valid |
 
 Selected rows of the decision matrix (full table in `evidence/decision-matrix-table.txt`; "effects" are observed on the server's stderr channel, separate from the protocol):
@@ -220,6 +220,14 @@ Selected rows of the decision matrix (full table in `evidence/decision-matrix-ta
    Detecting that needs the head hash anchored somewhere the attacker cannot also rewrite; this lab does not provide one.
 6. **Bare directory paths are outside a `/**` glob.** `notes:read:/workspace/notes/**` does not match `/workspace/notes` (no trailing component), by design. A tool that lists a directory needs the directory form or a second scope. Easy to get wrong in policy, and a source of "why was this denied" tickets.
 7. **The summary shown to the human is a security surface.** It is built from the actual arguments (recipient, subject, body *length*), with control characters stripped, and never from model-written justification text. The test asserts the body text does not appear in it.
+8. **My "nothing happened" assertions were not proofs.** The tests read side effects from the server's stderr and decisions from its stdout. Those are two pipes with no ordering guarantee between them, so a call could return before its
+   effect line had been read. I found it when the suite, run repeatedly under Node 24, failed a positive assertion in 2 of 8 runs (it had passed on Node 22 six times in a row, which was luck, not immunity). Probing it directly: after an *executed* call, the effect line was not yet visible for between 0.3% and 28% of calls across repeated 300-call probes on Node 22 and 24
+   (scheduling-dependent, so no single rate means much; every effect did arrive eventually). The dangerous half is the negative case: `assert.deepEqual(effects, [])` after a denied call passes just as happily when the effect line is late. A harness that can
+   pass vacuously is worse than no harness in a lab whose claim is "denied means nothing happened".
+   The fix is an ordering barrier, not a sleep. The mock server answers a lab-only `lab/barrier` request by writing a marker to stderr; stderr is a single ordered pipe, so a harness that has seen the marker has seen every effect written before it. The gateway exposes this
+   as a test seam (`upstreamStderrBarrier`, a no-op without a stderr observer, not reachable from an agent), the test harness settles after every call, and the scenario runner settles before it measures each step. A dedicated test fails deterministically
+   if the barrier is disabled (checked by disabling it: 6 of 6 runs failed that test, on Node 22 and 24). Residual limits: the barrier proves the harness has observed the server's stderr up to that point, not that the server reports every effect it causes.
+   The mock only reports what its own code paths emit, which is why the effects are in-memory appends I can enumerate.
 
 ### The taint model is an assumption, and a conservative one
 

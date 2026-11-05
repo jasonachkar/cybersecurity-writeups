@@ -154,5 +154,13 @@ rl.on("line", (line) => {
     }
     return;
   }
+  // Lab-only ordering barrier; it is not an MCP method. Side effects go to stderr and responses go to
+  // stdout, and the parent gets no ordering guarantee between two separate pipes. This marker is written
+  // to stderr AFTER any earlier EFFECT lines, and stderr is a single ordered pipe, so a harness that has
+  // seen the marker has seen every effect the server produced before it.
+  if (method === "lab/barrier") {
+    process.stderr.write(`BARRIER ${String(params && params.token).replace(/[^\w-]/g, "")}\n`);
+    return reply(id, {});
+  }
   if (id !== undefined) fail(id, -32601, `method not found: ${method}`);
 });

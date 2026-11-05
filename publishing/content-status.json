@@ -2044,7 +2044,7 @@
     "indexable": true,
     "lastReviewed": "2026-11-05",
     "evidence": [
-      "33 mechanism tests against a real spawned stdio child process; a 16-scenario decision matrix with expectations declared before each step; side effects observed on an independent channel."
+      "35 mechanism tests against a real spawned stdio child process; a 16-scenario decision matrix with expectations declared before each step; side effects observed on an independent channel."
     ],
     "limitations": [
       "No language model is involved: the agent is a deterministic stand-in that obeys every injected instruction.",
@@ -2071,7 +2071,7 @@
     "indexable": true,
     "lastReviewed": "2026-11-05",
     "evidence": [
-      "2026-11-05: 33 mechanism tests and a 16-scenario decision matrix; message shapes and security considerations read from the MCP specification 2025-11-25 source."
+      "2026-11-05: 35 mechanism tests and a 16-scenario decision matrix; message shapes and security considerations read from the MCP specification 2025-11-25 source."
     ],
     "limitations": [
       "A deterministic stand-in replaces any model; authentication, authorization flow and remote transport are not covered; review pending."

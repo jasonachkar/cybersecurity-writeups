@@ -134,6 +134,7 @@ async function runScenario(scenario) {
     async step(tool, args, expectation, approvalId) {
       const before = effects.length;
       const outcome = await gateway.callTool(c, tool, args, approvalId ? { approvalId } : {});
+      await gateway.upstreamStderrBarrier(); // stdout and stderr are unordered pipes: wait until this call's effects are visible
       record("script", tool, args, outcome, expectation);
       const delta = effects.length - before;
       if (delta !== expectation.effects) { failures += 1; rows[rows.length - 1].ok = false; rows[rows.length - 1].sideEffectMismatch = { expected: expectation.effects, observed: delta }; }
@@ -148,6 +149,7 @@ async function runScenario(scenario) {
     async agent(script) {
       const before = effects.length;
       const transcript = await new NaiveAgent(gateway, c).run(script);
+      await gateway.upstreamStderrBarrier();
       h._agentEffects = effects.length - before;
       return transcript;
     },

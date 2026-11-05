@@ -21,7 +21,7 @@ resource deployment.
 | [Event/secret lifecycle](../labs/request-lifecycle/README.md) | `node --test labs/request-lifecycle/lifecycle.test.js` | Six local methods, deterministic cache clock; no provider lease revocation |
 | [Docker hardening](../labs/docker-security/README.md) | `node --test labs/docker-security/tests/policy-check.test.js`; `bash labs/docker-security/scripts/run-lab.sh` | 38 static-gate tests (CI); runtime, scan, SBOM and local signing on a disposable Docker host, 85 assertions, not in CI |
 | [Linux host telemetry](../labs/linux-host-telemetry/README.md) | `python3 labs/linux-host-telemetry/tests/test_detections.py` | 23 tests on a synthetic corpus plus one strace capture; no production sensor |
-| [MCP tool authorization](../labs/mcp-tool-authorization/README.md) | `node --test labs/mcp-tool-authorization/tests/gateway.test.js` | 33 tests and a 16-scenario matrix against a stand-in agent; no model, no identity provider |
+| [MCP tool authorization](../labs/mcp-tool-authorization/README.md) | `node --test labs/mcp-tool-authorization/tests/gateway.test.js` | 35 tests and a 16-scenario matrix against a stand-in agent; no model, no identity provider |
 | [Tool SSRF](../labs/mcp-tool-ssrf/README.md) | Canonical Compose setup and `test_egress.py` | Six paired HTTP cases, six unit methods and actual isolated TCP-path test |
 | [API BOLA](../labs/api-bola-multi-tenant/README.md) | `python3 vulnerability-research/api-bola-multi-tenant/lab/test_api.py` | 14 paired real HTTP cases plus session/role/state checks |
 | [CI/CD identity](../labs/cicd-identity-escalation/README.md) | `bash vulnerability-research/cicd-identity-escalation/lab/validate.sh` | Three mock-plan tests and 28 policy/assertion decisions, no cloud exchange |

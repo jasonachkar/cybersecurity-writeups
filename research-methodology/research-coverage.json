@@ -151,7 +151,7 @@
     "lab": "labs/mcp-tool-authorization/README.md",
     "question": "Does a deterministic gateway keep tool authority independent of a compromised model's behaviour, and does every decision leave a verifiable record?",
     "command": "node --test labs/mcp-tool-authorization/tests/gateway.test.js",
-    "claimBoundary": "The 33 tests and 16-scenario matrix use a deterministic stand-in that obeys every injected instruction; no language model, identity provider or conformant MCP server is involved, and the audit chain does not detect tail truncation."
+    "claimBoundary": "The 35 tests and 16-scenario matrix use a deterministic stand-in that obeys every injected instruction; no language model, identity provider or conformant MCP server is involved, and the audit chain does not detect tail truncation."
   },
   {
     "article": "linux-security/host-telemetry-detection-lab.md",

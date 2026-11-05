@@ -48,13 +48,13 @@ descriptor pinning, output validation and an audit chain; it does not replace it
 
 | Path | Purpose |
 | --- | --- |
-| `mock-server.js` | Newline-delimited JSON-RPC 2.0 over stdio: `initialize`, `tools/list`, `tools/call`; five tools on in-memory data; modes `normal`, `rugpull`, `hostile_output`, `slow`, `crash`; side effects reported on stderr so tests observe them independently |
+| `mock-server.js` | Newline-delimited JSON-RPC 2.0 over stdio: `initialize`, `tools/list`, `tools/call`; five tools on in-memory data; modes `normal`, `rugpull`, `hostile_output`, `slow`, `crash`; side effects reported on stderr so tests observe them independently; plus a lab-only `lab/barrier` method (not MCP) that orders stderr against stdout for the test harness |
 | `gateway.js` | The single enforcement point: allowlist, descriptor pin, closed-schema check, path/recipient validation, user-AND-agent scope intersection, destination allowlist, risk gating with taint, approval verification, execution rate limit, audit-before-execute, timeout, output validation |
 | `policy.json` | Deny-by-default policy; each tool's reviewed descriptor is pinned by SHA-256 |
 | `audit.js` | Hash-chained append-only log with `verifyChain` |
 | `lib/` | Canonical hashing, a closed JSON-Schema subset, strict scope and path matching |
 | `agent-sim.js` | `NaiveAgent`, the compromised-planner stand-in |
-| `tests/gateway.test.js` | 33 tests against a real spawned server process |
+| `tests/gateway.test.js` | 35 tests against a real spawned server process |
 | `scripts/run-scenarios.js` | 16 scenarios, expectations declared before each step, decision matrix written to JSON and Markdown |
 | `scripts/pin.js`, `scripts/run-lab.sh` | Pin check/update; run everything |
 
@@ -63,7 +63,7 @@ descriptor pinning, output validation and an audit chain; it does not replace it
 Recorded run (`evidence/versions.txt`): Node.js v22.23.4, Linux 6.18.44, policy version `2026-11-05.1`.
 
 ```bash
-node --test labs/mcp-tool-authorization/tests/gateway.test.js     # 33 tests
+node --test labs/mcp-tool-authorization/tests/gateway.test.js     # 35 tests
 node labs/mcp-tool-authorization/scripts/run-scenarios.js         # 16 scenarios, 31 proposed calls
 bash labs/mcp-tool-authorization/scripts/run-lab.sh               # pins + tests + scenarios
 ```
@@ -71,9 +71,10 @@ bash labs/mcp-tool-authorization/scripts/run-lab.sh               # pins + tests
 | Check | Observed |
 | --- | --- |
 | Descriptor pins | all five match the benign server |
-| Mechanism tests | 33 passed, 0 failed (includes a check that every reason code the gateway can emit was exercised) |
+| Mechanism tests | 35 passed, 0 failed (includes a check that every reason code the gateway can emit was exercised) |
 | Scenario matrix | 16 scenarios, 31 proposed calls: **11 allow, 5 approval required, 15 deny**; every expectation met; every audit chain verifies |
-| Side effects | observed on a channel separate from the protocol: nothing happened for any denied or unapproved call |
+| Side effects | observed on a channel separate from the protocol: nothing happened for any denied or unapproved call. Reads are ordered by a stderr barrier; without it the assertion could pass because a line was late (see the article, finding 8) |
+| Reproducibility | decisions, reasons, effect counts and audit sequence numbers are identical across runs. The audit-chain `head` hashes in `decision-matrix.json` are **not**: approval ids are random, so they change on every run and are not a regression signal |
 
 The matrix, with a read-across to reasons and audit sequence numbers, is in the [article](../../ai-security/mcp-tool-authorization-lab.md#findings-and-interpretation).
 
@@ -81,7 +82,7 @@ The matrix, with a read-across to reasons and audit sequence numbers, is in the 
 
 - A real language model, real prompt injection, or any measure of how injectable a model is. The stand-in obeys every injected instruction by construction.
 - Authentication of the user, the agent or the approver; token validation; the MCP authorization specification; OAuth flows.
-- A conformant MCP server or client: the mock implements four methods and no pagination, capabilities negotiation, resources, prompts or sampling.
+- A conformant MCP server or client: the mock implements four MCP methods (`initialize`, `notifications/initialized`, `tools/list`, `tools/call`) plus the lab-only barrier, and no pagination, capabilities negotiation, resources, prompts or sampling.
 - Remote (HTTP) MCP transport; only stdio.
 - A compromised gateway host, a compromised approval UI, or an attacker with access to the audit store. The audit chain's tail-truncation gap is demonstrated, not closed.
 - Concurrency, performance and rate-limit behaviour under load; approval-fatigue effects on real reviewers.
