@@ -1,0 +1,5 @@
+date_utc=2026-11-05T02:21:06Z
+node=v22.23.4
+kernel=6.18.44-fc-v236
+policy_version=2026-11-05.1
+mcp_spec_revision_read=2025-11-25 (message shapes only; the mock server is not a conformant MCP server)

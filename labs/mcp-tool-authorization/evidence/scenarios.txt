@@ -1,0 +1,2 @@
+16 scenarios, 31 proposed calls: {"allow":11,"approval_required":5,"deny":15}; side effects observed only where an allow was expected; audit chains valid: true
+all expectations met
