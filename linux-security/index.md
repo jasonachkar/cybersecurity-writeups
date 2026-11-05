@@ -19,6 +19,7 @@ reviewIntervalDays: 90
 Research on Linux privilege, namespaces, exposure, safe metadata collection, and runtime telemetry.
 
 - [Linux Security engineering findings](evidence-driven-host-analysis.md)
+- [Host telemetry detection lab: nine rules, their false positives, and what they cannot see](host-telemetry-detection-lab.md)
 
 ## References
 
