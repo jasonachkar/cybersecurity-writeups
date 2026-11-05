@@ -1,0 +1,117 @@
+{
+  "cases": {
+    "compliant-app": {
+      "psa": "allow",
+      "vap": "allow",
+      "opa": "allow",
+      "kyverno": "pass",
+      "combined": "allow"
+    },
+    "compliant-api-reader": {
+      "psa": "allow",
+      "vap": "allow",
+      "opa": "allow",
+      "kyverno": "pass",
+      "combined": "allow"
+    },
+    "finding-pod-level-only-run-as-non-root": {
+      "psa": "allow",
+      "vap": "allow",
+      "opa": "allow",
+      "kyverno": "fail",
+      "combined": "allow"
+    },
+    "finding-sa-level-automount-false": {
+      "psa": "allow",
+      "vap": "allow",
+      "opa": "deny",
+      "kyverno": "fail",
+      "combined": "allow"
+    },
+    "rejected-privileged": {
+      "psa": "deny",
+      "vap": "allow",
+      "opa": "deny",
+      "kyverno": "fail",
+      "combined": "deny"
+    },
+    "rejected-hostpath": {
+      "psa": "deny",
+      "vap": "allow",
+      "opa": "deny",
+      "kyverno": "fail",
+      "combined": "deny"
+    },
+    "rejected-host-namespaces": {
+      "psa": "deny",
+      "vap": "allow",
+      "opa": "deny",
+      "kyverno": "fail",
+      "combined": "deny"
+    },
+    "rejected-run-as-root": {
+      "psa": "deny",
+      "vap": "allow",
+      "opa": "deny",
+      "kyverno": "fail",
+      "combined": "deny"
+    },
+    "rejected-capability-add": {
+      "psa": "deny",
+      "vap": "allow",
+      "opa": "deny",
+      "kyverno": "fail",
+      "combined": "deny"
+    },
+    "rejected-no-seccomp": {
+      "psa": "deny",
+      "vap": "allow",
+      "opa": "deny",
+      "kyverno": "fail",
+      "combined": "deny"
+    },
+    "rejected-privilege-escalation": {
+      "psa": "deny",
+      "vap": "allow",
+      "opa": "deny",
+      "kyverno": "fail",
+      "combined": "deny"
+    },
+    "gap-no-limits": {
+      "psa": "allow",
+      "vap": "deny",
+      "opa": "deny",
+      "kyverno": "fail",
+      "combined": "deny"
+    },
+    "gap-latest-tag": {
+      "psa": "allow",
+      "vap": "deny",
+      "opa": "deny",
+      "kyverno": "pass",
+      "combined": "deny"
+    },
+    "gap-writable-rootfs": {
+      "psa": "allow",
+      "vap": "deny",
+      "opa": "deny",
+      "kyverno": "fail",
+      "combined": "deny"
+    },
+    "gap-automounted-token": {
+      "psa": "allow",
+      "vap": "deny",
+      "opa": "deny",
+      "kyverno": "fail",
+      "combined": "deny"
+    },
+    "gap-projected-token-unapproved": {
+      "psa": "allow",
+      "vap": "deny",
+      "opa": "deny",
+      "kyverno": "pass",
+      "combined": "deny"
+    }
+  },
+  "mismatches": []
+}

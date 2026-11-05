@@ -1,0 +1,87 @@
+PASS  NetworkPolicy is enforced by this cluster's CNI (precondition for every network result)
+PASS  baseline: token mounted by default
+PASS  baseline: token is a bound (pod-scoped) token
+PASS  baseline: list_secrets_kube_system returns 200
+PASS  baseline: list_pods_all_namespaces returns 200
+PASS  baseline: list_nodes returns 200
+PASS  baseline: list_secrets_own_ns returns 200
+PASS  baseline: list_configmaps_own_ns returns 200
+PASS  baseline: kube-system secrets are listable (count only, no names or values recorded)
+PASS  baseline: SelfSubjectAccessReview allows create_pods_own_ns
+PASS  baseline: SelfSubjectAccessReview allows create_pods_exec_own_ns
+PASS  baseline: SelfSubjectAccessReview allows get_secrets_any_namespace
+PASS  baseline: SelfSubjectAccessReview allows create_rolebindings_own_ns
+PASS  baseline: escalate_clusterroles is NOT allowed (the over-grant is bounded, not cluster-admin)
+PASS  baseline: impersonate_users is NOT allowed (the over-grant is bounded, not cluster-admin)
+PASS  baseline: kubectl auth can-i agrees with the in-pod review
+PASS  baseline: runs as uid 0
+PASS  baseline: privileged container has a large capability set
+PASS  baseline: no seccomp filter
+PASS  baseline: host PID namespace visible
+PASS  baseline: root filesystem writable
+PASS  baseline: hostPath directory writable from the container
+PASS  baseline: file written through hostPath is owned by uid 0 on the node
+PASS  baseline: pod reaches canary (no NetworkPolicy)
+PASS  baseline: pod reaches neighbor (no NetworkPolicy)
+PASS  baseline: pod reaches the API server endpoint directly
+PASS  admission: all matrices recorded
+PASS  baseline admission: all 16 cases admitted (no admission control)
+PASS  kyverno: every predicted result matched the CLI
+PASS  matrix: compliant-app: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: compliant-api-reader: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: finding-pod-level-only-run-as-non-root: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: finding-sa-level-automount-false: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: rejected-privileged: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: rejected-hostpath: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: rejected-host-namespaces: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: rejected-run-as-root: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: rejected-capability-add: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: rejected-no-seccomp: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: rejected-privilege-escalation: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: gap-no-limits: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: gap-latest-tag: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: gap-writable-rootfs: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: gap-automounted-token: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: gap-projected-token-unapproved: combined PSA+VAP decision equals deny-if-either
+PASS  matrix: live/offline psa decisions match the predictions in expectations.json
+PASS  matrix: live/offline vap decisions match the predictions in expectations.json
+PASS  matrix: live/offline opa decisions match the predictions in expectations.json
+PASS  matrix: neither PSA nor VAP alone covers the corpus (each denies cases the other allows)
+PASS  hardened: submitting the unchanged baseline Deployment warns (PSA enforce applies to Pods, not Deployments)
+PASS  hardened: the ReplicaSet's pod creation is refused by Pod Security Admission and no pod exists
+PASS  hardened app: no API token mounted at all
+PASS  hardened api-reader: has a token
+PASS  hardened api-reader: GET of its one ConfigMap succeeds
+PASS  hardened api-reader: list_configmaps_own_ns is forbidden (403)
+PASS  hardened api-reader: list_secrets_own_ns is forbidden (403)
+PASS  hardened api-reader: list_secrets_kube_system is forbidden (403)
+PASS  hardened api-reader: list_pods_all_namespaces is forbidden (403)
+PASS  hardened api-reader: list_nodes is forbidden (403)
+PASS  hardened api-reader: every probed write/escalation review is denied
+PASS  hardened api-reader: token is bound to a pod
+PASS  hardened api-reader: token lifetime is at most the requested 3600 seconds
+PASS  hardened api-reader: can-i get app-config -> yes
+PASS  hardened api-reader: can-i get unrelated-config -> no (resourceNames scoping)
+PASS  hardened: runs as uid 65532
+PASS  hardened: no effective capabilities
+PASS  hardened: no_new_privs set
+PASS  hardened: seccomp RuntimeDefault active
+PASS  hardened: root filesystem read-only
+PASS  hardened: memory limit 128 MiB applied by the kubelet
+PASS  hardened: own PID namespace
+PASS  hardened: write_root_filesystem denied with EROFS
+PASS  hardened: chown_to_other_uid denied with EPERM
+PASS  hardened: mknod_char_device denied with EPERM
+PASS  hardened: raw_socket denied with EPERM
+PASS  hardened: mount_tmpfs denied with EPERM
+PASS  hardened: clone_new_user_namespace denied with EPERM
+PASS  hardened: hostPath not mounted
+PASS  hardened app -> data-tier canary: allowed by the one explicit rule
+PASS  hardened app -> neighbor tenant: blocked
+PASS  hardened app -> API server: blocked at the network layer too
+PASS  hardened api-reader -> data-tier canary: blocked (its only egress is DNS and the API server)
+PASS  baseline pod -> data tier: blocked after the data tier gained an ingress policy
+INFO  rules listed by `auth can-i --list` (baseline): 31 (includes the discovery rules every identity has)
+INFO  rules listed by `auth can-i --list` (hardened api-reader): 25 (includes the discovery rules every identity has)
+
+83 passed, 0 failed

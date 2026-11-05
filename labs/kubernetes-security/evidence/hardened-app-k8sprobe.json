@@ -1,0 +1,4 @@
+{
+  "token_mounted": false,
+  "note": "no service-account token mounted at /var/run/secrets/kubernetes.io/serviceaccount"
+}

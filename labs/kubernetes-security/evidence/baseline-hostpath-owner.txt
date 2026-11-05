@@ -1,0 +1,1 @@
+0 600 /var/lib/lab-host-canary/written-by-container.txt

@@ -1,0 +1,107 @@
+{
+  "_comment": "Predictions written BEFORE any engine was run, from each engine's documented semantics and from reading the policy sources. A mismatch with observed results is a finding to explain, not a value to overwrite. psa = Pod Security Admission 'restricted' (live); vap = lab-pod-extra-controls ValidatingAdmissionPolicy (live); kyverno = existing policies/hardened-pods.yaml via `kyverno test` (offline); opa = policies/rego/workload.rego (offline). History: the first prediction for compliant-app, compliant-api-reader, gap-latest-tag and gap-projected-token-unapproved was kyverno=pass. The Kyverno CLI returned fail for all four. Diagnosis (confirmed by re-running with ONLY container-level runAsNonRoot added): policies/hardened-pods.yaml reads runAsNonRoot at container level only, so a pod that sets it at pod level - which PSA treats as compliant - is rejected. The corpus pods now set it at both levels, and finding-pod-level-only-run-as-non-root pins the false positive. The existing policy was not modified. Second miss: the live combined PSA+VAP result for gap-automounted-token differed from the VAP-only result because lab-hardened's ServiceAccount sets automountServiceAccountToken=false while the ServiceAccount first created in lab-vap-only used defaults, so a pod that merely omitted the field was protected only in lab-hardened. The case now sets the field explicitly, both namespaces use the same ServiceAccount definitions, and finding-sa-level-automount-false pins the evaluation-context difference (offline engines read the Pod alone and treat omission as true).",
+  "engines": [
+    "psa",
+    "vap",
+    "kyverno",
+    "opa"
+  ],
+  "cases": {
+    "compliant-app": {
+      "psa": "allow",
+      "vap": "allow",
+      "kyverno": "pass",
+      "opa": "allow"
+    },
+    "compliant-api-reader": {
+      "psa": "allow",
+      "vap": "allow",
+      "kyverno": "pass",
+      "opa": "allow"
+    },
+    "finding-pod-level-only-run-as-non-root": {
+      "psa": "allow",
+      "vap": "allow",
+      "kyverno": "fail",
+      "opa": "allow"
+    },
+    "finding-sa-level-automount-false": {
+      "psa": "allow",
+      "vap": "allow",
+      "kyverno": "fail",
+      "opa": "deny"
+    },
+    "rejected-privileged": {
+      "psa": "deny",
+      "vap": "allow",
+      "kyverno": "fail",
+      "opa": "deny"
+    },
+    "rejected-hostpath": {
+      "psa": "deny",
+      "vap": "allow",
+      "kyverno": "fail",
+      "opa": "deny"
+    },
+    "rejected-host-namespaces": {
+      "psa": "deny",
+      "vap": "allow",
+      "kyverno": "fail",
+      "opa": "deny"
+    },
+    "rejected-run-as-root": {
+      "psa": "deny",
+      "vap": "allow",
+      "kyverno": "fail",
+      "opa": "deny"
+    },
+    "rejected-capability-add": {
+      "psa": "deny",
+      "vap": "allow",
+      "kyverno": "fail",
+      "opa": "deny"
+    },
+    "rejected-no-seccomp": {
+      "psa": "deny",
+      "vap": "allow",
+      "kyverno": "fail",
+      "opa": "deny"
+    },
+    "rejected-privilege-escalation": {
+      "psa": "deny",
+      "vap": "allow",
+      "kyverno": "fail",
+      "opa": "deny"
+    },
+    "gap-no-limits": {
+      "psa": "allow",
+      "vap": "deny",
+      "kyverno": "fail",
+      "opa": "deny"
+    },
+    "gap-latest-tag": {
+      "psa": "allow",
+      "vap": "deny",
+      "kyverno": "pass",
+      "opa": "deny"
+    },
+    "gap-writable-rootfs": {
+      "psa": "allow",
+      "vap": "deny",
+      "kyverno": "fail",
+      "opa": "deny"
+    },
+    "gap-automounted-token": {
+      "psa": "allow",
+      "vap": "deny",
+      "kyverno": "fail",
+      "opa": "deny"
+    },
+    "gap-projected-token-unapproved": {
+      "psa": "allow",
+      "vap": "deny",
+      "kyverno": "pass",
+      "opa": "deny"
+    }
+  }
+}

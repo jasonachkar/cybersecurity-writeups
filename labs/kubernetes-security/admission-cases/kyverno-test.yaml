@@ -1,0 +1,47 @@
+# Offline Kyverno CLI test of the EXISTING policies/hardened-pods.yaml over the
+# admission case corpus. Results are the PREDICTED ones recorded in
+# expectations.json before the CLI was run. Two cases are expected to PASS that a
+# reviewer might expect to fail; they are documented gaps of that policy:
+#   gap-latest-tag                  - the policy does not look at image tags
+#   gap-projected-token-unapproved  - the policy checks automountServiceAccountToken
+#                                     only; an explicit projected token volume bypasses it
+# One case is expected to FAIL although Pod Security Admission accepts it - a false
+# positive of that policy, kept as documented behavior (the policy is unchanged):
+#   finding-pod-level-only-run-as-non-root - runAsNonRoot is read at container level only
+#   finding-sa-level-automount-false       - the Pod omits automountServiceAccountToken and the
+#                                            ServiceAccount (not visible to a Pod-only test) sets it false
+apiVersion: cli.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: hardened-pods-over-admission-cases
+policies:
+  - ../policies/hardened-pods.yaml
+resources:
+  - cases.yaml
+results:
+  - isValidatingPolicy: true
+    policy: hardened-pods
+    kind: Pod
+    resources:
+      - compliant-app
+      - compliant-api-reader
+      - gap-latest-tag
+      - gap-projected-token-unapproved
+    result: pass
+  - isValidatingPolicy: true
+    policy: hardened-pods
+    kind: Pod
+    resources:
+      - finding-pod-level-only-run-as-non-root
+      - finding-sa-level-automount-false
+      - rejected-privileged
+      - rejected-hostpath
+      - rejected-host-namespaces
+      - rejected-run-as-root
+      - rejected-capability-add
+      - rejected-no-seccomp
+      - rejected-privilege-escalation
+      - gap-no-limits
+      - gap-writable-rootfs
+      - gap-automounted-token
+    result: fail

@@ -1,0 +1,51 @@
+# Fixtures, not subjects: a data-tier stand-in (lab-data) and another tenant (lab-other).
+# Each serves a static page on :9000 so reachability can be tested with a TCP connect.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: canary
+  namespace: lab-data
+  labels: {app: canary}
+spec:
+  automountServiceAccountToken: false
+  containers:
+    - name: httpd
+      image: busybox:1.37
+      imagePullPolicy: IfNotPresent
+      command: ["sh", "-c", "mkdir -p /www && echo data-tier > /www/index.html && exec httpd -f -p 9000 -h /www"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: canary
+  namespace: lab-data
+spec:
+  selector: {app: canary}
+  ports:
+    - port: 9000
+      targetPort: 9000
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: neighbor
+  namespace: lab-other
+  labels: {app: neighbor}
+spec:
+  automountServiceAccountToken: false
+  containers:
+    - name: httpd
+      image: busybox:1.37
+      imagePullPolicy: IfNotPresent
+      command: ["sh", "-c", "mkdir -p /www && echo other-tenant > /www/index.html && exec httpd -f -p 9000 -h /www"]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: neighbor
+  namespace: lab-other
+spec:
+  selector: {app: neighbor}
+  ports:
+    - port: 9000
+      targetPort: 9000

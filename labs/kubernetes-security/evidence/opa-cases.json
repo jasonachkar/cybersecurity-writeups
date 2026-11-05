@@ -1,0 +1,97 @@
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": [
+            {
+              "message": "API token present without reviewed approval label and non-default ServiceAccount",
+              "object": "Pod/finding-sa-level-automount-false",
+              "rule": "service-account-token"
+            },
+            {
+              "message": "API token present without reviewed approval label and non-default ServiceAccount",
+              "object": "Pod/gap-automounted-token",
+              "rule": "service-account-token"
+            },
+            {
+              "message": "API token present without reviewed approval label and non-default ServiceAccount",
+              "object": "Pod/gap-projected-token-unapproved",
+              "rule": "service-account-token"
+            },
+            {
+              "message": "container app adds capabilities",
+              "object": "Pod/rejected-capability-add",
+              "rule": "capabilities"
+            },
+            {
+              "message": "container app does not set allowPrivilegeEscalation=false",
+              "object": "Pod/rejected-privilege-escalation",
+              "rule": "privilege-escalation"
+            },
+            {
+              "message": "container app does not set allowPrivilegeEscalation=false",
+              "object": "Pod/rejected-privileged",
+              "rule": "privilege-escalation"
+            },
+            {
+              "message": "container app has a writable root filesystem",
+              "object": "Pod/gap-writable-rootfs",
+              "rule": "read-only-rootfs"
+            },
+            {
+              "message": "container app has no RuntimeDefault or Localhost seccomp profile",
+              "object": "Pod/rejected-no-seccomp",
+              "rule": "seccomp"
+            },
+            {
+              "message": "container app lacks cpu or memory limits",
+              "object": "Pod/gap-no-limits",
+              "rule": "resource-limits"
+            },
+            {
+              "message": "container app may run as root",
+              "object": "Pod/rejected-run-as-root",
+              "rule": "run-as-root"
+            },
+            {
+              "message": "container app runs as uid 0",
+              "object": "Pod/rejected-run-as-root",
+              "rule": "run-as-root"
+            },
+            {
+              "message": "container runs privileged",
+              "object": "Pod/rejected-privileged",
+              "rule": "privileged"
+            },
+            {
+              "message": "hostNetwork is true",
+              "object": "Pod/rejected-host-namespaces",
+              "rule": "host-namespace"
+            },
+            {
+              "message": "hostPID is true",
+              "object": "Pod/rejected-host-namespaces",
+              "rule": "host-namespace"
+            },
+            {
+              "message": "hostPath volume",
+              "object": "Pod/rejected-hostpath",
+              "rule": "hostpath"
+            },
+            {
+              "message": "image dockerlab/posture:latest is not digest-pinned and has no explicit non-latest tag",
+              "object": "Pod/gap-latest-tag",
+              "rule": "image-tag"
+            }
+          ],
+          "text": "data.lab.k8s.workload.pod_violations",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}

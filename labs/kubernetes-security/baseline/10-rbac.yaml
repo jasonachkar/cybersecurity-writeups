@@ -1,0 +1,42 @@
+# INSECURE BASELINE. An application identity that was handed more than it needs:
+# cluster-wide secret reads, exec into any pod, and rolebinding creation. A common
+# real-world shape is a ClusterRoleBinding created "to make the deployment work".
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-sa
+  namespace: lab-baseline
+# automountServiceAccountToken is not set: the token is mounted by default.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: app-config
+  namespace: lab-baseline
+data:
+  greeting: hello
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: lab-baseline-overreach
+rules:
+  - apiGroups: [""]
+    resources: ["secrets", "configmaps", "pods", "pods/exec", "nodes"]
+    verbs: ["get", "list", "watch", "create"]
+  - apiGroups: ["rbac.authorization.k8s.io"]
+    resources: ["rolebindings", "clusterrolebindings"]
+    verbs: ["get", "list", "create"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: lab-baseline-overreach
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: lab-baseline-overreach
+subjects:
+  - kind: ServiceAccount
+    name: app-sa
+    namespace: lab-baseline

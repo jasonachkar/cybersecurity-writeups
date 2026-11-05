@@ -1,0 +1,52 @@
+Loading test  ( admission-cases/kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 16 resources with 0 exceptions ...
+  Checking results ...
+
+│──────────│───────────────│──────│────────────────────────────────────────────────────────────│────────│────────│
+│ ID (16)  │ POLICY        │ RULE │ RESOURCE                                                   │ RESULT │ REASON │
+│──────────│───────────────│──────│────────────────────────────────────────────────────────────│────────│────────│
+│ 1        │ hardened-pods │      │ v1/Pod/lab-hardened/compliant-app                          │ Pass   │ Ok     │
+│ 2        │ hardened-pods │      │ v1/Pod/lab-hardened/compliant-api-reader                   │ Pass   │ Ok     │
+│ 3        │ hardened-pods │      │ v1/Pod/lab-hardened/gap-latest-tag                         │ Pass   │ Ok     │
+│ 4        │ hardened-pods │      │ v1/Pod/lab-hardened/gap-projected-token-unapproved         │ Pass   │ Ok     │
+│ 5        │ hardened-pods │      │ v1/Pod/lab-hardened/finding-pod-level-only-run-as-non-root │ Pass   │ Ok     │
+│ 6        │ hardened-pods │      │ v1/Pod/lab-hardened/finding-sa-level-automount-false       │ Pass   │ Ok     │
+│ 7        │ hardened-pods │      │ v1/Pod/lab-hardened/rejected-privileged                    │ Pass   │ Ok     │
+│ 8        │ hardened-pods │      │ v1/Pod/lab-hardened/rejected-hostpath                      │ Pass   │ Ok     │
+│ 9        │ hardened-pods │      │ v1/Pod/lab-hardened/rejected-host-namespaces               │ Pass   │ Ok     │
+│ 10       │ hardened-pods │      │ v1/Pod/lab-hardened/rejected-run-as-root                   │ Pass   │ Ok     │
+│ 11       │ hardened-pods │      │ v1/Pod/lab-hardened/rejected-capability-add                │ Pass   │ Ok     │
+│ 12       │ hardened-pods │      │ v1/Pod/lab-hardened/rejected-no-seccomp                    │ Pass   │ Ok     │
+│ 13       │ hardened-pods │      │ v1/Pod/lab-hardened/rejected-privilege-escalation          │ Pass   │ Ok     │
+│ 14       │ hardened-pods │      │ v1/Pod/lab-hardened/gap-no-limits                          │ Pass   │ Ok     │
+│ 15       │ hardened-pods │      │ v1/Pod/lab-hardened/gap-writable-rootfs                    │ Pass   │ Ok     │
+│ 16       │ hardened-pods │      │ v1/Pod/lab-hardened/gap-automounted-token                  │ Pass   │ Ok     │
+│──────────│───────────────│──────│────────────────────────────────────────────────────────────│────────│────────│
+
+Loading test  ( kyverno-test.yaml ) ...
+  Loading values/variables ...
+  Loading policies ...
+  Loading resources ...
+  Loading exceptions ...
+  Applying 1 policy to 7 resources with 0 exceptions ...
+  Checking results ...
+
+│────│───────────────│──────│─────────────────────────────────────────────│────────│────────│
+│ ID │ POLICY        │ RULE │ RESOURCE                                    │ RESULT │ REASON │
+│────│───────────────│──────│─────────────────────────────────────────────│────────│────────│
+│ 1  │ hardened-pods │      │ v1/Pod/workloads/allowed-workload           │ Pass   │ Ok     │
+│ 2  │ hardened-pods │      │ v1/Pod/workloads/rejected-privileged        │ Pass   │ Ok     │
+│ 3  │ hardened-pods │      │ v1/Pod/workloads/rejected-host-namespace    │ Pass   │ Ok     │
+│ 4  │ hardened-pods │      │ v1/Pod/workloads/rejected-hostpath          │ Pass   │ Ok     │
+│ 5  │ hardened-pods │      │ v1/Pod/workloads/rejected-capability        │ Pass   │ Ok     │
+│ 6  │ hardened-pods │      │ v1/Pod/workloads/rejected-missing-resources │ Pass   │ Ok     │
+│ 7  │ hardened-pods │      │ v1/Pod/workloads/rejected-token-automount   │ Pass   │ Ok     │
+│────│───────────────│──────│─────────────────────────────────────────────│────────│────────│
+
+
+Test Summary: 23 tests passed and 0 tests failed
+
