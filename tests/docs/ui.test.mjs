@@ -40,6 +40,8 @@ test("repaired Markdown renders and navigates on desktop/mobile in both themes",
               assert.equal(await heading.getAttribute("id"), id);
               const link = article.getByRole("link", {name: `Open the ${title} category`, exact: true});
               await link.click();
+              // Navigation can commit before the streamed article is parsed.
+              await page.waitForURL(`${server.base}${categoryUrl}`, {waitUntil: "load"});
               assert.equal(new URL(page.url()).pathname, categoryUrl);
               assert.equal(await page.locator("article .docs-source-viewer").count() > 0, true);
               await page.goto(`${server.base}${url}`, {waitUntil: "load"});
@@ -48,6 +50,7 @@ test("repaired Markdown renders and navigates on desktop/mobile in both themes",
               const link = article.getByRole("link", {name: title, exact: true});
               assert.equal(await link.getAttribute("href"), href);
               await link.click();
+              await page.waitForURL(`${server.base}${href}`, {waitUntil: "load"});
               const destination = new URL(page.url());
               assert.equal(`${destination.pathname}${destination.hash}`, href);
               const target = page.locator(destination.hash);
