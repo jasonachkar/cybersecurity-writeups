@@ -67,6 +67,8 @@ watch:
   - ../scripts
 
 markdown_extensions:
+  # Semantic HTML containers opt in with markdown="1"; unmarked HTML stays raw.
+  - md_in_html
   - toc:
       permalink: true
   - admonition

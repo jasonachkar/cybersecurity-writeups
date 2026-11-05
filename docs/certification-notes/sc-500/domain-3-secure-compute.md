@@ -18,7 +18,7 @@ reviewIntervalDays: 90
 
 # Study Notes: Secure compute
 
-<aside class="study-currency" aria-label="Official-owner check">
+<aside class="study-currency" aria-label="Official-owner check" markdown="1">
 
 **Official-owner check**
 
