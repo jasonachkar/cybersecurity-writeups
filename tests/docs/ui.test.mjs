@@ -3,6 +3,7 @@ import test, {after, before} from "node:test";
 import {chromium} from "playwright";
 import {createRequire} from "node:module";
 import {serveSite} from "./site-helper.mjs";
+import {rawMarkdownInArticle, scriptCategories, scriptLinks, studyNoteRoutes, studyGuideUrl} from "./markdown-content.mjs";
 
 const require = createRequire(import.meta.url);
 const catalog = require("../../scripts/docs-catalog-lib.js").buildCatalog();
@@ -11,8 +12,8 @@ let server;
 before(async () => { server = await serveSite(); browser = await chromium.launch(); });
 after(async () => { await browser?.close(); await server?.close(); });
 
-async function pageAt(url, viewport = {width: 1440, height: 900}) {
-  const context = await browser.newContext({viewport, colorScheme: "light"});
+async function pageAt(url, viewport = {width: 1440, height: 900}, colorScheme = "light") {
+  const context = await browser.newContext({viewport, colorScheme});
   const page = await context.newPage();
   const errors = [];
   page.on("pageerror", error => errors.push(String(error)));
@@ -21,6 +22,68 @@ async function pageAt(url, viewport = {width: 1440, height: 900}) {
   assert.equal(response.status(), 200);
   return {context, page, errors};
 }
+
+test("repaired Markdown renders and navigates on desktop/mobile in both themes", async () => {
+  for (const viewport of [{width: 1440, height: 900}, {width: 390, height: 844}]) {
+    for (const scheme of ["light", "dark"]) {
+      for (const url of ["/scripts/", ...studyNoteRoutes]) {
+        const {context, page, errors} = await pageAt(url, viewport, scheme);
+        try {
+          const article = page.locator("article.md-content__inner");
+          assert.equal(await page.locator("body").getAttribute("data-md-color-scheme"), scheme === "dark" ? "slate" : "default");
+          assert.equal(await article.locator("h1").count(), 1);
+          assert.deepEqual(await article.evaluate(rawMarkdownInArticle), [], url);
+          if (url === "/scripts/") {
+            for (const {title, id, url: categoryUrl} of scriptCategories) {
+              const heading = article.getByRole("heading", {level: 2, name: new RegExp(`^${title}\\s*¶?$`)});
+              assert.equal(await heading.count(), 1);
+              assert.equal(await heading.getAttribute("id"), id);
+              const link = article.getByRole("link", {name: `Open the ${title} category`, exact: true});
+              await link.click();
+              // Navigation can commit before the streamed article is parsed.
+              await page.waitForURL(`${server.base}${categoryUrl}`, {waitUntil: "load"});
+              assert.equal(new URL(page.url()).pathname, categoryUrl);
+              assert.equal(await page.locator("article .docs-source-viewer").count() > 0, true);
+              await page.goto(`${server.base}${url}`, {waitUntil: "load"});
+            }
+            for (const [title, href] of scriptLinks) {
+              const link = article.getByRole("link", {name: title, exact: true});
+              assert.equal(await link.getAttribute("href"), href);
+              await link.click();
+              await page.waitForURL(`${server.base}${href}`, {waitUntil: "load"});
+              const destination = new URL(page.url());
+              assert.equal(`${destination.pathname}${destination.hash}`, href);
+              const target = page.locator(destination.hash);
+              assert.equal(await target.count(), 1, href);
+              assert.equal(await target.locator("h2").count(), 1);
+              await page.goto(`${server.base}${url}`, {waitUntil: "load"});
+            }
+            const list = article.locator("ul:has(> li > a[href$='#kyverno-policy-schema-check'])");
+            const items = list.locator(":scope > li");
+            assert.equal(await items.count(), 2);
+            const first = await items.nth(0).boundingBox();
+            const second = await items.nth(1).boundingBox();
+            assert.ok(second.y >= first.y + first.height, "validator items must occupy separate lines");
+            const headings = await article.locator("h2").all();
+            for (const heading of headings) {
+              const headingBox = await heading.boundingBox();
+              const nextBox = await heading.locator("xpath=following-sibling::p[1]").boundingBox();
+              assert.ok(nextBox.y > headingBox.y + headingBox.height, "heading/link spacing");
+            }
+          } else {
+            const aside = article.locator("aside.study-currency");
+            assert.equal(await aside.getByRole("link", {name: "Official SC-500 study guide", exact: true}).getAttribute("href"), studyGuideUrl);
+            assert.equal(await aside.locator("strong").count(), 2);
+            assert.equal(await aside.isVisible(), true);
+          }
+          assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), `${url} ${viewport.width}/${scheme}: overflow`);
+          assert.ok(await page.locator("#docs-navigation").count() === 1);
+          assert.equal(errors.length, 0, errors.join("\n"));
+        } finally { await context.close(); }
+      }
+    }
+  }
+});
 
 test("article metadata, actions, relationships, and breadcrumbs match catalog without status panels", async () => {
   const item = catalog.research.find(candidate => candidate.id === "ai-agent-security");
