@@ -1,0 +1,4 @@
+{"from": "hardened/app", "to": "canary.lab-data.svc.cluster.local:9000", "result": {"connected": true, "target": "canary.lab-data.svc.cluster.local:9000"}}
+{"from": "hardened/app", "to": "neighbor.lab-other.svc.cluster.local:9000", "result": {"connected": false, "error": "timeout", "target": "neighbor.lab-other.svc.cluster.local:9000"}}
+{"from": "hardened/app", "to": "172.18.0.2:6443", "result": {"connected": false, "error": "timeout", "target": "172.18.0.2:6443"}}
+{"from": "hardened/api-reader", "to": "canary.lab-data.svc.cluster.local:9000", "result": {"connected": false, "error": "timeout", "target": "canary.lab-data.svc.cluster.local:9000"}}

@@ -1,0 +1,10 @@
+date_utc=2026-11-05T01:51:41Z
+kernel=6.18.44-fc-v236
+kind=v0.33.0
+kubectl=v1.37.0
+apiserver=v1.37.0
+container_runtime=containerd://2.3.4
+cni=calico quay.io/calico/node:v3.33.0
+kyverno=1.18.2
+opa=1.22.0
+kubeconform=v0.8.0

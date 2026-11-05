@@ -1429,14 +1429,17 @@
     "title": "Kubernetes admission, network, and image-policy lab",
     "status": "partially-tested",
     "indexable": true,
-    "lastReviewed": "2026-07-25",
+    "lastReviewed": "2026-11-05",
     "evidence": [
       "Local pod, network, and image-decision cases include accepted and denied inputs.",
       "Native Kyverno CLI 1.18.2 tests exercise the hardened-pod policy.",
-      "The ImageValidatingPolicy manifest was validated against the pinned Kyverno v1.18.2 CRD structural schema in this review."
+      "The ImageValidatingPolicy manifest was validated against the pinned Kyverno v1.18.2 CRD structural schema in this review.",
+      "2026-11-05: one disposable kind v0.33.0 cluster (Kubernetes v1.37.0, Calico v3.33.0): 83 of 83 assertions on workload identity, RBAC, Pod Security Admission, a ValidatingAdmissionPolicy and NetworkPolicy reachability, with a 16-case corpus compared across PSA, VAP, Kyverno CLI and OPA.",
+      "Kyverno CLI 1.18.2: 23 tests pass; OPA: 12 unit tests; kubeconform: 45 resources valid."
     ],
     "limitations": [
-      "Image-signature policy remains schema/offline only; signature, certificate, registry, transparency, digest resolution, and live admission are not executed end to end."
+      "Image-signature policy remains schema/offline only; signature, certificate, registry, transparency, digest resolution, and live admission are not executed end to end.",
+      "Kyverno and OPA ran offline only; no live webhook admission. No multi-node, audit-log, token-theft or signed-image admission testing. The live run is not part of CI."
     ],
     "reviewIntervalDays": 90
   },
@@ -2002,6 +2005,76 @@
     ],
     "limitations": [
       "No production or cloud deployment."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/docker-security/": {
+    "title": "Docker image and runtime hardening lab",
+    "status": "partially-tested",
+    "indexable": true,
+    "lastReviewed": "2026-11-05",
+    "evidence": [
+      "Static Dockerfile and Compose policy gate: 38 unit tests, 30 findings on the insecure stack and 0 on the hardened stack.",
+      "One recorded run on a disposable Docker 29.9.2 host (cgroup v1): 85 of 85 assertions on observed runtime posture, a derived seccomp profile with attribution controls, Trivy and Syft output, and local cosign signing and verification with an ephemeral key."
+    ],
+    "limitations": [
+      "AppArmor, rootless Docker, user-namespace remapping, cgroup v2 and keyless or transparency-log signing were not executed.",
+      "The runtime and supply-chain steps are not part of CI; the static gate is."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/linux-host-telemetry/": {
+    "title": "Linux host telemetry detection lab",
+    "status": "partially-tested",
+    "indexable": true,
+    "lastReviewed": "2026-11-05",
+    "evidence": [
+      "23 unit tests over a deterministic synthetic corpus (855 events, 42 labeled scenarios) with a pinned confusion matrix.",
+      "One real-kernel strace capture from a throwaway container run through the same nine rules."
+    ],
+    "limitations": [
+      "Synthetic corpus written by the rule author; precision and recall are a regression guard, not a field estimate.",
+      "No production sensor (auditd, eBPF, Falco, Tetragon) was run; the capture is not in CI."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/labs/mcp-tool-authorization/": {
+    "title": "MCP tool-authorization gateway lab",
+    "status": "partially-tested",
+    "indexable": true,
+    "lastReviewed": "2026-11-05",
+    "evidence": [
+      "35 mechanism tests against a real spawned stdio child process; a 16-scenario decision matrix with expectations declared before each step; side effects observed on an independent channel."
+    ],
+    "limitations": [
+      "No language model is involved: the agent is a deterministic stand-in that obeys every injected instruction.",
+      "User, agent and approver authentication, the MCP authorization flow, remote transport and a conformant MCP server are not covered."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/linux-security/host-telemetry-detection-lab/": {
+    "title": "Host Telemetry Detection Lab: Nine Linux Rules, Their False Positives, and What They Cannot See",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-05",
+    "evidence": [
+      "2026-11-05: local lab run (23 tests, 855-event synthetic corpus, 176-line strace capture); process start time and trace format checked against the Linux man-pages and strace sources."
+    ],
+    "limitations": [
+      "Detection logic on author-written synthetic data; no production sensor or fleet data; review pending."
+    ],
+    "reviewIntervalDays": 90
+  },
+  "/ai-security/mcp-tool-authorization-lab/": {
+    "title": "MCP Tool Authorization Lab: A Gateway That Holds When the Model Does Not",
+    "status": "requires-review",
+    "indexable": true,
+    "lastReviewed": "2026-11-05",
+    "evidence": [
+      "2026-11-05: 35 mechanism tests and a 16-scenario decision matrix; message shapes and security considerations read from the MCP specification 2025-11-25 source."
+    ],
+    "limitations": [
+      "A deterministic stand-in replaces any model; authentication, authorization flow and remote transport are not covered; review pending."
     ],
     "reviewIntervalDays": 90
   }

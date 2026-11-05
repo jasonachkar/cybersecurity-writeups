@@ -1,0 +1,16 @@
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": [],
+          "text": "data.lab.k8s.workload.deny",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}

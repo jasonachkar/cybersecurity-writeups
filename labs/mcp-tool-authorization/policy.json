@@ -1,0 +1,89 @@
+{
+  "version": "2026-11-05.1",
+  "_comment": "Deny by default. A tool is callable only if it is listed here AND the server's current descriptor hashes to pinnedHash. Regenerate pins with `node scripts/pin.js --write` after REVIEWING a descriptor change; tests fail if they drift.",
+  "approvers": [
+    "human-reviewer-01",
+    "human-reviewer-02"
+  ],
+  "approvalTtlSeconds": 120,
+  "redactKeys": [
+    "body"
+  ],
+  "egress": {
+    "allowedRecipientDomains": [
+      "example.test"
+    ]
+  },
+  "output": {
+    "maxBytes": 4096,
+    "allowedHosts": [
+      "example.test"
+    ]
+  },
+  "tools": {
+    "list_notes": {
+      "risk": "read",
+      "capability": "notes",
+      "verb": "read",
+      "resourceKind": "path",
+      "resourceArg": "dir",
+      "taintsSession": true,
+      "rate": {
+        "max": 10,
+        "windowSeconds": 60
+      },
+      "pinnedHash": "bec24e9cd93c5bc0a4ad20de6d34cbcc080cc2f9a743a22a4bedfb7bb9a80a25"
+    },
+    "read_note": {
+      "risk": "read",
+      "capability": "notes",
+      "verb": "read",
+      "resourceKind": "path",
+      "resourceArg": "path",
+      "taintsSession": true,
+      "rate": {
+        "max": 10,
+        "windowSeconds": 60
+      },
+      "pinnedHash": "42b39c36db4dc6e711f155bc6868bc1f6f8fd1b1227867c81007b3a05f790468"
+    },
+    "create_ticket": {
+      "risk": "write_internal",
+      "capability": "tickets",
+      "verb": "create",
+      "resourceKind": "none",
+      "taintsSession": false,
+      "rate": {
+        "max": 5,
+        "windowSeconds": 60
+      },
+      "pinnedHash": "fdb95aa97805af09bc98149ff76a1778f8aa0738c336c33b7a2aabd469731131"
+    },
+    "send_email": {
+      "risk": "egress",
+      "capability": "email",
+      "verb": "send",
+      "resourceKind": "email_domain",
+      "resourceArg": "to",
+      "taintsSession": false,
+      "rate": {
+        "max": 2,
+        "windowSeconds": 300
+      },
+      "pinnedHash": "ed613995cb632e0e6938d4b197918034f6ac8109e9961c96703407da43605124"
+    },
+    "delete_note": {
+      "risk": "destructive",
+      "capability": "notes",
+      "verb": "delete",
+      "resourceKind": "path",
+      "resourceArg": "path",
+      "taintsSession": false,
+      "rate": {
+        "max": 2,
+        "windowSeconds": 300
+      },
+      "pinnedHash": "35a62d6809d6a01d77a9d1fc7469fe5e7df04fc98b63eb23172d13c9c98f1e01"
+    }
+  }
+}

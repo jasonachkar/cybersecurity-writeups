@@ -1,0 +1,117 @@
+# HARDENED workloads. Both satisfy the restricted Pod Security profile.
+#
+# app         no API token, no API reachability (NetworkPolicy), talks to lab-data only.
+# api-reader  explicitly projected, short-lived token; the only workload with API access.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: lab-hardened
+  labels: {app: app}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: app}
+  template:
+    metadata:
+      labels: {app: app}
+    spec:
+      serviceAccountName: app
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: app
+          image: dockerlab/posture:hardened
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests: {cpu: 50m, memory: 32Mi}
+            limits: {cpu: 500m, memory: 128Mi}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-reader
+  namespace: lab-hardened
+  labels: {app: api-reader}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: api-reader}
+  template:
+    metadata:
+      labels:
+        app: api-reader
+        # Reviewed exception marker: required by the admission policy for any pod
+        # that projects a service-account token.
+        lab.example/api-access: approved
+    spec:
+      serviceAccountName: api-reader
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65532
+        runAsGroup: 65532
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: app
+          image: dockerlab/posture:hardened
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests: {cpu: 50m, memory: 32Mi}
+            limits: {cpu: 500m, memory: 128Mi}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+            # Same path the kubelet uses for an automounted token, so the
+            # workload and the probe need no special case.
+            - name: api-token
+              mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+              readOnly: true
+      volumes:
+        - name: tmp
+          emptyDir:
+            medium: Memory
+            sizeLimit: 8Mi
+        - name: api-token
+          projected:
+            defaultMode: 0444
+            sources:
+              - serviceAccountToken:
+                  path: token
+                  expirationSeconds: 3600
+              - configMap:
+                  name: kube-root-ca.crt
+                  items:
+                    - key: ca.crt
+                      path: ca.crt
+              - downwardAPI:
+                  items:
+                    - path: namespace
+                      fieldRef:
+                        fieldPath: metadata.namespace

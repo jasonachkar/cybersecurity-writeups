@@ -1,0 +1,22 @@
+{
+  "CapAdd": null,
+  "CapDrop": [
+    "ALL"
+  ],
+  "Memory": 134217728,
+  "MemorySwap": 134217728,
+  "NanoCpus": 500000000,
+  "PidMode": "",
+  "PidsLimit": 64,
+  "PortBindings": {},
+  "Privileged": false,
+  "ReadonlyRootfs": true,
+  "RestartPolicy": {
+    "MaximumRetryCount": 0,
+    "Name": "no"
+  },
+  "SecurityOpt": [
+    "no-new-privileges:true",
+    "seccomp=<inlined profile, 1264 bytes>"
+  ]
+}

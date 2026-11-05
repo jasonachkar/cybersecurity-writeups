@@ -1,0 +1,33 @@
+# INSECURE BASELINE workload: root, privileged, host PID, hostPath, no limits,
+# default-mounted API token, mutable-tag image, no probes.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: lab-baseline
+  labels: {app: app}
+spec:
+  replicas: 1
+  selector:
+    matchLabels: {app: app}
+  template:
+    metadata:
+      labels: {app: app}
+    spec:
+      serviceAccountName: app-sa
+      hostPID: true
+      containers:
+        - name: app
+          image: dockerlab/posture:insecure
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            privileged: true
+            runAsUser: 0
+          volumeMounts:
+            - name: host-canary
+              mountPath: /mnt/host-canary
+      volumes:
+        - name: host-canary
+          hostPath:
+            path: /var/lib/lab-host-canary
+            type: DirectoryOrCreate

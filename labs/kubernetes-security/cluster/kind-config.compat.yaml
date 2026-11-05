@@ -1,0 +1,24 @@
+# Same cluster plus two accommodations for hosts like the sandbox this lab was
+# developed in. Use only when the portable config fails to start the kubelet:
+#   * failCgroupV1: false  - recent kubelets refuse to start on a cgroup v1 host
+#     (observed: "kubelet is configured to not run on a host using cgroup v1").
+#   * restrict_oom_score_adj - the sandbox's capability bounding set lacks
+#     CAP_SYS_RESOURCE, so runc cannot set a negative oom_score_adj for pod sandboxes
+#     (observed: "failed to update /proc/self/oom_score_adj: Permission denied").
+#     containerd then clamps the requested value to its own.
+# Both weaken isolation guarantees slightly; they are lab accommodations, not advice.
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  disableDefaultCNI: true
+  podSubnet: 192.168.0.0/16
+containerdConfigPatches:
+  - |-
+    [plugins."io.containerd.grpc.v1.cri"]
+      restrict_oom_score_adj = true
+nodes:
+  - role: control-plane
+    kubeadmConfigPatches:
+      - |
+        kind: KubeletConfiguration
+        failCgroupV1: false

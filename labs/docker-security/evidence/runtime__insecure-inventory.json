@@ -1,0 +1,18 @@
+{
+  "compilers_or_interpreters": [
+    "usr/local/go/bin/go"
+  ],
+  "executables": 86,
+  "files": 17270,
+  "package_managers": [
+    "sbin/apk"
+  ],
+  "setuid_or_setgid": [],
+  "shells": [
+    "bin/ash",
+    "bin/sh"
+  ],
+  "size_bytes": 356984047,
+  "symlinks": 571,
+  "world_writable_files": 2
+}

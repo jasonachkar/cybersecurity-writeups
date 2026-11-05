@@ -1,0 +1,11 @@
+PASS  synthetic corpus: every outcome matches its documented expectation
+PASS  synthetic corpus: background noise produced no alerts
+PASS  synthetic corpus: all nine rules were evaluated
+PASS  missing network source: LNX-004 is reported blind
+PASS  missing network source: no LNX-004 alert and no score for it
+PASS  real capture: exactly the five designed analogs alert
+PASS  real capture: the private-address connect from /tmp stays silent (LNX-004 negative control)
+PASS  real capture: LNX-003 is blind because strace cannot supply ExecStart
+PASS  real capture: no event is flagged synthetic
+
+0 failed

@@ -1,0 +1,192 @@
+{
+  "result": [
+    {
+      "expressions": [
+        {
+          "value": [
+            {
+              "message": "API token present without reviewed approval label and non-default ServiceAccount",
+              "object": "Deployment/app",
+              "rule": "service-account-token"
+            },
+            {
+              "message": "can create RoleBindings or ClusterRoleBindings",
+              "object": "ClusterRole/lab-baseline-overreach",
+              "rule": "rbac-binding-creation"
+            },
+            {
+              "message": "cluster-wide read access to secrets",
+              "object": "ClusterRole/lab-baseline-overreach",
+              "rule": "rbac-secrets-read"
+            },
+            {
+              "message": "container app does not drop ALL capabilities",
+              "object": "Deployment/app",
+              "rule": "capabilities"
+            },
+            {
+              "message": "container app does not set allowPrivilegeEscalation=false",
+              "object": "Deployment/app",
+              "rule": "privilege-escalation"
+            },
+            {
+              "message": "container app has a writable root filesystem",
+              "object": "Deployment/app",
+              "rule": "read-only-rootfs"
+            },
+            {
+              "message": "container app has no RuntimeDefault or Localhost seccomp profile",
+              "object": "Deployment/app",
+              "rule": "seccomp"
+            },
+            {
+              "message": "container app has no resources block",
+              "object": "Deployment/app",
+              "rule": "resource-limits"
+            },
+            {
+              "message": "container app lacks cpu or memory limits",
+              "object": "Deployment/app",
+              "rule": "resource-limits"
+            },
+            {
+              "message": "container app may run as root",
+              "object": "Deployment/app",
+              "rule": "run-as-root"
+            },
+            {
+              "message": "container app runs as uid 0",
+              "object": "Deployment/app",
+              "rule": "run-as-root"
+            },
+            {
+              "message": "container httpd does not drop ALL capabilities",
+              "object": "Pod/canary",
+              "rule": "capabilities"
+            },
+            {
+              "message": "container httpd does not drop ALL capabilities",
+              "object": "Pod/neighbor",
+              "rule": "capabilities"
+            },
+            {
+              "message": "container httpd does not set allowPrivilegeEscalation=false",
+              "object": "Pod/canary",
+              "rule": "privilege-escalation"
+            },
+            {
+              "message": "container httpd does not set allowPrivilegeEscalation=false",
+              "object": "Pod/neighbor",
+              "rule": "privilege-escalation"
+            },
+            {
+              "message": "container httpd has a writable root filesystem",
+              "object": "Pod/canary",
+              "rule": "read-only-rootfs"
+            },
+            {
+              "message": "container httpd has a writable root filesystem",
+              "object": "Pod/neighbor",
+              "rule": "read-only-rootfs"
+            },
+            {
+              "message": "container httpd has no RuntimeDefault or Localhost seccomp profile",
+              "object": "Pod/canary",
+              "rule": "seccomp"
+            },
+            {
+              "message": "container httpd has no RuntimeDefault or Localhost seccomp profile",
+              "object": "Pod/neighbor",
+              "rule": "seccomp"
+            },
+            {
+              "message": "container httpd has no resources block",
+              "object": "Pod/canary",
+              "rule": "resource-limits"
+            },
+            {
+              "message": "container httpd has no resources block",
+              "object": "Pod/neighbor",
+              "rule": "resource-limits"
+            },
+            {
+              "message": "container httpd lacks cpu or memory limits",
+              "object": "Pod/canary",
+              "rule": "resource-limits"
+            },
+            {
+              "message": "container httpd lacks cpu or memory limits",
+              "object": "Pod/neighbor",
+              "rule": "resource-limits"
+            },
+            {
+              "message": "container httpd may run as root",
+              "object": "Pod/canary",
+              "rule": "run-as-root"
+            },
+            {
+              "message": "container httpd may run as root",
+              "object": "Pod/neighbor",
+              "rule": "run-as-root"
+            },
+            {
+              "message": "container runs privileged",
+              "object": "Deployment/app",
+              "rule": "privileged"
+            },
+            {
+              "message": "hostPID is true",
+              "object": "Deployment/app",
+              "rule": "host-namespace"
+            },
+            {
+              "message": "hostPath volume",
+              "object": "Deployment/app",
+              "rule": "hostpath"
+            },
+            {
+              "message": "namespace with workloads does not enforce baseline or restricted Pod Security",
+              "object": "Namespace/lab-baseline",
+              "rule": "psa-enforce"
+            },
+            {
+              "message": "namespace with workloads does not enforce baseline or restricted Pod Security",
+              "object": "Namespace/lab-data",
+              "rule": "psa-enforce"
+            },
+            {
+              "message": "namespace with workloads does not enforce baseline or restricted Pod Security",
+              "object": "Namespace/lab-other",
+              "rule": "psa-enforce"
+            },
+            {
+              "message": "namespace with workloads has no default-deny ingress+egress NetworkPolicy",
+              "object": "Namespace/lab-baseline",
+              "rule": "default-deny-network"
+            },
+            {
+              "message": "namespace with workloads has no default-deny ingress+egress NetworkPolicy",
+              "object": "Namespace/lab-data",
+              "rule": "default-deny-network"
+            },
+            {
+              "message": "namespace with workloads has no default-deny ingress+egress NetworkPolicy",
+              "object": "Namespace/lab-other",
+              "rule": "default-deny-network"
+            },
+            {
+              "message": "pods/exec create allows code execution in other pods",
+              "object": "ClusterRole/lab-baseline-overreach",
+              "rule": "rbac-exec"
+            }
+          ],
+          "text": "data.lab.k8s.workload.deny",
+          "location": {
+            "row": 1,
+            "col": 1
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "token_mounted": true,
+  "namespace": "lab-hardened",
+  "token_claims": {
+    "aud": [
+      "https://kubernetes.default.svc.cluster.local"
+    ],
+    "bound_to_pod": true,
+    "iss": "https://kubernetes.default.svc.cluster.local",
+    "seconds_until_expiry": 3594,
+    "sub": "system:serviceaccount:lab-hardened:api-reader",
+    "token_age_seconds": 6
+  },
+  "api_calls": [
+    {
+      "name": "get_configmap_app_config_own_ns",
+      "status": 200
+    },
+    {
+      "name": "list_configmaps_own_ns",
+      "status": 403
+    },
+    {
+      "name": "list_secrets_own_ns",
+      "status": 403
+    },
+    {
+      "name": "list_secrets_kube_system",
+      "status": 403
+    },
+    {
+      "name": "list_pods_all_namespaces",
+      "status": 403
+    },
+    {
+      "name": "list_nodes",
+      "status": 403
+    }
+  ],
+  "self_subject_access_review": {
+    "create_pods_exec_own_ns": false,
+    "create_pods_own_ns": false,
+    "create_rolebindings_own_ns": false,
+    "escalate_clusterroles": false,
+    "get_secrets_any_namespace": false,
+    "impersonate_users": false
+  }
+}

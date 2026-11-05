@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+# Derive hardened/seccomp.json from syscalls OBSERVED by strace while the exact
+# shipped binary runs a bounded workload. Requires: docker, strace, python3, curl.
+#
+# Method (and its limits - see README "Seccomp profile"):
+#   1. Extract /app/posture from the built hardened image (the binary that ships).
+#   2. Trace it on the host kernel under strace -f for: the HTTP service
+#      (serve + requests + SIGTERM shutdown), the healthcheck client, and the lab
+#      harness subcommands (sleep, forktest, memtest, probe).
+#   3. Remove syscalls from a fixed deny list that the probe attempts ON PURPOSE
+#      (mount, mknod, chown ...). strace records an attempt even when the kernel
+#      refuses it, so without this step the profile would "learn" the attacks.
+#   4. Emit a default-ERRNO allowlist. clone is allowed only without namespace
+#      flags (same 0x7E020000 mask as Docker's default profile); clone3 returns
+#      ENOSYS so libc/Go fall back to clone, because seccomp cannot inspect the
+#      clone3 flags struct.
+#
+# A profile learned from a bounded workload WILL miss rarely-executed paths.
+# That is a false-positive risk, handled in rollout by SCMP_ACT_LOG first.
+set -euo pipefail
+
+lab_root="$(cd "$(dirname "$0")/.." && pwd)"
+out="${1:-$lab_root/hardened/seccomp.json}"
+work="$(mktemp -d)"
+cleanup() { rm -rf "$work"; }
+trap cleanup EXIT
+
+command -v strace >/dev/null || { echo "strace not found" >&2; exit 2; }
+
+docker compose -f "$lab_root/hardened/compose.yaml" build app >/dev/null
+cid="$(docker create dockerlab/posture:hardened)"
+docker cp "$cid:/app/posture" "$work/posture" >/dev/null
+docker rm "$cid" >/dev/null
+chmod 0755 "$work/posture"
+
+trace() { # name, args...
+  local name="$1"; shift
+  strace -f -qq -o "$work/$name.trace" "$work/posture" "$@" >"$work/$name.out" 2>&1 || true
+}
+
+# Service workload: serve, hit both endpoints, then shut down on SIGTERM. A
+# high loopback port avoids colliding with a published port from another stack.
+export LISTEN_ADDR=127.0.0.1:18080
+strace -f -qq -o "$work/serve.trace" "$work/posture" serve >"$work/serve.out" 2>&1 &
+strace_pid=$!
+ready=0
+for _ in $(seq 1 50); do
+  if curl -fs "http://$LISTEN_ADDR/healthz" >/dev/null 2>&1; then ready=1; break; fi
+  sleep 0.1
+done
+[ "$ready" = 1 ] || { echo "service did not start; see $work/serve.out" >&2; cat "$work/serve.out" >&2; exit 1; }
+curl -fs "http://$LISTEN_ADDR/posture" >/dev/null
+curl -fs "http://$LISTEN_ADDR/healthz" >/dev/null
+trace healthcheck healthcheck
+# Signal only the traced service process (a child of the strace we started).
+service_pid="$(pgrep -P "$strace_pid" -x posture || true)"
+[ -n "$service_pid" ] && kill -TERM "$service_pid"
+wait "$strace_pid" || true
+unset LISTEN_ADDR
+
+# Lab harness workload (non-service subcommands).
+trace sleep sleep 1
+trace forktest forktest 3
+trace memtest memtest 8
+PROBE_TCP_TARGET=127.0.0.1:9 trace probe probe
+
+python3 - "$work" "$out" <<'PY'
+import json, pathlib, re, sys
+
+work, out = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+pat = re.compile(r"^(?:\d+\s+)?(?:<\.\.\. (\w+) resumed>|(\w+)\()")
+
+def syscalls(name):
+    found = set()
+    for line in (work / f"{name}.trace").read_text(errors="replace").splitlines():
+        m = pat.match(line)
+        if m:
+            found.add(m.group(1) or m.group(2))
+    return found
+
+service = syscalls("serve") | syscalls("healthcheck")
+harness = set()
+for name in ("sleep", "forktest", "memtest", "probe"):
+    harness |= syscalls(name)
+harness -= service
+
+# Attempted ON PURPOSE by the probe; must stay unavailable to the workload.
+deny = {
+    "mount", "umount2", "mknod", "mknodat", "chown", "fchown", "lchown", "fchownat",
+    "unshare", "setns", "ptrace", "bpf", "keyctl", "add_key", "request_key",
+    "perf_event_open", "userfaultfd", "kexec_load", "kexec_file_load",
+    "init_module", "finit_module", "delete_module", "open_by_handle_at",
+    "name_to_handle_at", "pivot_root", "chroot", "swapon", "swapoff", "reboot",
+    "settimeofday", "clock_settime", "acct", "iopl", "ioperm", "quotactl",
+    "personality", "process_vm_readv", "process_vm_writev", "mount_setattr",
+    "move_mount", "open_tree", "fsopen", "fsconfig", "fsmount", "fspick",
+}
+# clone/clone3 get dedicated rules below.
+special = {"clone", "clone3"}
+
+# Syscalls the container RUNTIME (runc init) issues after the filter is loaded and
+# before execve of the entrypoint. An app trace cannot see them. Found empirically
+# on runc 1.5.2 by starting the container and reading each failure in turn:
+#   fstatfs -> statx (runc's safe /proc handle checks while reopening exec.fifo).
+# This set is runtime-version dependent; re-derive it when runc changes.
+handoff = {"fstatfs", "statfs", "statx"}
+
+removed = sorted((service | harness) & deny)
+allow_service = sorted((service - deny) - special)
+allow_harness = sorted(((harness - deny) - special) - set(allow_service) - handoff)
+allow_handoff = sorted(handoff - set(allow_service))
+
+profile = {
+    "comment": "Generated by scripts/gen-seccomp.sh from strace observations of "
+               "the shipped binary. Default action is ERRNO (EPERM), not KILL, "
+               "so a missed syscall degrades visibly instead of killing PID 1.",
+    "defaultAction": "SCMP_ACT_ERRNO",
+    "defaultErrnoRet": 1,
+    "archMap": [{
+        "architecture": "SCMP_ARCH_X86_64",
+        "subArchitectures": ["SCMP_ARCH_X86", "SCMP_ARCH_X32"],
+    }],
+    "syscalls": [
+        {"names": allow_service, "action": "SCMP_ACT_ALLOW"},
+        {"names": allow_handoff, "action": "SCMP_ACT_ALLOW"},
+        {"names": allow_harness, "action": "SCMP_ACT_ALLOW"},
+        {"names": ["clone"], "action": "SCMP_ACT_ALLOW",
+         "args": [{"index": 0, "value": 2114060288, "valueTwo": 0,
+                   "op": "SCMP_CMP_MASKED_EQ"}]},
+        {"names": ["clone3"], "action": "SCMP_ACT_ERRNO", "errnoRet": 38},
+    ],
+}
+out.write_text(json.dumps(profile, indent=2) + "\n")
+print(f"service syscalls allowed : {len(allow_service)}")
+print(f"runtime hand-off allowed : {len(allow_handoff)}  {allow_handoff}")
+print(f"harness-only allowed     : {len(allow_harness)}  {allow_harness}")
+print(f"observed but removed     : {len(removed)}  {removed}")
+print(f"wrote {out}")
+PY

@@ -18,4 +18,5 @@ trap cleanup EXIT
 sh labs/postgresql-rls/run-tests.sh
 bash labs/iac-policy/validate-opa.sh
 bash labs/kubernetes-security/validate-kyverno.sh
+bash labs/kubernetes-security/validate-rego.sh
 bash scripts/validate-terraform.sh

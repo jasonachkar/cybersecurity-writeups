@@ -1,0 +1,16 @@
+# HARDENED counterpart. Pod Security Admission enforces the "restricted" profile;
+# audit and warn use the same level so a violation is both rejected and visible.
+# The version is pinned so a cluster upgrade cannot silently change the policy.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lab-hardened
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: v1.37
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: v1.37
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: v1.37
+    # Selected by the ValidatingAdmissionPolicyBinding in 40-admission-vap.yaml.
+    lab.example/admission: enforced

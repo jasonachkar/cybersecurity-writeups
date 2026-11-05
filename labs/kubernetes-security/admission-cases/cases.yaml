@@ -1,0 +1,752 @@
+# Admission-control case corpus for labs/kubernetes-security.
+# Every pod differs from "compliant-app" in exactly one property, named in the
+# lab.example/violates annotation. Expected outcomes per engine are in
+# expectations.json and were written BEFORE the engines were run; see README.
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compliant-app
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: none
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: compliant-api-reader
+  namespace: lab-hardened
+  labels:
+    app: case
+    lab.example/api-access: approved
+  annotations:
+    lab.example/violates: none (token projected, approved)
+spec:
+  serviceAccountName: api-reader
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: api-token
+          mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          readOnly: true
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+    - name: api-token
+      projected:
+        defaultMode: 292
+        sources:
+          - serviceAccountToken:
+              path: token
+              expirationSeconds: 3600
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rejected-privileged
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: privileged container
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: true
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+        privileged: true
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rejected-hostpath
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: hostPath volume
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: host
+          mountPath: /host
+          readOnly: true
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+    - name: host
+      hostPath:
+        path: /var/lib
+        type: Directory
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rejected-host-namespaces
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: hostNetwork and hostPID
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+  hostNetwork: true
+  hostPID: true
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rejected-run-as-root
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: runAsNonRoot false, uid 0
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: false
+    runAsUser: 0
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: false
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rejected-capability-add
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: adds NET_ADMIN
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+          add:
+            - NET_ADMIN
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rejected-no-seccomp
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: no seccomp profile
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: rejected-privilege-escalation
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: allowPrivilegeEscalation true
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: true
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: finding-pod-level-only-run-as-non-root
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: "none under PSA: runAsNonRoot set at pod level only
+      (existing Kyverno policy reads container level only)"
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gap-no-limits
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: no resource limits
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gap-latest-tag
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: image :latest
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:latest
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gap-writable-rootfs
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: readOnlyRootFilesystem false
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: false
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gap-automounted-token
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: "automountServiceAccountToken: true set explicitly"
+spec:
+  serviceAccountName: app
+  automountServiceAccountToken: true
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: finding-sa-level-automount-false
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: "none under PSA/VAP: pod omits
+      automountServiceAccountToken and the ServiceAccount sets it to false
+      (offline engines cannot see the ServiceAccount)"
+spec:
+  serviceAccountName: app
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: gap-projected-token-unapproved
+  namespace: lab-hardened
+  labels:
+    app: case
+  annotations:
+    lab.example/violates: projected token without the review label
+spec:
+  serviceAccountName: api-reader
+  automountServiceAccountToken: false
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 65532
+    runAsGroup: 65532
+    seccompProfile:
+      type: RuntimeDefault
+  containers:
+    - name: app
+      image: dockerlab/posture:hardened
+      imagePullPolicy: IfNotPresent
+      securityContext:
+        runAsNonRoot: true
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+      resources:
+        requests:
+          cpu: 50m
+          memory: 32Mi
+        limits:
+          cpu: 500m
+          memory: 128Mi
+      volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: api-token
+          mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          readOnly: true
+  volumes:
+    - name: tmp
+      emptyDir:
+        medium: Memory
+        sizeLimit: 8Mi
+    - name: api-token
+      projected:
+        defaultMode: 292
+        sources:
+          - serviceAccountToken:
+              path: token
+              expirationSeconds: 3600

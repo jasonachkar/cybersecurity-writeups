@@ -1,0 +1,19 @@
+# INSECURE BASELINE for labs/kubernetes-security. Deliberately bad; do not reuse.
+#
+# lab-baseline carries NO Pod Security Admission labels, so the cluster default
+# applies (privileged: anything is admitted). That is the "weak admission control"
+# finding. lab-data and lab-other stand in for a data tier and another tenant.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lab-baseline
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lab-data
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: lab-other

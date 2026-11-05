@@ -1,0 +1,18 @@
+| Case | PSA restricted (live) | VAP (live) | PSA+VAP together (live) | Kyverno hardened-pods (offline) | OPA workload.rego (offline) |
+| --- | --- | --- | --- | --- | --- |
+| `compliant-app` | allow | allow | allow | allow | allow |
+| `compliant-api-reader` | allow | allow | allow | allow | allow |
+| `finding-pod-level-only-run-as-non-root` | allow | allow | allow | deny | allow |
+| `finding-sa-level-automount-false` | allow | allow | allow | deny | deny |
+| `rejected-privileged` | deny | allow | deny | deny | deny |
+| `rejected-hostpath` | deny | allow | deny | deny | deny |
+| `rejected-host-namespaces` | deny | allow | deny | deny | deny |
+| `rejected-run-as-root` | deny | allow | deny | deny | deny |
+| `rejected-capability-add` | deny | allow | deny | deny | deny |
+| `rejected-no-seccomp` | deny | allow | deny | deny | deny |
+| `rejected-privilege-escalation` | deny | allow | deny | deny | deny |
+| `gap-no-limits` | allow | deny | deny | deny | deny |
+| `gap-latest-tag` | allow | deny | deny | allow | deny |
+| `gap-writable-rootfs` | allow | deny | deny | deny | deny |
+| `gap-automounted-token` | allow | deny | deny | deny | deny |
+| `gap-projected-token-unapproved` | allow | deny | deny | allow | deny |

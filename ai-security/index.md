@@ -19,6 +19,7 @@ reviewIntervalDays: 90
 Research on agent permissions, MCP discovery, bounded assessments, and honest evidence.
 
 - [AI Security engineering findings](evidence-driven-agent-security.md)
+- [MCP tool authorization lab: a gateway that holds when the model does not](mcp-tool-authorization-lab.md)
 
 ## References
 

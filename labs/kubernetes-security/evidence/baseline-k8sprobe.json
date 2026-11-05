@@ -1,0 +1,53 @@
+{
+  "token_mounted": true,
+  "namespace": "lab-baseline",
+  "token_claims": {
+    "aud": [
+      "https://kubernetes.default.svc.cluster.local"
+    ],
+    "bound_to_pod": true,
+    "iss": "https://kubernetes.default.svc.cluster.local",
+    "seconds_until_expiry": 31535999,
+    "sub": "system:serviceaccount:lab-baseline:app-sa",
+    "token_age_seconds": 1
+  },
+  "api_calls": [
+    {
+      "name": "get_configmap_app_config_own_ns",
+      "status": 200
+    },
+    {
+      "name": "list_configmaps_own_ns",
+      "status": 200,
+      "items": 2
+    },
+    {
+      "name": "list_secrets_own_ns",
+      "status": 200,
+      "items": 0
+    },
+    {
+      "name": "list_secrets_kube_system",
+      "status": 200,
+      "items": 1
+    },
+    {
+      "name": "list_pods_all_namespaces",
+      "status": 200,
+      "items": 15
+    },
+    {
+      "name": "list_nodes",
+      "status": 200,
+      "items": 1
+    }
+  ],
+  "self_subject_access_review": {
+    "create_pods_exec_own_ns": true,
+    "create_pods_own_ns": true,
+    "create_rolebindings_own_ns": true,
+    "escalate_clusterroles": false,
+    "get_secrets_any_namespace": true,
+    "impersonate_users": false
+  }
+}

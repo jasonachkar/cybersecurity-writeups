@@ -1,0 +1,3 @@
+{"from": "baseline/app", "to": "canary.lab-data.svc.cluster.local:9000", "result": {"connected": true, "target": "canary.lab-data.svc.cluster.local:9000"}}
+{"from": "baseline/app", "to": "neighbor.lab-other.svc.cluster.local:9000", "result": {"connected": true, "target": "neighbor.lab-other.svc.cluster.local:9000"}}
+{"from": "baseline/app", "to": "172.18.0.2:6443", "result": {"connected": true, "target": "172.18.0.2:6443"}}

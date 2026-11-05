@@ -7,6 +7,43 @@ The content is written to reflect **how security is applied in production enviro
 
 ---
 
+## Start here — technical proof
+
+Every item below is runnable on a laptop or a disposable VM. Each page says what was executed, what was only read from a
+source, what is a policy model, and what was **not tested**; results that surprised me are kept in the write-ups.
+
+1. [Docker image and runtime hardening lab](labs/docker-security/README.md) — an insecure and a hardened container measured from inside the container, a seccomp profile derived from `strace`, scanning, SBOM and local signing.
+2. [Kubernetes lab](labs/kubernetes-security/README.md) — a live local cluster: workload identity, RBAC, admission and network reachability before and after, with four policy engines compared on one 16-case corpus.
+3. [Host telemetry detection lab](linux-security/host-telemetry-detection-lab.md) — nine Linux detection rules as plain SQL, scored on labeled **synthetic** data, with the false positives and misses written down and a real-kernel `strace` cross-check.
+4. [MCP tool-authorization lab](ai-security/mcp-tool-authorization-lab.md) — a policy gateway that holds against a stand-in agent that obeys every injected instruction.
+5. [Vulnerability research](vulnerability-research/index.md) — three paired vulnerable/remediated studies on owned, isolated targets (tool SSRF, multi-tenant BOLA, CI/CD identity).
+6. [Evidence standards](research-methodology/evidence-standards.md) — the T0–T4 rubric every page is held to.
+7. [Lab reproducibility audit](research-methodology/lab-audit.md) — what each lab validates and what it does not.
+
+## Technical proof
+
+| Domain | Artifact | What I built | How it was validated | Security outcome | Link |
+| --- | --- | --- | --- | --- | --- |
+| Docker | Insecure vs hardened container stacks | One Go service in two configurations; a static Dockerfile/Compose gate; a seccomp profile derived from `strace` of the shipped binary; scan, SBOM and local cosign scripts | 38 static tests (in CI). One recorded run on a disposable Docker host: 85 of 85 runtime assertions, including a seccomp on/off/default control that attributes a denial to the filter | Insecure: root, 40 capabilities, no filter, Docker socket answering, host directory writable. Hardened: uid 65532, no capabilities, read-only root, 128 MiB / 64-PID limits enforced (OOM-killed at 512 MiB; 13 of 200 children started). Scan counts did **not** rank the images (0 vs 4 findings), so attack surface is measured directly (86 vs 10 executables) | [Docker lab](labs/docker-security/README.md) |
+| Kubernetes | Baseline vs hardened workload on a live kind cluster | RBAC, Pod Security Admission, a CEL admission policy, default-deny NetworkPolicy (with an enforcement smoke test), a 16-case corpus run through PSA, VAP, Kyverno CLI and OPA | One fresh-cluster run: 83 of 83 assertions. Plus 16 manifest tests and 12 Rego tests; 23 Kyverno CLI tests; 45 manifests schema-valid | The over-granted identity could list `kube-system` secrets; the hardened one reads exactly one ConfigMap (403 elsewhere). The hardened pod reaches only its data tier. Found a false positive and a gap in my own existing Kyverno policy | [Kubernetes lab](labs/kubernetes-security/README.md) |
+| Linux | Host telemetry detection | Nine SQL rules with identity-aware process ancestry, exceptions that need an owner and an expiry, deduplication, and a "blind" state for missing telemetry | 23 tests over 855 synthetic events in 42 labeled scenarios, with the confusion matrix pinned; a real `strace` capture from a throwaway container: 5 of 5 designed analogs alert, the negative control stays silent | 7 documented residual false positives and 2 documented misses; background noise raised 0 alerts; a missing sensor or field is reported blind, never clean. Synthetic data, author-written: a regression guard, not a field accuracy estimate | [Detection article](linux-security/host-telemetry-detection-lab.md) |
+| AI / MCP | Tool-authorization gateway | A mock MCP-style stdio server and a gateway: allowlist with pinned descriptors, user-AND-agent scopes, session taint, single-use bound approvals, output validation, hash-chained audit | 35 mechanism tests against a real child process; 16 scenarios, 31 proposed calls, expectations declared before each step; side effects watched on an independent channel | 11 allowed, 5 gated for a human, 15 denied; the only side effects were the three in-policy or approved executions. No language model is involved: the agent is a deterministic stand-in | [MCP article](ai-security/mcp-tool-authorization-lab.md) |
+| AppSec / AI | Paired studies on owned targets | Tool-SSRF, multi-tenant BOLA and CI/CD-identity experiments with vulnerable and remediated paths | Paired HTTP cases with seeded state; policy and container-path tests (tiers per study) | Same cases against both paths, with denial state checked; no cloud execution | [Vulnerability research](vulnerability-research/index.md) |
+| DevSecOps | Supply chain and pipeline boundaries | Offline policy decisions for digest, provenance identity, source, builder and SBOM; untrusted-workflow and fail-closed scanner fixtures | Local positive and negative fixtures (see each lab's own status) | Unsigned, wrong-identity and changed-bytes cases rejected in the model; no real signing service | [Supply-chain lab](labs/supply-chain/README.md), [Secure CI/CD lab](labs/secure-cicd/README.md) |
+
+Evidence labels used throughout: `tested locally` (executed, output kept), `source-reviewed` (read in a primary source, not executed),
+`policy model` (a rule evaluated by a test, not enforced by the real system), and `requires-review` (no independent reviewer yet — every new
+page carries it). "Tested locally" is not "proven in production"; each page lists what it did not test.
+
+## Active deep dives
+
+These four are the current focus. Each links to its lab and names the next experiment, because the open items are the honest part.
+
+- **Docker security** — [lab](labs/docker-security/README.md). Next: AppArmor and rootless/user-namespace runs on a host that supports them, cgroup v2, and a CI job once the privileged lab has been tried on a hosted runner.
+- **Kubernetes security** — [lab](labs/kubernetes-security/README.md). Next: Kyverno and Gatekeeper as live admission controllers, signed-image admission against a real signature, API-server audit logging, and binding the "approved" token label to something the pod author cannot set.
+- **Linux security** — [article](linux-security/host-telemetry-detection-lab.md), [lab](labs/linux-host-telemetry/README.md). Next: a production sensor (auditd or eBPF) feeding the same rules, and the enrichment fields (parsed `ExecStart`, writer session, package ownership) that would remove the residual false positives without allowlisting tools.
+- **AI/MCP security** — [article](ai-security/mcp-tool-authorization-lab.md), [lab](labs/mcp-tool-authorization/README.md). Next: a run against a real model, per-argument provenance in place of session-level taint, and anchoring the audit log's head hash.
+
 ## 📚 Contents Overview
 
 - **Tutorials** – Step-by-step, implementation-focused guides
@@ -304,11 +341,13 @@ _This section is autogenerated. Do not edit entries here directly; update each w
 
 ### AI Security
 
+- [MCP Tool Authorization Lab: A Gateway That Holds When the Model Does Not](ai-security/mcp-tool-authorization-lab.md) —  · 2026-11-05
 - [AI Security overview](ai-security/index.md) —  · 2026-10-22 · 1 min
 - [Evidence-Driven AI Agent and MCP Security](ai-security/evidence-driven-agent-security.md) —  · 2026-10-22
 
 ### Linux Security
 
+- [Host Telemetry Detection Lab: Nine Linux Rules, Their False Positives, and What They Cannot See](linux-security/host-telemetry-detection-lab.md) —  · 2026-11-05
 - [Linux Host Analysis Without Invented Attack Paths](linux-security/evidence-driven-host-analysis.md) —  · 2026-10-22
 - [Linux Security overview](linux-security/index.md) —  · 2026-10-22 · 1 min
 

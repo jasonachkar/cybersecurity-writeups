@@ -1,0 +1,33 @@
+{
+  "images": {
+    "hardened": {
+      "raw_findings": 47,
+      "result_targets_with_findings": 2,
+      "unique_by_severity": {
+        "HIGH": 23,
+        "LOW": 2,
+        "MEDIUM": 18,
+        "UNKNOWN": 4
+      },
+      "unique_cve_package_pairs": 47
+    },
+    "insecure": {
+      "raw_findings": 976,
+      "result_targets_with_findings": 22,
+      "unique_by_severity": {
+        "CRITICAL": 2,
+        "HIGH": 38,
+        "LOW": 34,
+        "MEDIUM": 40,
+        "UNKNOWN": 2
+      },
+      "unique_cve_package_pairs": 116
+    }
+  },
+  "kind": "one-off observation (NOT reproducible by script)",
+  "note": "The 1.24-era images no longer exist in the lab, and the vulnerability DB moves daily, so these numbers cannot be regenerated. They are kept as the observation that motivated the toolchain bump and the raw-vs-unique counting rule.",
+  "scanned_at_utc": "2026-11-05T01:13Z",
+  "trivy_db_updated_at_utc": "2026-11-04T19:02:00Z",
+  "trivy_version": "0.76.1",
+  "what": "Trivy scan of both lab images when the Go builder was golang:1.24-alpine (digest sha256:8bee1901f1e530bfb4a7850aa7a479d17ae3a18beb6e09064ed54cfd245b7191), before the builders were moved to golang:1.27-alpine."
+}
