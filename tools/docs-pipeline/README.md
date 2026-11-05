@@ -64,6 +64,27 @@ Markdown route has a registry entry, and its status/indexability are included in
 the build manifest. `migrationMode` is `false`, so any future indexable lifecycle
 entry without canonical Markdown fails the pipeline.
 
+## Markdown inside HTML
+
+Prefer ordinary Markdown for headings, links and lists. Raw block HTML suppresses
+Markdown parsing. When a semantic container is needed, the configured `md_in_html`
+extension requires `markdown="1"` on that container (and on each nested block
+container that needs Markdown). The extension alone does not parse unmarked HTML.
+See the [Python-Markdown documentation](https://python-markdown.github.io/extensions/md_in_html/).
+
+`npm run docs:test:html` parses every built article with JavaScript disabled and
+checks for unintended Markdown text, including non-indexable and archived routes.
+The tested [failure fixture](../../tests/docs/fixtures/markdown-in-html.md) exercises
+both ordinary Markdown and the explicit container opt-in using the installed
+renderer and actual MkDocs extension configuration. Browser regressions in
+`npm run docs:test:ui` check the repaired pages in both themes and screen sizes.
+
+The DOM guard excludes code, preformatted text, scripts, styles, textareas, Mermaid
+and source viewers. Intentional Markdown demonstrations in prose can use
+`data-markdown-example="reason for this literal example"` on the smallest relevant
+container. Numbered semantic headings, table-cell labels and prose dashes in real
+list items are accepted. Do not exempt whole articles to silence a rendering bug.
+
 ## Migration rule
 
 Do not automate HTML-to-Markdown scraping. Content that exists only on
