@@ -1,0 +1,659 @@
+{
+  "alerts": [
+    {
+      "alert_ts": "2026-11-05T09:35:35.000Z",
+      "count": 1,
+      "detail": "service ancestor /usr/sbin/nginx at depth 1",
+      "event_id": 726,
+      "event_ids": [
+        726
+      ],
+      "event_ts": "2026-11-05T09:35:31.757Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:35:32.334Z",
+      "rule": "LNX-001",
+      "scenario": "S01",
+      "scenarios": [
+        "S01"
+      ],
+      "severity": "high",
+      "subject": "nginx > sh",
+      "synthetic_latency_seconds": 3.2
+    },
+    {
+      "alert_ts": "2026-11-05T09:35:35.000Z",
+      "count": 1,
+      "detail": "service ancestor /usr/sbin/php-fpm8.3 at depth 2",
+      "event_id": 727,
+      "event_ids": [
+        727
+      ],
+      "event_ts": "2026-11-05T09:35:32.827Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:35:33.608Z",
+      "rule": "LNX-001",
+      "scenario": "S02",
+      "scenarios": [
+        "S02"
+      ],
+      "severity": "high",
+      "subject": "php-fpm8.3 > bash",
+      "synthetic_latency_seconds": 2.2
+    },
+    {
+      "alert_ts": "2026-11-05T09:35:40.000Z",
+      "count": 1,
+      "detail": "service ancestor /usr/bin/gunicorn at depth 1",
+      "event_id": 730,
+      "event_ids": [
+        730
+      ],
+      "event_ts": "2026-11-05T09:35:37.124Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:35:37.532Z",
+      "rule": "LNX-001",
+      "scenario": "S04",
+      "scenarios": [
+        "S04"
+      ],
+      "severity": "high",
+      "subject": "gunicorn > sh",
+      "synthetic_latency_seconds": 2.9
+    },
+    {
+      "alert_ts": "2026-11-05T09:36:20.000Z",
+      "count": 1,
+      "detail": "written by /bin/sh",
+      "event_id": 736,
+      "event_ids": [
+        736
+      ],
+      "event_ts": "2026-11-05T09:36:17.512Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:36:18.928Z",
+      "rule": "LNX-002",
+      "scenario": "S10",
+      "scenarios": [
+        "S10"
+      ],
+      "severity": "medium",
+      "subject": "/etc/cron.d/update",
+      "synthetic_latency_seconds": 2.5
+    },
+    {
+      "alert_ts": "2026-11-05T09:36:30.000Z",
+      "count": 1,
+      "detail": "written by /usr/bin/vim.basic",
+      "event_id": 742,
+      "event_ids": [
+        742
+      ],
+      "event_ts": "2026-11-05T09:36:27.073Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:36:28.906Z",
+      "rule": "LNX-002",
+      "scenario": "S13",
+      "scenarios": [
+        "S13"
+      ],
+      "severity": "medium",
+      "subject": "/etc/cron.d/backup",
+      "synthetic_latency_seconds": 2.9
+    },
+    {
+      "alert_ts": "2026-11-05T09:37:10.000Z",
+      "count": 1,
+      "detail": "ExecStart=/tmp/.x/helper written by /bin/sh",
+      "event_id": 746,
+      "event_ids": [
+        746
+      ],
+      "event_ts": "2026-11-05T09:37:03.444Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:37:05.434Z",
+      "rule": "LNX-003",
+      "scenario": "S20",
+      "scenarios": [
+        "S20"
+      ],
+      "severity": "high",
+      "subject": "/etc/systemd/system/update-helper.service",
+      "synthetic_latency_seconds": 6.6
+    },
+    {
+      "alert_ts": "2026-11-05T09:37:20.000Z",
+      "count": 1,
+      "detail": "ExecStart=/home/dev/bin/serve written by /usr/bin/bash",
+      "event_id": 752,
+      "event_ids": [
+        752
+      ],
+      "event_ts": "2026-11-05T09:37:15.129Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:37:15.938Z",
+      "rule": "LNX-003",
+      "scenario": "S23",
+      "scenarios": [
+        "S23"
+      ],
+      "severity": "high",
+      "subject": "/home/dev/.config/systemd/user/dev.service",
+      "synthetic_latency_seconds": 4.9
+    },
+    {
+      "alert_ts": "2026-11-05T09:38:40.000Z",
+      "count": 1,
+      "detail": "uid 33",
+      "event_id": 764,
+      "event_ids": [
+        764
+      ],
+      "event_ts": "2026-11-05T09:38:37.822Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:38:38.729Z",
+      "rule": "LNX-005",
+      "scenario": "S40",
+      "scenarios": [
+        "S40"
+      ],
+      "severity": "high",
+      "subject": "/usr/bin/python3 reads /etc/shadow",
+      "synthetic_latency_seconds": 2.2
+    },
+    {
+      "alert_ts": "2026-11-05T09:38:45.000Z",
+      "count": 1,
+      "detail": "uid 1000",
+      "event_id": 766,
+      "event_ids": [
+        766
+      ],
+      "event_ts": "2026-11-05T09:38:40.355Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:38:41.434Z",
+      "rule": "LNX-005",
+      "scenario": "S41",
+      "scenarios": [
+        "S41"
+      ],
+      "severity": "high",
+      "subject": "/tmp/.x/h reads /home/alice/.aws/credentials",
+      "synthetic_latency_seconds": 4.6
+    },
+    {
+      "alert_ts": "2026-11-05T09:38:55.000Z",
+      "count": 1,
+      "detail": "uid 0",
+      "event_id": 772,
+      "event_ids": [
+        772
+      ],
+      "event_ts": "2026-11-05T09:38:51.016Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:38:52.759Z",
+      "rule": "LNX-005",
+      "scenario": "S44",
+      "scenarios": [
+        "S44"
+      ],
+      "severity": "high",
+      "subject": "/opt/auditscan/scan reads /etc/shadow",
+      "synthetic_latency_seconds": 4.0
+    },
+    {
+      "alert_ts": "2026-11-05T09:38:55.000Z",
+      "count": 1,
+      "detail": "uid 0",
+      "event_id": 773,
+      "event_ids": [
+        773
+      ],
+      "event_ts": "2026-11-05T09:38:53.306Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:38:53.679Z",
+      "rule": "LNX-005",
+      "scenario": "S45",
+      "scenarios": [
+        "S45"
+      ],
+      "severity": "high",
+      "subject": "/opt/legacy/sync reads /etc/shadow",
+      "synthetic_latency_seconds": 1.7
+    },
+    {
+      "alert_ts": "2026-11-05T09:39:30.000Z",
+      "count": 1,
+      "detail": "service ancestor /usr/sbin/php-fpm8.3 at depth 1",
+      "event_id": 775,
+      "event_ids": [
+        775
+      ],
+      "event_ts": "2026-11-05T09:39:24.171Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:39:26.454Z",
+      "rule": "LNX-001",
+      "scenario": "S50",
+      "scenarios": [
+        "S50"
+      ],
+      "severity": "high",
+      "subject": "php-fpm8.3 > sh",
+      "synthetic_latency_seconds": 5.8
+    },
+    {
+      "alert_ts": "2026-11-05T09:39:30.000Z",
+      "count": 1,
+      "detail": "written by /bin/sh",
+      "event_id": 776,
+      "event_ids": [
+        776
+      ],
+      "event_ts": "2026-11-05T09:39:26.426Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:39:28.692Z",
+      "rule": "LNX-006",
+      "scenario": "S50",
+      "scenarios": [
+        "S50"
+      ],
+      "severity": "high",
+      "subject": "/etc/sudoers.d/90-web",
+      "synthetic_latency_seconds": 3.6
+    },
+    {
+      "alert_ts": "2026-11-05T09:39:30.000Z",
+      "count": 1,
+      "detail": "written by /bin/sh",
+      "event_id": 778,
+      "event_ids": [
+        778
+      ],
+      "event_ts": "2026-11-05T09:39:28.823Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:39:29.564Z",
+      "rule": "LNX-006",
+      "scenario": "S51",
+      "scenarios": [
+        "S51"
+      ],
+      "severity": "high",
+      "subject": "/etc/ld.so.preload",
+      "synthetic_latency_seconds": 1.2
+    },
+    {
+      "alert_ts": "2026-11-05T09:39:50.000Z",
+      "count": 1,
+      "detail": "written by /usr/bin/tee",
+      "event_id": 786,
+      "event_ids": [
+        786
+      ],
+      "event_ts": "2026-11-05T09:39:46.388Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:39:47.923Z",
+      "rule": "LNX-006",
+      "scenario": "S54",
+      "scenarios": [
+        "S54"
+      ],
+      "severity": "high",
+      "subject": "/etc/sudoers.d/dev-team",
+      "synthetic_latency_seconds": 3.6
+    },
+    {
+      "alert_ts": "2026-11-05T09:40:20.000Z",
+      "count": 1,
+      "detail": "mode 4755 set by /bin/chmod",
+      "event_id": 788,
+      "event_ids": [
+        788
+      ],
+      "event_ts": "2026-11-05T09:40:19.000Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:40:19.903Z",
+      "rule": "LNX-007",
+      "scenario": "S60",
+      "scenarios": [
+        "S60"
+      ],
+      "severity": "high",
+      "subject": "/tmp/.x/helper",
+      "synthetic_latency_seconds": 1.0
+    },
+    {
+      "alert_ts": "2026-11-05T09:41:00.000Z",
+      "count": 1,
+      "detail": "cmdline /tmp/.x/h",
+      "event_id": 793,
+      "event_ids": [
+        793
+      ],
+      "event_ts": "2026-11-05T09:40:55.810Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:40:56.739Z",
+      "rule": "LNX-008",
+      "scenario": "S71",
+      "scenarios": [
+        "S71"
+      ],
+      "severity": "high",
+      "subject": "/tmp/.x/h (deleted)",
+      "synthetic_latency_seconds": 4.2
+    },
+    {
+      "alert_ts": "2026-11-05T09:41:00.000Z",
+      "count": 1,
+      "detail": "cmdline /memfd:payload (deleted)",
+      "event_id": 794,
+      "event_ids": [
+        794
+      ],
+      "event_ts": "2026-11-05T09:40:55.397Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:40:56.781Z",
+      "rule": "LNX-008",
+      "scenario": "S70",
+      "scenarios": [
+        "S70"
+      ],
+      "severity": "high",
+      "subject": "/memfd:payload (deleted)",
+      "synthetic_latency_seconds": 4.6
+    },
+    {
+      "alert_ts": "2026-11-05T09:41:35.000Z",
+      "count": 1,
+      "detail": "file_truncate by /bin/sh",
+      "event_id": 797,
+      "event_ids": [
+        797
+      ],
+      "event_ts": "2026-11-05T09:41:32.083Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:41:33.992Z",
+      "rule": "LNX-009",
+      "scenario": "S80",
+      "scenarios": [
+        "S80"
+      ],
+      "severity": "high",
+      "subject": "/var/log/auth.log",
+      "synthetic_latency_seconds": 2.9
+    },
+    {
+      "alert_ts": "2026-11-05T09:41:35.000Z",
+      "count": 1,
+      "detail": "cmdline auditctl -e 0",
+      "event_id": 798,
+      "event_ids": [
+        798
+      ],
+      "event_ts": "2026-11-05T09:41:33.149Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:41:34.522Z",
+      "rule": "LNX-009",
+      "scenario": "S80",
+      "scenarios": [
+        "S80"
+      ],
+      "severity": "high",
+      "subject": "auditctl -e 0",
+      "synthetic_latency_seconds": 1.9
+    },
+    {
+      "alert_ts": "2026-11-05T09:41:45.000Z",
+      "count": 1,
+      "detail": "file_truncate by /usr/bin/truncate",
+      "event_id": 802,
+      "event_ids": [
+        802
+      ],
+      "event_ts": "2026-11-05T09:41:40.372Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:41:41.731Z",
+      "rule": "LNX-009",
+      "scenario": "S82",
+      "scenarios": [
+        "S82"
+      ],
+      "severity": "high",
+      "subject": "/var/log/syslog",
+      "synthetic_latency_seconds": 4.6
+    },
+    {
+      "alert_ts": "2026-11-05T09:42:20.000Z",
+      "count": 50,
+      "detail": "written by /bin/sh",
+      "event_id": 804,
+      "event_ids": [
+        804,
+        805,
+        806,
+        807,
+        808,
+        809,
+        810,
+        811,
+        812,
+        813,
+        814,
+        815,
+        816,
+        817,
+        818,
+        819,
+        820,
+        821,
+        822,
+        823,
+        824,
+        825,
+        826,
+        827,
+        828,
+        829,
+        830,
+        831,
+        832,
+        833,
+        834,
+        835,
+        836,
+        837,
+        838,
+        839,
+        840,
+        841,
+        842,
+        843,
+        844,
+        845,
+        846,
+        847,
+        848,
+        849,
+        850,
+        851,
+        852,
+        853
+      ],
+      "event_ts": "2026-11-05T09:42:14.850Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:42:15.431Z",
+      "rule": "LNX-002",
+      "scenario": "S90",
+      "scenarios": [
+        "S90"
+      ],
+      "severity": "medium",
+      "subject": "/etc/cron.d/loop",
+      "synthetic_latency_seconds": 5.2
+    },
+    {
+      "alert_ts": "2026-11-05T09:46:15.000Z",
+      "count": 1,
+      "detail": "service ancestor /usr/sbin/php-fpm8.3 at depth 1",
+      "event_id": 854,
+      "event_ids": [
+        854
+      ],
+      "event_ts": "2026-11-05T09:44:08.460Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:46:13.460Z",
+      "rule": "LNX-001",
+      "scenario": "S91",
+      "scenarios": [
+        "S91"
+      ],
+      "severity": "high",
+      "subject": "php-fpm8.3 > sh",
+      "synthetic_latency_seconds": 126.5
+    },
+    {
+      "alert_ts": "2026-11-05T09:46:15.000Z",
+      "count": 1,
+      "detail": "written by /bin/sh",
+      "event_id": 855,
+      "event_ids": [
+        855
+      ],
+      "event_ts": "2026-11-05T09:44:09.824Z",
+      "host": "lab-host-01",
+      "ingest_ts": "2026-11-05T09:46:14.824Z",
+      "rule": "LNX-006",
+      "scenario": "S91",
+      "scenarios": [
+        "S91"
+      ],
+      "severity": "high",
+      "subject": "/etc/sudoers.d/91-late",
+      "synthetic_latency_seconds": 125.2
+    }
+  ],
+  "background_alerts": 0,
+  "confusion": {
+    "LNX-001": {
+      "FN": 0,
+      "FP": 1,
+      "TN": 24,
+      "TP": 4,
+      "blind": false,
+      "incidental": 0
+    },
+    "LNX-002": {
+      "FN": 1,
+      "FP": 1,
+      "TN": 23,
+      "TP": 2,
+      "blind": false,
+      "incidental": 0
+    },
+    "LNX-003": {
+      "FN": 0,
+      "FP": 1,
+      "TN": 24,
+      "TP": 1,
+      "blind": false,
+      "incidental": 0
+    },
+    "LNX-004": {
+      "FN": 0,
+      "FP": 0,
+      "TN": 0,
+      "TP": 0,
+      "blind": true,
+      "incidental": 0
+    },
+    "LNX-005": {
+      "FN": 0,
+      "FP": 1,
+      "TN": 24,
+      "TP": 3,
+      "blind": false,
+      "incidental": 0
+    },
+    "LNX-006": {
+      "FN": 0,
+      "FP": 1,
+      "TN": 24,
+      "TP": 3,
+      "blind": false,
+      "incidental": 0
+    },
+    "LNX-007": {
+      "FN": 0,
+      "FP": 0,
+      "TN": 25,
+      "TP": 1,
+      "blind": false,
+      "incidental": 0
+    },
+    "LNX-008": {
+      "FN": 0,
+      "FP": 0,
+      "TN": 25,
+      "TP": 2,
+      "blind": false,
+      "incidental": 0
+    },
+    "LNX-009": {
+      "FN": 0,
+      "FP": 1,
+      "TN": 24,
+      "TP": 1,
+      "blind": false,
+      "incidental": 0
+    }
+  },
+  "coverage": {
+    "LNX-001": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-002": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-003": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-004": {
+      "missing_fields": [],
+      "missing_sources": [
+        "net"
+      ],
+      "status": "blind"
+    },
+    "LNX-005": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-006": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-007": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-008": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-009": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    }
+  },
+  "events": 855,
+  "unexpected_outcomes": []
+}

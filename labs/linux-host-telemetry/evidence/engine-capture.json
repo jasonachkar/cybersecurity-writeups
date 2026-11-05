@@ -1,0 +1,156 @@
+{
+  "alerts": [
+    {
+      "alert_ts": "2026-11-05T02:21:15.000Z",
+      "count": 1,
+      "detail": "written by /bin/sh",
+      "event_id": 2,
+      "event_ids": [
+        2
+      ],
+      "event_ts": "2026-11-05T02:21:13.829Z",
+      "host": "lab-capture-container",
+      "ingest_ts": "2026-11-05T02:21:13.829Z",
+      "rule": "LNX-002",
+      "scenario": "capture",
+      "scenarios": [
+        "capture"
+      ],
+      "severity": "medium",
+      "subject": "/etc/cron.d/lab-job",
+      "synthetic_latency_seconds": 1.2
+    },
+    {
+      "alert_ts": "2026-11-05T02:21:15.000Z",
+      "count": 1,
+      "detail": "uid 0",
+      "event_id": 7,
+      "event_ids": [
+        7
+      ],
+      "event_ts": "2026-11-05T02:21:13.839Z",
+      "host": "lab-capture-container",
+      "ingest_ts": "2026-11-05T02:21:13.839Z",
+      "rule": "LNX-005",
+      "scenario": "capture",
+      "scenarios": [
+        "capture"
+      ],
+      "severity": "high",
+      "subject": "/bin/cat reads /etc/shadow",
+      "synthetic_latency_seconds": 1.2
+    },
+    {
+      "alert_ts": "2026-11-05T02:21:15.000Z",
+      "count": 1,
+      "detail": "written by /bin/sh",
+      "event_id": 9,
+      "event_ids": [
+        9
+      ],
+      "event_ts": "2026-11-05T02:21:13.849Z",
+      "host": "lab-capture-container",
+      "ingest_ts": "2026-11-05T02:21:13.849Z",
+      "rule": "LNX-006",
+      "scenario": "capture",
+      "scenarios": [
+        "capture"
+      ],
+      "severity": "high",
+      "subject": "/etc/sudoers.d/90-lab",
+      "synthetic_latency_seconds": 1.2
+    },
+    {
+      "alert_ts": "2026-11-05T02:21:15.000Z",
+      "count": 1,
+      "detail": "mode 4755 set by /bin/chmod",
+      "event_id": 15,
+      "event_ids": [
+        15
+      ],
+      "event_ts": "2026-11-05T02:21:13.873Z",
+      "host": "lab-capture-container",
+      "ingest_ts": "2026-11-05T02:21:13.873Z",
+      "rule": "LNX-007",
+      "scenario": "capture",
+      "scenarios": [
+        "capture"
+      ],
+      "severity": "high",
+      "subject": "/tmp/lab-copy",
+      "synthetic_latency_seconds": 1.1
+    },
+    {
+      "alert_ts": "2026-11-05T02:21:15.000Z",
+      "count": 2,
+      "detail": "file_truncate by /bin/sh",
+      "event_id": 18,
+      "event_ids": [
+        18,
+        20
+      ],
+      "event_ts": "2026-11-05T02:21:13.883Z",
+      "host": "lab-capture-container",
+      "ingest_ts": "2026-11-05T02:21:13.883Z",
+      "rule": "LNX-009",
+      "scenario": "capture",
+      "scenarios": [
+        "capture"
+      ],
+      "severity": "high",
+      "subject": "/var/log/lab.log",
+      "synthetic_latency_seconds": 1.1
+    }
+  ],
+  "coverage": {
+    "LNX-001": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-002": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-003": {
+      "missing_fields": [
+        "exec_start"
+      ],
+      "missing_sources": [],
+      "status": "blind"
+    },
+    "LNX-004": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-005": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-006": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-007": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-008": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    },
+    "LNX-009": {
+      "missing_fields": [],
+      "missing_sources": [],
+      "status": "evaluated"
+    }
+  },
+  "events": 28,
+  "synthetic_events": 0
+}
