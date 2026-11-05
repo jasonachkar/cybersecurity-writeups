@@ -1,0 +1,8 @@
+date_utc=2026-11-05T01:48:52Z
+kernel=6.18.44-fc-v236
+docker_server=29.9.2 cgroup_version=1 security_options=[name=seccomp,profile=builtin] default_runtime=runc storage_driver=overlayfs
+compose=5.6.1
+trivy=0.76.1
+syft=1.56.0
+cosign=v3.1.4
+strace=strace -- version 6.8

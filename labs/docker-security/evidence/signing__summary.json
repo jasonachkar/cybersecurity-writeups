@@ -1,0 +1,8 @@
+{
+  "executed": true,
+  "cosign": "v3.1.4",
+  "hardened_digest": "sha256:ed1bd4b59d89124af64842e19b94b139bdcf0e9542b84321d66a688bb76d49f7",
+  "insecure_digest": "sha256:b9921fd8b6651529a40cce57d41967f319ae1822a87d281ce66aff54d2ca99a6",
+  "transparency_log": "not used (signing config lists no Rekor service; verify ran with --insecure-ignore-tlog)",
+  "results": {"tag_before_substitution_ok": true, "tag_substitution_rejected": true, "unsigned_rejected": true, "wrong_key_rejected": true, "wrong_predicate_rejected": true, "attestation_verified": true, "verify_signed_digest": true, "signed": true}
+}
