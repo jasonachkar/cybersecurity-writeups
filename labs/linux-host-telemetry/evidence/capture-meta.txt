@@ -1,0 +1,4 @@
+strace=strace -- version 6.8
+container_image=busybox:1.37
+root_exe=/bin/sh
+canary_network_class=private

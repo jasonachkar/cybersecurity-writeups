@@ -1,0 +1,29 @@
+{
+  "CapAdd": [
+    "CAP_NET_ADMIN",
+    "CAP_SYS_ADMIN"
+  ],
+  "CapDrop": null,
+  "Memory": 0,
+  "NanoCpus": 0,
+  "PidMode": "host",
+  "PidsLimit": null,
+  "PortBindings": {
+    "8080/tcp": [
+      {
+        "HostIp": "0.0.0.0",
+        "HostPort": "8080"
+      }
+    ]
+  },
+  "Privileged": true,
+  "ReadonlyRootfs": false,
+  "RestartPolicy": {
+    "MaximumRetryCount": 0,
+    "Name": "always"
+  },
+  "SecurityOpt": [
+    "seccomp=unconfined",
+    "label=disable"
+  ]
+}

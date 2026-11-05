@@ -1,0 +1,1339 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A policy gateway between an agent runtime and a mock MCP-style server, tested against a stand-in agent that obeys every injected instruction, covering allowlists, scoped identity, taint, approval gates, descriptor pinning, output validation and tamper-evident audit.">
+      
+      
+        <meta name="author" content="Jason Achkar Diab">
+      
+      
+        <link rel="canonical" href="https://docs.jasonachkardiab.com/ai-security/mcp-tool-authorization-lab/">
+      
+      
+        <link rel="prev" href="../evidence-driven-agent-security/">
+      
+      
+        <link rel="next" href="../../linux-security/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>MCP Tool Authorization Lab: A Gateway That Holds When the Model Does Not - Cybersecurity Writeups</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../../css/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  
+  
+  
+    <meta property="og:description" content="A policy gateway between an agent runtime and a mock MCP-style server, tested against a stand-in agent that obeys every injected instruction, covering allowlists, scoped identity, taint, approval gates, descriptor pinning, output validation and tamper-evident audit.">
+    <meta name="twitter:description" content="A policy gateway between an agent runtime and a mock MCP-style server, tested against a stand-in agent that obeys every injected instruction, covering allowlists, scoped identity, taint, approval gates, descriptor pinning, output validation and tamper-evident audit.">
+  
+  
+    <script src="../../js/vendor/mermaid.min.js"></script>
+    <script src="../../js/mermaid-zoom.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#scope" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a class="docs-brand" href="../.." aria-label="Cybersecurity Writeups home" data-md-component="logo">Cybersecurity<span>Writeups</span></a>
+    
+      <button type="button" class="md-header__button md-icon docs-mobile-search" data-docs-search-open aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg></button>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    <div class="docs-header-tools">
+      <a class="docs-header-source md-icon" href="https://github.com/jasonachkar/cybersecurity-writeups" aria-label="Source code on GitHub" title="Source code"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg></a>
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+        <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+      
+      <button type="button" class="md-header__button md-icon docs-menu" aria-label="Toggle navigation" aria-controls="docs-navigation" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg></button>
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+  
+    <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+<nav id="docs-navigation" class="md-nav md-nav--primary" aria-label="Documentation" data-md-level="0">
+  <div class="md-nav__title docs-nav-mobile-header"><span>Cybersecurity Writeups</span><button type="button" class="docs-nav-close md-icon" aria-label="Close navigation"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <ul class="md-nav__list">
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Start here<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../.." class="md-nav__link">Home</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../research/" class="md-nav__link">Research</a></li>
+  
+</ul>
+      </details>
+    </li>
+    
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Cloud Security<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../cloud-security/" class="md-nav__link">Cloud Security overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/iam-at-scale/" class="md-nav__link">IAM and workload federation</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/cloud-network-segmentation/" class="md-nav__link">Network segmentation</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/multi-account-landing-zones/" class="md-nav__link">Landing zones</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/kubernetes-multi-tenancy/" class="md-nav__link">Kubernetes isolation</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/cloud-detection-and-response/" class="md-nav__link">Detection and response</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/serverless-security/" class="md-nav__link">Serverless security</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Application Security<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../appsec/" class="md-nav__link">Application Security overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../appsec/ai-agent-security/" class="md-nav__link">AI-agent authorization</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../appsec/saas-multitenancy-isolation/" class="md-nav__link">Multi-tenant SaaS isolation</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../appsec/oauth2-oidc-deep-dive/" class="md-nav__link">OAuth 2.0 and OIDC</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../appsec/api-microservices-threat-modeling/" class="md-nav__link">API threat modeling</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../appsec/runtime-protection-rasp-waf/" class="md-nav__link">Runtime protection</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">AI Security<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../" class="md-nav__link">AI Security overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../evidence-driven-agent-security/" class="md-nav__link">Agent and MCP evidence</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="./" class="md-nav__link md-nav__link--active" aria-current="page">MCP tool authorization lab</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Linux Security<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../linux-security/" class="md-nav__link">Linux Security overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../linux-security/evidence-driven-host-analysis/" class="md-nav__link">Host evidence and uncertainty</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../linux-security/host-telemetry-detection-lab/" class="md-nav__link">Host telemetry detection lab</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">DevSecOps<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../devsecops/" class="md-nav__link">DevSecOps overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/secure-cicd-pipeline-design/" class="md-nav__link">Secure CI/CD</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/iac-security-and-policy-as-code/" class="md-nav__link">IaC policy engineering</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/supply-chain-sbom-signing/" class="md-nav__link">Supply-chain evidence</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/secrets-management/" class="md-nav__link">Secrets management</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/secureobs-multitenant-security-scanner/" class="md-nav__link">SecureObs architecture</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/evidence-preserving-security-pipelines/" class="md-nav__link">Scanning and gate reliability</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Threat Intelligence<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../threat-intel/" class="md-nav__link">Threat Intelligence overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../threat-intel/attack-path-analysis/" class="md-nav__link">Attack-path analysis</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../threat-intel/cloud-breach-case-studies/" class="md-nav__link">Incident case studies</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Research methodology<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../research-methodology/" class="md-nav__link">Research methodology</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../research-methodology/evidence-standards/" class="md-nav__link">Evidence standards</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../research-methodology/research-index/" class="md-nav__link">Research index</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../research-methodology/open-questions/" class="md-nav__link">Open questions</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+    
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Vulnerability research<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../vulnerability-research/" class="md-nav__link">Vulnerability research</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../vulnerability-research/methodology/" class="md-nav__link">Methodology</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../vulnerability-research/mcp-tool-ssrf/" class="md-nav__link">MCP-style tool SSRF</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../vulnerability-research/api-bola-multi-tenant/" class="md-nav__link">Multi-tenant BOLA</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../vulnerability-research/cicd-identity-escalation/" class="md-nav__link">CI/CD identity escalation</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Labs<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../labs/" class="md-nav__link">Labs</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/secure-cicd/" class="md-nav__link">Secure CI/CD</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/iam-oidc/" class="md-nav__link">IAM and OIDC</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/oauth-oidc/" class="md-nav__link">OAuth and OIDC</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/ai-agent-security/" class="md-nav__link">AI-agent security</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/postgresql-rls/" class="md-nav__link">PostgreSQL RLS</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/kubernetes-security/" class="md-nav__link">Kubernetes security</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/docker-security/" class="md-nav__link">Docker security</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/supply-chain/" class="md-nav__link">Supply-chain policy</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/iac-policy/" class="md-nav__link">IaC policy</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/azure-landing-zone/" class="md-nav__link">Azure landing zone</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/request-lifecycle/" class="md-nav__link">Event and secret lifecycle</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/mcp-tool-ssrf/" class="md-nav__link">MCP-style SSRF</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/api-bola-multi-tenant/" class="md-nav__link">Multi-tenant BOLA</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/cicd-identity-escalation/" class="md-nav__link">CI/CD identity escalation</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/linux-host-telemetry/" class="md-nav__link">Linux host telemetry</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/mcp-tool-authorization/" class="md-nav__link">MCP tool authorization</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Scripts<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../scripts/" class="md-nav__link">Security scripts, packages, and small utilities</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../scripts/cloud-security/" class="md-nav__link">Cloud Security</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../scripts/application-security/" class="md-nav__link">Application Security</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../scripts/devsecops/" class="md-nav__link">DevSecOps</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../scripts/threat-intelligence/" class="md-nav__link">Threat Intelligence</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Study notes<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../study-notes/" class="md-nav__link">Study notes</a></li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">AZ-900<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/az-900/" class="md-nav__link">Microsoft AZ-900: Azure Fundamentals Study Guide</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/az-900/domain-1-concepts/" class="md-nav__link">Domain 1 - Cloud concepts</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/az-900/domain-2-architecture-services/" class="md-nav__link">Domain 2 - Architecture and services</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/az-900/domain-3-management-governance/" class="md-nav__link">Domain 3 - Management and governance</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">SC-500<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/sc-500/" class="md-nav__link">Microsoft SC-500 study notes</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/sc-500/domain-1-identity/" class="md-nav__link">Domain 1 - Identity</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/sc-500/domain-2-storage-networking/" class="md-nav__link">Domain 2 - Storage and networking</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/sc-500/domain-3-secure-compute/" class="md-nav__link">Domain 3 - Secure compute</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/sc-500/domain-4-manage-monitor-posture/" class="md-nav__link">Domain 4 - Manage and monitor posture</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/security-plus/" class="md-nav__link">Security+</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/google-cybersecurity/" class="md-nav__link">Google Cybersecurity</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../about/" class="md-nav__link">About</a></li>
+  
+
+  </ul>
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+  <div class="md-content" data-md-component="content">
+    
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../../research/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Research
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    AI Security
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+    <article class="md-content__inner md-typeset">
+      
+  <header class="docs-article-header">
+  <h1 id="mcp-tool-authorization-lab-a-gateway-that-holds-when-the-model-does-not">MCP Tool Authorization Lab: A Gateway That Holds When the Model Does Not</h1>
+  <p class="docs-article-header__summary">A policy gateway between an agent runtime and a mock MCP-style server, tested against a stand-in agent that obeys every injected instruction, covering allowlists, scoped identity, taint, approval gates, descriptor pinning, output validation and tamper-evident audit.</p>
+  <p class="docs-article-header__orientation">
+    <span>AI Security</span>
+    <span aria-hidden="true">·</span><span>17 min read</span>
+  </p>
+  
+    <nav class="docs-article-actions" aria-label="Article actions">
+  <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
+    <span data-focus-label>Focus</span>
+  </button>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/ai-security/mcp-tool-authorization-lab.md"><span class="docs-link-label">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+</nav>
+  
+</header>
+  
+<aside class="docs-key-takeaway" aria-labelledby="docs-key-takeaway-heading">
+  <h2 id="docs-key-takeaway-heading">Key takeaway</h2>
+  <p>Authority must be decided outside the model, from identity the model cannot supply, and the decision must still hold when the model obeys an attacker.</p>
+</aside>
+
+  
+  <p>When an agent can call tools, the question that matters is not "will the model behave?" but "what happens when it does not?". A model that reads
+a hostile document may be instructed to call a tool it was never meant to use. This study builds a gateway that answers by construction:
+every proposed call passes a deterministic decision made from identity the model cannot supply, and the test agent is a <strong>stand-in that obeys every
+instruction it finds in tool output</strong>, so a passing test does not depend on the model resisting anything.</p>
+<blockquote>
+<p><strong>There is no language model in this lab.</strong> <code>NaiveAgent</code> is a deterministic worst-case stand-in for a compromised planner, not a model and not
+a claim about any model. It cannot show whether a real model is injectable, how often, or how well a prompt or classifier resists. No LLM API is
+contacted and no credential is used. The tool server is a local child process whose every effect is an in-memory array append; all data is synthetic.</p>
+</blockquote>
+<p>Evidence labels: <code>tested locally</code> (executed here; output in the lab's <a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/main/labs/mcp-tool-authorization/evidence"><code>evidence/</code></a>),
+<code>policy model</code> (decision logic evaluated against a stand-in, not a real model or identity provider), <code>source-reviewed</code> (read in the named primary source),
+<code>requires-review</code> (no independent reviewer yet). They map to T2/T3, T1, T0 and review status in the <a href="../../research-methodology/evidence-standards/">evidence standards</a>.
+This article extends, and does not repeat, the <a href="../../labs/ai-agent-security/">external tool-broker lab</a> (action-bound approval, replay resistance) and the broader
+<a href="../evidence-driven-agent-security/">agent and MCP evidence article</a>; URL-fetching tools are covered by the <a href="../../labs/mcp-tool-ssrf/">SSRF lab</a>.</p>
+<h2 id="scope">Scope<a class="headerlink" href="#scope" title="Permanent link">&para;</a></h2>
+<p>The authorization decision for an agent-proposed tool call: which tools exist, whose authority applies, when a human must decide, what a tool may return, and what is
+recorded. Out of scope: authenticating users or agents (the context is a trusted input), token issuance and exchange, the MCP authorization specification, transport security,
+sandboxing the tool server, and any real model behaviour.</p>
+<h2 id="what-i-built">What I built<a class="headerlink" href="#what-i-built" title="Permanent link">&para;</a></h2>
+<p>The code is in the <a href="../../labs/mcp-tool-authorization/">mcp-tool-authorization lab</a>: a mock stdio server (<code>tools/list</code>, <code>tools/call</code>; five tools; five failure modes), the
+gateway, a hash-chained audit log, a stand-in agent, 35 mechanism tests and a 16-scenario decision matrix.</p>
+<pre class="mermaid"><code>flowchart LR
+  U["User&lt;br/&gt;authenticated, holds scopes"] --&gt; RT["Agent runtime&lt;br/&gt;context: user, agent, session"]
+  RT --&gt; M["Model or stand-in&lt;br/&gt;proposes a call"]
+  M --&gt;|"tool name + arguments only"| GW
+  subgraph GW["Policy gateway: the only path to a tool"]
+    direction TB
+    A1["allowlist + descriptor pin"] --&gt; A2["closed schema + strict path or recipient"]
+    A2 --&gt; A3["authority = user scopes AND agent scopes"]
+    A3 --&gt; A4{"risk class and session taint"}
+    A4 --&gt;|"deny"| DEN["deny with a reason code"]
+    A4 --&gt;|"needs a human"| APR["approval request&lt;br/&gt;bound to the exact action"]
+    A4 --&gt;|"allow"| LOGA["audit the decision first"]
+  end
+  APR --&gt; H["Human approver&lt;br/&gt;separate surface, policy-listed ids"]
+  H --&gt;|"approve once or refuse"| GW
+  LOGA --&gt; S["Tool server&lt;br/&gt;local stdio child"]
+  S --&gt; OV["output validation&lt;br/&gt;text only, size, controls, links, schema"]
+  OV --&gt;|"tool output is untrusted: taints the session"| RT
+  DEN --&gt; LOG[("audit log&lt;br/&gt;hash chain")]
+  LOGA --&gt; LOG
+  OV --&gt; LOG
+  H --&gt; LOG</code></pre>
+<p><em>Status: <code>tested locally</code>. Every box is a function in <code>gateway.js</code>; the stand-in agent and the approval surface are separate objects, and the agent holds no reference to either the
+approval function or the log.</em></p>
+<p>The trust boundaries the design relies on:</p>
+<pre class="mermaid"><code>flowchart TD
+  subgraph TRUSTED["Decided outside the model"]
+    ID["identity: user, tenant, scopes, agent id, session"]
+    POL["policy: allowlist, pinned descriptors, egress allowlist, risk classes"]
+    APP["approvers: policy-listed human ids"]
+  end
+  subgraph UNTRUSTED["Never trusted to decide anything"]
+    MODEL["model output: tool names and arguments"]
+    TOOLOUT["tool output: text, links, annotations"]
+    DESC["server-advertised descriptors until pinned"]
+  end
+  MODEL --&gt;|"proposal"| CHECK["gateway checks"]
+  TOOLOUT -.-&gt;|"taints session, can change what is gated"| CHECK
+  DESC -.-&gt;|"must hash to a reviewed pin"| CHECK
+  ID --&gt; CHECK
+  POL --&gt; CHECK
+  APP --&gt; CHECK</code></pre>
+<h3 id="control-decisions">Control decisions<a class="headerlink" href="#control-decisions" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>What it stops</th>
+<th>What it does not</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tool allowlist plus descriptor pin</td>
+<td>Calling an unreviewed tool; a description or schema silently changed after review</td>
+<td>A malicious tool whose reviewed behaviour is malicious</td>
+<td><code>tested locally</code>: <code>shell_exec</code>, <code>__proto__</code>, <code>constructor</code> denied; rug-pull quarantined</td>
+</tr>
+<tr>
+<td>Closed schema, strict paths and recipients</td>
+<td>Smuggled arguments (<code>cc</code>, an identity field, <code>__proto__</code>), traversal, multi-recipient strings</td>
+<td>Semantically harmful values that are well-formed</td>
+<td><code>tested locally</code>: 9 schema and 8 path cases, none repaired into a match</td>
+</tr>
+<tr>
+<td>Authority = user AND agent scopes</td>
+<td>A confused deputy in either direction</td>
+<td>A user and an agent who both hold too much</td>
+<td><code>tested locally</code>: private note denied when only the user (or only the agent) holds the scope</td>
+</tr>
+<tr>
+<td>Destination allowlist behind scopes</td>
+<td>Exfiltration when scopes are over-broad (<code>email:send:*</code>)</td>
+<td>An allowed destination that is itself attacker-controlled</td>
+<td><code>tested locally</code>: both layers exercised independently</td>
+</tr>
+<tr>
+<td>Taint plus risk gating</td>
+<td>A write or deletion proposed after untrusted content entered the context</td>
+<td>Harm that needs no tool call</td>
+<td><code>tested locally</code>; the taint input is a modeling assumption (below)</td>
+</tr>
+<tr>
+<td>Approval bound to the exact action</td>
+<td>Replay, argument swap after approval, approval by the agent, expired approval, reviewer flooding</td>
+<td>A reviewer who approves what they should not</td>
+<td><code>tested locally</code></td>
+</tr>
+<tr>
+<td>Output validation</td>
+<td>Oversize or control-character output, non-text content, undeclared structured fields, off-allowlist links</td>
+<td>Persuasive false text</td>
+<td><code>tested locally</code></td>
+</tr>
+<tr>
+<td>Audit before execute, hash chain</td>
+<td>An unrecorded effect; editing or deleting a record in the middle</td>
+<td>Tail truncation (documented gap)</td>
+<td><code>tested locally</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="research-question-and-hypothesis">Research question and hypothesis<a class="headerlink" href="#research-question-and-hypothesis" title="Permanent link">&para;</a></h2>
+<p><strong>Question:</strong> Does a deterministic gateway keep tool authority independent of a compromised model's behaviour, and does every decision leave a verifiable record?</p>
+<p><strong>Falsifiable hypothesis (bounded experiment):</strong> With a stand-in that obeys every injected instruction, no denied or unapproved call produces a side effect on the independent observation channel, every decision (allow, deny, approval required) has an audit record whose chain verifies, and every reason code the gateway can emit is exercised by a test. One observed side effect without an allow, an unrecorded decision, or an unexercised reason code refutes it.</p>
+<h2 id="research-threat-model">Research threat model<a class="headerlink" href="#research-threat-model" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Declared scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>Text the model reads (a note, an email, a web page) that carries instructions; a tool server that changes after review; a model that follows both</td>
+</tr>
+<tr>
+<td>Assets</td>
+<td>Data the user can read, the ability to send data out, the ability to delete, and the integrity of the record of what happened</td>
+</tr>
+<tr>
+<td>Entry points</td>
+<td>Tool names and arguments proposed by the model; tool descriptors; tool results</td>
+</tr>
+<tr>
+<td>Trust boundaries</td>
+<td>Model → gateway → tool server; user and agent identity (trusted input here); the human approver</td>
+</tr>
+<tr>
+<td>Impact under investigation</td>
+<td>Exfiltration to an unlisted recipient, a destructive call, privilege borrowed across user and agent, an unrecorded effect</td>
+</tr>
+<tr>
+<td>Trusted assumptions</td>
+<td>The runtime supplies correct user, agent and session identity; the approver surface is not reachable by the model; the gateway process is not compromised; <strong>a real model's behaviour is not modeled</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="method-and-evidence-requirements">Method and evidence requirements<a class="headerlink" href="#method-and-evidence-requirements" title="Permanent link">&para;</a></h2>
+<p>Follow the <a href="../../research-methodology/evidence-standards/">evidence standards</a> (AI agent row: principal and delegation map, untrusted-input entry, tool schema and authorization, denied tool invocation,
+egress decisions, bounded evidence retention; simulated tool calls distinguished from a real model run). The <a href="../../labs/mcp-tool-authorization/">lab</a> owns setup, prerequisites, expected output,
+safety, evidence collection and teardown. From repository root:</p>
+<div class="language-bash highlight"><pre><span></span><code>node<span class="w"> </span>--test<span class="w"> </span>labs/mcp-tool-authorization/tests/gateway.test.js
+</code></pre></div>
+<p>This command is a <strong>tested local check</strong> with the scope below. Review the test inputs and the failure assertions before interpreting a pass. The decision matrix is produced by
+<code>node labs/mcp-tool-authorization/scripts/run-scenarios.js</code>, where each step's expected decision, reason and side-effect count are declared before the step runs. A policy file or a passing test is
+T1/T2 evidence about this gateway, not about a deployment. Do not deploy cloud resources from repository validation.</p>
+<h3 id="how-the-lab-maps-to-the-specifications-security-statements">How the lab maps to the specification's security statements<a class="headerlink" href="#how-the-lab-maps-to-the-specifications-security-statements" title="Permanent link">&para;</a></h3>
+<p>Read in the MCP specification source, revision 2025-11-25 (<code>source-reviewed</code>). The gateway is a <strong>client-side</strong> control layer; it does not rely on the server doing its part.</p>
+<table>
+<thead>
+<tr>
+<th>Specification statement (paraphrased)</th>
+<th>Where it lands here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Servers MUST validate inputs, implement access controls, rate limit and sanitize outputs</td>
+<td>The gateway enforces all four <em>independently</em>, so a server that fails any of them is still bounded</td>
+</tr>
+<tr>
+<td>Clients SHOULD prompt for confirmation on sensitive operations and show inputs before calling</td>
+<td>Approval gating; the summary shown to the human is built from the actual arguments, never from model text</td>
+</tr>
+<tr>
+<td>Clients SHOULD validate tool results before passing them to the model</td>
+<td>Output validation; rejected output is withheld</td>
+</tr>
+<tr>
+<td>Clients SHOULD implement timeouts and log tool usage</td>
+<td>Per-request timeout; every decision is audited before the call runs</td>
+</tr>
+<tr>
+<td>Clients MUST treat tool annotations as untrusted unless the server is trusted</td>
+<td>Annotations are never an input to a decision; the whole descriptor is pinned instead</td>
+</tr>
+<tr>
+<td>Servers MUST return structured results that conform to a declared <code>outputSchema</code>; clients SHOULD validate them</td>
+<td><code>structuredContent</code> is validated against the pinned <code>outputSchema</code>; extra fields and missing content are rejected</td>
+</tr>
+<tr>
+<td>stdio messages are newline-delimited and MUST NOT contain embedded newlines</td>
+<td>The mock and the gateway use exactly that framing</td>
+</tr>
+</tbody>
+</table>
+<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
+<p>Recorded run (<code>evidence/versions.txt</code>): Node.js v22.23.4, Linux 6.18.44, policy version <code>2026-11-05.1</code>. All <code>tested locally</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Observed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>node scripts/pin.js</code></td>
+<td><code>all pins match</code> for five tools</td>
+</tr>
+<tr>
+<td><code>node --test labs/mcp-tool-authorization/tests/gateway.test.js</code></td>
+<td><code>tests 35, pass 35, fail 0</code></td>
+</tr>
+<tr>
+<td><code>node labs/mcp-tool-authorization/scripts/run-scenarios.js</code></td>
+<td>16 scenarios, 31 proposed calls: 11 allow, 5 approval required, 15 deny; <code>all expectations met</code>; audit chains valid</td>
+</tr>
+</tbody>
+</table>
+<p>Selected rows of the decision matrix (full table in <code>evidence/decision-matrix-table.txt</code>; "effects" are observed on the server's stderr channel, separate from the protocol):</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Proposed call</th>
+<th>Decision</th>
+<th>Reason</th>
+<th>Effects</th>
+<th>Audit seq</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td><code>read_note</code> <code>/workspace/notes/meeting.md</code></td>
+<td>allow</td>
+<td><code>ALLOWED</code></td>
+<td>0</td>
+<td>5</td>
+</tr>
+<tr>
+<td>A1</td>
+<td><code>create_ticket</code> after that read (session now holds untrusted content)</td>
+<td>approval required</td>
+<td><code>APPROVAL_REQUIRED</code></td>
+<td>0</td>
+<td>6</td>
+</tr>
+<tr>
+<td>A1</td>
+<td>the same <code>create_ticket</code>, human approved</td>
+<td>allow</td>
+<td><code>ALLOWED_WITH_APPROVAL</code></td>
+<td>1</td>
+<td>9</td>
+</tr>
+<tr>
+<td>D2</td>
+<td><code>read_note</code> <code>/workspace/notes/../private/salary.md</code></td>
+<td>deny</td>
+<td><code>PATH_INVALID</code></td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr>
+<td>D3</td>
+<td><code>read_note</code> <code>/workspace/private/salary.md</code> (user may, agent not delegated)</td>
+<td>deny</td>
+<td><code>AGENT_SCOPE_DENIED</code></td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr>
+<td>D5</td>
+<td><code>send_email</code> to <code>attacker@evil.test</code> with over-broad scopes</td>
+<td>deny</td>
+<td><code>RECIPIENT_NOT_ALLOWED</code></td>
+<td>0</td>
+<td>2</td>
+</tr>
+<tr>
+<td>I1</td>
+<td>injected <code>send_email</code> to an outsider after reading a poisoned note</td>
+<td>deny</td>
+<td><code>RECIPIENT_NOT_ALLOWED</code></td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>I2</td>
+<td>injected <code>send_email</code> to an allowed recipient</td>
+<td>approval required, then the human refuses</td>
+<td><code>APPROVAL_DENIED</code></td>
+<td>0</td>
+<td>6</td>
+</tr>
+<tr>
+<td>P1</td>
+<td><code>send_email</code> replayed with the same approval</td>
+<td>deny</td>
+<td><code>APPROVAL_CONSUMED</code></td>
+<td>0</td>
+<td>7</td>
+</tr>
+<tr>
+<td>T1</td>
+<td><code>delete_note</code> after untrusted content entered the context</td>
+<td>deny</td>
+<td><code>TAINTED_SESSION_DESTRUCTIVE</code></td>
+<td>0</td>
+<td>4</td>
+</tr>
+<tr>
+<td>R1</td>
+<td><code>read_note</code> after the server changed its description</td>
+<td>deny</td>
+<td><code>DESCRIPTOR_DRIFT</code></td>
+<td>0</td>
+<td>5</td>
+</tr>
+<tr>
+<td>O1</td>
+<td><code>read_note</code> from a server returning oversize, control-character, non-text output</td>
+<td>allow, result withheld</td>
+<td><code>OUTPUT_INVALID</code></td>
+<td>0</td>
+<td>3</td>
+</tr>
+<tr>
+<td>U1</td>
+<td>approved <code>send_email</code>, server never answers</td>
+<td>allow, not executed</td>
+<td><code>UPSTREAM_TIMEOUT</code></td>
+<td>0</td>
+<td>5</td>
+</tr>
+<tr>
+<td>L1</td>
+<td>any call while the audit log is unavailable</td>
+<td>deny</td>
+<td><code>AUDIT_UNAVAILABLE</code></td>
+<td>0</td>
+<td>none (the log is down; the response says it could not record)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="findings-and-interpretation">Findings and interpretation<a class="headerlink" href="#findings-and-interpretation" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Claim class</th>
+<th>Evidence tier and boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The gateway's decisions are independent of the stand-in's behaviour</td>
+<td>T3, <code>tested locally</code>: injected instructions were obeyed by construction and denied or gated by the gateway</td>
+</tr>
+<tr>
+<td>No denied or unapproved call had a side effect</td>
+<td>T2/T3, independent observation channel on all 16 scenarios</td>
+</tr>
+<tr>
+<td>Every decision has a verifiable audit record</td>
+<td>T2, hash chain verifies for every scenario</td>
+</tr>
+<tr>
+<td>A real model would or would not be injectable</td>
+<td>Not established; not modeled</td>
+</tr>
+<tr>
+<td>Operating cost of approvals on real reviewers</td>
+<td>Not tested</td>
+</tr>
+<tr>
+<td>MCP spec alignment</td>
+<td>T0, paraphrased from the 2025-11-25 source</td>
+</tr>
+</tbody>
+</table>
+<h3 id="what-the-lab-found-that-i-did-not-plan-for">What the lab found that I did not plan for<a class="headerlink" href="#what-the-lab-found-that-i-did-not-plan-for" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Two egress layers, and the first one hides the second.</strong> My first injection test expected <code>RECIPIENT_NOT_ALLOWED</code> and got <code>USER_SCOPE_DENIED</code>: the user's <code>email:send:example.test</code> scope already excluded the domain,
+   earlier in the pipeline. That is correct, but it meant the gateway's destination allowlist was never exercised. It exists for the realistic mistake of an over-broad scope (<code>email:send:*</code>), so both layers now have their own test, and
+   a third case shows approval cannot widen the allowlist.</li>
+<li><strong>Rate-limiting calls punished approvals.</strong> I first counted every call that reached the limiter. One email needs a request, possibly a premature retry, and the approved retry: three calls against a limit of two. A rate limit should bound
+   <em>executions</em>; it now does, and a separate cap on <strong>pending approvals per agent</strong> (3) stops a compromised planner from burying its reviewers instead. Without that cap, moving the limit would have created a new denial-of-attention channel.</li>
+<li><strong>A keyword filter is a signal, not a control.</strong> The output scan flags <code>ignore previous instructions</code> and <code>CALL tool {</code> patterns. A differently worded note (<code>Ign0re pr1or directives ...</code>) is <strong>not</strong> flagged, yet the session is
+   tainted anyway, because taint is set by the <em>source</em> of the content, not by recognizing the attack. The control that works is the one that does not require recognizing anything.</li>
+<li><strong>A withheld output does not taint the session.</strong> If output validation rejects a result, the model never saw it, so there is nothing to taint. The tests assert this; it also means a hostile server that fails validation costs a call, not the session.</li>
+<li><strong>The audit chain does not catch tail truncation.</strong> Editing a record or deleting one in the middle breaks verification (both tested). Removing the last N records yields a valid shorter chain (also tested, and asserted so the limitation cannot be forgotten).
+   Detecting that needs the head hash anchored somewhere the attacker cannot also rewrite; this lab does not provide one.</li>
+<li><strong>Bare directory paths are outside a <code>/**</code> glob.</strong> <code>notes:read:/workspace/notes/**</code> does not match <code>/workspace/notes</code> (no trailing component), by design. A tool that lists a directory needs the directory form or a second scope. Easy to get wrong in policy, and a source of "why was this denied" tickets.</li>
+<li><strong>The summary shown to the human is a security surface.</strong> It is built from the actual arguments (recipient, subject, body <em>length</em>), with control characters stripped, and never from model-written justification text. The test asserts the body text does not appear in it.</li>
+<li><strong>My "nothing happened" assertions were not proofs.</strong> The tests read side effects from the server's stderr and decisions from its stdout. Those are two pipes with no ordering guarantee between them, so a call could return before its
+   effect line had been read. I found it when the suite, run repeatedly under Node 24, failed a positive assertion in 2 of 8 runs (it had passed on Node 22 six times in a row, which was luck, not immunity). Probing it directly: after an <em>executed</em> call, the effect line was not yet visible for between 0.3% and 28% of calls across repeated 300-call probes on Node 22 and 24
+   (scheduling-dependent, so no single rate means much; every effect did arrive eventually). The dangerous half is the negative case: <code>assert.deepEqual(effects, [])</code> after a denied call passes just as happily when the effect line is late. A harness that can
+   pass vacuously is worse than no harness in a lab whose claim is "denied means nothing happened".
+   The fix is an ordering barrier, not a sleep. The mock server answers a lab-only <code>lab/barrier</code> request by writing a marker to stderr; stderr is a single ordered pipe, so a harness that has seen the marker has seen every effect written before it. The gateway exposes this
+   as a test seam (<code>upstreamStderrBarrier</code>, a no-op without a stderr observer, not reachable from an agent), the test harness settles after every call, and the scenario runner settles before it measures each step. A dedicated test fails deterministically
+   if the barrier is disabled (checked by disabling it: 6 of 6 runs failed that test, on Node 22 and 24). Residual limits: the barrier proves the harness has observed the server's stderr up to that point, not that the server reports every effect it causes.
+   The mock only reports what its own code paths emit, which is why the effects are in-memory appends I can enumerate.</li>
+</ol>
+<h3 id="the-taint-model-is-an-assumption-and-a-conservative-one">The taint model is an assumption, and a conservative one<a class="headerlink" href="#the-taint-model-is-an-assumption-and-a-conservative-one" title="Permanent link">&para;</a></h3>
+<p>A real gateway cannot know whether a model's argument was influenced by an injected sentence. The lab therefore taints at <strong>session</strong> level: any output from a tool marked <code>taintsSession</code> (here, anything reading notes) means later
+higher-risk calls are gated regardless of what the arguments look like. That is cheap and unforgeable by the model, and it is blunt: after one read, every ticket needs approval (the matrix's ambiguous case A1). Finer-grained provenance tracking would reduce
+that friction, but it requires the runtime to track data flow through the model, which this lab does not attempt and cannot validate.</p>
+<h3 id="optional-integration-with-a-real-model-not-executed">Optional integration with a real model (not executed)<a class="headerlink" href="#optional-integration-with-a-real-model-not-executed" title="Permanent link">&para;</a></h3>
+<p>Wiring a real client means calling <code>gateway.callTool(ctx, name, args)</code> wherever the client would call the server, building <code>ctx</code> from the authenticated session, and exposing <code>visibleTools(ctx)</code> as the tool list. The following is <strong>pseudocode</strong> for orientation; no real model, SDK or credential was used.</p>
+<div class="language-text highlight"><pre><span></span><code># pseudocode - not executed in this lab
+ctx = { user: from_auth(session), agent: from_registry(agent_id), session: { id, tainted: false } }
+tools = gateway.visibleTools(ctx)                 # hygiene only; enforcement is in callTool
+loop:
+    proposal = model.next(messages, tools)        # tool name + arguments, nothing else
+    outcome  = gateway.callTool(ctx, proposal.name, proposal.args, approval_id_if_any)
+    if outcome.decision == &quot;approval_required&quot;: surface outcome.summary to a human, out of band
+    messages.append(outcome.result or outcome.reason)   # reason codes, not internals
+</code></pre></div>
+<h2 id="practical-guidance-and-failure-containment">Practical guidance and failure containment<a class="headerlink" href="#practical-guidance-and-failure-containment" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Decide authority outside the model, from identity the model cannot supply.</strong> Everything in this design follows from refusing to read a user, tenant or scope out of tool arguments.</li>
+<li><strong>Make the gateway the only path to a tool</strong>, and pin what you reviewed. A tool added or edited after review should be unreachable until someone reads the diff.</li>
+<li><strong>Gate by risk class and by provenance of content</strong>, and accept the friction: the cost of an unnecessary approval is a click; the cost of a missing one is an unrecorded exfiltration.</li>
+<li><strong>Fail closed, and say why.</strong> Unknown tool, malformed context, invalid policy, failed audit write, unreachable server: each denies or does not run, with a stable reason code.</li>
+<li><strong>Keep reasons stable and complete.</strong> A reason code with no test is a decision nobody has checked; the suite fails if one is added without a test.</li>
+<li><strong>Roll back by pin or policy, not by relaxing a check.</strong> A tool that breaks after a server update is quarantined until its new descriptor is reviewed; do not widen a scope to make a call succeed.</li>
+</ul>
+<h2 id="what-was-not-tested">What was not tested<a class="headerlink" href="#what-was-not-tested" title="Permanent link">&para;</a></h2>
+<ul>
+<li>A real language model, real indirect prompt injection, or any measure of how often a model obeys one.</li>
+<li>Authentication of the user, agent or approver; token validation; the MCP authorization flow; OAuth.</li>
+<li>A conformant MCP server or client: only <code>initialize</code>, <code>tools/list</code>, <code>tools/call</code> and the list-changed notification are implemented. No pagination, resources, prompts, sampling or tasks.</li>
+<li>Remote (HTTP) MCP transport and its authorization.</li>
+<li>A compromised gateway host, a compromised approval UI, or an attacker with access to the audit store; anchoring the audit head.</li>
+<li>Concurrency, load, and rate-limit behaviour under real traffic; approval fatigue in practice.</li>
+<li>Sandboxing of the tool server itself; the server in this lab is trusted not to escape its own process.</li>
+<li>Time to detect and contain, population false-positive rates, and cost: <strong>not measured in this article</strong>.</li>
+</ul>
+<h2 id="production-considerations">Production considerations<a class="headerlink" href="#production-considerations" title="Permanent link">&para;</a></h2>
+<p><strong>Rollout.</strong> Start in observe mode: run the gateway in front of existing tool calls, log decisions, and enforce nothing, then review what would have been denied or gated. Onboard tools one at a time by reviewing the descriptor and pinning its hash;
+move a tool to enforcement only after its denial reasons have been triaged. Keep the first approval policy tight (egress and destructive) and widen the "needs a human" set only if you can staff it.</p>
+<p><strong>Detection.</strong> Alert on: descriptor drift or an unreviewed tool appearing (the rug-pull signal), repeated <code>*_SCOPE_DENIED</code>, <code>PATH_INVALID</code> or <code>RECIPIENT_NOT_ALLOWED</code> from one agent or session (probing), approval floods or
+<code>TOO_MANY_PENDING_APPROVALS</code>, a hash-chain verification failure, a gap in audit sequence, and <code>OUTPUT_INVALID</code> from a server that was previously quiet. The record holds identities, tool, an argument hash and a redacted preview, never raw bodies.</p>
+<p><strong>Operability.</strong> The gateway fails closed on an unavailable audit log, which makes the log's availability the tool's availability; size and monitor it accordingly, or accept read-only tools running unlogged by explicit policy. Approvals expire (120 s here);
+choose a TTL that matches how fast a human responds, and surface the approver queue. Policy and pins are files in version control; a policy change is a reviewed change with a version string that appears in every audit record.</p>
+<p><strong>False positives.</strong> Expect friction from taint gating: any workflow that reads then writes will ask for approval. Mitigate by narrowing which tools taint, by pre-approving narrow, low-risk write shapes, and by measuring approval volume per week; do not mitigate by removing the
+gate. Expect pin churn when a legitimate server updates a description. Expect legitimate multi-recipient mail to be rejected by the strict recipient parser and handle it with explicit tools, not looser parsing.</p>
+<p><strong>Blast radius.</strong> The worst case of a gateway bug is an unauthorized call executing. Keep per-tool rate limits and a destination allowlist as independent layers behind the scopes, keep destructive tools behind both approval and a clean session, and do not give an agent credentials the user does not hold.</p>
+<p><strong>Rollback.</strong> Set a tool's risk class to a stricter one or remove it from the policy; both take effect on the next call. Re-pin only after reading the descriptor diff. Preserve the audit log across rollback; it is the record of what the agent did while you decided.</p>
+<h2 id="limitations-and-what-was-not-tested">Limitations and what was not tested<a class="headerlink" href="#limitations-and-what-was-not-tested" title="Permanent link">&para;</a></h2>
+<p>The local experiment validates a decision model against a deterministic stand-in and one mock server. It does not validate the complete reference architecture, a real identity provider, live cloud enforcement, hosted CI, representative adversarial coverage
+or independent audit storage. Review status remains <code>requires-review</code> until a reviewer checks the claims above against <code>validatedAgainst</code> and the linked evidence.</p>
+<p>Time to detect, time to contain, population false-positive and false-negative rates, pipeline overhead and cost are <strong>not measured in this article</strong>. Use the
+<a href="../../research-methodology/evidence-standards/#measurement-contract">measurement contract</a> to define clocks, denominators, repeated workloads and residual capabilities before claiming those outcomes.</p>
+<h2 id="open-questions">Open questions<a class="headerlink" href="#open-questions" title="Permanent link">&para;</a></h2>
+<p>Can session-level taint be replaced by per-argument provenance that a runtime can track through a real model without trusting the model to report it, and how much approval volume would that remove without reopening the exfiltration path this lab closes?</p>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Model Context Protocol, specification revision 2025-11-25, source of <a href="https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2025-11-25/server/tools.mdx">Tools</a>: <code>tools/list</code> and <code>tools/call</code> shapes, <code>isError</code>, <code>structuredContent</code> and <code>outputSchema</code>, annotations untrusted unless the server is trusted, and the stated security considerations for servers (validate, access-control, rate limit, sanitize) and clients (confirm, show inputs, validate results, time out, log).</li>
+<li>Model Context Protocol, specification revision 2025-11-25, source of <a href="https://github.com/modelcontextprotocol/modelcontextprotocol/blob/main/docs/specification/2025-11-25/basic/transports.mdx">Transports</a>: stdio framing (newline-delimited, no embedded newlines).</li>
+<li>The <code>.test</code> top-level domain is reserved for testing (RFC 6761); named from memory, not consulted in this session.</li>
+<li><a href="../evidence-driven-agent-security/">Evidence-Driven AI Agent and MCP Security</a>, <a href="../../appsec/ai-agent-security/">Threat-Driven Security Architecture for AI Agents</a> and the <a href="../../labs/ai-agent-security/">external tool-broker lab</a>, which this lab builds on.</li>
+<li><a href="../../labs/mcp-tool-authorization/">MCP tool-authorization gateway lab</a>, the implementation, tests and evidence.</li>
+</ul>
+  
+  
+    
+
+<section class="docs-related" aria-labelledby="docs-related-heading">
+  <h2 id="docs-related-heading">Related content</h2>
+  <div class="docs-related__grid">
+    
+      
+      <a class="docs-related__item" href="/ai-security/evidence-driven-agent-security/">
+        <span class="docs-related__type">Research</span>
+        <strong><span class="docs-link-label">Agent and MCP evidence <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
+        <span>Separate configuration, observed activity, authorization, and exploitability when assessing AI agents and their tools.</span>
+      </a>
+      
+      <a class="docs-related__item" href="/appsec/ai-agent-security/">
+        <span class="docs-related__type">Research</span>
+        <strong><span class="docs-link-label">AI-agent authorization <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
+        <span>External authorization, action-bound approval, concurrent local consumption, and bounded tool execution.</span>
+      </a>
+      
+    
+      
+      <a class="docs-related__item" href="/labs/ai-agent-security/">
+        <span class="docs-related__type">Lab</span>
+        <strong><span class="docs-link-label">AI-agent security <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
+        <span>Exercises action-bound approval, replay resistance, kill-switch behavior, and unknown-argument denial in a local tool broker.</span>
+      </a>
+      
+      <a class="docs-related__item" href="/labs/mcp-tool-ssrf/">
+        <span class="docs-related__type">Lab</span>
+        <strong><span class="docs-link-label">MCP-style SSRF <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
+        <span>Reproduce the owned MCP-style SSRF experiment and inspect its implementation and evidence limits.</span>
+      </a>
+      
+      <a class="docs-related__item" href="/labs/mcp-tool-authorization/">
+        <span class="docs-related__type">Lab</span>
+        <strong><span class="docs-link-label">MCP tool authorization <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
+        <span>A policy gateway between an agent runtime and a mock MCP-style stdio server, tested against a deliberately compromised stand-in agent for allowlists, scoped identity, taint, approval gates, descriptor pinning, output validation and tamper-evident audit.</span>
+      </a>
+      
+    
+      
+    
+  </div>
+</section>
+
+    <aside class="docs-contribute" aria-label="Contribute to this article">
+  <p><strong>Help improve this page</strong></p>
+  <div>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20MCP%20Tool%20Authorization%20Lab%3A%20A%20Gateway%20That%20Holds%20When%20the%20Model%20Does%20Not&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/ai-security/mcp-tool-authorization-lab/%0ASource%3A%20ai-security/mcp-tool-authorization-lab.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A"><span class="docs-link-label">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20MCP%20Tool%20Authorization%20Lab%3A%20A%20Gateway%20That%20Holds%20When%20the%20Model%20Does%20Not&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/ai-security/mcp-tool-authorization-lab/%0ASource%3A%20ai-security/mcp-tool-authorization-lab.md%0A%0ADescribe%20the%20issue%3A"><span class="docs-link-label">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+  </div>
+</aside>
+  
+
+    </article>
+    <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../evidence-driven-agent-security/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Agent and MCP evidence">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Agent and MCP evidence
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../linux-security/" class="md-footer__link md-footer__link--next" aria-label="Next: Linux Security overview">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Linux Security overview
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  &copy; 2026 Jason Achkardiab. All rights reserved.
+</div>
+      
+    </div>
+  </div>
+</footer>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.path", "navigation.indexes", "navigation.footer", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../js/docs-ui.js"></script>
+      
+        <script src="../../js/source-viewer.js"></script>
+      
+    
+  </body>
+</html>

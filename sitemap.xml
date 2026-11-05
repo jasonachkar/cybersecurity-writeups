@@ -9,6 +9,10 @@
          <lastmod>2026-11-05</lastmod>
     </url>
     <url>
+         <loc>https://docs.jasonachkardiab.com/ai-security/mcp-tool-authorization-lab/</loc>
+         <lastmod>2026-11-05</lastmod>
+    </url>
+    <url>
          <loc>https://docs.jasonachkardiab.com/appsec/</loc>
          <lastmod>2026-11-05</lastmod>
     </url>
@@ -141,6 +145,10 @@
          <lastmod>2026-11-05</lastmod>
     </url>
     <url>
+         <loc>https://docs.jasonachkardiab.com/linux-security/host-telemetry-detection-lab/</loc>
+         <lastmod>2026-11-05</lastmod>
+    </url>
+    <url>
          <loc>https://docs.jasonachkardiab.com/threat-intel/</loc>
          <lastmod>2026-11-05</lastmod>
     </url>
@@ -169,6 +177,10 @@
          <lastmod>2026-11-05</lastmod>
     </url>
     <url>
+         <loc>https://docs.jasonachkardiab.com/labs/docker-security/</loc>
+         <lastmod>2026-11-05</lastmod>
+    </url>
+    <url>
          <loc>https://docs.jasonachkardiab.com/labs/iac-policy/</loc>
          <lastmod>2026-11-05</lastmod>
     </url>
@@ -182,6 +194,14 @@
     </url>
     <url>
          <loc>https://docs.jasonachkardiab.com/labs/kubernetes-security/</loc>
+         <lastmod>2026-11-05</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.jasonachkardiab.com/labs/linux-host-telemetry/</loc>
+         <lastmod>2026-11-05</lastmod>
+    </url>
+    <url>
+         <loc>https://docs.jasonachkardiab.com/labs/mcp-tool-authorization/</loc>
          <lastmod>2026-11-05</lastmod>
     </url>
     <url>

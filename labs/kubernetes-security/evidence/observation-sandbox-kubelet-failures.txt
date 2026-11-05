@@ -1,0 +1,23 @@
+One-off observation (the FIX is exercised by every scripted run; the failures below
+are not regenerated). Recorded by hand on 2026-11-05 while bringing up the first
+cluster with the portable kind config on the sandbox VM.
+
+1. Kubelet refused to start on a cgroup v1 host:
+     "kubelet is configured to not run on a host using cgroup v1. cgroup v1 support
+      is unsupported and will be removed in a future release"
+   Accommodation: KubeletConfiguration failCgroupV1: false (cluster/kind-config.compat.yaml).
+
+2. Pod sandboxes could not be created:
+     "OCI runtime create failed: runc create failed: unable to start container process:
+      can't get final child's PID from pipe: EOF; runc init error(s): nsexec[N]:
+      failed to update /proc/self/oom_score_adj: Permission denied"
+   Cause established by test: writing a negative oom_score_adj failed for root on the VM
+   host, in a privileged container and inside the kind node. /proc/self/status showed
+   CapBnd 000001fffeffffff - bit 24 (CAP_SYS_RESOURCE) is absent. capabilities(7)
+   lists lowering oom_score_adj below the last privileged value as requiring CAP_SYS_RESOURCE.
+   Accommodation: containerd restrict_oom_score_adj = true, which clamps the requested
+   value to containerd's own (cluster/kind-config.compat.yaml).
+
+cluster/up.sh selects the compat config automatically when the cgroup filesystem is
+not cgroup2 or CapBnd lacks bit 24. Both accommodations weaken isolation guarantees
+slightly and are lab accommodations, not recommendations.

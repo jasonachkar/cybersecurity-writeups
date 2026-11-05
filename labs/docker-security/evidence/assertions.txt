@@ -1,0 +1,89 @@
+PASS  insecure: probe output exists
+PASS  insecure: runs as uid 0
+PASS  insecure: large effective capability set (privileged)
+PASS  insecure: SYS_ADMIN present
+PASS  insecure: no_new_privs off
+PASS  insecure: seccomp off
+PASS  insecure: root filesystem writable
+PASS  insecure: no memory limit
+PASS  insecure: no pids limit
+PASS  insecure: host PID namespace visible
+PASS  insecure: write_root_filesystem allowed
+PASS  insecure: write_tmp_scratch allowed
+PASS  insecure: chown_to_other_uid allowed
+PASS  insecure: mknod_char_device allowed
+PASS  insecure: raw_socket allowed
+PASS  insecure: mount_tmpfs allowed
+PASS  insecure: clone_new_user_namespace allowed
+PASS  insecure: docker_socket_reachable allowed
+PASS  insecure: host_canary_read allowed
+PASS  insecure: host_canary_write allowed
+PASS  insecure: tcp_connect_canary allowed
+PASS  insecure: docker API answered /_ping
+PASS  insecure: all 200 children started (no PID limit)
+PASS  insecure: 512 MiB allocation succeeds (no memory limit)
+PASS  insecure: file written into the bind-mounted host directory is owned by uid 0
+PASS  hardened: probe output exists
+PASS  hardened: runs as uid 65532
+PASS  hardened: effective capability set is empty
+PASS  hardened: no_new_privs on
+PASS  hardened: seccomp filter active
+PASS  hardened: root filesystem read-only
+PASS  hardened: memory limit 128 MiB
+PASS  hardened: pids limit 64
+PASS  hardened: cpu quota 0.5 CPU
+PASS  hardened: own PID namespace (app is PID 1, few processes)
+PASS  hardened: write_root_filesystem denied with EROFS
+PASS  hardened: chown_to_other_uid denied with EPERM
+PASS  hardened: mknod_char_device denied with EPERM
+PASS  hardened: raw_socket denied with EPERM
+PASS  hardened: mount_tmpfs denied with EPERM
+PASS  hardened: clone_new_user_namespace denied with EPERM
+PASS  hardened: docker_socket_present denied with ENOENT
+PASS  hardened: host_canary_mounted denied with ENOENT
+PASS  hardened: scratch tmpfs still writable (the app is not broken)
+PASS  hardened: canary unreachable and name not resolvable (network topology)
+PASS  hardened: container reported healthy via image HEALTHCHECK
+PASS  hardened: PID limit stops child creation with EAGAIN
+PASS  hardened: 512 MiB allocation is OOM-killed under a 128 MiB limit (exit 137)
+PASS  control seccomp=unconfined: probe output exists
+PASS  control seccomp=unconfined: seccomp_mode 0
+PASS  control seccomp=unconfined: user-namespace clone allowed
+PASS  control seccomp=unconfined: capabilities still empty (so the denial is not a capability effect)
+PASS  control seccomp=default: probe output exists
+PASS  control seccomp=default: seccomp_mode 2
+PASS  control seccomp=default: user-namespace clone denied
+PASS  control seccomp=default: capabilities still empty (so the denial is not a capability effect)
+PASS  control seccomp=custom: probe output exists
+PASS  control seccomp=custom: seccomp_mode 2
+PASS  control seccomp=custom: user-namespace clone denied
+PASS  control seccomp=custom: capabilities still empty (so the denial is not a capability effect)
+PASS  inventory: both images inventoried
+PASS  inventory: insecure image ships a shell
+PASS  inventory: insecure image ships a package manager
+PASS  inventory: insecure image ships a compiler/toolchain
+PASS  inventory: hardened image ships no shell
+PASS  inventory: hardened image ships no package manager
+PASS  inventory: hardened image ships no compiler or interpreter
+PASS  inventory: hardened image has no setuid/setgid files
+PASS  inventory: hardened image has far fewer executable files
+INFO  inventory: executables insecure=86 hardened=10; size insecure=356984047 hardened=9404585 bytes (file content)
+INFO  scan: unique CVE/package findings insecure=0 hardened=4 (a count of known CVEs is not an attack-surface measure)
+PASS  scan: insecure summary is internally consistent
+PASS  scan: hardened summary is internally consistent
+PASS  scan: SBOM-only scan agrees with the image scan for both variants
+PASS  scan: Trivy flags the insecure Dockerfile (root user, no HEALTHCHECK, secret in ENV)
+PASS  scan: Trivy reports nothing for the hardened Dockerfile
+PASS  scan: Trivy DB timestamp recorded
+PASS  sbom: hardened CycloneDX document has components
+PASS  sbom: insecure CycloneDX document has components
+PASS  signing: signed
+PASS  signing: verify_signed_digest
+PASS  signing: unsigned_rejected
+PASS  signing: wrong_key_rejected
+PASS  signing: tag_before_substitution_ok
+PASS  signing: tag_substitution_rejected
+PASS  signing: attestation_verified
+PASS  signing: wrong_predicate_rejected
+
+85 passed, 0 failed

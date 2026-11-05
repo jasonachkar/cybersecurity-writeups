@@ -1,0 +1,17 @@
+Synthetic corpus: 855 events, 27 deduplicated alerts, 0 alerts on background noise.
+
+| Rule | TP | FP | FN | TN | Precision | Recall |
+| --- | --- | --- | --- | --- | --- | --- |
+| LNX-001 | 4 | 1 | 0 | 24 | 0.80 | 1.00 |
+| LNX-002 | 2 | 1 | 1 | 23 | 0.67 | 0.67 |
+| LNX-003 | 1 | 1 | 0 | 24 | 0.50 | 1.00 |
+| LNX-004 | 2 | 1 | 1 | 23 | 0.67 | 0.67 |
+| LNX-005 | 3 | 1 | 0 | 24 | 0.75 | 1.00 |
+| LNX-006 | 3 | 1 | 0 | 24 | 0.75 | 1.00 |
+| LNX-007 | 1 | 0 | 0 | 25 | 1.00 | 1.00 |
+| LNX-008 | 2 | 0 | 0 | 25 | 1.00 | 1.00 |
+| LNX-009 | 1 | 1 | 0 | 24 | 0.50 | 1.00 |
+
+Synthetic detection latency (event time to batch-evaluation time, seconds): min 1.0, median 3.6, max 126.5. These are synthetic clocks, not measured latency.
+
+Real-kernel capture: 28 events from strace, alerts from LNX-002, LNX-005, LNX-006, LNX-007, LNX-009; LNX-003 blind (no ExecStart).

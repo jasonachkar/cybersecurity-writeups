@@ -1,0 +1,76 @@
+{
+  "dockerfile_misconfigurations": {
+    "hardened": [],
+    "insecure": [
+      {
+        "id": "DS-0002",
+        "severity": "HIGH",
+        "title": "Image user should not be 'root'"
+      },
+      {
+        "id": "DS-0026",
+        "severity": "LOW",
+        "title": "No HEALTHCHECK defined"
+      },
+      {
+        "id": "DS-0031",
+        "severity": "CRITICAL",
+        "title": "Secrets passed via `build-args` or envs or copied secret files"
+      }
+    ]
+  },
+  "images": {
+    "hardened": {
+      "os": "debian 12.15",
+      "raw_findings": 4,
+      "result_targets_with_findings": 1,
+      "unique_by_class": {
+        "os-pkgs": 4
+      },
+      "unique_by_severity": {
+        "UNKNOWN": 4
+      },
+      "unique_cve_package_pairs": 4,
+      "unique_with_fixed_version": 4
+    },
+    "insecure": {
+      "os": "alpine 3.24.3",
+      "raw_findings": 0,
+      "result_targets_with_findings": 0,
+      "unique_by_class": {},
+      "unique_by_severity": {},
+      "unique_cve_package_pairs": 0,
+      "unique_with_fixed_version": 0
+    }
+  },
+  "sbom": {
+    "hardened": {
+      "components": 958,
+      "components_by_type": {
+        "file": 950,
+        "library": 7,
+        "operating-system": 1
+      },
+      "format": "CycloneDX",
+      "spec_version": "1.7",
+      "unique_findings_from_sbom_only": 4
+    },
+    "insecure": {
+      "components": 254,
+      "components_by_type": {
+        "application": 1,
+        "file": 213,
+        "library": 39,
+        "operating-system": 1
+      },
+      "format": "CycloneDX",
+      "spec_version": "1.7",
+      "unique_findings_from_sbom_only": 0
+    }
+  },
+  "trivy": {
+    "db_downloaded_at": "2026-11-05T01:49:53.284033113Z",
+    "db_updated_at": "2026-11-04T19:02:00.490077333Z",
+    "version": "0.76.1"
+  }
+}

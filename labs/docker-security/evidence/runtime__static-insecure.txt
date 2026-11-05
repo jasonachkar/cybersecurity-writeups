@@ -1,0 +1,31 @@
+DF001  labs/docker-security/insecure/Dockerfile:8  base image golang:1.27-alpine is not pinned by digest
+DF003  labs/docker-security/insecure/Dockerfile:8  final stage runs as root (no non-root USER)
+DF006  labs/docker-security/insecure/Dockerfile:8  final stage defines no HEALTHCHECK
+DF007  labs/docker-security/insecure/Dockerfile:22  CMD uses shell form; PID 1 will be a shell that does not forward signals
+DF009  labs/docker-security/insecure/Dockerfile:8  single-stage build: compiler or package manager ships in the runtime image
+DF005  labs/docker-security/insecure/Dockerfile:13  world-writable permissions set in the image
+DF004  labs/docker-security/insecure/Dockerfile:16  ENV API_TOKEN carries a literal value; it persists in image metadata
+DC001  labs/docker-security/insecure/compose.yaml [app]  privileged: true grants all capabilities and device access
+DC002  labs/docker-security/insecure/compose.yaml [app]  cap_add SYS_ADMIN
+DC002  labs/docker-security/insecure/compose.yaml [app]  cap_add NET_ADMIN
+DC003  labs/docker-security/insecure/compose.yaml [app]  cap_drop does not include ALL
+DC004  labs/docker-security/insecure/compose.yaml [app]  seccomp or AppArmor confinement disabled
+DC005  labs/docker-security/insecure/compose.yaml [app]  no-new-privileges is not set
+DC006  labs/docker-security/insecure/compose.yaml [app]  container runtime socket mounted (host-root equivalent; :ro on a socket file does not restrict API calls)
+DC007  labs/docker-security/insecure/compose.yaml [app]  host bind mount ${LAB_CANARY_DIR:?set by scripts/run-lab.sh} is writable
+DC008  labs/docker-security/insecure/compose.yaml [app]  pid: host shares a host namespace
+DC009  labs/docker-security/insecure/compose.yaml [app]  container user is root or unset
+DC010  labs/docker-security/insecure/compose.yaml [app]  root filesystem is writable (read_only is not true)
+DC011  labs/docker-security/insecure/compose.yaml [app]  no memory limit
+DC012  labs/docker-security/insecure/compose.yaml [app]  no PID limit
+DC013  labs/docker-security/insecure/compose.yaml [app]  no CPU limit
+DC014  labs/docker-security/insecure/compose.yaml [app]  published port 0.0.0.0:8080:8080 binds all interfaces
+DC003  labs/docker-security/insecure/compose.yaml [canary]  cap_drop does not include ALL
+DC005  labs/docker-security/insecure/compose.yaml [canary]  no-new-privileges is not set
+DC009  labs/docker-security/insecure/compose.yaml [canary]  container user is root or unset
+DC010  labs/docker-security/insecure/compose.yaml [canary]  root filesystem is writable (read_only is not true)
+DC011  labs/docker-security/insecure/compose.yaml [canary]  no memory limit
+DC012  labs/docker-security/insecure/compose.yaml [canary]  no PID limit
+DC013  labs/docker-security/insecure/compose.yaml [canary]  no CPU limit
+DC015  labs/docker-security/insecure/compose.yaml [canary]  external image busybox:1.37 is not pinned by digest
+30 finding(s)

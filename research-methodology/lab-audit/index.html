@@ -276,6 +276,10 @@
   
     <li class="md-nav__item"><a href="../../ai-security/evidence-driven-agent-security/" class="md-nav__link">Agent and MCP evidence</a></li>
   
+
+  
+    <li class="md-nav__item"><a href="../../ai-security/mcp-tool-authorization-lab/" class="md-nav__link">MCP tool authorization lab</a></li>
+  
 </ul>
       </details>
     </li>
@@ -292,6 +296,10 @@
 
   
     <li class="md-nav__item"><a href="../../linux-security/evidence-driven-host-analysis/" class="md-nav__link">Host evidence and uncertainty</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../linux-security/host-telemetry-detection-lab/" class="md-nav__link">Host telemetry detection lab</a></li>
   
 </ul>
       </details>
@@ -445,6 +453,10 @@
   
 
   
+    <li class="md-nav__item"><a href="../../labs/docker-security/" class="md-nav__link">Docker security</a></li>
+  
+
+  
     <li class="md-nav__item"><a href="../../labs/supply-chain/" class="md-nav__link">Supply-chain policy</a></li>
   
 
@@ -470,6 +482,14 @@
 
   
     <li class="md-nav__item"><a href="../../labs/cicd-identity-escalation/" class="md-nav__link">CI/CD identity escalation</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/linux-host-telemetry/" class="md-nav__link">Linux host telemetry</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/mcp-tool-authorization/" class="md-nav__link">MCP tool authorization</a></li>
   
 </ul>
       </details>
@@ -650,7 +670,7 @@ resource deployment.</p>
 <tr>
 <td><a href="../../labs/kubernetes-security/">Kubernetes policy</a></td>
 <td><code>node labs/kubernetes-security/tests/run-tests.js</code>; <code>kyverno test labs/kubernetes-security --remove-color</code></td>
-<td>Native seven-case pod policy; image evidence model/schema; no live CNI/admission</td>
+<td>Native Kyverno CLI (7 existing + 16 new cases), OPA, kubeconform, and a live kind cluster run (83 assertions, not in CI); image evidence model/schema; no live webhook admission</td>
 </tr>
 <tr>
 <td><a href="../../labs/supply-chain/">Supply-chain policy</a></td>
@@ -671,6 +691,21 @@ resource deployment.</p>
 <td><a href="../../labs/request-lifecycle/">Event/secret lifecycle</a></td>
 <td><code>node --test labs/request-lifecycle/lifecycle.test.js</code></td>
 <td>Six local methods, deterministic cache clock; no provider lease revocation</td>
+</tr>
+<tr>
+<td><a href="../../labs/docker-security/">Docker hardening</a></td>
+<td><code>node --test labs/docker-security/tests/policy-check.test.js</code>; <code>bash labs/docker-security/scripts/run-lab.sh</code></td>
+<td>38 static-gate tests (CI); runtime, scan, SBOM and local signing on a disposable Docker host, 85 assertions, not in CI</td>
+</tr>
+<tr>
+<td><a href="../../labs/linux-host-telemetry/">Linux host telemetry</a></td>
+<td><code>python3 labs/linux-host-telemetry/tests/test_detections.py</code></td>
+<td>23 tests on a synthetic corpus plus one strace capture; no production sensor</td>
+</tr>
+<tr>
+<td><a href="../../labs/mcp-tool-authorization/">MCP tool authorization</a></td>
+<td><code>node --test labs/mcp-tool-authorization/tests/gateway.test.js</code></td>
+<td>35 tests and a 16-scenario matrix against a stand-in agent; no model, no identity provider</td>
 </tr>
 <tr>
 <td><a href="../../labs/mcp-tool-ssrf/">Tool SSRF</a></td>

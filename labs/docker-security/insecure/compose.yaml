@@ -1,0 +1,31 @@
+# INSECURE BASELINE for labs/docker-security. Deliberately bad; do not reuse.
+# LAB_CANARY_DIR is created by scripts/run-lab.sh under a temp directory; it
+# stands in for "a host directory someone bind-mounted for convenience".
+name: dockerlab-insecure
+
+services:
+  app:
+    build:
+      context: ../app
+      dockerfile: ../insecure/Dockerfile
+    image: dockerlab/posture:insecure
+    # All of the following widen the blast radius of a compromised process.
+    privileged: true
+    pid: host
+    user: root
+    cap_add:
+      - SYS_ADMIN
+      - NET_ADMIN
+    security_opt:
+      - seccomp=unconfined
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${LAB_CANARY_DIR:?set by scripts/run-lab.sh}:/mnt/host-canary
+    ports:
+      - "0.0.0.0:8080:8080"
+    restart: always
+    # No mem_limit, cpus, pids_limit, read_only, tmpfs or healthcheck.
+
+  canary:
+    image: busybox:1.37
+    command: ["httpd", "-f", "-p", "9000", "-h", "/tmp"]

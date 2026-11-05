@@ -145,5 +145,19 @@
     "question": "Can public incident disclosures support control lessons without inventing the missing exploit details?",
     "command": "python3 vulnerability-research/mcp-tool-ssrf/lab/test_fetcher.py",
     "claimBoundary": "The related lab illustrates a generic request boundary only. It does not reenact Capital One, Uber or CircleCI or validate any private forensic detail."
+  },
+  {
+    "article": "ai-security/mcp-tool-authorization-lab.md",
+    "lab": "labs/mcp-tool-authorization/README.md",
+    "question": "Does a deterministic gateway keep tool authority independent of a compromised model's behaviour, and does every decision leave a verifiable record?",
+    "command": "node --test labs/mcp-tool-authorization/tests/gateway.test.js",
+    "claimBoundary": "The 35 tests and 16-scenario matrix use a deterministic stand-in that obeys every injected instruction; no language model, identity provider or conformant MCP server is involved, and the audit chain does not detect tail truncation."
+  },
+  {
+    "article": "linux-security/host-telemetry-detection-lab.md",
+    "lab": "labs/linux-host-telemetry/README.md",
+    "question": "Can a small set of SQL host rules separate designed behaviour from suspicious behaviour on labeled telemetry while reporting a missing sensor or field as blind rather than clean?",
+    "command": "python3 labs/linux-host-telemetry/tests/test_detections.py",
+    "claimBoundary": "Rule logic is tested on an author-written synthetic corpus plus one small strace capture; precision and recall are a regression guard, not a field estimate, and no production sensor was run."
   }
 ]

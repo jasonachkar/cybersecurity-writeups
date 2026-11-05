@@ -1,0 +1,1 @@
+0 600 <canary-dir>/written-by-container.txt

@@ -1,0 +1,1325 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Nine high-signal host rules written as plain SQL, scored on a labeled synthetic corpus with benign look-alikes and known evasions, then run over real syscalls captured from a throwaway container.">
+      
+      
+        <meta name="author" content="Jason Achkar Diab">
+      
+      
+        <link rel="canonical" href="https://docs.jasonachkardiab.com/linux-security/host-telemetry-detection-lab/">
+      
+      
+        <link rel="prev" href="../evidence-driven-host-analysis/">
+      
+      
+        <link rel="next" href="../../devsecops/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Host Telemetry Detection Lab: Nine Linux Rules, Their False Positives, and What They Cannot See - Cybersecurity Writeups</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+    
+    
+      <link rel="stylesheet" href="../../css/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  
+  
+  
+    <meta property="og:description" content="Nine high-signal host rules written as plain SQL, scored on a labeled synthetic corpus with benign look-alikes and known evasions, then run over real syscalls captured from a throwaway container.">
+    <meta name="twitter:description" content="Nine high-signal host rules written as plain SQL, scored on a labeled synthetic corpus with benign look-alikes and known evasions, then run over real syscalls captured from a throwaway container.">
+  
+  
+    <script src="../../js/vendor/mermaid.min.js"></script>
+    <script src="../../js/mermaid-zoom.js"></script>
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#scope" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a class="docs-brand" href="../.." aria-label="Cybersecurity Writeups home" data-md-component="logo">Cybersecurity<span>Writeups</span></a>
+    
+      <button type="button" class="md-header__button md-icon docs-mobile-search" data-docs-search-open aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg></button>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    <div class="docs-header-tools">
+      <a class="docs-header-source md-icon" href="https://github.com/jasonachkar/cybersecurity-writeups" aria-label="Source code on GitHub" title="Source code"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg></a>
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+        <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+      
+      <button type="button" class="md-header__button md-icon docs-menu" aria-label="Toggle navigation" aria-controls="docs-navigation" aria-expanded="false"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg></button>
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+  
+    <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+<nav id="docs-navigation" class="md-nav md-nav--primary" aria-label="Documentation" data-md-level="0">
+  <div class="md-nav__title docs-nav-mobile-header"><span>Cybersecurity Writeups</span><button type="button" class="docs-nav-close md-icon" aria-label="Close navigation"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button></div>
+  <ul class="md-nav__list">
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Start here<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../.." class="md-nav__link">Home</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../research/" class="md-nav__link">Research</a></li>
+  
+</ul>
+      </details>
+    </li>
+    
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Cloud Security<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../cloud-security/" class="md-nav__link">Cloud Security overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/iam-at-scale/" class="md-nav__link">IAM and workload federation</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/cloud-network-segmentation/" class="md-nav__link">Network segmentation</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/multi-account-landing-zones/" class="md-nav__link">Landing zones</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/kubernetes-multi-tenancy/" class="md-nav__link">Kubernetes isolation</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/cloud-detection-and-response/" class="md-nav__link">Detection and response</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../cloud-security/serverless-security/" class="md-nav__link">Serverless security</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Application Security<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../appsec/" class="md-nav__link">Application Security overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../appsec/ai-agent-security/" class="md-nav__link">AI-agent authorization</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../appsec/saas-multitenancy-isolation/" class="md-nav__link">Multi-tenant SaaS isolation</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../appsec/oauth2-oidc-deep-dive/" class="md-nav__link">OAuth 2.0 and OIDC</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../appsec/api-microservices-threat-modeling/" class="md-nav__link">API threat modeling</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../appsec/runtime-protection-rasp-waf/" class="md-nav__link">Runtime protection</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">AI Security<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../ai-security/" class="md-nav__link">AI Security overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../ai-security/evidence-driven-agent-security/" class="md-nav__link">Agent and MCP evidence</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../ai-security/mcp-tool-authorization-lab/" class="md-nav__link">MCP tool authorization lab</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Linux Security<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../" class="md-nav__link">Linux Security overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../evidence-driven-host-analysis/" class="md-nav__link">Host evidence and uncertainty</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="./" class="md-nav__link md-nav__link--active" aria-current="page">Host telemetry detection lab</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">DevSecOps<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../devsecops/" class="md-nav__link">DevSecOps overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/secure-cicd-pipeline-design/" class="md-nav__link">Secure CI/CD</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/iac-security-and-policy-as-code/" class="md-nav__link">IaC policy engineering</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/supply-chain-sbom-signing/" class="md-nav__link">Supply-chain evidence</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/secrets-management/" class="md-nav__link">Secrets management</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/secureobs-multitenant-security-scanner/" class="md-nav__link">SecureObs architecture</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../devsecops/evidence-preserving-security-pipelines/" class="md-nav__link">Scanning and gate reliability</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Threat Intelligence<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../threat-intel/" class="md-nav__link">Threat Intelligence overview</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../threat-intel/attack-path-analysis/" class="md-nav__link">Attack-path analysis</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../threat-intel/cloud-breach-case-studies/" class="md-nav__link">Incident case studies</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Research methodology<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../research-methodology/" class="md-nav__link">Research methodology</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../research-methodology/evidence-standards/" class="md-nav__link">Evidence standards</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../research-methodology/research-index/" class="md-nav__link">Research index</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../research-methodology/open-questions/" class="md-nav__link">Open questions</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+    
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Vulnerability research<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../vulnerability-research/" class="md-nav__link">Vulnerability research</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../vulnerability-research/methodology/" class="md-nav__link">Methodology</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../vulnerability-research/mcp-tool-ssrf/" class="md-nav__link">MCP-style tool SSRF</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../vulnerability-research/api-bola-multi-tenant/" class="md-nav__link">Multi-tenant BOLA</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../vulnerability-research/cicd-identity-escalation/" class="md-nav__link">CI/CD identity escalation</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Labs<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../labs/" class="md-nav__link">Labs</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/secure-cicd/" class="md-nav__link">Secure CI/CD</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/iam-oidc/" class="md-nav__link">IAM and OIDC</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/oauth-oidc/" class="md-nav__link">OAuth and OIDC</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/ai-agent-security/" class="md-nav__link">AI-agent security</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/postgresql-rls/" class="md-nav__link">PostgreSQL RLS</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/kubernetes-security/" class="md-nav__link">Kubernetes security</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/docker-security/" class="md-nav__link">Docker security</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/supply-chain/" class="md-nav__link">Supply-chain policy</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/iac-policy/" class="md-nav__link">IaC policy</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/azure-landing-zone/" class="md-nav__link">Azure landing zone</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/request-lifecycle/" class="md-nav__link">Event and secret lifecycle</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/mcp-tool-ssrf/" class="md-nav__link">MCP-style SSRF</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/api-bola-multi-tenant/" class="md-nav__link">Multi-tenant BOLA</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/cicd-identity-escalation/" class="md-nav__link">CI/CD identity escalation</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/linux-host-telemetry/" class="md-nav__link">Linux host telemetry</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../labs/mcp-tool-authorization/" class="md-nav__link">MCP tool authorization</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Scripts<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../scripts/" class="md-nav__link">Security scripts, packages, and small utilities</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../scripts/cloud-security/" class="md-nav__link">Cloud Security</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../scripts/application-security/" class="md-nav__link">Application Security</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../scripts/devsecops/" class="md-nav__link">DevSecOps</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../scripts/threat-intelligence/" class="md-nav__link">Threat Intelligence</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">Study notes<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../study-notes/" class="md-nav__link">Study notes</a></li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">AZ-900<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/az-900/" class="md-nav__link">Microsoft AZ-900: Azure Fundamentals Study Guide</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/az-900/domain-1-concepts/" class="md-nav__link">Domain 1 - Cloud concepts</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/az-900/domain-2-architecture-services/" class="md-nav__link">Domain 2 - Architecture and services</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/az-900/domain-3-management-governance/" class="md-nav__link">Domain 3 - Management and governance</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item docs-nav-group">
+      <details class="docs-nav-section">
+        <summary class="docs-nav-heading">SC-500<span class="md-icon docs-nav-caret" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg></span></summary>
+        <ul class="md-nav__list">
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/sc-500/" class="md-nav__link">Microsoft SC-500 study notes</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/sc-500/domain-1-identity/" class="md-nav__link">Domain 1 - Identity</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/sc-500/domain-2-storage-networking/" class="md-nav__link">Domain 2 - Storage and networking</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/sc-500/domain-3-secure-compute/" class="md-nav__link">Domain 3 - Secure compute</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/sc-500/domain-4-manage-monitor-posture/" class="md-nav__link">Domain 4 - Manage and monitor posture</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/security-plus/" class="md-nav__link">Security+</a></li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../docs/certification-notes/google-cybersecurity/" class="md-nav__link">Google Cybersecurity</a></li>
+  
+</ul>
+      </details>
+    </li>
+  
+
+  
+    <li class="md-nav__item"><a href="../../about/" class="md-nav__link">About</a></li>
+  
+
+  </ul>
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+  <div class="md-content" data-md-component="content">
+    
+
+
+
+  
+
+
+  <nav class="md-path" aria-label="Navigation" >
+    <ol class="md-path__list">
+      
+        
+  
+  
+    <li class="md-path__item">
+      <a href="../.." class="md-path__link">
+        
+  <span class="md-ellipsis">
+    Home
+  </span>
+
+      </a>
+    </li>
+  
+
+      
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../../research/" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Research
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+    
+      <li class="md-path__item">
+        <a href="../" class="md-path__link">
+          
+  <span class="md-ellipsis">
+    Linux Security
+  </span>
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ol>
+  </nav>
+
+    <article class="md-content__inner md-typeset">
+      
+  <header class="docs-article-header">
+  <h1 id="host-telemetry-detection-lab-nine-linux-rules-their-false-positives-and-what-they-cannot-see">Host Telemetry Detection Lab: Nine Linux Rules, Their False Positives, and What They Cannot See</h1>
+  <p class="docs-article-header__summary">Nine high-signal host rules written as plain SQL, scored on a labeled synthetic corpus with benign look-alikes and known evasions, then run over real syscalls captured from a throwaway container.</p>
+  <p class="docs-article-header__orientation">
+    <span>Linux Security</span>
+    <span aria-hidden="true">·</span><span>16 min read</span>
+  </p>
+  
+    <nav class="docs-article-actions" aria-label="Article actions">
+  <button type="button" class="docs-action docs-action--focus" data-docs-focus aria-pressed="false">
+    <span data-focus-label>Focus</span>
+  </button>
+  <a class="docs-action" href="https://github.com/jasonachkar/cybersecurity-writeups/blob/main/linux-security/host-telemetry-detection-lab.md"><span class="docs-link-label">View source <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+</nav>
+  
+</header>
+  
+<aside class="docs-key-takeaway" aria-labelledby="docs-key-takeaway-heading">
+  <h2 id="docs-key-takeaway-heading">Key takeaway</h2>
+  <p>A rule is only as honest as its failure modes: report a missing sensor as blind, own every exception, and keep the false positives you know about written down.</p>
+</aside>
+
+  
+  <p>This is a study of detection <strong>logic</strong>, not of a sensor. Nine rules turn host events (process starts, file reads and writes,
+permission changes, outbound connections) into alerts. The interesting questions are the ones a rule's author usually skips: what
+legitimate activity does it also flag, what malicious activity does it miss, who owns each exception, and what does it say when its
+data source is gone?</p>
+<blockquote>
+<p><strong>Synthetic data, stated plainly.</strong> Every event produced by the generator carries <code>"synthetic": true</code> and <code>"origin": "synthetic-generator"</code>.
+Nothing here records, simulates or reproduces a real intrusion; there is no malicious code in the lab. The one dataset with
+<code>"origin": "strace-capture"</code> is real kernel-observed syscalls from harmless placeholders inside a throwaway container. The corpus was
+written by the rule author, so its numbers describe the rules' logic, not field accuracy.</p>
+</blockquote>
+<p>Evidence labels: <code>tested locally</code> (executed here; output in the lab's <a href="https://github.com/jasonachkar/cybersecurity-writeups/tree/main/labs/linux-host-telemetry/evidence"><code>evidence/</code></a>),
+<code>policy model</code> (a rule evaluated by a local test, not by a production sensor), <code>source-reviewed</code> (read in the named primary source),
+<code>requires-review</code> (no independent reviewer yet). They map to T2/T3, T1, T0 and review status in the
+<a href="../../research-methodology/evidence-standards/">evidence standards</a>. This article builds on, and does not repeat, the process-identity
+argument in <a href="../evidence-driven-host-analysis/">Linux Host Analysis Without Invented Attack Paths</a>.</p>
+<h2 id="scope">Scope<a class="headerlink" href="#scope" title="Permanent link">&para;</a></h2>
+<p>In scope: the behaviours below, expressed as queries over normalized events; their false positives and misses; exception ownership; missing-telemetry
+reporting; deduplication; and a cross-check of the same rules on real kernel-observed syscalls. Out of scope: fleet-scale collection, kernel sensors
+(auditd, eBPF, Falco, Tetragon, osquery), a SIEM, enrichment, and response automation. Response guidance is written for people and was never executed.</p>
+<h2 id="what-i-built">What I built<a class="headerlink" href="#what-i-built" title="Permanent link">&para;</a></h2>
+<p>The code lives in the <a href="../../labs/linux-host-telemetry/">linux-host-telemetry lab</a>. The shape:</p>
+<pre class="mermaid"><code>flowchart LR
+  subgraph SRC["Telemetry sources"]
+    GEN["generator.py&lt;br/&gt;seeded, synthetic: true"]
+    CAP["capture.sh&lt;br/&gt;host strace on a throwaway container"]
+  end
+  GEN --&gt; VAL["engine.validate&lt;br/&gt;schema, origin, clocks"]
+  CAP --&gt; NRM["normalize_strace.py&lt;br/&gt;strace lines to events"] --&gt; VAL
+  VAL --&gt; DB[("SQLite events table")]
+  DB --&gt; RULES["rules/*.sql&lt;br/&gt;nine readable queries"]
+  AL["allowlist.json&lt;br/&gt;owner, reason, expiry"] --&gt; RULES
+  COV{"required sources and fields present?"} --&gt; RULES
+  RULES --&gt; DED["deduplicate&lt;br/&gt;rule, host, subject, 5 min"]
+  DED --&gt; ALERT["alerts with count, clocks, response text"]
+  LAB["scenario labels"] -.-&gt;|"offline scoring only"| SCORE["confusion matrix per rule"]
+  ALERT --&gt; SCORE</code></pre>
+<p>The labels reach the scorer only; a test asserts that no rule's SQL mentions <code>scenario</code>, <code>synthetic</code> or <code>origin</code>, so a rule cannot read the answer key.</p>
+<p>Process ancestry, the one place SQL needs care, is a recursive query keyed on process <strong>identity</strong> (host, boot, pid, start time), not on pid:</p>
+<pre class="mermaid"><code>flowchart TD
+  EV["event arrives"] --&gt; OK{"valid schema, known origin,&lt;br/&gt;ingest_ts not before ts?"}
+  OK --&gt;|"no"| REJ["reject the event, do not guess"]
+  OK --&gt;|"yes"| NEED{"rule's sources and fields present?"}
+  NEED --&gt;|"no"| BLIND["rule is BLIND: reported, not scored, not 'clean'"]
+  NEED --&gt;|"yes"| Q["run the rule's SQL"]
+  Q --&gt; ALLOW{"matches an unexpired allowlist entry?"}
+  ALLOW --&gt;|"yes"| SUP["suppressed, entry owner on record"]
+  ALLOW --&gt;|"no"| DEDUP{"same rule, host, subject within 5 minutes?"}
+  DEDUP --&gt;|"yes"| FOLD["fold into the open alert, count + 1"]
+  DEDUP --&gt;|"no"| NEW["new alert, evaluated in the next 5 s batch"]
+  NEW --&gt; TRI["triage: read-only first, then the rule's response text"]</code></pre>
+<p><em>Status: <code>tested locally</code>; every box maps to a function in <code>engine.py</code> and at least one test.</em></p>
+<h3 id="the-rules">The rules<a class="headerlink" href="#the-rules" title="Permanent link">&para;</a></h3>
+<p>Each rule is one SQL file whose header states severity, required telemetry and response guidance. Scenario counts are from the pinned table below.</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>Looks for</th>
+<th>Why it is high-signal</th>
+<th>Known false-positive sources</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LNX-001</td>
+<td>A shell or interpreter whose ancestor within 3 levels is a network-facing service</td>
+<td>Services rarely need a shell; the ancestry catches a helper in between</td>
+<td>App code that shells out (<code>git</code>, image conversion); supervisors</td>
+</tr>
+<tr>
+<td>LNX-002</td>
+<td>A write under <code>/etc/cron.d</code>, <code>/etc/cron.*</code>, <code>/etc/crontab</code> by a non-package-manager</td>
+<td>System cron is mostly managed by packages and configuration management</td>
+<td>Manual edits; config-management tools not allowlisted</td>
+</tr>
+<tr>
+<td>LNX-003</td>
+<td>A systemd unit written by a non-package-manager whose <code>ExecStart</code> is under <code>/tmp</code>, <code>/dev/shm</code>, <code>/var/tmp</code>, <code>/home</code> or <code>/root</code></td>
+<td>A service pointing at a writable directory is persistence-shaped</td>
+<td>Developer user units under <code>/home</code></td>
+</tr>
+<tr>
+<td>LNX-004</td>
+<td>A process executing from <code>/tmp</code>, <code>/var/tmp</code> or <code>/dev/shm</code> connecting to a <strong>public</strong> address</td>
+<td>Legitimate services do not run from world-writable directories</td>
+<td>CI tooling unpacked in <code>/tmp</code></td>
+</tr>
+<tr>
+<td>LNX-005</td>
+<td>A read of <code>/etc/shadow</code>, SSH host/user keys, cloud credentials by anything but the designed readers</td>
+<td>Few programs have a reason to read these</td>
+<td>Backup agents, audit scanners</td>
+</tr>
+<tr>
+<td>LNX-006</td>
+<td>A write to sudoers, <code>passwd</code>/<code>shadow</code>/<code>group</code>, PAM, <code>sshd_config</code>, <code>ld.so.preload</code> by anything but the designed tools</td>
+<td>Direct changes to authorization are rare and consequential</td>
+<td>Approved manual changes (<code>tee</code>, editors)</td>
+</tr>
+<tr>
+<td>LNX-007</td>
+<td><code>chmod</code> setting setuid/setgid on a <strong>file</strong> by a non-package-manager</td>
+<td>New setuid binaries are a classic local-escalation precondition</td>
+<td>None observed; directories are excluded on purpose</td>
+</tr>
+<tr>
+<td>LNX-008</td>
+<td>Execution from <code>/memfd:…</code>, <code>/proc/self/fd/…</code>, or a path ending <code>(deleted)</code></td>
+<td>A process with no file on disk is unusual</td>
+<td>A binary replaced mid-upgrade (rare)</td>
+</tr>
+<tr>
+<td>LNX-009</td>
+<td>Truncating or deleting under <code>/var/log</code> by a non-rotation tool, or <code>auditctl -e 0</code></td>
+<td>Removing evidence is rarely routine</td>
+<td>Emergency disk clean-ups</td>
+</tr>
+</tbody>
+</table>
+<p>Design decisions worth defending:</p>
+<ol>
+<li><strong>SQL, not a DSL.</strong> A reviewer can read the query that fired. The cost is that SQL cannot express "this process, then that one within 60 seconds" cleanly;
+   LNX-001 needs a recursive CTE, and anything with ordered sequences would need a second engine.</li>
+<li><strong>Exceptions are data with an owner and an expiry.</strong> The engine refuses an allowlist entry missing either, and ignores an entry after its date. Exercised: the
+   backup agent (S43) is suppressed; the legacy sync tool (S45), whose exception expired 2026-06-30, alerts again with the same behaviour.</li>
+<li><strong>Package-manager and designed-tool exclusions live in the rule, not the allowlist.</strong> They are part of what the rule means; environment-specific exceptions are not.</li>
+<li><strong>Path-based egress (LNX-004) is a deliberate simplification.</strong> It is cheap and quiet, and it misses a reverse connection from a system <code>bash</code> (S34). A
+   behavioural version needs socket-to-stdio correlation that this telemetry model does not carry.</li>
+</ol>
+<h2 id="research-question-and-hypothesis">Research question and hypothesis<a class="headerlink" href="#research-question-and-hypothesis" title="Permanent link">&para;</a></h2>
+<p><strong>Question:</strong> Can a small set of SQL host rules separate designed behaviour from suspicious behaviour on labeled telemetry while reporting a missing sensor or field as blind rather than clean?</p>
+<p><strong>Falsifiable hypothesis (bounded experiment):</strong> Every scenario's outcome matches its documented expectation, including seven named residual false positives and two named misses; background activity produces no alerts; a rule whose source or field is absent is reported blind and excluded from scoring. Any silent change in the confusion matrix, an alert on background noise, or a missing-source rule scored as a true negative refutes it.</p>
+<h2 id="research-threat-model">Research threat model<a class="headerlink" href="#research-threat-model" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Declared scope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Actor</td>
+<td>A local process on a Linux host with the privileges of a web service account or an interactive session, trying persistence, credential access, privilege change or log removal</td>
+</tr>
+<tr>
+<td>Assets</td>
+<td>The host's authentication and authorization files, cron and systemd persistence points, credential files, and the audit trail</td>
+</tr>
+<tr>
+<td>Entry points</td>
+<td>Process starts, file writes/reads/chmods/truncates, outbound connections as seen by an assumed sensor</td>
+</tr>
+<tr>
+<td>Trust boundaries</td>
+<td>Kernel events → sensor → normalization → rule → alert → human; the rules assume the sensor reports faithfully</td>
+</tr>
+<tr>
+<td>Impact under investigation</td>
+<td>A rule that alerts on everything, nothing, or only on what its author expected, and a telemetry gap that looks like a quiet host</td>
+</tr>
+<tr>
+<td>Trusted assumptions</td>
+<td>The sensor delivers accurate <code>exe</code>, path and process-identity fields; the host kernel is not compromised; an attacker who knows these rules is <strong>out of scope</strong> (two evasions are shown, not a bypass analysis)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="method-and-evidence-requirements">Method and evidence requirements<a class="headerlink" href="#method-and-evidence-requirements" title="Permanent link">&para;</a></h2>
+<p>Follow the <a href="../../research-methodology/evidence-standards/">evidence standards</a> (Detection row: labeled fixtures, parser and query, TP/FP/FN/TN counts, a missing-source
+case, event/ingest/alert clocks, deduplication and response limits). The <a href="../../labs/linux-host-telemetry/">lab</a> owns setup, prerequisites, expected output, safety,
+evidence collection and teardown. From repository root:</p>
+<div class="language-bash highlight"><pre><span></span><code>python3<span class="w"> </span>labs/linux-host-telemetry/tests/test_detections.py
+</code></pre></div>
+<p>This command is a <strong>tested local check</strong> of detection logic, with the scope below. The full run (<code>bash labs/linux-host-telemetry/scripts/run-lab.sh</code>) additionally
+generates the corpus, scores it, removes the network sensor, and, where Docker and <code>strace</code> exist, captures real syscalls. A passing run does not show that the rules work on a
+real fleet; it shows that they do what this article says on the data it describes.</p>
+<h2 id="validation">Validation<a class="headerlink" href="#validation" title="Permanent link">&para;</a></h2>
+<p>Recorded run, 2026-11-05 (<code>evidence/versions.txt</code>): Python 3.13.18, SQLite 3.53.1, Linux 6.18.44, strace 6.8, Docker 29.9.2. All <code>tested locally</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Observed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>python3 labs/linux-host-telemetry/tests/test_detections.py</code></td>
+<td><code>Ran 23 tests ... OK</code></td>
+</tr>
+<tr>
+<td><code>bash labs/linux-host-telemetry/scripts/run-lab.sh --publish-evidence</code></td>
+<td>9 assertions passed, 0 failed</td>
+</tr>
+<tr>
+<td>generator</td>
+<td><code>855 synthetic events, 42 labeled scenarios (seed 20261105)</code>; byte-identical on a second run</td>
+</tr>
+<tr>
+<td>engine over the corpus</td>
+<td>27 deduplicated alerts; <strong>0 alerts on 400 iterations of background noise</strong></td>
+</tr>
+<tr>
+<td>engine, network sensor removed (<code>--sources exec,file</code>)</td>
+<td>LNX-004 <code>blind</code> (missing source <code>net</code>), no LNX-004 alert, no LNX-004 score</td>
+</tr>
+<tr>
+<td>capture</td>
+<td>176 strace lines, 28 normalized events</td>
+</tr>
+<tr>
+<td>engine over the capture</td>
+<td>alerts from exactly LNX-002, 005, 006, 007, 009; LNX-004 silent; LNX-003 <code>blind</code> (missing field <code>exec_start</code>)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="findings-and-interpretation">Findings and interpretation<a class="headerlink" href="#findings-and-interpretation" title="Permanent link">&para;</a></h2>
+<h3 id="scenario-level-results-on-the-synthetic-corpus">Scenario-level results on the synthetic corpus<a class="headerlink" href="#scenario-level-results-on-the-synthetic-corpus" title="Permanent link">&para;</a></h3>
+<p>42 scenarios: 17 malicious-pattern, 17 benign look-alike, 6 control, 2 evasion. Counted per rule per scenario; totals over the nine rules are TP 19, FP 7, FN 2, TN 216.</p>
+<table>
+<thead>
+<tr>
+<th>Rule</th>
+<th>TP</th>
+<th>FP</th>
+<th>FN</th>
+<th>TN</th>
+<th>Precision</th>
+<th>Recall</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>LNX-001</td>
+<td>4</td>
+<td>1</td>
+<td>0</td>
+<td>24</td>
+<td>0.80</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>LNX-002</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+<td>23</td>
+<td>0.67</td>
+<td>0.67</td>
+</tr>
+<tr>
+<td>LNX-003</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>24</td>
+<td>0.50</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>LNX-004</td>
+<td>2</td>
+<td>1</td>
+<td>1</td>
+<td>23</td>
+<td>0.67</td>
+<td>0.67</td>
+</tr>
+<tr>
+<td>LNX-005</td>
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>24</td>
+<td>0.75</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>LNX-006</td>
+<td>3</td>
+<td>1</td>
+<td>0</td>
+<td>24</td>
+<td>0.75</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>LNX-007</td>
+<td>1</td>
+<td>0</td>
+<td>0</td>
+<td>25</td>
+<td>1.00</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>LNX-008</td>
+<td>2</td>
+<td>0</td>
+<td>0</td>
+<td>25</td>
+<td>1.00</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>LNX-009</td>
+<td>1</td>
+<td>1</td>
+<td>0</td>
+<td>24</td>
+<td>0.50</td>
+<td>1.00</td>
+</tr>
+</tbody>
+</table>
+<p>These are a <strong>regression guard and a statement of documented behaviour</strong>, not a population estimate: the author wrote both the rules and the corpus, small per-rule denominators
+make the ratios unstable, and the 216 true negatives are mostly scenarios that have nothing to do with a given rule. The table is pinned in the tests so a change is a deliberate edit.</p>
+<table>
+<thead>
+<tr>
+<th>Claim class</th>
+<th>Evidence tier and boundary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rule logic does what the SQL says on labeled input</td>
+<td>T2/T3, <code>tested locally</code>, 23 tests over the synthetic corpus</td>
+</tr>
+<tr>
+<td>The seven look-alikes alert and the two evasions stay silent, as documented</td>
+<td>T3, pinned confusion matrix</td>
+</tr>
+<tr>
+<td>Real kernel events reach the same rules through a normalizer</td>
+<td>T2, one capture, five rules positive, one negative, one blind</td>
+</tr>
+<tr>
+<td>Time to detect, field false-positive rate, adversary resistance</td>
+<td>Not established; synthetic latency only</td>
+</tr>
+<tr>
+<td>A rule's recommended response is right for your environment</td>
+<td>T0 judgment; never executed here</td>
+</tr>
+</tbody>
+</table>
+<h3 id="residual-false-positives-and-what-resolves-each">Residual false positives, and what resolves each<a class="headerlink" href="#residual-false-positives-and-what-resolves-each" title="Permanent link">&para;</a></h3>
+<p>The seven benign look-alikes that alert are the point of the exercise. Each needs context the telemetry does not carry:</p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Rule</th>
+<th>Why it alerts</th>
+<th>What resolves it</th>
+<th>Owner action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S04 gunicorn runs <code>git rev-parse HEAD</code></td>
+<td>LNX-001</td>
+<td>Real service, real shell</td>
+<td>The exact command and parent are known</td>
+<td>Allowlist <code>parent_exe</code> + command regex with an owner and expiry, or have the app read its version at build time</td>
+</tr>
+<tr>
+<td>S13 <code>vim</code> edits <code>/etc/cron.d/backup</code></td>
+<td>LNX-002</td>
+<td>A manual change by a human</td>
+<td>A change record</td>
+<td>Ask; prefer configuration management as the only writer</td>
+</tr>
+<tr>
+<td>S23 developer user unit under <code>/home</code></td>
+<td>LNX-003</td>
+<td><code>/home</code> is in the writable set</td>
+<td>Host role (developer workstation vs server)</td>
+<td>Scope the rule to server roles</td>
+</tr>
+<tr>
+<td>S33 CI toolchain in <code>/tmp</code> connects out</td>
+<td>LNX-004</td>
+<td>Executes from a writable directory</td>
+<td>The binary's hash or a dedicated build directory</td>
+<td>Run builds elsewhere; allow by hash, never by path</td>
+</tr>
+<tr>
+<td>S44 nightly audit scanner reads <code>/etc/shadow</code></td>
+<td>LNX-005</td>
+<td>Designed reader not on the list</td>
+<td>Inventory of scanners</td>
+<td>Allowlist with owner and expiry</td>
+</tr>
+<tr>
+<td>S54 <code>tee /etc/sudoers.d/dev-team</code>, approved</td>
+<td>LNX-006</td>
+<td>Legitimate, approved write</td>
+<td>The approval</td>
+<td>Attach a change reference; do not allowlist <code>tee</code></td>
+</tr>
+<tr>
+<td>S82 <code>truncate -s 0 /var/log/syslog</code></td>
+<td>LNX-009</td>
+<td>Emergency clean-up</td>
+<td>Asking the person; confirming the shipper holds the data</td>
+<td>Respond by asking, not by isolating</td>
+</tr>
+</tbody>
+</table>
+<p>Ten other look-alikes (S03, S11, S12, S21, S22, S43, S52, S53, S61, S62) are correctly quiet: three because of an unexpired exception, the rest because the rule
+excludes the designed tool or the specific shape (for example S62: setgid on a <strong>directory</strong>).</p>
+<h3 id="what-the-lab-found-that-i-did-not-plan-for">What the lab found that I did not plan for<a class="headerlink" href="#what-the-lab-found-that-i-did-not-plan-for" title="Permanent link">&para;</a></h3>
+<ol>
+<li><strong>Deduplication can hide a distinct action.</strong> The key <code>(rule, host, subject)</code> with a 5-minute window folds any second hit with the same subject into the first alert's count. When I tested
+   a pid-only ancestry join, the benign S06 hit was folded into S01's alert (subject <code>nginx &gt; sh</code>), so my first scorer attributed the alert only to S01 and S06 looked silent. The scorer now
+   tracks the folded scenarios (evaluation-only metadata; a real pipeline sees only the count). The production lesson: choose the key deliberately. A coarse key reduces noise and
+   also means a second, different shell started by the same service inside the window is not a second alert.</li>
+<li><strong>Python's <code>ipaddress.is_private</code> is true for the RFC 5737 documentation ranges</strong> the lab uses as stand-ins for "somewhere on the Internet". The first normalizer classified them as private and a
+   test caught it. Classification now treats only loopback, RFC 1918, link-local and ULA as internal.</li>
+<li><strong>A source can be present while a needed field is not.</strong> The first engine reported LNX-003 as evaluated on the strace capture, although strace can never provide a unit's parsed <code>ExecStart</code>. Coverage is
+   now checked per source <strong>and</strong> per field: LNX-003 is <code>blind</code> on the capture. A silent rule and a blind rule look identical in an alert list; they must not be treated alike.</li>
+<li><strong>PID reuse is a real attribution risk, and identity prevents it.</strong> In S06 a benign shell reuses the pid of a former nginx child. The identity-aware ancestry (pid <strong>and</strong> start time, the latter being
+   <code>/proc/[pid]/stat</code> field 22, <code>source-reviewed</code>) attributes it correctly; the same query with the start-time condition removed alerts on it. Both outcomes are asserted.</li>
+<li><strong>Ingestion lag, not rule logic, dominates detection time.</strong> Synthetic latency was a median of 3.6 s, but S91, whose events reach the pipeline 125 s late, alerts after 125-127 s. These are synthetic
+   clocks (a 5 s evaluation batch plus a generated lag), not a measurement of any real pipeline.</li>
+</ol>
+<h3 id="the-real-kernel-cross-check">The real-kernel cross-check<a class="headerlink" href="#the-real-kernel-cross-check" title="Permanent link">&para;</a></h3>
+<p><code>capture.sh</code> runs a busybox container whose script performs harmless analogs: a comment-only file in <code>/etc/cron.d</code>, a read of the container's own <code>/etc/shadow</code>, a comment-only
+<code>sudoers.d</code> drop-in, <code>chmod 4755</code> on a copy of <code>/bin/true</code>, a truncated log file, and a connection from a copy of <code>wget</code> in <code>/tmp</code> to a <strong>private</strong> canary. The host attaches <code>strace -f</code> to the container's PID 1.
+176 raw lines became 28 events and exactly the five matching rules alerted. LNX-004's negative control (a <code>/tmp</code> executable talking to a private address) stayed silent.</p>
+<p>Two caveats are part of the finding. The first-attached process has no <code>execve</code> in the trace, so its <code>exe</code> comes from <code>/proc/&lt;pid&gt;/exe</code> at attach time. And <code>strace</code> is a capture convenience: it
+perturbs timing, records only the syscalls it is asked for, and supplies host PIDs without start times (the normalizer substitutes a per-trace ordinal, which keeps identity within one capture but is not a kernel start time).</p>
+<h2 id="practical-guidance-and-failure-containment">Practical guidance and failure containment<a class="headerlink" href="#practical-guidance-and-failure-containment" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Treat blind as an incident in the pipeline.</strong> A rule whose source or field is gone should page the telemetry owner, because its silence is not evidence of a clean host.</li>
+<li><strong>Exceptions need an owner and an expiry, and the engine should enforce both.</strong> An exception without an expiry is a permanent hole nobody remembers granting.</li>
+<li><strong>Respond read-only first.</strong> Every rule's response text starts with capture and attribution; containment follows evidence. LNX-008 in particular: the deleted or in-memory file is only recoverable while the process lives.</li>
+<li><strong>Never auto-isolate a host on a single rule.</strong> Seven of nine rules have a documented legitimate source; automation without the context that resolves it turns a false positive into an outage.</li>
+<li><strong>Roll back by disabling the rule or its exception, not by loosening the pattern.</strong> Rules are files; the previous version is in version control.</li>
+</ul>
+<p>Failure containment: a bad rule is bounded by its blast radius, an alert (a person reads it), not by an action. The first automated action added to any rule should be reversible and rate-limited, and I did not build one.</p>
+<h2 id="what-was-not-tested">What was not tested<a class="headerlink" href="#what-was-not-tested" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Production sensors</strong> (auditd, eBPF, Falco, Tetragon, osquery) and their fidelity, drops, and overhead. <code>strace</code> is not a representative sensor.</li>
+<li><strong>Real fleet data.</strong> False-positive rates here are properties of a hand-written corpus. A real environment will have more sources of both noise and evasion.</li>
+<li><strong>Rules LNX-001, 003, 004 and 008 on real kernel data.</strong> The capture exercises 002, 005, 006, 007, 009 and one negative for 004; the rest are tested on synthetic events only.</li>
+<li><strong>A knowing adversary.</strong> Evasion is two hand-written cases (a per-user crontab, an outbound connection from system <code>bash</code>). There is no bypass analysis.</li>
+<li><strong>Time to detect and time to contain</strong> against a real pipeline; the latency in this lab is synthetic.</li>
+<li><strong>Response actions.</strong> They are written guidance and were never executed.</li>
+<li><strong>Container and Kubernetes context</strong> (namespaces, cgroups, image provenance as fields) and multi-host correlation.</li>
+</ul>
+<h2 id="production-considerations">Production considerations<a class="headerlink" href="#production-considerations" title="Permanent link">&para;</a></h2>
+<p><strong>Rollout.</strong> Run every rule report-only on a few hosts of each role (web, build, bastion, workstation) for at least one full change cycle. Record each alert's disposition; the
+list of dispositions is the first draft of the allowlist and tells you which rules need a host-role scope (LNX-003 and LNX-004 almost certainly do). Promote a rule to paging only when its
+residual false-positive sources are known and owned.</p>
+<p><strong>Detection.</strong> Alert on pipeline health as seriously as on the rules: a falling event rate per host, a rule reported blind, an allowlist entry about to expire, and a rule that has not fired
+in a long time all deserve a signal. Log the rule version, the allowlist version and the evaluation batch on every alert so a disposition can be reproduced.</p>
+<p><strong>Operability.</strong> Keep rules in version control as plain files and review them like code, including the exclusions. Give each exception a named owner and an expiry date and
+notify the owner before the date. Choose the deduplication key per rule, not globally, and state the window in the alert so an analyst knows a count of 50 means 50 hits.</p>
+<p><strong>False positives.</strong> Expect the seven families above plus whatever your environment adds (CI runners, backup and EDR agents, developer tooling, configuration management). Resolve each by
+adding context to the rule (host role, a change reference, a binary hash), not by widening exclusions. Never allowlist a generic tool such as <code>tee</code>, <code>sh</code> or <code>python3</code>.</p>
+<p><strong>Blast radius.</strong> A detection rule's worst case is an unnecessary investigation or, with automation, an unnecessary isolation. Keep the response step manual until the rule's
+disposition history justifies otherwise, and make any automated step reversible.</p>
+<p><strong>Rollback.</strong> Disable the rule file or the exception; both are one-line changes and both leave the history intact. Keep the corpus in the repository and re-run the tests when a rule changes so a fix for one false positive
+cannot silently open a new miss.</p>
+<h2 id="limitations-and-what-was-not-tested">Limitations and what was not tested<a class="headerlink" href="#limitations-and-what-was-not-tested" title="Permanent link">&para;</a></h2>
+<p>The local experiment validates detection <strong>logic</strong> on a corpus its author wrote and on one small real capture. It does not validate the complete reference architecture, a production sensor,
+live cloud enforcement, hosted CI, representative adversarial coverage, or independent audit storage. Review status remains <code>requires-review</code> until a reviewer checks the claims above against
+<code>validatedAgainst</code> and the linked evidence.</p>
+<p>Time to detect, time to contain, population false-positive and false-negative rates, pipeline overhead and cost are <strong>not measured in this article</strong>. Use the
+<a href="../../research-methodology/evidence-standards/#measurement-contract">measurement contract</a> to define clocks, denominators, repeated workloads and residual capabilities before claiming those outcomes.
+Report local fixture counts separately from live coverage.</p>
+<h2 id="open-questions">Open questions<a class="headerlink" href="#open-questions" title="Permanent link">&para;</a></h2>
+<p>Which fields must a production sensor attach to a file event (parsed <code>ExecStart</code>, writer's session and tty, package ownership of the path) for LNX-003 and LNX-006 to drop their residual false
+positives without allowlisting tools, and how much does enriching events at the sensor cost compared with enriching them at query time?</p>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<ul>
+<li>Linux man-pages, <a href="https://github.com/mkerrisk/man-pages/blob/master/man5/proc.5">proc(5)</a>: <code>/proc/[pid]/stat</code> field 22, <code>starttime</code>, the time the process started after system boot (the basis for pairing a start time with a pid).</li>
+<li>strace project, <a href="https://github.com/strace/strace/blob/master/doc/strace.1.in">strace(1)</a>: the trace-line format the normalizer parses (name, arguments, return value, <code>errno</code> on failure, octal modes).</li>
+<li>The documentation-only address ranges used for destinations (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24) are those of RFC 5737; the RFC text was not reachable from the build environment and is named from memory, not listed as consulted.</li>
+<li><a href="../evidence-driven-host-analysis/">Linux Host Analysis Without Invented Attack Paths</a>, the maintained process-identity argument this lab builds on.</li>
+<li><a href="../../labs/linux-host-telemetry/">Linux host telemetry detection lab</a>, the implementation, tests and evidence.</li>
+</ul>
+  
+  
+    
+
+<section class="docs-related" aria-labelledby="docs-related-heading">
+  <h2 id="docs-related-heading">Related content</h2>
+  <div class="docs-related__grid">
+    
+      
+      <a class="docs-related__item" href="/linux-security/evidence-driven-host-analysis/">
+        <span class="docs-related__type">Research</span>
+        <strong><span class="docs-link-label">Host evidence and uncertainty <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
+        <span>Collect bounded Linux metadata while preserving process identity, namespace context, exposure uncertainty, and incomplete coverage.</span>
+      </a>
+      
+    
+      
+      <a class="docs-related__item" href="/labs/linux-host-telemetry/">
+        <span class="docs-related__type">Lab</span>
+        <strong><span class="docs-link-label">Linux host telemetry <span class="docs-link-arrow" aria-hidden="true">→</span></span></strong>
+        <span>Runs nine SQL detection rules over a deterministic synthetic corpus with labeled benign look-alikes and known evasions, then over real syscalls captured with strace from a throwaway container.</span>
+      </a>
+      
+    
+      
+    
+  </div>
+</section>
+
+    <aside class="docs-contribute" aria-label="Contribute to this article">
+  <p><strong>Help improve this page</strong></p>
+  <div>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Suggestion%3A%20Host%20Telemetry%20Detection%20Lab%3A%20Nine%20Linux%20Rules%2C%20Their%20False%20Positives%2C%20and%20What%20They%20Cannot%20See&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/linux-security/host-telemetry-detection-lab/%0ASource%3A%20linux-security/host-telemetry-detection-lab.md%0A%0ADescribe%20the%20improvement%20you%20would%20like%20to%20suggest%3A"><span class="docs-link-label">Suggest an improvement <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+    <a href="https://github.com/jasonachkar/cybersecurity-writeups/issues/new?title=Docs%3A%20Host%20Telemetry%20Detection%20Lab%3A%20Nine%20Linux%20Rules%2C%20Their%20False%20Positives%2C%20and%20What%20They%20Cannot%20See&amp;body=Article%3A%20https%3A//docs.jasonachkardiab.com/linux-security/host-telemetry-detection-lab/%0ASource%3A%20linux-security/host-telemetry-detection-lab.md%0A%0ADescribe%20the%20issue%3A"><span class="docs-link-label">Report an issue <span class="docs-link-arrow" aria-hidden="true">↗</span></span></a>
+  </div>
+</aside>
+  
+
+    </article>
+    <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../evidence-driven-host-analysis/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Host evidence and uncertainty">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Host evidence and uncertainty
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../devsecops/" class="md-footer__link md-footer__link--next" aria-label="Next: DevSecOps overview">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                DevSecOps overview
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  &copy; 2026 Jason Achkardiab. All rights reserved.
+</div>
+      
+    </div>
+  </div>
+</footer>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tracking", "navigation.top", "navigation.path", "navigation.indexes", "navigation.footer", "search.suggest", "search.highlight"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../../js/docs-ui.js"></script>
+      
+        <script src="../../js/source-viewer.js"></script>
+      
+    
+  </body>
+</html>

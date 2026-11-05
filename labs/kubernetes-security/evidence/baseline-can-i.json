@@ -1,0 +1,1 @@
+{"get secrets in kube-system": true, "list pods (any namespace)": true, "list nodes (any namespace)": true, "create pods/exec in lab-data": true, "create rolebindings in lab-baseline": true, "escalate clusterroles (any namespace)": false, "impersonate users (any namespace)": false}

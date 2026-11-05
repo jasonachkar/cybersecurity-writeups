@@ -1,0 +1,14 @@
+# Portable kind cluster for labs/kubernetes-security.
+#
+# The default CNI is disabled on purpose: NetworkPolicy objects are accepted by the
+# API server whether or not anything enforces them, so the lab installs a CNI
+# whose enforcement it verifies with a smoke test (scripts/np-smoke.sh) before
+# trusting any network result. See README "NetworkPolicy enforcement is a property
+# of the CNI".
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  disableDefaultCNI: true
+  podSubnet: 192.168.0.0/16
+nodes:
+  - role: control-plane

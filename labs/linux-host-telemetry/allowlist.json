@@ -1,0 +1,13 @@
+{
+  "_comment": "Exceptions to the detection rules. Every entry needs an owner, a reason and an expiry; the engine ignores an entry after its expiry date and a test proves it. Patterns are anchored regular expressions matched against the named field.",
+  "entries": [
+    {"rule": "LNX-001", "field": "cmdline", "parent_exe": "/usr/sbin/php-fpm8.3", "pattern": "^sh -c convert /tmp/[^ ]+ -resize [0-9x]+ /tmp/[^ ]+$",
+     "owner": "web-platform", "reason": "image thumbnailing in the upload handler", "expires": "2027-03-01"},
+    {"rule": "LNX-002", "field": "exe", "pattern": "^/usr/bin/python3$", "cmdline_pattern": "AnsiballZ_",
+     "owner": "platform-config", "reason": "configuration management writes cron entries", "expires": "2027-03-01"},
+    {"rule": "LNX-005", "field": "exe", "pattern": "^/opt/backup/agent$",
+     "owner": "backup-team", "reason": "nightly full-host backup reads credentials by design", "expires": "2027-03-01"},
+    {"rule": "LNX-005", "field": "exe", "pattern": "^/opt/legacy/sync$",
+     "owner": "legacy-apps", "reason": "temporary exception while the sync job is replaced", "expires": "2026-06-30"}
+  ]
+}

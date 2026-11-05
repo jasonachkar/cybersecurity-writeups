@@ -1,0 +1,65 @@
+{
+  "posture": {
+    "uid": 65532,
+    "gid": 65532,
+    "cap_eff_hex": "0000000000000000",
+    "cap_eff": [],
+    "cap_bnd_hex": "0000000000000000",
+    "no_new_privs": "1",
+    "seccomp_mode": "2",
+    "seccomp_filters": "1",
+    "root_fs_mounted_read_only": true,
+    "memory_limit": "134217728 (/sys/fs/cgroup/memory/memory.limit_in_bytes)",
+    "pids_limit": "19275 (/sys/fs/cgroup/pids/pids.max)",
+    "cpu_quota": "50000 (/sys/fs/cgroup/cpu/cpu.cfs_quota_us)",
+    "pid1_comm": "posture",
+    "visible_process_count": 2,
+    "go_version": "go1.27.3"
+  },
+  "probes": [
+    {
+      "name": "write_root_filesystem",
+      "allowed": false,
+      "errno": "EROFS"
+    },
+    {
+      "name": "write_tmp_scratch",
+      "allowed": true
+    },
+    {
+      "name": "chown_to_other_uid (CAP_CHOWN)",
+      "allowed": false,
+      "errno": "EPERM"
+    },
+    {
+      "name": "mknod_char_device (CAP_MKNOD)",
+      "allowed": false,
+      "errno": "EPERM"
+    },
+    {
+      "name": "raw_socket (CAP_NET_RAW)",
+      "allowed": false,
+      "errno": "EPERM"
+    },
+    {
+      "name": "mount_tmpfs (CAP_SYS_ADMIN)",
+      "allowed": false,
+      "errno": "EPERM"
+    },
+    {
+      "name": "clone_new_user_namespace (seccomp-attributable)",
+      "allowed": false,
+      "errno": "EPERM"
+    },
+    {
+      "name": "docker_socket_present",
+      "allowed": false,
+      "errno": "ENOENT"
+    },
+    {
+      "name": "host_canary_mounted",
+      "allowed": false,
+      "errno": "ENOENT"
+    }
+  ]
+}

@@ -1,0 +1,447 @@
+{
+  "scenarios": [
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-001"
+      ],
+      "id": "S01",
+      "name": "nginx worker starts a shell",
+      "note": "depth-1 ancestry from a network-facing service",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-001"
+      ],
+      "id": "S02",
+      "name": "php-fpm worker descendant starts bash",
+      "note": "depth-2 ancestry: service > helper > shell",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S03",
+      "name": "php-fpm runs an allowlisted image converter via sh",
+      "note": "suppressed by an allowlist entry with an owner and an expiry",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [
+        "LNX-001"
+      ],
+      "id": "S04",
+      "name": "gunicorn app shells out to git",
+      "note": "RESIDUAL FALSE POSITIVE: legitimate, not allowlisted; needs an owner decision",
+      "requires_sources": []
+    },
+    {
+      "class": "control",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S05",
+      "name": "admin reloads nginx from an ssh session",
+      "note": "parent is the admin shell, not the service",
+      "requires_sources": []
+    },
+    {
+      "class": "control",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S06",
+      "name": "PID reuse: a benign shell reuses pid 61000 of a former nginx child",
+      "note": "identity (pid + start time) prevents misattribution; a pid-only join would alert",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-002"
+      ],
+      "id": "S10",
+      "name": "shell writes /etc/cron.d",
+      "note": "non-package-manager writer creates a system cron entry",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S11",
+      "name": "dpkg updates /etc/cron.d during an upgrade",
+      "note": "package manager writer",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S12",
+      "name": "configuration management writes /etc/cron.d",
+      "note": "suppressed by an allowlist entry with an owner and an expiry",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [
+        "LNX-002"
+      ],
+      "id": "S13",
+      "name": "admin edits /etc/cron.d/backup with vim",
+      "note": "RESIDUAL FALSE POSITIVE: a legitimate manual change; correlate with a change record",
+      "requires_sources": []
+    },
+    {
+      "class": "evasion",
+      "evades": [
+        "LNX-002"
+      ],
+      "expected_rules": [],
+      "id": "S14",
+      "name": "user crontab written by the crontab binary",
+      "note": "KNOWN MISS: the per-user spool is excluded because crontab(1) is its legitimate writer",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-003"
+      ],
+      "id": "S20",
+      "name": "shell installs a unit whose ExecStart is under /tmp",
+      "note": "persistence via a unit pointing at a world-writable path",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S21",
+      "name": "dpkg installs a service unit",
+      "note": "package manager writer, ExecStart in /usr",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S22",
+      "name": "admin installs an app unit under /opt",
+      "note": "non-package writer but ExecStart is not under a writable directory",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [
+        "LNX-003"
+      ],
+      "id": "S23",
+      "name": "developer user unit under /home",
+      "note": "RESIDUAL FALSE POSITIVE: user units under /home are a normal developer workflow",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-004"
+      ],
+      "id": "S30",
+      "name": "binary in /tmp connects to a public address",
+      "note": "exe under a world-writable directory with a public destination",
+      "requires_sources": [
+        "net"
+      ]
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-004"
+      ],
+      "id": "S31",
+      "name": "binary in /dev/shm connects out over 443",
+      "note": "same rule, TLS port: the port is not the signal",
+      "requires_sources": [
+        "net"
+      ]
+    },
+    {
+      "class": "control",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S32",
+      "name": "admin curls a public HTTPS endpoint",
+      "note": "ordinary exe path",
+      "requires_sources": [
+        "net"
+      ]
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [
+        "LNX-004"
+      ],
+      "id": "S33",
+      "name": "CI toolchain unpacked in /tmp fetches dependencies",
+      "note": "RESIDUAL FALSE POSITIVE: build tools run from /tmp; allowlist by exe hash or run builds elsewhere",
+      "requires_sources": [
+        "net"
+      ]
+    },
+    {
+      "class": "evasion",
+      "evades": [
+        "LNX-004"
+      ],
+      "expected_rules": [],
+      "id": "S34",
+      "name": "system bash makes an outbound connection",
+      "note": "KNOWN MISS: the exe path is ordinary, so path-based egress logic does not see it",
+      "requires_sources": [
+        "net"
+      ]
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-005"
+      ],
+      "id": "S40",
+      "name": "python reads /etc/shadow as www-data",
+      "note": "unexpected reader of the shadow file",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-005"
+      ],
+      "id": "S41",
+      "name": "binary in /tmp reads cloud credentials",
+      "note": "credential file read by an unexpected process",
+      "requires_sources": []
+    },
+    {
+      "class": "control",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S42",
+      "name": "unix_chkpwd reads /etc/shadow at login",
+      "note": "the designed reader; also covered in the background noise",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S43",
+      "name": "backup agent reads shadow and ssh keys",
+      "note": "suppressed by an allowlist entry with an owner and an expiry",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [
+        "LNX-005"
+      ],
+      "id": "S44",
+      "name": "nightly audit scanner reads /etc/shadow",
+      "note": "RESIDUAL FALSE POSITIVE: a legitimate scanner with no allowlist entry",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-005"
+      ],
+      "id": "S45",
+      "name": "an allowlisted tool keeps running after its exception expired",
+      "note": "the exception for /opt/legacy/sync expired 2026-06-30; the same behaviour must alert again",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-001",
+        "LNX-006"
+      ],
+      "id": "S50",
+      "name": "shell drops a NOPASSWD sudoers file as www-data",
+      "note": "write to sudoers.d by a non-admin tool",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-006"
+      ],
+      "id": "S51",
+      "name": "write to /etc/ld.so.preload",
+      "note": "a loader preload entry is not a routine change",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S52",
+      "name": "visudo edits /etc/sudoers",
+      "note": "designed editor",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S53",
+      "name": "useradd updates passwd, shadow and group",
+      "note": "designed account tool",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [
+        "LNX-006"
+      ],
+      "id": "S54",
+      "name": "admin applies an approved sudoers.d change with tee",
+      "note": "RESIDUAL FALSE POSITIVE: legitimate and approved; the detection cannot know that without a change record",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-007"
+      ],
+      "id": "S60",
+      "name": "chmod u+s on a file in /tmp",
+      "note": "setuid bit set outside a package manager",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S61",
+      "name": "dpkg sets the setuid bit on sudo",
+      "note": "package manager writer",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S62",
+      "name": "admin sets setgid on a shared directory",
+      "note": "directories are excluded: setgid on a directory is a normal sharing pattern",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-008"
+      ],
+      "id": "S70",
+      "name": "execution from an anonymous memory file",
+      "note": "fileless execution pattern",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-008"
+      ],
+      "id": "S71",
+      "name": "execution of a binary that was deleted after launch",
+      "note": "the file was unlinked to hide it",
+      "requires_sources": []
+    },
+    {
+      "class": "control",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S72",
+      "name": "ordinary exec of a system binary",
+      "note": "nothing unusual about the path",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-009"
+      ],
+      "id": "S80",
+      "name": "shell truncates auth.log and disables auditing",
+      "note": "log truncation by a non-rotation tool, plus auditctl -e 0",
+      "requires_sources": []
+    },
+    {
+      "class": "control",
+      "evades": [],
+      "expected_rules": [],
+      "id": "S81",
+      "name": "logrotate rotates auth.log",
+      "note": "designed rotation tool",
+      "requires_sources": []
+    },
+    {
+      "class": "benign_lookalike",
+      "evades": [],
+      "expected_rules": [
+        "LNX-009"
+      ],
+      "id": "S82",
+      "name": "admin truncates a huge log to free disk",
+      "note": "RESIDUAL FALSE POSITIVE: legitimate emergency action; the response is to ask, not to isolate",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-002"
+      ],
+      "id": "S90",
+      "name": "the same suspicious write repeated 50 times",
+      "note": "deduplication: 50 events must produce one alert with a count",
+      "requires_sources": []
+    },
+    {
+      "class": "malicious_pattern",
+      "evades": [],
+      "expected_rules": [
+        "LNX-001",
+        "LNX-006"
+      ],
+      "id": "S91",
+      "name": "a detectable write that reaches the pipeline 125 seconds late",
+      "note": "event time and ingest time diverge: detection latency is dominated by ingestion, not by the rule",
+      "requires_sources": []
+    }
+  ],
+  "seed": 20261105
+}

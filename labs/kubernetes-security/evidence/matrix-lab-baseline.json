@@ -1,0 +1,69 @@
+{
+  "namespace": "lab-baseline",
+  "results": {
+    "compliant-app": {
+      "decision": "allow",
+      "message": ""
+    },
+    "compliant-api-reader": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-privileged": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-hostpath": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-host-namespaces": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-run-as-root": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-capability-add": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-no-seccomp": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-privilege-escalation": {
+      "decision": "allow",
+      "message": ""
+    },
+    "finding-pod-level-only-run-as-non-root": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-no-limits": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-latest-tag": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-writable-rootfs": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-automounted-token": {
+      "decision": "allow",
+      "message": ""
+    },
+    "finding-sa-level-automount-false": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-projected-token-unapproved": {
+      "decision": "allow",
+      "message": ""
+    }
+  }
+}

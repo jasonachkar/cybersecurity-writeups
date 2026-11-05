@@ -1,0 +1,69 @@
+{
+  "namespace": "lab-hardened",
+  "results": {
+    "compliant-app": {
+      "decision": "allow",
+      "message": ""
+    },
+    "compliant-api-reader": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-privileged": {
+      "decision": "deny",
+      "message": "Error from server (Forbidden): error when creating \"STDIN\": pods \"rejected-privileged\" is forbidden: violates PodSecurity \"restricted:v1.37\": privileged (container \"app\" must not set securityContext.privileged=true), allowPrivilegeEscalation != false (container \"app\" must set securityContext.allowPrivilegeEscalation=false)"
+    },
+    "rejected-hostpath": {
+      "decision": "deny",
+      "message": "Error from server (Forbidden): error when creating \"STDIN\": pods \"rejected-hostpath\" is forbidden: violates PodSecurity \"restricted:v1.37\": restricted volume types (volume \"host\" uses restricted volume type \"hostPath\")"
+    },
+    "rejected-host-namespaces": {
+      "decision": "deny",
+      "message": "Error from server (Forbidden): error when creating \"STDIN\": pods \"rejected-host-namespaces\" is forbidden: violates PodSecurity \"restricted:v1.37\": host namespaces (hostNetwork=true, hostPID=true)"
+    },
+    "rejected-run-as-root": {
+      "decision": "deny",
+      "message": "Error from server (Forbidden): error when creating \"STDIN\": pods \"rejected-run-as-root\" is forbidden: violates PodSecurity \"restricted:v1.37\": runAsNonRoot != true (pod and container \"app\" must not set securityContext.runAsNonRoot=false), runAsUser=0 (pod must not set runAsUser=0)"
+    },
+    "rejected-capability-add": {
+      "decision": "deny",
+      "message": "Error from server (Forbidden): error when creating \"STDIN\": pods \"rejected-capability-add\" is forbidden: violates PodSecurity \"restricted:v1.37\": unrestricted capabilities (container \"app\" must not include \"NET_ADMIN\" in securityContext.capabilities.add)"
+    },
+    "rejected-no-seccomp": {
+      "decision": "deny",
+      "message": "Error from server (Forbidden): error when creating \"STDIN\": pods \"rejected-no-seccomp\" is forbidden: violates PodSecurity \"restricted:v1.37\": seccompProfile (pod or container \"app\" must set securityContext.seccompProfile.type to \"RuntimeDefault\" or \"Localhost\")"
+    },
+    "rejected-privilege-escalation": {
+      "decision": "deny",
+      "message": "Error from server (Forbidden): error when creating \"STDIN\": pods \"rejected-privilege-escalation\" is forbidden: violates PodSecurity \"restricted:v1.37\": allowPrivilegeEscalation != false (container \"app\" must set securityContext.allowPrivilegeEscalation=false)"
+    },
+    "finding-pod-level-only-run-as-non-root": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-no-limits": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-latest-tag": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-writable-rootfs": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-automounted-token": {
+      "decision": "allow",
+      "message": ""
+    },
+    "finding-sa-level-automount-false": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-projected-token-unapproved": {
+      "decision": "allow",
+      "message": ""
+    }
+  }
+}

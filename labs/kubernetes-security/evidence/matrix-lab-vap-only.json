@@ -1,0 +1,69 @@
+{
+  "namespace": "lab-vap-only",
+  "results": {
+    "compliant-app": {
+      "decision": "allow",
+      "message": ""
+    },
+    "compliant-api-reader": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-privileged": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-hostpath": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-host-namespaces": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-run-as-root": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-capability-add": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-no-seccomp": {
+      "decision": "allow",
+      "message": ""
+    },
+    "rejected-privilege-escalation": {
+      "decision": "allow",
+      "message": ""
+    },
+    "finding-pod-level-only-run-as-non-root": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-no-limits": {
+      "decision": "deny",
+      "message": "The pods \"gap-no-limits\" is invalid: : ValidatingAdmissionPolicy 'lab-pod-extra-controls' with binding 'lab-pod-extra-controls' denied request: Every container must set CPU and memory limits."
+    },
+    "gap-latest-tag": {
+      "decision": "deny",
+      "message": "The pods \"gap-latest-tag\" is invalid: : ValidatingAdmissionPolicy 'lab-pod-extra-controls' with binding 'lab-pod-extra-controls' denied request: Images must be pinned by digest or carry an explicit non-latest tag."
+    },
+    "gap-writable-rootfs": {
+      "decision": "deny",
+      "message": "The pods \"gap-writable-rootfs\" is invalid: : ValidatingAdmissionPolicy 'lab-pod-extra-controls' with binding 'lab-pod-extra-controls' denied request: Containers must use a read-only root filesystem."
+    },
+    "gap-automounted-token": {
+      "decision": "deny",
+      "message": "Error from server (Forbidden): error when creating \"STDIN\": pods \"gap-automounted-token\" is forbidden: ValidatingAdmissionPolicy 'lab-pod-extra-controls' with binding 'lab-pod-extra-controls' denied request: A service-account token (automounted or projected) requires the reviewed label lab.example/api-access=approved and a non-default ServiceAccount."
+    },
+    "finding-sa-level-automount-false": {
+      "decision": "allow",
+      "message": ""
+    },
+    "gap-projected-token-unapproved": {
+      "decision": "deny",
+      "message": "Error from server (Forbidden): error when creating \"STDIN\": pods \"gap-projected-token-unapproved\" is forbidden: ValidatingAdmissionPolicy 'lab-pod-extra-controls' with binding 'lab-pod-extra-controls' denied request: A service-account token (automounted or projected) requires the reviewed label lab.example/api-access=approved and a non-default ServiceAccount."
+    }
+  }
+}
